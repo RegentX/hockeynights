@@ -43,6 +43,24 @@ export const mockNotifications: Notification[] = [
     relatedEntityId: 'resp-001',
     createdAt: '2026-06-05T11:05:00Z',
   },
+  {
+    id: 'notif-005',
+    userId: 'user-001',
+    type: 'event_reminder',
+    title: 'Напоминание: игра сегодня',
+    body: 'Игра «Медведи САО» сегодня в 20:00, отметь участие.',
+    relatedEntityId: 'event-001',
+    createdAt: '2026-06-07T17:30:00Z',
+  },
+  {
+    id: 'notif-006',
+    userId: 'user-001',
+    type: 'event_reminder',
+    title: 'Напоминание: тренировка утром',
+    body: 'Тренировка завтра в 08:00, не забудь форму.',
+    relatedEntityId: 'event-002',
+    createdAt: '2026-06-16T21:00:00Z',
+  },
 ]
 
 /**

@@ -32,7 +32,10 @@ const TYPE_LABELS: Record<string, string> = {
  */
 export function EventCard({event, currentUserId = 'user-001', compact = false}: EventCardProps) {
   const myAttendance = event.participation.find((p) => p.userId === currentUserId)
+  const defaultStatus = event.type === 'game' ? 'not_going' as const : undefined
+  const currentStatus = myAttendance?.status ?? defaultStatus
   const start = new Date(event.startsAt)
+  const isPastEvent = start.getTime() < Date.now()
   const timeStr = start.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})
 
   if (compact) {
@@ -75,11 +78,11 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
           </div>
         </div>
 
-        <AttendanceControl eventId={event.id} currentStatus={myAttendance?.status} />
+        <AttendanceControl eventId={event.id} currentStatus={currentStatus} />
         <RosterNeedsWidget eventId={event.id} />
-        {myAttendance?.status === 'going' && (
+        {currentStatus === 'going' && isPastEvent && (
           <Link to="/feedback">
-            <Text color="link">Оставить feedback участникам</Text>
+            <Text color="link">Оставить отзыв после матча</Text>
           </Link>
         )}
       </div>

@@ -32,6 +32,8 @@ export interface HockeyProfile {
   profileCompleteness: number
   /** @spec SPEC-FR-8.2.1 */
   karmaScore: number
+  /** Микро-ачивки (простые текстовые бейджи) */
+  achievements?: string[]
 }
 
 /** @spec SPEC-FR-2.3.1 - Карточка игрока для списка */

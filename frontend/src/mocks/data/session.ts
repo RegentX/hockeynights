@@ -35,6 +35,7 @@ export let mockProfile: HockeyProfile = {
   bio: 'Любитель, играю 2 раза в неделю',
   profileCompleteness: 72,
   karmaScore: 74,
+  achievements: ['10 игр подряд без пропусков', '3 SOS-выручки', '5 отзывов без no-show'],
 }
 
 /**

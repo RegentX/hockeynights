@@ -60,6 +60,19 @@ function HockeyProfileFormFields({profile}: {profile: HockeyProfile}) {
           <KarmaHint />
         </div>
 
+        {profile.achievements && profile.achievements.length > 0 && (
+          <div className="hockey-stack hockey-stack--gap-4">
+            <Text color="secondary">Микро-ачивки</Text>
+            <ul className="hockey-list hockey-list--chips">
+              {profile.achievements.map((ach) => (
+                <li key={ach} className="hockey-chip">
+                  {ach}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <TextInput
           label="ФИО"
           value={form.fullName ?? ''}

@@ -25,16 +25,38 @@ export let mockEvents: GameEvent[] = [
     ],
     pricePerPlayer: 1500,
     participation: [
-      {eventId: 'event-001', userId: 'user-001', displayName: 'Иван Петров', status: 'going', updatedAt: '2026-06-05T10:00:00Z'},
+      {eventId: 'event-001', userId: 'user-001', displayName: 'Иван Петров', status: 'not_going', updatedAt: '2026-06-05T10:00:00Z'},
       {eventId: 'event-001', userId: 'user-003', displayName: 'Дмитрий Козлов', status: 'going', updatedAt: '2026-06-05T10:00:00Z'},
       {eventId: 'event-001', userId: 'user-004', displayName: 'Сергей Волков', status: 'maybe', updatedAt: '2026-06-05T10:00:00Z'},
+    ],
+  },
+  {
+    id: 'event-003',
+    type: 'game',
+    title: 'Прошедшая игра — Вымпел',
+    startsAt: '2026-06-01T19:00:00+03:00',
+    endsAt: '2026-06-01T20:30:00+03:00',
+    arenaId: 'arena-001',
+    arenaName: 'Ледовый дворец на Ходынке',
+    organizerUserId: 'user-001',
+    teamId: 'team-001',
+    requiredSkillLevel: 'amateur',
+    requiredSlots: [
+      {position: 'goalie', count: 2, filledCount: 2},
+      {position: 'forward', count: 6, filledCount: 6},
+    ],
+    pricePerPlayer: 1400,
+    participation: [
+      {eventId: 'event-003', userId: 'user-001', displayName: 'Иван Петров', status: 'going', updatedAt: '2026-06-01T12:00:00Z'},
+      {eventId: 'event-003', userId: 'user-002', displayName: 'Алексей Смирнов', status: 'going', updatedAt: '2026-06-01T12:00:00Z'},
+      {eventId: 'event-003', userId: 'user-003', displayName: 'Дмитрий Козлов', status: 'going', updatedAt: '2026-06-01T12:00:00Z'},
     ],
   },
   {
     id: 'event-002',
     type: 'training',
     title: 'Утренняя тренировка',
-    startsAt: '2026-06-08T08:00:00+03:00',
+    startsAt: '2026-06-17T08:00:00+03:00',
     endsAt: '2026-06-08T09:30:00+03:00',
     arenaId: 'arena-002',
     arenaName: 'Каток «Лужники»',
@@ -46,9 +68,7 @@ export let mockEvents: GameEvent[] = [
       {position: 'forward', count: 8, filledCount: 1},
     ],
     pricePerPlayer: 1200,
-    participation: [
-      {eventId: 'event-002', userId: 'user-001', displayName: 'Иван Петров', status: 'going', updatedAt: '2026-06-05T10:00:00Z'},
-    ],
+    participation: [],
   },
 ]
 

@@ -61,6 +61,8 @@ $slot-green: #34d399;
   --hockey-header-bg: linear-gradient(180deg, #ffffff 0%, #f5f0e8 100%);
   --hockey-header-border: var(--hockey-line-red);
   --hockey-nav-active-bg: rgba(225, 6, 0, 0.1);
+  --hockey-status-online: #0f8a4b;
+  --hockey-status-typing: #0057b7;
   --hockey-spotlight: radial-gradient(
     ellipse 120% 80% at 50% -20%,
     rgba(255, 199, 44, 0.14) 0%,
@@ -94,6 +96,8 @@ $slot-green: #34d399;
   --hockey-glass-bg: rgba(255, 255, 255, 0.04);
   --hockey-glass-border: rgba(94, 200, 242, 0.12);
   --hockey-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  --hockey-status-online: #9dffc8;
+  --hockey-status-typing: #f4fcff;
 }
 
 body {

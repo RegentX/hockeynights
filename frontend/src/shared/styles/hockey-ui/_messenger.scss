@@ -104,10 +104,10 @@
 
   &__status {
     font-size: 11px;
-    color: var(--hockey-text-muted);
+    color: var(--hockey-status-typing);
 
     &.is-online {
-      color: var(--hockey-line-blue);
+      color: var(--hockey-status-online);
     }
   }
 }
@@ -214,7 +214,7 @@
     text-overflow: ellipsis;
 
     &.is-typing {
-      color: var(--hockey-line-blue);
+      color: var(--hockey-status-typing);
       font-style: italic;
     }
   }
