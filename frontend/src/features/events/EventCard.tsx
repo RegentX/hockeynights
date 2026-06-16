@@ -3,6 +3,7 @@
  * SPEC-UI-2.5, SPEC-UI-1.3
  */
 
+import {useState} from 'react'
 import {Link} from 'react-router-dom'
 import {Text} from '@gravity-ui/uikit'
 import type {GameEvent} from '@/entities/event/types'
@@ -34,8 +35,9 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
   const myAttendance = event.participation.find((p) => p.userId === currentUserId)
   const defaultStatus = event.type === 'game' ? 'not_going' as const : undefined
   const currentStatus = myAttendance?.status ?? defaultStatus
+  const [nowMs] = useState(() => Date.now())
   const start = new Date(event.startsAt)
-  const isPastEvent = start.getTime() < Date.now()
+  const isPastEvent = new Date(event.endsAt).getTime() < nowMs
   const timeStr = start.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})
 
   if (compact) {
