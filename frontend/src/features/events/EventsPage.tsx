@@ -20,6 +20,7 @@ import {ScrollReveal} from '@/shared/ui/ScrollStory'
  */
 export function EventsPage() {
   const {data: events = [], isLoading} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
+  const currentUserId = 'user-001'
 
   const matchRows = events.map((event) => ({
     id: event.id,
@@ -31,6 +32,14 @@ export function EventsPage() {
     subtitle: `${event.arenaName ?? event.arenaId} · ${event.type}`,
     type: (event.type === 'open_ice' ? 'open_ice' : event.type) as 'game' | 'training' | 'open_ice',
   }))
+
+  const participationHistory = events
+    .filter((event) => event.participation.some((p) => p.userId === currentUserId))
+    .map((event) => {
+      const myStatus = event.participation.find((p) => p.userId === currentUserId)?.status ?? 'maybe'
+      return {event, myStatus}
+    })
+    .sort((a, b) => new Date(b.event.startsAt).getTime() - new Date(a.event.startsAt).getTime())
 
   return (
     <div className="hockey-stack hockey-stack--gap-20">
@@ -74,6 +83,33 @@ export function EventsPage() {
             </ScrollReveal>
           ))}
         </div>
+      )}
+
+      {!isLoading && participationHistory.length > 0 && (
+        <IceCard padding="m">
+          <div className="hockey-stack hockey-stack--gap-10">
+            <Text variant="subheader-2">Моя история участия (RSVP)</Text>
+            {participationHistory.map(({event, myStatus}) => (
+              <div key={`${event.id}-history`} className="hockey-row hockey-row--between hockey-row--gap-12">
+                <div className="hockey-stack hockey-stack--gap-4">
+                  <Text variant="body-2">{event.title}</Text>
+                  <Text color="secondary">
+                    {new Date(event.startsAt).toLocaleString('ru-RU', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}{' '}
+                    · {event.arenaName ?? event.arenaId}
+                  </Text>
+                </div>
+                <Text color={myStatus === 'going' ? 'positive' : myStatus === 'not_going' ? 'danger' : 'warning'}>
+                  {myStatus === 'going' ? 'Иду' : myStatus === 'not_going' ? 'Не иду' : 'Под вопросом'}
+                </Text>
+              </div>
+            ))}
+          </div>
+        </IceCard>
       )}
     </div>
   )

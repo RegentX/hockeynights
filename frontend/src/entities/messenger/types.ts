@@ -12,7 +12,19 @@ export interface Chat {
   avatarUrl?: string
   lastMessage?: Message
   unreadCount: number
+  isPinned?: boolean
+  isOnline?: boolean
+  isTyping?: boolean
+  memberIds?: string[]
   relatedEntityId?: string // ID команды или события
+}
+
+/** @spec SPEC-FR-16.1.1 - Пользователь для создания чата */
+export interface ChatUser {
+  userId: string
+  displayName: string
+  position?: string
+  isOnline?: boolean
 }
 
 export type MessageType = 'text' | 'actionable' | 'system'

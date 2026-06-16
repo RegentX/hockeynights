@@ -2,10 +2,10 @@
  * SPEC-FR-16.1.1, SPEC-UI-8.1
  */
 
-import {useEffect, useState} from 'react'
-import {useQuery, useQueryClient} from '@tanstack/react-query'
-import type {Message} from '@/entities/messenger/types'
-import {fetchChats} from '@/features/messenger/api/messengerApi'
+import {useEffect, useMemo, useState} from 'react'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import type {Chat, Message} from '@/entities/messenger/types'
+import {createDirectChat, fetchChatMessages, fetchChats, searchChatUsers} from '@/features/messenger/api/messengerApi'
 import {ChatBubble} from './ChatBubble'
 import {Text, TextInput, Button, Icon} from '@gravity-ui/uikit'
 import {PaperPlane} from '@gravity-ui/icons'
@@ -16,14 +16,7 @@ function isMobileViewport(): boolean {
   return typeof window !== 'undefined' && window.matchMedia(MOBILE_BREAKPOINT).matches
 }
 
-async function fetchChatMessages(chatId: string): Promise<Message[]> {
-  const res = await fetch(`/mock-api/v1/messenger/chats/${chatId}/messages`)
-  if (!res.ok) {
-    throw new Error(`Failed to load messages for ${chatId}`)
-  }
-  const data: unknown = await res.json()
-  return Array.isArray(data) ? (data as Message[]) : []
-}
+const PINNED_FILTER = 'pinned'
 
 export function MessengerPage() {
   const queryClient = useQueryClient()
@@ -35,6 +28,22 @@ export function MessengerPage() {
   const [inputText, setInputText] = useState('')
   const [isMobile, setIsMobile] = useState(isMobileViewport)
   const [mobileView, setMobileView] = useState<'list' | 'chat'>('list')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterMode, setFilterMode] = useState<'all' | 'pinned'>('all')
+
+  const {data: users = []} = useQuery({
+    queryKey: ['messenger-users', searchQuery],
+    queryFn: () => searchChatUsers(searchQuery),
+  })
+
+  const createChatMutation = useMutation({
+    mutationFn: (targetUserId: string) => createDirectChat(targetUserId),
+    onSuccess: (chat) => {
+      void queryClient.invalidateQueries({queryKey: ['messenger-chats']})
+      setSelectedChatId(chat.id)
+      setMobileView('chat')
+    },
+  })
 
   useEffect(() => {
     const mq = window.matchMedia(MOBILE_BREAKPOINT)
@@ -52,8 +61,16 @@ export function MessengerPage() {
     return () => mq.removeEventListener('change', update)
   }, [])
 
+  const sortedChats = useMemo(() => {
+    const ranked = [...chats].sort((a, b) => Number(Boolean(b.isPinned)) - Number(Boolean(a.isPinned)))
+    if (filterMode === PINNED_FILTER) {
+      return ranked.filter((chat) => chat.isPinned)
+    }
+    return ranked
+  }, [chats, filterMode])
+
   const activeChatId =
-    selectedChatId ?? (!isMobile && chats[0]?.id ? chats[0].id : null)
+    selectedChatId ?? (!isMobile && sortedChats[0]?.id ? sortedChats[0].id : null)
 
   const {data: messages = [], isLoading: isLoadingMessages} = useQuery({
     queryKey: ['messenger-messages', activeChatId],
@@ -100,14 +117,74 @@ export function MessengerPage() {
     .filter(Boolean)
     .join(' ')
 
-  const selectedChat = chats.find((c) => c.id === activeChatId)
+  const selectedChat = sortedChats.find((c) => c.id === activeChatId)
+
+  function handleCreateDirectChat(targetUserId: string) {
+    createChatMutation.mutate(targetUserId)
+  }
+
+  function getChatSubtitle(chat: Chat): string {
+    if (chat.isTyping) return 'печатает...'
+    if (chat.lastMessage) return chat.lastMessage.content
+    if (chat.type === 'team') return 'Групповой чат команды'
+    return 'Сообщений пока нет'
+  }
 
   return (
     <div className={layoutClass}>
       <div className="messenger-sidebar">
-        <Text variant="header-2" className="messenger-title">Мессенджер</Text>
+        <div className="messenger-title messenger-title--stack">
+          <Text variant="header-2">Мессенджер</Text>
+          <div className="messenger-toolbar">
+            <Button
+              size="s"
+              view={filterMode === 'all' ? 'action' : 'outlined'}
+              onClick={() => setFilterMode('all')}
+            >
+              Все
+            </Button>
+            <Button
+              size="s"
+              view={filterMode === 'pinned' ? 'action' : 'outlined'}
+              onClick={() => setFilterMode('pinned')}
+            >
+              Важные
+            </Button>
+          </div>
+          <TextInput
+            size="m"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Поиск игроков и новый чат"
+          />
+          {searchQuery.trim().length > 0 && (
+            <div className="chat-user-search">
+              {users.map((user) => (
+                <button
+                  key={user.userId}
+                  type="button"
+                  className="chat-user-search__item"
+                  onClick={() => handleCreateDirectChat(user.userId)}
+                >
+                  <span>
+                    {user.displayName}
+                    {user.position ? ` · ${user.position}` : ''}
+                  </span>
+                  <span className={`chat-user-search__status ${user.isOnline ? 'is-online' : ''}`}>
+                    {user.isOnline ? 'online' : 'offline'}
+                  </span>
+                </button>
+              ))}
+              {users.length === 0 && (
+                <Text variant="body-1" color="secondary">
+                  Игроков по запросу не найдено
+                </Text>
+              )}
+            </div>
+          )}
+        </div>
         <div className="chat-list">
-          {chats.map((chat) => (
+          {sortedChats.map((chat) => (
             <button
               key={chat.id}
               type="button"
@@ -118,12 +195,14 @@ export function MessengerPage() {
                 {chat.title.slice(0, 1)}
               </span>
               <span className="chat-item__info">
-                <Text variant="body-2" className="chat-item__title">{chat.title}</Text>
-                {chat.lastMessage && (
-                  <Text variant="caption-1" className="chat-item__last-msg" color="secondary">
-                    {chat.lastMessage.content}
-                  </Text>
-                )}
+                <Text variant="body-2" className="chat-item__title">
+                  {chat.isPinned ? '📌 ' : ''}
+                  {chat.title}
+                  {chat.isOnline ? ' · online' : ''}
+                </Text>
+                <Text variant="caption-1" className={`chat-item__last-msg ${chat.isTyping ? 'is-typing' : ''}`} color="secondary">
+                  {getChatSubtitle(chat)}
+                </Text>
               </span>
               {chat.unreadCount > 0 && (
                 <span className="chat-item__unread">{chat.unreadCount}</span>
@@ -148,6 +227,11 @@ export function MessengerPage() {
                 </button>
               )}
               <Text variant="subheader-2">{selectedChat?.title}</Text>
+              {selectedChat?.isTyping && (
+                <Text variant="body-1" color="secondary">
+                  печатает...
+                </Text>
+              )}
             </div>
             <div className="messenger-messages">
               {isLoadingMessages && messages.length === 0 ? (
