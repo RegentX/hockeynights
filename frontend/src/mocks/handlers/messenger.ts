@@ -1,5 +1,11 @@
 import { http, HttpResponse } from 'msw'
-import {createDirectMockChat, mockChats, mockChatUsers, mockMessages} from '@/mocks/data/messenger'
+import {
+  createDirectMockChat,
+  mockChats,
+  mockChatUsers,
+  mockMessages,
+  toggleMockChatPin,
+} from '@/mocks/data/messenger'
 
 /** @spec SPEC-FR-16.1.1, SPEC-FR-16.1.2, SPEC-FR-16.1.3 */
 export const messengerHandlers = [
@@ -23,6 +29,15 @@ export const messengerHandlers = [
     const chat = createDirectMockChat(body.targetUserId)
     if (!chat) {
       return HttpResponse.json({message: 'Target user not found'}, {status: 404})
+    }
+    return HttpResponse.json(chat)
+  }),
+
+  http.patch('/mock-api/v1/messenger/chats/:chatId/pin', async ({params, request}) => {
+    const body = (await request.json().catch(() => ({}))) as {pinned?: boolean}
+    const chat = toggleMockChatPin(params.chatId as string, body.pinned)
+    if (!chat) {
+      return HttpResponse.json({message: 'Chat not found'}, {status: 404})
     }
     return HttpResponse.json(chat)
   }),

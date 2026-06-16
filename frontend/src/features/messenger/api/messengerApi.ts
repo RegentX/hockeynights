@@ -28,6 +28,13 @@ export function createDirectChat(targetUserId: string): Promise<Chat> {
   })
 }
 
+export function toggleChatPin(chatId: string, pinned?: boolean): Promise<Chat> {
+  return apiRequest<Chat>(`/messenger/chats/${chatId}/pin`, {
+    method: 'PATCH',
+    body: pinned === undefined ? {} : {pinned},
+  })
+}
+
 export function getTotalUnreadCount(chats: Chat[]): number {
   return chats.reduce((total, chat) => total + Math.max(0, chat.unreadCount), 0)
 }

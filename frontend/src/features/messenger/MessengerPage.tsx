@@ -5,7 +5,13 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import type {Chat, Message} from '@/entities/messenger/types'
-import {createDirectChat, fetchChatMessages, fetchChats, searchChatUsers} from '@/features/messenger/api/messengerApi'
+import {
+  createDirectChat,
+  fetchChatMessages,
+  fetchChats,
+  searchChatUsers,
+  toggleChatPin,
+} from '@/features/messenger/api/messengerApi'
 import {ChatBubble} from './ChatBubble'
 import {Text, TextInput, Button, Icon} from '@gravity-ui/uikit'
 import {PaperPlane} from '@gravity-ui/icons'
@@ -42,6 +48,16 @@ export function MessengerPage() {
       void queryClient.invalidateQueries({queryKey: ['messenger-chats']})
       setSelectedChatId(chat.id)
       setMobileView('chat')
+    },
+  })
+
+  const pinChatMutation = useMutation({
+    mutationFn: ({chatId, pinned}: {chatId: string; pinned?: boolean}) =>
+      toggleChatPin(chatId, pinned),
+    onSuccess: (chat) => {
+      queryClient.setQueryData<Chat[]>(['messenger-chats'], (prev = []) =>
+        prev.map((item) => (item.id === chat.id ? chat : item)),
+      )
     },
   })
 
@@ -123,6 +139,10 @@ export function MessengerPage() {
     createChatMutation.mutate(targetUserId)
   }
 
+  function handleToggleChatPin(chatId: string, pinned?: boolean) {
+    pinChatMutation.mutate({chatId, pinned})
+  }
+
   function getChatSubtitle(chat: Chat): string {
     if (chat.isTyping) return 'печатает...'
     if (chat.lastMessage) return chat.lastMessage.content
@@ -185,29 +205,42 @@ export function MessengerPage() {
         </div>
         <div className="chat-list">
           {sortedChats.map((chat) => (
-            <button
+            <div
               key={chat.id}
-              type="button"
-              onClick={() => handleSelectChat(chat.id)}
               className={`chat-item ${activeChatId === chat.id ? 'chat-item--selected' : ''}`}
             >
-              <span className="chat-item__avatar" aria-hidden>
-                {chat.title.slice(0, 1)}
-              </span>
-              <span className="chat-item__info">
-                <Text variant="body-2" className="chat-item__title">
-                  {chat.isPinned ? '📌 ' : ''}
-                  {chat.title}
-                  {chat.isOnline ? ' · online' : ''}
-                </Text>
-                <Text variant="caption-1" className={`chat-item__last-msg ${chat.isTyping ? 'is-typing' : ''}`} color="secondary">
-                  {getChatSubtitle(chat)}
-                </Text>
-              </span>
-              {chat.unreadCount > 0 && (
-                <span className="chat-item__unread">{chat.unreadCount}</span>
-              )}
-            </button>
+              <button
+                type="button"
+                className="chat-item__open"
+                onClick={() => handleSelectChat(chat.id)}
+              >
+                <span className="chat-item__avatar" aria-hidden>
+                  {chat.title.slice(0, 1)}
+                </span>
+                <span className="chat-item__info">
+                  <Text variant="body-2" className="chat-item__title">
+                    {chat.isPinned ? '📌 ' : ''}
+                    {chat.title}
+                    {chat.isOnline ? ' · online' : ''}
+                  </Text>
+                  <Text variant="caption-1" className={`chat-item__last-msg ${chat.isTyping ? 'is-typing' : ''}`} color="secondary">
+                    {getChatSubtitle(chat)}
+                  </Text>
+                </span>
+                {chat.unreadCount > 0 && (
+                  <span className="chat-item__unread">{chat.unreadCount}</span>
+                )}
+              </button>
+              <button
+                type="button"
+                className={`chat-item__pin ${chat.isPinned ? 'is-pinned' : ''}`}
+                aria-label={chat.isPinned ? 'Открепить чат' : 'Закрепить чат'}
+                title={chat.isPinned ? 'Открепить' : 'Закрепить'}
+                onClick={() => handleToggleChatPin(chat.id)}
+              >
+                📌
+              </button>
+            </div>
           ))}
         </div>
       </div>
@@ -226,11 +259,23 @@ export function MessengerPage() {
                   ←
                 </button>
               )}
-              <Text variant="subheader-2">{selectedChat?.title}</Text>
-              {selectedChat?.isTyping && (
-                <Text variant="body-1" color="secondary">
-                  печатает...
-                </Text>
+              <div className="messenger-header__title">
+                <Text variant="subheader-2">{selectedChat?.title}</Text>
+                {selectedChat?.isTyping && (
+                  <Text variant="body-1" color="secondary">
+                    печатает...
+                  </Text>
+                )}
+              </div>
+              {selectedChat && (
+                <Button
+                  size="s"
+                  view={selectedChat.isPinned ? 'action' : 'outlined'}
+                  onClick={() => handleToggleChatPin(selectedChat.id)}
+                  loading={pinChatMutation.isPending}
+                >
+                  {selectedChat.isPinned ? 'Открепить' : 'Закрепить'}
+                </Button>
               )}
             </div>
             <div className="messenger-messages">

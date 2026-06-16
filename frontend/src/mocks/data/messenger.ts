@@ -139,6 +139,13 @@ mockChats.forEach(chat => {
   }
 });
 
+export function toggleMockChatPin(chatId: string, pinned?: boolean): Chat | null {
+  const chat = mockChats.find((item) => item.id === chatId)
+  if (!chat) return null
+  chat.isPinned = pinned ?? !chat.isPinned
+  return chat
+}
+
 export function createDirectMockChat(targetUserId: string): Chat | null {
   const target = mockChatUsers.find((user) => user.userId === targetUserId)
   if (!target) return null

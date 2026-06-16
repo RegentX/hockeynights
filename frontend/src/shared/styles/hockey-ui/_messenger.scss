@@ -114,8 +114,17 @@
 
 .messenger-header {
   gap: 12px;
+  justify-content: space-between;
   background: rgba(255, 255, 255, 0.01);
   @include glass-panel(8px);
+
+  &__title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+  }
 }
 
 .messenger-back {
@@ -152,15 +161,10 @@
 .chat-item {
   display: flex;
   width: 100%;
-  border: none;
-  outline: none;
-  text-align: left;
-  justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  padding: 12px;
+  gap: 6px;
+  padding: 6px;
   border-radius: 12px;
-  cursor: pointer;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid transparent;
   transition:
@@ -177,6 +181,43 @@
   &--selected {
     background: rgba(83, 159, 255, 0.15);
     border-color: rgba(83, 159, 255, 0.42);
+  }
+
+  &__open {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    text-align: left;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    background: transparent;
+    color: inherit;
+  }
+
+  &__pin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0.45;
+    transition: opacity 0.2s ease, background 0.2s ease;
+
+    &:hover,
+    &.is-pinned {
+      opacity: 1;
+      background: rgba(93, 172, 255, 0.12);
+    }
   }
 
   &__avatar {

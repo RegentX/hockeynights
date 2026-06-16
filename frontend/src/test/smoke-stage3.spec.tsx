@@ -66,15 +66,15 @@ describe('TASK-QA-02 mock API smoke', () => {
   /** @spec SPEC-FR-8.1.1 */
   it('POST /feedback creates feedback for event participant', async () => {
     const payload: CreateFeedbackPayload = {
-      eventId: 'event-001',
-      toUserId: 'user-003',
+      eventId: 'event-003',
+      toUserId: 'user-002',
       attendanceRating: 'confirmed',
       skillMatchRating: 'matched',
       behaviorRating: 'positive',
     }
     const feedback = await mockApiPost<Feedback>('/feedback', payload)
     expect(feedback.id).toBeTruthy()
-    expect(feedback.eventId).toBe('event-001')
+    expect(feedback.eventId).toBe('event-003')
   })
 
   /** @spec SPEC-FR-8.2.1 */
