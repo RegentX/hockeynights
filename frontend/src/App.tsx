@@ -12,7 +12,7 @@ const queryClient = new QueryClient()
 
 /**
  * @spec SPEC-FR-1.2.2 - Корневой компонент React + Gravity UI
- * @spec SPEC-UI-4.1, SPEC-UI-4.2 - Hockey theme provider
+ * @spec SPEC-UI-4.1, SPEC-UI-4.2 - Hockey theme provider aboba
  */
 export default function App() {
   return (
