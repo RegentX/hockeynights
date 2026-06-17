@@ -5,7 +5,7 @@
 
 import {useEffect, useMemo, useState} from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import type {ChannelSettings, Chat, ChatTopic, ChatUser, Message} from '@/entities/messenger/types'
+import type {ChannelSettings, ChannelSettingsPatch, Chat, ChatTopic, ChatUser, Message} from '@/entities/messenger/types'
 import {
   createChannelOrChat,
   createChatTopic,
@@ -164,7 +164,7 @@ export function MessengerPage() {
       patch,
     }: {
       chatId: string
-      patch: Partial<ChannelSettings>
+      patch: ChannelSettingsPatch
     }) => updateChannelSettings(chatId, patch),
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ['messenger-channel-settings', activeChatId]})
@@ -296,7 +296,7 @@ export function MessengerPage() {
     })
   }
 
-  function handleChannelSettingsPatch(patch: Partial<ChannelSettings>) {
+  function handleChannelSettingsPatch(patch: ChannelSettingsPatch) {
     if (!activeChatId || selectedChat?.type !== 'channel') return
     updateChannelSettingsMutation.mutate({chatId: activeChatId, patch})
   }

@@ -1,6 +1,7 @@
 import type {
   Chat,
   ChannelSettings,
+  ChannelSettingsPatch,
   ChatTopic,
   ChatUser,
   CreateChatPayload,
@@ -370,7 +371,7 @@ export function getMockChannelSettings(chatId: string): ChannelSettings | null {
 
 export function patchMockChannelSettings(
   chatId: string,
-  patch: Partial<ChannelSettings>,
+  patch: ChannelSettingsPatch,
   actorName = 'Иван Петров',
 ): ChannelSettings | null {
   const current = mockChannelSettings[chatId]

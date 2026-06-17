@@ -6,6 +6,7 @@ import {apiRequest} from '@/shared/api/client'
 import type {
   Chat,
   ChannelSettings,
+  ChannelSettingsPatch,
   ChatTopic,
   ChatUser,
   CreateChatPayload,
@@ -44,7 +45,7 @@ export function fetchChannelSettings(chatId: string): Promise<ChannelSettings> {
 
 export function updateChannelSettings(
   chatId: string,
-  payload: Partial<ChannelSettings>,
+  payload: ChannelSettingsPatch,
 ): Promise<ChannelSettings> {
   return apiRequest<ChannelSettings>(`/messenger/chats/${chatId}/settings`, {
     method: 'PATCH',

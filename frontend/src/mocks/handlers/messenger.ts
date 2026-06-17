@@ -11,7 +11,7 @@ import {
   patchMockChannelSettings,
   toggleMockChatPin,
 } from '@/mocks/data/messenger'
-import type {ChannelSettings, CreateChatPayload, CreateChatTopicPayload} from '@/entities/messenger/types'
+import type {ChannelSettingsPatch, CreateChatPayload, CreateChatTopicPayload} from '@/entities/messenger/types'
 
 /** @spec SPEC-FR-16.1.1, SPEC-FR-16.1.2, SPEC-FR-16.1.3 */
 export const messengerHandlers = [
@@ -85,7 +85,7 @@ export const messengerHandlers = [
   }),
 
   http.patch('/mock-api/v1/messenger/chats/:chatId/settings', async ({params, request}) => {
-    const body = (await request.json()) as Partial<ChannelSettings>
+    const body = (await request.json()) as ChannelSettingsPatch
     const next = patchMockChannelSettings(params.chatId as string, body)
     if (!next) {
       return HttpResponse.json({message: 'Settings not found for this chat'}, {status: 404})

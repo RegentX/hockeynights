@@ -108,6 +108,14 @@ export interface ChannelSettings {
   audit: ChannelAuditEntry[]
 }
 
+/** PATCH payload for channel settings (nested fields are shallow-partial). */
+export type ChannelSettingsPatch = Partial<
+  Omit<ChannelSettings, 'notifications' | 'permissions'>
+> & {
+  notifications?: Partial<ChannelNotificationSettings>
+  permissions?: Partial<ChannelPermissionSettings>
+}
+
 /** @spec SPEC-FR-16.1.3 - Данные интерактивного сообщения */
 export interface ActionableMessageData {
   type: 'booking' | 'join_team' | 'sos_response' | 'payment'
