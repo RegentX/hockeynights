@@ -8,7 +8,7 @@
 
 import {screen, waitFor} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
-import {mockApiGet} from '@/test/api'
+import {mockApiGet, mockApiPatch, mockApiPost} from '@/test/api'
 import {renderWithProviders} from '@/test/render'
 import {MockLoginPage} from '@/features/auth/MockLoginPage'
 import {HockeyProfileForm} from '@/features/profile/HockeyProfileForm'
@@ -22,6 +22,8 @@ import type {GameEvent} from '@/entities/event/types'
 import type {HockeyProfile} from '@/entities/profile/types'
 import type {PlayerListItem} from '@/entities/profile/types'
 import type {Team} from '@/entities/team/types'
+import type {TeamInvite} from '@/entities/team/types'
+import type {RosterMember} from '@/entities/team/types'
 import type {Arena} from '@/entities/arena/types'
 import type {RecruitmentRequest} from '@/entities/recruitment/types'
 import type {Session} from '@/entities/user/types'
@@ -52,6 +54,25 @@ describe('TASK-QA-01 mock API smoke', () => {
   it('GET /teams returns teams', async () => {
     const teams = await mockApiGet<Team[]>('/teams')
     expect(teams.length).toBeGreaterThan(0)
+  })
+
+  /** @spec SPEC-FR-21.1.5 */
+  it('PATCH /teams/{teamId}/roles/{userId} updates team role', async () => {
+    const teams = await mockApiGet<Team[]>('/teams')
+    const updated = await mockApiPatch<RosterMember>(`/teams/${teams[0].id}/roles/user-003`, {
+      teamRole: 'coach',
+    })
+    expect(updated.teamRole).toBe('coach')
+  })
+
+  /** @spec SPEC-FR-21.1.2 */
+  it('POST /teams/{teamId}/invites sends email invite', async () => {
+    const teams = await mockApiGet<Team[]>('/teams')
+    const invite = await mockApiPost<TeamInvite>(`/teams/${teams[0].id}/invites`, {
+      email: 'candidate@example.com',
+    })
+    expect(invite.email).toBe('candidate@example.com')
+    expect(invite.status).toBe('sent')
   })
 
   /** @spec SPEC-FR-4.1.1 */

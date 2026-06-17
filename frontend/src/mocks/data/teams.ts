@@ -1,8 +1,10 @@
 /**
  * SPEC-FR-3.1.1, SPEC-FR-3.1.2, SPEC-FR-3.2.1, SPEC-FR-3.2.2
+ * SPEC-FR-21.1.2
+ * SPEC-FR-21.1.5
  */
 
-import type {RosterMember, Team} from '@/entities/team/types'
+import type {RosterMember, Team, TeamInvite, TeamRole} from '@/entities/team/types'
 
 /** @spec SPEC-FR-3.1.1 - Mock команды */
 export let mockTeams: Team[] = [
@@ -12,6 +14,7 @@ export let mockTeams: Team[] = [
     city: 'Москва',
     skillLevel: 'amateur',
     captainUserId: 'user-001',
+    ownerUserId: 'user-001',
     description: 'Регулярные тренировки по вторникам и субботам',
     memberIds: ['user-001', 'user-003', 'user-004'],
   },
@@ -24,6 +27,7 @@ export let mockRoster: RosterMember[] = [
     userId: 'user-001',
     displayName: 'Иван Петров',
     position: 'forward',
+    teamRole: 'owner',
     rosterStatus: 'active',
     joinedAt: '2026-01-10T10:00:00Z',
   },
@@ -32,6 +36,7 @@ export let mockRoster: RosterMember[] = [
     userId: 'user-003',
     displayName: 'Дмитрий Козлов',
     position: 'defense',
+    teamRole: 'player',
     rosterStatus: 'active',
     joinedAt: '2026-01-12T10:00:00Z',
   },
@@ -40,10 +45,14 @@ export let mockRoster: RosterMember[] = [
     userId: 'user-004',
     displayName: 'Сергей Волков',
     position: 'forward',
+    teamRole: 'player',
     rosterStatus: 'bench',
     joinedAt: '2026-02-01T10:00:00Z',
   },
 ]
+
+/** @spec SPEC-FR-21.1.2 - Email-приглашения в команду */
+export let mockTeamInvites: TeamInvite[] = []
 
 /**
  * @spec SPEC-FR-3.1.1 - Создать команду в mock store
@@ -77,4 +86,30 @@ export function updateMockRosterStatus(
   if (index === -1) return undefined
   mockRoster[index] = {...mockRoster[index], rosterStatus}
   return mockRoster[index]
+}
+
+/** @spec SPEC-FR-21.1.5 - Обновить роль участника команды */
+export function updateMockTeamRole(
+  teamId: string,
+  userId: string,
+  teamRole: TeamRole,
+): RosterMember | undefined {
+  const index = mockRoster.findIndex((m) => m.teamId === teamId && m.userId === userId)
+  if (index === -1) return undefined
+  mockRoster[index] = {...mockRoster[index], teamRole}
+  return mockRoster[index]
+}
+
+/** @spec SPEC-FR-21.1.2 - Создать email-invite для незарегистрированного игрока */
+export function createMockTeamInvite(teamId: string, email: string, invitedByUserId = 'user-001'): TeamInvite {
+  const invite: TeamInvite = {
+    id: `invite-${Date.now()}`,
+    teamId,
+    email: email.trim().toLowerCase(),
+    invitedByUserId,
+    status: 'sent',
+    createdAt: new Date().toISOString(),
+  }
+  mockTeamInvites = [invite, ...mockTeamInvites]
+  return invite
 }

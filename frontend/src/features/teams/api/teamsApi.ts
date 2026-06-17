@@ -1,9 +1,10 @@
 /**
  * SPEC-FR-3.1.1, SPEC-FR-3.1.2, SPEC-FR-3.2.1, SPEC-FR-3.2.2
+ * SPEC-FR-21.1.2
  */
 
 import {apiRequest} from '@/shared/api/client'
-import type {CreateTeamPayload, RosterMember, Team} from '@/entities/team/types'
+import type {CreateTeamPayload, RosterMember, Team, TeamInvite, TeamRole} from '@/entities/team/types'
 
 /**
  * @spec SPEC-FR-3.1.1 - Список команд
@@ -41,11 +42,35 @@ export function updateRosterMemberStatus(
 }
 
 /**
+ * @spec SPEC-FR-21.1.5 - Изменить роль участника команды
+ */
+export function updateTeamMemberRole(
+  teamId: string,
+  userId: string,
+  teamRole: TeamRole,
+): Promise<RosterMember> {
+  return apiRequest<RosterMember>(`/teams/${teamId}/roles/${userId}`, {
+    method: 'PATCH',
+    body: {teamRole},
+  })
+}
+
+/**
  * @spec SPEC-FR-3.1.2 - Добавить игрока в команду
  */
 export function addTeamMember(teamId: string, userId: string): Promise<RosterMember> {
   return apiRequest<RosterMember>(`/teams/${teamId}/members`, {
     method: 'POST',
     body: {userId},
+  })
+}
+
+/**
+ * @spec SPEC-FR-21.1.2 - Пригласить незарегистрированного игрока по email
+ */
+export function inviteTeamMemberByEmail(teamId: string, email: string): Promise<TeamInvite> {
+  return apiRequest<TeamInvite>(`/teams/${teamId}/invites`, {
+    method: 'POST',
+    body: {email},
   })
 }

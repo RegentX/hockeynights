@@ -3,7 +3,14 @@
  */
 
 import type {Session, User} from '@/entities/user/types'
-import type {HockeyProfile} from '@/entities/profile/types'
+import type {
+  HockeyProfile,
+  NotificationPreferences,
+  PrivacySettings,
+  ProfileSettings,
+  SubscriptionState,
+  VerificationStatus,
+} from '@/entities/profile/types'
 
 /** @spec SPEC-FR-2.1.1 - Mock пользователь по умолчанию */
 export const mockUser: User = {
@@ -36,6 +43,40 @@ export let mockProfile: HockeyProfile = {
   profileCompleteness: 72,
   karmaScore: 74,
   achievements: ['10 игр подряд без пропусков', '3 SOS-выручки', '5 отзывов без no-show'],
+  verificationStatus: 'verified',
+}
+
+/** @spec SPEC-FR-18.1.3 - Настройки уведомлений */
+const defaultNotificationPreferences: NotificationPreferences = {
+  inApp: true,
+  email: true,
+  push: false,
+  maxMessenger: false,
+  teamEvents: true,
+  goalkeeperSos: true,
+  eventReminders: true,
+}
+
+/** @spec SPEC-FR-18.1.4 - Настройки приватности */
+const defaultPrivacySettings: PrivacySettings = {
+  profileVisibility: 'public',
+  showContacts: false,
+  showParticipationHistory: true,
+}
+
+/** @spec SPEC-FR-19.1.1 - Mock подписка */
+const defaultSubscriptionState: SubscriptionState = {
+  planId: 'free',
+  status: 'mock',
+  currentPeriodEndsAt: '2026-07-01T00:00:00Z',
+  entitlements: ['basic_profile', 'team_chat_access'],
+}
+
+/** @spec SPEC-FR-18.1.1 - Сводные настройки профиля */
+export let mockProfileSettings: ProfileSettings = {
+  notificationPreferences: defaultNotificationPreferences,
+  privacy: defaultPrivacySettings,
+  subscription: defaultSubscriptionState,
 }
 
 /**
@@ -57,4 +98,39 @@ export function completeOnboarding(displayName: string, roles: User['roles']): S
 export function updateMockProfile(profile: Partial<HockeyProfile>): HockeyProfile {
   mockProfile = {...mockProfile, ...profile}
   return mockProfile
+}
+
+/** @spec SPEC-FR-17.1.1 - Обновление статуса подтверждения */
+export function updateMockVerificationStatus(status: VerificationStatus): HockeyProfile {
+  mockProfile = {...mockProfile, verificationStatus: status}
+  return mockProfile
+}
+
+/** @spec SPEC-FR-18.1.3 - Обновление уведомлений */
+export function updateMockNotificationPreferences(
+  partial: Partial<NotificationPreferences>,
+): ProfileSettings {
+  mockProfileSettings = {
+    ...mockProfileSettings,
+    notificationPreferences: {...mockProfileSettings.notificationPreferences, ...partial},
+  }
+  return mockProfileSettings
+}
+
+/** @spec SPEC-FR-18.1.4 - Обновление приватности */
+export function updateMockPrivacySettings(partial: Partial<PrivacySettings>): ProfileSettings {
+  mockProfileSettings = {
+    ...mockProfileSettings,
+    privacy: {...mockProfileSettings.privacy, ...partial},
+  }
+  return mockProfileSettings
+}
+
+/** @spec SPEC-FR-19.1.3 - Обновление mock подписки */
+export function updateMockSubscriptionState(partial: Partial<SubscriptionState>): ProfileSettings {
+  mockProfileSettings = {
+    ...mockProfileSettings,
+    subscription: {...mockProfileSettings.subscription, ...partial},
+  }
+  return mockProfileSettings
 }

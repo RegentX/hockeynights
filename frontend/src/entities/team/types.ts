@@ -1,8 +1,12 @@
 /**
  * SPEC-FR-3.1.1, SPEC-FR-3.1.2, SPEC-FR-3.2.1, SPEC-FR-3.2.2
+ * SPEC-FR-21.1.1, SPEC-FR-21.1.2, SPEC-FR-21.1.5
  */
 
 import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
+
+/** @spec SPEC-FR-21.1.5 - Роли участника команды */
+export type TeamRole = 'owner' | 'captain' | 'coach' | 'team_admin' | 'player'
 
 /** @spec SPEC-FR-3.1.1 - Команда */
 export interface Team {
@@ -16,6 +20,8 @@ export interface Team {
   skillLevel: SkillLevel
   /** @spec SPEC-FR-3.1.1 */
   captainUserId: string
+  /** @spec SPEC-FR-21.1.5 */
+  ownerUserId?: string
   /** @spec SPEC-FR-3.1.1 */
   description?: string
   /** @spec SPEC-FR-3.1.2 */
@@ -32,6 +38,8 @@ export interface RosterMember {
   displayName: string
   /** @spec SPEC-FR-3.2.1 */
   position: PlayerPosition
+  /** @spec SPEC-FR-21.1.5 */
+  teamRole?: TeamRole
   /** @spec SPEC-FR-3.2.2 */
   rosterStatus: 'active' | 'bench' | 'invited' | 'removed'
   /** @spec SPEC-FR-3.2.1 */
@@ -48,4 +56,14 @@ export interface CreateTeamPayload {
   skillLevel: SkillLevel
   /** @spec SPEC-FR-3.1.1 */
   description?: string
+}
+
+/** @spec SPEC-FR-21.1.2 - Email-приглашение незарегистрированному игроку */
+export interface TeamInvite {
+  id: string
+  teamId: string
+  email: string
+  invitedByUserId: string
+  status: 'sent' | 'accepted' | 'expired'
+  createdAt: string
 }

@@ -1,5 +1,6 @@
 /**
  * SPEC-FR-2.2.1, SPEC-FR-2.2.2, SPEC-FR-2.2.3, SPEC-FR-2.2.4, SPEC-FR-8.2.1
+ * SPEC-FR-17.1.1, SPEC-FR-18.1.3, SPEC-FR-18.1.4, SPEC-FR-19.1.1
  */
 
 import type { PlayerPosition, SkillLevel } from '@/entities/common/types'
@@ -34,6 +35,8 @@ export interface HockeyProfile {
   karmaScore: number
   /** Микро-ачивки (простые текстовые бейджи) */
   achievements?: string[]
+  /** @spec SPEC-FR-17.1.1 */
+  verificationStatus?: VerificationStatus
 }
 
 /** @spec SPEC-FR-2.3.1 - Карточка игрока для списка */
@@ -42,4 +45,40 @@ export interface PlayerListItem extends HockeyProfile {
   displayName: string
   /** @spec SPEC-FR-2.3.1 */
   avatarUrl?: string
+}
+
+/** @spec SPEC-FR-17.1.1 - Статус подтверждения пользователя */
+export type VerificationStatus = 'unverified' | 'pending' | 'verified' | 'rejected'
+
+/** @spec SPEC-FR-18.1.3 - Каналы уведомлений в профиле */
+export interface NotificationPreferences {
+  inApp: boolean
+  email: boolean
+  push: boolean
+  maxMessenger: boolean
+  teamEvents: boolean
+  goalkeeperSos: boolean
+  eventReminders: boolean
+}
+
+/** @spec SPEC-FR-18.1.4 - Настройки видимости профиля */
+export interface PrivacySettings {
+  profileVisibility: 'public' | 'teams_only' | 'verified_only' | 'private'
+  showContacts: boolean
+  showParticipationHistory: boolean
+}
+
+/** @spec SPEC-FR-19.1.1 - Состояние mock-подписки */
+export interface SubscriptionState {
+  planId: 'free' | 'player_plus' | 'team_pro'
+  status: 'active' | 'trial' | 'cancelled' | 'mock'
+  currentPeriodEndsAt?: string
+  entitlements: string[]
+}
+
+/** @spec SPEC-FR-18.1.1 - Настройки личного кабинета профиля */
+export interface ProfileSettings {
+  notificationPreferences: NotificationPreferences
+  privacy: PrivacySettings
+  subscription: SubscriptionState
 }

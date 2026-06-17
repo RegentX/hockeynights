@@ -3,9 +3,22 @@
  */
 
 import {http, HttpResponse} from 'msw'
-import {mockProfile, updateMockProfile} from '@/mocks/data/session'
+import {
+  mockProfile,
+  mockProfileSettings,
+  updateMockNotificationPreferences,
+  updateMockPrivacySettings,
+  updateMockProfile,
+  updateMockSubscriptionState,
+  updateMockVerificationStatus,
+} from '@/mocks/data/session'
 import {mockPlayers} from '@/mocks/data/players'
-import type {HockeyProfile} from '@/entities/profile/types'
+import type {
+  HockeyProfile,
+  NotificationPreferences,
+  PrivacySettings,
+  SubscriptionState,
+} from '@/entities/profile/types'
 import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
 
 /** @spec SPEC-FR-2.3.2 - Query params фильтра игроков */
@@ -28,6 +41,50 @@ export const profileHandlers = [
     const body = (await request.json()) as Partial<HockeyProfile>
     const updated = updateMockProfile(body)
     return HttpResponse.json(updated)
+  }),
+
+  http.get('/mock-api/v1/profile/settings', () => {
+    return HttpResponse.json(mockProfileSettings)
+  }),
+
+  http.patch('/mock-api/v1/profile/notification-preferences', async ({request}) => {
+    const body = (await request.json()) as Partial<NotificationPreferences>
+    const updated = updateMockNotificationPreferences(body)
+    return HttpResponse.json(updated)
+  }),
+
+  http.patch('/mock-api/v1/profile/privacy', async ({request}) => {
+    const body = (await request.json()) as Partial<PrivacySettings>
+    const updated = updateMockPrivacySettings(body)
+    return HttpResponse.json(updated)
+  }),
+
+  http.post('/mock-api/v1/subscription-intents', async ({request}) => {
+    const body = (await request.json()) as Partial<SubscriptionState>
+    const updated = updateMockSubscriptionState({
+      ...body,
+      status: 'mock',
+    })
+    return HttpResponse.json(updated)
+  }),
+
+  http.post('/mock-api/v1/verification-requests', async () => {
+    updateMockVerificationStatus('pending')
+    return HttpResponse.json({
+      requestId: `verify-${Date.now()}`,
+      status: 'pending',
+      method: 'manual_profile_review',
+    })
+  }),
+
+  http.patch('/mock-api/v1/verification-requests/:requestId', async ({request}) => {
+    const body = (await request.json()) as {status?: HockeyProfile['verificationStatus']}
+    const nextStatus = body.status ?? 'verified'
+    updateMockVerificationStatus(nextStatus)
+    return HttpResponse.json({
+      requestId: `verify-${Date.now()}`,
+      status: nextStatus,
+    })
   }),
 
   http.get('/mock-api/v1/players', ({request}) => {

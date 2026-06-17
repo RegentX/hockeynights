@@ -1,10 +1,11 @@
 /**
- * SPEC-FR-3.1.2
+ * SPEC-FR-3.1.2, SPEC-FR-21.1.1, SPEC-FR-21.1.2
  */
 
+import {useState} from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {Button, Select, Text} from '@gravity-ui/uikit'
-import {addTeamMember} from '@/features/teams/api/teamsApi'
+import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
+import {addTeamMember, fetchTeamRoster, inviteTeamMemberByEmail} from '@/features/teams/api/teamsApi'
 import {fetchPlayers} from '@/features/players/api/playersApi'
 
 /** @spec SPEC-FR-3.1.2 - Props добавления игрока */
@@ -18,39 +19,88 @@ export interface AddTeamMemberProps {
  */
 export function AddTeamMember({teamId}: AddTeamMemberProps) {
   const queryClient = useQueryClient()
-  const {data: players = []} = useQuery({queryKey: ['players'], queryFn: () => fetchPlayers()})
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [statusMessage, setStatusMessage] = useState<string | null>(null)
 
-  const mutation = useMutation({
+  const {data: players = []} = useQuery({queryKey: ['players'], queryFn: () => fetchPlayers()})
+  const {data: roster = []} = useQuery({
+    queryKey: ['roster', teamId],
+    queryFn: () => fetchTeamRoster(teamId),
+  })
+
+  const addMemberMutation = useMutation({
     mutationFn: (userId: string) => addTeamMember(teamId, userId),
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ['roster', teamId]})
+      setSelectedUserId(null)
+      setStatusMessage('Игрок добавлен в состав как приглашенный.')
+    },
+    onError: (error) => {
+      setStatusMessage(error instanceof Error ? error.message : 'Не удалось добавить игрока')
     },
   })
 
-  const options = players.map((p) => ({value: p.userId, content: p.displayName}))
+  const inviteMutation = useMutation({
+    mutationFn: (email: string) => inviteTeamMemberByEmail(teamId, email),
+    onSuccess: (invite) => {
+      setInviteEmail('')
+      setStatusMessage(`Приглашение отправлено на ${invite.email}`)
+    },
+    onError: (error) => {
+      setStatusMessage(error instanceof Error ? error.message : 'Не удалось отправить приглашение')
+    },
+  })
+
+  const rosterUserIds = new Set(roster.map((member) => member.userId))
+  const options = players
+    .filter((p) => !rosterUserIds.has(p.userId))
+    .map((p) => ({value: p.userId, content: `${p.displayName} (${p.position})`}))
 
   return (
-    <div className="hockey-row hockey-row--gap-8 hockey-row--end">
-      <Select
-        label="Добавить игрока"
-        options={options}
-        onUpdate={(v) => {
-          if (v[0]) mutation.mutate(v[0])
-        }}
-        placeholder="Выберите игрока"
-        width={240}
-      />
-      <Text color="secondary">или</Text>
-      <Button
-        view="outlined"
-        loading={mutation.isPending}
-        onClick={() => {
-          const first = players[0]
-          if (first) mutation.mutate(first.userId)
-        }}
-      >
-        Добавить первого из списка
-      </Button>
+    <div className="hockey-stack hockey-stack--gap-10">
+      <Text color="secondary">В команду можно добавить только зарегистрированных пользователей.</Text>
+      <div className="hockey-row hockey-row--gap-8 hockey-row--end">
+        <Select
+          label="Добавить зарегистрированного игрока"
+          options={options}
+          value={selectedUserId ? [selectedUserId] : []}
+          onUpdate={(v) => setSelectedUserId(v[0] ?? null)}
+          placeholder={options.length ? 'Выберите игрока' : 'Все игроки уже в составе'}
+          width={320}
+        />
+        <Button
+          view="action"
+          loading={addMemberMutation.isPending}
+          disabled={!selectedUserId}
+          onClick={() => {
+            if (selectedUserId) addMemberMutation.mutate(selectedUserId)
+          }}
+        >
+          Добавить
+        </Button>
+      </div>
+
+      <Text color="secondary">
+        Если игрок не зарегистрирован, отправь ему приглашение на email.
+      </Text>
+      <div className="hockey-row hockey-row--gap-8 hockey-row--end">
+        <TextInput
+          label="Email приглашения"
+          value={inviteEmail}
+          placeholder="player@example.com"
+          onUpdate={setInviteEmail}
+        />
+        <Button
+          view="outlined"
+          loading={inviteMutation.isPending}
+          disabled={!inviteEmail.trim()}
+          onClick={() => inviteMutation.mutate(inviteEmail)}
+        >
+          Отправить приглашение
+        </Button>
+      </div>
+      {statusMessage && <Text color="secondary">{statusMessage}</Text>}
     </div>
   )
 }
