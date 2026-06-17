@@ -8,9 +8,8 @@ import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
 import {fetchTeams} from '@/features/teams/api/teamsApi'
 import {TeamCreateForm} from '@/features/teams/TeamCreateForm'
-import {TeamRoster} from '@/features/teams/TeamRoster'
-import {AddTeamMember} from '@/features/teams/AddTeamMember'
 import {TeamCrest} from '@/features/teams/TeamCrest'
+import {TeamControlCenter} from '@/features/teams/TeamControlCenter'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
@@ -68,9 +67,8 @@ export function TeamsPage() {
             skillLevel={activeTeam.skillLevel}
           />
           <div className="hockey-mt-16 hockey-mb-12">
-            <AddTeamMember teamId={activeTeamId} />
+            <TeamControlCenter team={activeTeam} />
           </div>
-          <TeamRoster teamId={activeTeamId} />
         </div>
       )}
     </div>

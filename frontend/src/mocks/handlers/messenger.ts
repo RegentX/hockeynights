@@ -1,15 +1,25 @@
 import { http, HttpResponse } from 'msw'
 import {
+  createMockChannelOrChat,
+  createMockTopic,
   createDirectMockChat,
+  getMockChannelSettings,
+  getMockMessages,
+  getMockVisibleTopics,
   mockChats,
   mockChatUsers,
-  mockMessages,
+  patchMockChannelSettings,
   toggleMockChatPin,
 } from '@/mocks/data/messenger'
+import type {ChannelSettings, CreateChatPayload, CreateChatTopicPayload} from '@/entities/messenger/types'
 
 /** @spec SPEC-FR-16.1.1, SPEC-FR-16.1.2, SPEC-FR-16.1.3 */
 export const messengerHandlers = [
-  http.get('/mock-api/v1/messenger/chats', () => {
+  http.get('/mock-api/v1/messenger/chats', ({request}) => {
+    const teamId = new URL(request.url).searchParams.get('teamId')?.trim()
+    if (teamId) {
+      return HttpResponse.json(mockChats.filter((chat) => chat.relatedEntityId === teamId))
+    }
     return HttpResponse.json(mockChats)
   }),
 
@@ -22,14 +32,18 @@ export const messengerHandlers = [
   }),
 
   http.post('/mock-api/v1/messenger/chats', async ({request}) => {
-    const body = (await request.json()) as {targetUserId?: string}
-    if (!body.targetUserId) {
-      return HttpResponse.json({message: 'targetUserId is required'}, {status: 400})
+    const body = (await request.json()) as {targetUserId?: string} & Partial<CreateChatPayload>
+    if (body.targetUserId) {
+      const chat = createDirectMockChat(body.targetUserId)
+      if (!chat) {
+        return HttpResponse.json({message: 'Target user not found'}, {status: 404})
+      }
+      return HttpResponse.json(chat)
     }
-    const chat = createDirectMockChat(body.targetUserId)
-    if (!chat) {
-      return HttpResponse.json({message: 'Target user not found'}, {status: 404})
+    if (!body.type || !body.title) {
+      return HttpResponse.json({message: 'type and title are required'}, {status: 400})
     }
+    const chat = createMockChannelOrChat(body as CreateChatPayload)
     return HttpResponse.json(chat)
   }),
 
@@ -42,9 +56,41 @@ export const messengerHandlers = [
     return HttpResponse.json(chat)
   }),
 
-  http.get('/mock-api/v1/messenger/chats/:chatId/messages', ({ params }) => {
-    const messages = mockMessages[params.chatId as string] || []
+  http.get('/mock-api/v1/messenger/chats/:chatId/topics', ({params}) => {
+    const topics = getMockVisibleTopics(params.chatId as string)
+    return HttpResponse.json(topics)
+  }),
+
+  http.post('/mock-api/v1/messenger/chats/:chatId/topics', async ({params, request}) => {
+    const body = (await request.json()) as CreateChatTopicPayload
+    if (!body.title?.trim()) {
+      return HttpResponse.json({message: 'title is required'}, {status: 400})
+    }
+    const topic = createMockTopic(params.chatId as string, body)
+    return HttpResponse.json(topic)
+  }),
+
+  http.get('/mock-api/v1/messenger/chats/:chatId/messages', ({ params, request }) => {
+    const topicId = new URL(request.url).searchParams.get('topicId') ?? undefined
+    const messages = getMockMessages(params.chatId as string, topicId)
     return HttpResponse.json(messages)
+  }),
+
+  http.get('/mock-api/v1/messenger/chats/:chatId/settings', ({params}) => {
+    const settings = getMockChannelSettings(params.chatId as string)
+    if (!settings) {
+      return HttpResponse.json({message: 'Settings not found for this chat'}, {status: 404})
+    }
+    return HttpResponse.json(settings)
+  }),
+
+  http.patch('/mock-api/v1/messenger/chats/:chatId/settings', async ({params, request}) => {
+    const body = (await request.json()) as Partial<ChannelSettings>
+    const next = patchMockChannelSettings(params.chatId as string, body)
+    if (!next) {
+      return HttpResponse.json({message: 'Settings not found for this chat'}, {status: 404})
+    }
+    return HttpResponse.json(next)
   }),
 
   /** @spec SPEC-FR-16.1.4 - Обработка действий в сообщениях */

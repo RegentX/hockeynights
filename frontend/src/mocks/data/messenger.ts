@@ -1,4 +1,12 @@
-import type {Chat, ChatUser, Message} from '../../entities/messenger/types'
+import type {
+  Chat,
+  ChannelSettings,
+  ChatTopic,
+  ChatUser,
+  CreateChatPayload,
+  CreateChatTopicPayload,
+  Message,
+} from '../../entities/messenger/types'
 import {mockPlayers} from '@/mocks/data/players'
 
 /** @spec SPEC-FR-16.1.1, SPEC-FR-16.1.2 */
@@ -13,7 +21,7 @@ export const mockChats: Chat[] = [
     isOnline: true,
     isTyping: true,
     memberIds: ['user-001', 'user-003', 'user-004'],
-    relatedEntityId: 'team-1',
+    relatedEntityId: 'team-001',
   },
   {
     id: 'chat-2',
@@ -23,7 +31,7 @@ export const mockChats: Chat[] = [
     unreadCount: 0,
     isOnline: false,
     memberIds: ['user-001', 'user-003'],
-    relatedEntityId: 'event-1',
+    relatedEntityId: 'event-001',
   },
   {
     id: 'chat-4',
@@ -35,6 +43,18 @@ export const mockChats: Chat[] = [
     isOnline: true,
     memberIds: ['user-001', 'user-002', 'user-004'],
     relatedEntityId: 'team-002',
+  },
+  {
+    id: 'chat-5',
+    type: 'channel',
+    title: 'Канал команды: Объявления',
+    tag: 'announcements',
+    unreadCount: 1,
+    isOnline: true,
+    isPinned: false,
+    memberIds: ['user-001', 'user-003', 'user-004'],
+    visibility: 'team_members',
+    relatedEntityId: 'team-001',
   },
   {
     id: 'chat-3',
@@ -64,6 +84,7 @@ export const mockMessages: Record<string, Message[]> = {
       senderName: 'Александр Овечкин',
       type: 'text',
       content: 'Парни, кто сегодня будет на тренировке?',
+      topicId: 'topic-1',
       timestamp: new Date(Date.now() - 3600000).toISOString(),
     },
     {
@@ -73,6 +94,7 @@ export const mockMessages: Record<string, Message[]> = {
       senderName: 'Система',
       type: 'actionable',
       content: 'Запрос на вступление в команду',
+      topicId: 'topic-1',
       timestamp: new Date(Date.now() - 1800000).toISOString(),
       actionData: {
         type: 'join_team',
@@ -94,6 +116,7 @@ export const mockMessages: Record<string, Message[]> = {
       senderName: 'Система',
       type: 'actionable',
       content: 'Бронирование льда',
+      topicId: 'topic-3',
       timestamp: new Date(Date.now() - 7200000).toISOString(),
       actionData: {
         type: 'booking',
@@ -114,9 +137,22 @@ export const mockMessages: Record<string, Message[]> = {
       senderName: 'Система',
       type: 'system',
       content: 'Ваша карма повышена за хорошую игру!',
+      topicId: 'topic-5',
       timestamp: new Date(Date.now() - 86400000).toISOString(),
     }
-  ]
+  ],
+  'chat-5': [
+    {
+      id: 'msg-6',
+      chatId: 'chat-5',
+      topicId: 'topic-6',
+      senderId: 'user-001',
+      senderName: 'Иван Петров',
+      type: 'text',
+      content: 'Сбор команды в 19:40. Форма: белая.',
+      timestamp: new Date(Date.now() - 1400000).toISOString(),
+    },
+  ],
 };
 
 mockMessages['chat-4'] = [
@@ -127,9 +163,55 @@ mockMessages['chat-4'] = [
     senderName: 'Алексей Смирнов',
     type: 'text',
     content: 'Парни, собираемся в 19:40 у входа на арену.',
+    topicId: 'topic-4',
     timestamp: new Date(Date.now() - 2400000).toISOString(),
   },
 ]
+
+export const mockTopics: Record<string, ChatTopic[]> = {
+  'chat-1': [
+    {id: 'topic-1', chatId: 'chat-1', title: 'Общее', tag: 'general'},
+    {
+      id: 'topic-2',
+      chatId: 'chat-1',
+      title: 'Тактика и звенья',
+      tag: 'tactics',
+      restrictedUserIds: ['user-001', 'user-003'],
+    },
+  ],
+  'chat-2': [{id: 'topic-3', chatId: 'chat-2', title: 'Игра 06.06', tag: 'event'}],
+  'chat-4': [{id: 'topic-4', chatId: 'chat-4', title: 'Состав', tag: 'roster'}],
+  'chat-3': [{id: 'topic-5', chatId: 'chat-3', title: 'Система', tag: 'system'}],
+  'chat-5': [{id: 'topic-6', chatId: 'chat-5', title: 'Объявления', tag: 'notice'}],
+}
+
+export const mockChannelSettings: Record<string, ChannelSettings> = {
+  'chat-5': {
+    chatId: 'chat-5',
+    channelTag: 'announcements',
+    currentUserRole: 'owner',
+    notifications: {
+      muted: false,
+      mentionsOnly: false,
+      importantOnly: true,
+      pushEnabled: true,
+    },
+    permissions: {
+      publishMinRole: 'captain',
+      manageMembersMinRole: 'team_admin',
+      allowTopicCreation: true,
+    },
+    slowModeSeconds: 30,
+    audit: [
+      {
+        id: 'audit-1',
+        actorName: 'Иван Петров',
+        action: 'Создал канал и включил режим важных уведомлений',
+        createdAt: new Date(Date.now() - 7_200_000).toISOString(),
+      },
+    ],
+  },
+}
 
 // Update last messages in chats
 mockChats.forEach(chat => {
@@ -144,6 +226,31 @@ export function toggleMockChatPin(chatId: string, pinned?: boolean): Chat | null
   if (!chat) return null
   chat.isPinned = pinned ?? !chat.isPinned
   return chat
+}
+
+export function getMockVisibleTopics(chatId: string, userId = 'user-001'): ChatTopic[] {
+  return (mockTopics[chatId] ?? []).filter(
+    (topic) => !topic.restrictedUserIds || topic.restrictedUserIds.includes(userId),
+  )
+}
+
+export function createMockTopic(
+  chatId: string,
+  payload: CreateChatTopicPayload,
+  userId = 'user-001',
+): ChatTopic {
+  const topic: ChatTopic = {
+    id: `topic-${Date.now()}`,
+    chatId,
+    title: payload.title.trim(),
+    tag: payload.tag?.trim() || undefined,
+    restrictedUserIds:
+      payload.restrictedUserIds && payload.restrictedUserIds.length > 0 ?
+        Array.from(new Set([userId, ...payload.restrictedUserIds]))
+      : undefined,
+  }
+  mockTopics[chatId] = [topic, ...(mockTopics[chatId] ?? [])]
+  return topic
 }
 
 export function createDirectMockChat(targetUserId: string): Chat | null {
@@ -165,6 +272,7 @@ export function createDirectMockChat(targetUserId: string): Chat | null {
     memberIds: ['user-001', targetUserId],
   }
   mockChats.unshift(directChat)
+  const defaultTopicId = `topic-${Date.now()}`
   mockMessages[chatId] = [
     {
       id: `msg-${Date.now()}`,
@@ -173,9 +281,123 @@ export function createDirectMockChat(targetUserId: string): Chat | null {
       senderName: 'Система',
       type: 'system',
       content: `Чат с игроком ${target.displayName} создан.`,
+      topicId: defaultTopicId,
       timestamp: new Date().toISOString(),
     },
   ]
+  mockTopics[chatId] = [{id: defaultTopicId, chatId, title: 'Общее', tag: 'general'}]
   directChat.lastMessage = mockMessages[chatId][0]
   return directChat
+}
+
+export function createMockChannelOrChat(payload: CreateChatPayload, userId = 'user-001'): Chat {
+  const chatId = `chat-${Date.now()}`
+  const chat: Chat = {
+    id: chatId,
+    type: payload.type,
+    title: payload.title.trim(),
+    tag: payload.tag?.trim() || undefined,
+    unreadCount: 0,
+    isOnline: true,
+    memberIds:
+      payload.restrictedUserIds && payload.restrictedUserIds.length > 0 ?
+        Array.from(new Set([userId, ...payload.restrictedUserIds]))
+      : ['user-001', 'user-003', 'user-004'],
+    visibility:
+      payload.restrictedUserIds && payload.restrictedUserIds.length > 0 ? 'restricted' : 'team_members',
+    relatedEntityId: payload.relatedEntityId,
+  }
+  mockChats.unshift(chat)
+  const defaultTopic = createMockTopic(
+    chatId,
+    {title: 'Общее', tag: 'general', restrictedUserIds: payload.restrictedUserIds},
+    userId,
+  )
+  const firstMessage: Message = {
+    id: `msg-${Date.now()}`,
+    chatId,
+    topicId: defaultTopic.id,
+    senderId: 'system',
+    senderName: 'Система',
+    type: 'system',
+    content: `${payload.type === 'channel' ? 'Канал' : 'Чат'} «${chat.title}» создан.`,
+    timestamp: new Date().toISOString(),
+  }
+  mockMessages[chatId] = [firstMessage]
+  chat.lastMessage = firstMessage
+  if (chat.type === 'channel') {
+    mockChannelSettings[chatId] = {
+      chatId,
+      channelTag: chat.tag,
+      currentUserRole: 'owner',
+      notifications: {
+        muted: false,
+        mentionsOnly: false,
+        importantOnly: false,
+        pushEnabled: true,
+      },
+      permissions: {
+        publishMinRole: 'captain',
+        manageMembersMinRole: 'team_admin',
+        allowTopicCreation: true,
+      },
+      slowModeSeconds: 0,
+      audit: [
+        {
+          id: `audit-${Date.now()}`,
+          actorName: 'Иван Петров',
+          action: 'создал канал',
+          createdAt: new Date().toISOString(),
+        },
+      ],
+    }
+  }
+  return chat
+}
+
+export function getMockMessages(chatId: string, topicId?: string, userId = 'user-001'): Message[] {
+  const visibleTopicIds = new Set(getMockVisibleTopics(chatId, userId).map((topic) => topic.id))
+  const messages = (mockMessages[chatId] ?? []).filter(
+    (message) => !message.topicId || visibleTopicIds.has(message.topicId),
+  )
+  if (!topicId) return messages
+  return messages.filter((message) => message.topicId === topicId)
+}
+
+export function getMockChannelSettings(chatId: string): ChannelSettings | null {
+  return mockChannelSettings[chatId] ?? null
+}
+
+export function patchMockChannelSettings(
+  chatId: string,
+  patch: Partial<ChannelSettings>,
+  actorName = 'Иван Петров',
+): ChannelSettings | null {
+  const current = mockChannelSettings[chatId]
+  if (!current) return null
+  const next: ChannelSettings = {
+    ...current,
+    ...patch,
+    notifications: {...current.notifications, ...(patch.notifications ?? {})},
+    permissions: {...current.permissions, ...(patch.permissions ?? {})},
+    audit: current.audit,
+  }
+  const actionParts: string[] = []
+  if (patch.notifications) actionParts.push('обновлены уведомления')
+  if (patch.permissions) actionParts.push('обновлены права')
+  if (patch.slowModeSeconds !== undefined) actionParts.push(`slow mode: ${patch.slowModeSeconds}с`)
+  if (patch.channelTag !== undefined) actionParts.push(`тег: ${patch.channelTag || 'без тега'}`)
+  const entry = {
+    id: `audit-${Date.now()}`,
+    actorName,
+    action: actionParts.length ? actionParts.join(', ') : 'обновлены настройки канала',
+    createdAt: new Date().toISOString(),
+  }
+  next.audit = [entry, ...current.audit].slice(0, 10)
+  mockChannelSettings[chatId] = next
+  const chat = mockChats.find((item) => item.id === chatId)
+  if (chat) {
+    chat.tag = next.channelTag || chat.tag
+  }
+  return next
 }

@@ -77,7 +77,43 @@
 
 .messenger-toolbar {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+}
+
+.messenger-composer,
+.messenger-topic-composer {
+  border-top: 1px solid var(--hockey-card-border);
+  padding-top: 8px;
+
+  &__switch,
+  .messenger-composer__switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+}
+
+.messenger-member-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.messenger-member-pill {
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+
+  &.is-selected {
+    border-color: rgba(83, 159, 255, 0.42);
+    background: rgba(83, 159, 255, 0.12);
+  }
 }
 
 .chat-user-search {
@@ -124,6 +160,89 @@
     gap: 2px;
     min-width: 0;
     flex: 1;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.messenger-topics {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--hockey-card-border);
+  background: rgba(255, 255, 255, 0.02);
+
+  &__item {
+    border: 1px solid var(--hockey-card-border);
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+
+    small {
+      opacity: 0.7;
+    }
+
+    &.is-active {
+      border-color: rgba(83, 159, 255, 0.42);
+      background: rgba(83, 159, 255, 0.12);
+    }
+  }
+}
+
+.messenger-status {
+  padding: 4px 16px 0;
+}
+
+.messenger-channel-settings {
+  margin: 8px 16px 0;
+  padding: 12px;
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+
+  &__grid {
+    display: grid;
+    gap: 8px;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+
+    select {
+      border: 1px solid var(--hockey-card-border);
+      border-radius: 8px;
+      background: transparent;
+      color: inherit;
+      padding: 6px 8px;
+    }
+  }
+
+  &__audit {
+    border-top: 1px solid var(--hockey-card-border);
+    padding-top: 8px;
+    margin-top: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__audit-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
   }
 }
 
