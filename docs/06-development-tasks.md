@@ -110,6 +110,31 @@
 - [x] `[M]` Задача `TASK-FE-41`: Реализовать Actionable Messages (интерактивные карточки действий) (`SPEC-UI-8.2`, `SPEC-FR-16.1.3`, `SPEC-FR-16.1.4`) - оценка M. Зависимости: `TASK-FE-40`. **Реализовано:** `ActionableMessage` в `ChatBubble.tsx`.
 - [x] `[M]` Задача `TASK-MOCK-14`: Настроить MSW для чатов, сообщений и системных уведомлений об активности (`SPEC-FR-16.1.1`, `SPEC-FR-16.1.2`, `SPEC-FR-16.1.3`) - оценка M. Зависимости: `TASK-01`, `TASK-02`. **Реализовано:** `mocks/handlers/messenger.ts`, `mocks/data/messenger.ts`.
 - [x] `[S]` Задача `TASK-FE-42`: Сворачиваемые боковые панели и фокус-режим мессенджера (`SPEC-UI-5.5`, `SPEC-UI-5.6`, `SPEC-UI-8.3`, `SPEC-UI-8.4`) - оценка S. Зависимости: `TASK-FE-40`. **Реализовано:** `AppShell.tsx` (toggle left/right/focus), `hockey-ui.css` (grid collapse, borderless focus layout, unified 56px headers).
+- [ ] `[M]` Задача `TASK-FE-43`: Добавить темы внутри чатов и каналы команды как Telegram-like topics/channels (`SPEC-FR-22.1.1`, `SPEC-FR-22.1.2`, `SPEC-UI-8.5`) - оценка M. Зависимости: `TASK-FE-40`, `TASK-MOCK-14`, `TASK-FE-60`.
+- [ ] `[M]` Задача `TASK-MOCK-15`: Настроить MSW DTO для chat topics, team channels и role/lock states (`SPEC-FR-22.1.1`–`SPEC-FR-22.1.5`) - оценка M. Зависимости: `TASK-MOCK-14`, `TASK-MOCK-17`.
+
+### 1.15 Profile Hub, подтверждение человека и подписки (Next-release)
+
+- [ ] `[M]` Задача `TASK-FE-50`: Перестроить профиль как личный кабинет с разделами «О человеке», «Настройки», «Приватность», «Подписка» (`SPEC-FR-18.1.1`, `SPEC-FR-18.1.2`) - оценка M. Зависимости: `TASK-FE-02`, `TASK-UI-15`.
+- [ ] `[M]` Задача `TASK-FE-51`: Создать mock-поток подтверждения человека и галочку рядом с аватаркой (`SPEC-FR-17.1.1`, `SPEC-FR-17.1.2`, `SPEC-FR-17.1.3`, `SPEC-FR-17.1.4`) - оценка M. Зависимости: `TASK-FE-50`, `TASK-MOCK-16`.
+- [ ] `[S]` Задача `TASK-FE-52`: Добавить switch-настройки in-app/email/push/MAX/SOS/event reminders (`SPEC-FR-18.1.3`) - оценка S. Зависимости: `TASK-FE-50`.
+- [ ] `[S]` Задача `TASK-FE-53`: Добавить mock-настройки приватности профиля и контактов (`SPEC-FR-18.1.4`, `SPEC-FR-18.1.5`, `SPEC-NFR-9`) - оценка S. Зависимости: `TASK-FE-50`.
+- [ ] `[M]` Задача `TASK-FE-54`: Реализовать mock-модель подписки Free / Player Plus / Team Pro и upgrade/downgrade intent (`SPEC-FR-19.1.1`–`SPEC-FR-19.1.4`) - оценка M. Зависимости: `TASK-FE-50`.
+- [ ] `[M]` Задача `TASK-MOCK-16`: Настроить MSW для verification, profile settings, privacy, notification preferences и subscription state (`SPEC-FR-17.1.1`–`SPEC-FR-19.1.4`) - оценка M. Зависимости: `TASK-MOCK-02`.
+
+### 1.16 Advanced Team Ops и события команды (Next-release)
+
+- [ ] `[M]` Задача `TASK-FE-60`: Ограничить добавление в команду зарегистрированными пользователями и добавить email invite для незарегистрированных (`SPEC-FR-21.1.1`, `SPEC-FR-21.1.2`) - оценка M. Зависимости: `TASK-FE-05`, `TASK-MOCK-17`.
+- [ ] `[M]` Задача `TASK-FE-61`: Добавить роли команды: владелец, капитан, тренер, админ команды, игрок (`SPEC-FR-21.1.5`, `SPEC-FR-22.1.4`) - оценка M. Зависимости: `TASK-FE-06`, `TASK-FE-60`.
+- [ ] `[M]` Задача `TASK-FE-62`: Привязать командные события к `teamId` и добавить фильтры «моя команда» / «все события» (`SPEC-FR-21.1.3`, `SPEC-FR-21.1.4`) - оценка M. Зависимости: `TASK-FE-07`, `TASK-FE-10`.
+- [ ] `[L]` Задача `TASK-FE-63`: Добавить тренерскую раскладку тренировки по позициям и красным/белым (`SPEC-FR-21.1.6`, `SPEC-FR-21.1.7`) - оценка L. Зависимости: `TASK-FE-61`, `TASK-FE-62`.
+- [ ] `[M]` Задача `TASK-MOCK-17`: Настроить MSW для registered-only team add, email invites, team roles и training lineup assignments (`SPEC-FR-21.1.1`–`SPEC-FR-21.1.7`) - оценка M. Зависимости: `TASK-MOCK-03`.
+
+### 1.17 Store Catalog API mocks и граница кабинетов арен (Discovery/Post-MVP)
+
+- [ ] `[M]` Задача `TASK-MOCK-18`: Расширить магазинные моки до partner API каталога: цены, наличие, категории и состояния sync/stale/partial/failed (`SPEC-FR-20.1.1`, `SPEC-FR-20.1.2`) - оценка M. Зависимости: `TASK-MOCK-09`.
+- [ ] `[S]` Задача `TASK-FE-70`: Отобразить source state каталога магазина и fallback для пустого/ошибочного feed (`SPEC-FR-20.1.1`, `SPEC-FR-20.1.2`, `SPEC-NFR-10`) - оценка S. Зависимости: `TASK-FE-23`, `TASK-MOCK-18`.
+- [ ] `[XL]` Задача `TASK-DISC-01`: Описать отдельный проект цифровизации личных кабинетов ледовых площадок и adapter contract без реализации в текущем MVP (`SPEC-FR-20.1.3`, `SPEC-FR-20.1.4`) - оценка XL. Зависимости: партнерские переговоры с площадками.
 
 ### 1.12 Возвращающие сценарии next-release
 
@@ -152,6 +177,10 @@
 - [ ] `[M]` Задача `TASK-BE-13`: Реализовать backend для `Hockey IQ` попыток, рейтинга и контентной модели вопросов (`SPEC-FR-13.1.1`, `SPEC-FR-13.1.2`, `SPEC-FR-13.1.3`) - оценка M. Зависимости: `TASK-BE-02`, `TASK-BE-03`.
 - [ ] `[XL]` Задача `TASK-BE-14`: Спроектировать video storage/transcoding pipeline для `Highlight Analysis` (`SPEC-FR-14.1.1`–`SPEC-FR-14.1.4`) - оценка XL. Зависимости: юридическое решение по приватности видео, storage provider.
 - [ ] `[L]` Задача `TASK-BE-15`: Реализовать ranking service для `Ice Radar` на основе событий, SOS, арен и профиля (`SPEC-FR-15.1.1`, `SPEC-FR-15.1.2`, `SPEC-FR-15.1.3`) - оценка L. Зависимости: `TASK-BE-04`, `TASK-BE-05`, `TASK-BE-06`.
+- [ ] `[L]` Задача `TASK-BE-16`: Реализовать verification/profile settings/privacy backend без хранения чувствительных документов в публичном контуре (`SPEC-FR-17.1.1`–`SPEC-FR-18.1.5`, `SPEC-NFR-9`) - оценка L. Зависимости: `TASK-BE-03`, юридическая модель проверки.
+- [ ] `[M]` Задача `TASK-BE-17`: Реализовать subscription entitlements API и подготовить billing integration boundary (`SPEC-FR-19.1.1`–`SPEC-FR-19.1.4`) - оценка M. Зависимости: `TASK-BE-03`, платежная модель.
+- [ ] `[L]` Задача `TASK-BE-18`: Реализовать advanced team RBAC, email invites и training lineup API (`SPEC-FR-21.1.1`–`SPEC-FR-21.1.7`) - оценка L. Зависимости: `TASK-BE-04`, email provider.
+- [ ] `[L]` Задача `TASK-BE-19`: Реализовать chat topics/channels, server-side ACL и notification routing (`SPEC-FR-22.1.1`–`SPEC-FR-22.1.5`, `SPEC-UI-8.5`) - оценка L. Зависимости: `TASK-BE-18`, chat service.
 
 ## Requirements Traceability Matrix
 
@@ -167,6 +196,7 @@
 | `SPEC-UI-8.2` | `TASK-FE-41` | `src/features/messenger/ChatBubble.tsx` | Done |
 | `SPEC-UI-8.3` | `TASK-FE-42` | `src/shared/styles/hockey-ui.css` | Done |
 | `SPEC-UI-8.4` | `TASK-FE-42` | `src/shared/styles/hockey-ui.css` | Done |
+| `SPEC-UI-8.5` | `TASK-FE-43`, `TASK-MOCK-15`, `TASK-BE-19` | `src/features/messenger/ChatTopics.tsx` | Planned |
 | `SPEC-UI-5.5` | `TASK-FE-42` | `src/app/AppShell.tsx`, `src/shared/styles/hockey-ui.css` | Done |
 | `SPEC-UI-5.6` | `TASK-FE-42` | `src/app/AppShell.tsx` | Done |
 | `SPEC-FR-1.1.1` | `TASK-QA-01`, `TASK-QA-02` | `docs/05-srs.md`, `tests/spec-traceability.spec.ts` | Planned |
@@ -243,6 +273,35 @@
 | `SPEC-FR-15.1.1` | `TASK-FE-34`, `TASK-MOCK-13`, `TASK-BE-15` | `src/features/radar/IceRadarPage.tsx` | Done |
 | `SPEC-FR-15.1.2` | `TASK-FE-34`, `TASK-MOCK-13`, `TASK-BE-15` | `src/features/radar/RadarRecommendationCard.tsx` | Done |
 | `SPEC-FR-15.1.3` | `TASK-FE-34`, `TASK-MOCK-13`, `TASK-BE-15` | `src/features/radar/api/radarApi.ts` | Done |
+| `SPEC-FR-17.1.1` | `TASK-FE-51`, `TASK-MOCK-16`, `TASK-BE-16` | `src/features/profile/VerificationFlow.tsx` | Planned |
+| `SPEC-FR-17.1.2` | `TASK-FE-51` | `src/features/profile/VerifiedBadge.tsx` | Planned |
+| `SPEC-FR-17.1.3` | `TASK-FE-51`, `TASK-MOCK-16` | `src/mocks/handlers/verification.ts` | Planned |
+| `SPEC-FR-17.1.4` | `TASK-FE-53`, `TASK-BE-16` | `src/entities/profile/types.ts` | Planned |
+| `SPEC-FR-18.1.1` | `TASK-FE-50`, `TASK-MOCK-16` | `src/features/profile/ProfileHub.tsx` | Planned |
+| `SPEC-FR-18.1.2` | `TASK-FE-50` | `src/features/profile/ProfileOverview.tsx` | Planned |
+| `SPEC-FR-18.1.3` | `TASK-FE-52`, `TASK-MOCK-16`, `TASK-BE-16` | `src/features/profile/NotificationSettings.tsx` | Planned |
+| `SPEC-FR-18.1.4` | `TASK-FE-53`, `TASK-MOCK-16`, `TASK-BE-16` | `src/features/profile/PrivacySettings.tsx` | Planned |
+| `SPEC-FR-18.1.5` | `TASK-MOCK-16`, `TASK-BE-16` | `src/mocks/data/session.ts` | Planned |
+| `SPEC-FR-19.1.1` | `TASK-FE-54`, `TASK-MOCK-16`, `TASK-BE-17` | `src/features/profile/SubscriptionPanel.tsx` | Planned |
+| `SPEC-FR-19.1.2` | `TASK-FE-54` | `src/mocks/data/subscriptions.ts` | Planned |
+| `SPEC-FR-19.1.3` | `TASK-FE-54`, `TASK-MOCK-16` | `src/features/profile/SubscriptionPanel.tsx` | Planned |
+| `SPEC-FR-19.1.4` | `TASK-BE-17` | `src/entities/subscription/types.ts` | Planned |
+| `SPEC-FR-20.1.1` | `TASK-MOCK-18`, `TASK-FE-70` | `src/features/shops/api/shopsApi.ts` | Planned |
+| `SPEC-FR-20.1.2` | `TASK-MOCK-18`, `TASK-FE-70` | `src/mocks/data/shops.ts` | Planned |
+| `SPEC-FR-20.1.3` | `TASK-DISC-01` | `docs/arena-partner-cabinets.md` | Post-MVP |
+| `SPEC-FR-20.1.4` | `TASK-DISC-01` | `docs/arena-partner-cabinets.md` | Post-MVP |
+| `SPEC-FR-21.1.1` | `TASK-FE-60`, `TASK-MOCK-17`, `TASK-BE-18` | `src/features/teams/AddTeamMember.tsx` | Planned |
+| `SPEC-FR-21.1.2` | `TASK-FE-60`, `TASK-MOCK-17`, `TASK-BE-18` | `src/features/teams/EmailInviteForm.tsx` | Planned |
+| `SPEC-FR-21.1.3` | `TASK-FE-62`, `TASK-MOCK-17`, `TASK-BE-18` | `src/features/events/EventCreateForm.tsx` | Planned |
+| `SPEC-FR-21.1.4` | `TASK-FE-62` | `src/features/events/EventFilters.tsx` | Planned |
+| `SPEC-FR-21.1.5` | `TASK-FE-61`, `TASK-MOCK-17`, `TASK-BE-18` | `src/features/teams/TeamRoles.tsx` | Planned |
+| `SPEC-FR-21.1.6` | `TASK-FE-63`, `TASK-MOCK-17`, `TASK-BE-18` | `src/features/teams/TrainingLineupBoard.tsx` | Planned |
+| `SPEC-FR-21.1.7` | `TASK-FE-63`, `TASK-MOCK-17`, `TASK-BE-18` | `src/features/teams/TrainingLineupBoard.tsx` | Planned |
+| `SPEC-FR-22.1.1` | `TASK-FE-43`, `TASK-MOCK-15`, `TASK-BE-19` | `src/features/messenger/ChatTopics.tsx` | Planned |
+| `SPEC-FR-22.1.2` | `TASK-FE-43`, `TASK-MOCK-15`, `TASK-BE-19` | `src/features/messenger/TeamChannels.tsx` | Planned |
+| `SPEC-FR-22.1.3` | `TASK-MOCK-15`, `TASK-BE-19` | `src/entities/messenger/types.ts` | Planned |
+| `SPEC-FR-22.1.4` | `TASK-FE-61`, `TASK-FE-43`, `TASK-BE-19` | `src/features/teams/TeamRoles.tsx` | Planned |
+| `SPEC-FR-22.1.5` | `TASK-FE-43`, `TASK-MOCK-15`, `TASK-BE-19` | `src/features/messenger/MessengerPage.tsx` | Planned |
 | `SPEC-UI-1.1` | `TASK-UI-02` | `src/shared/ui/HockeyButton.tsx` | Done |
 | `SPEC-UI-1.2` | `TASK-UI-02` | `src/features/sos/SosRequestForm.tsx` | Done |
 | `SPEC-UI-1.3` | `TASK-UI-03` | `src/shared/ui/IceCard.tsx` | Done |
