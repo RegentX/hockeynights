@@ -25,7 +25,7 @@
 | `SPEC-FR-1.3.4` | Организатор | Создает игры/тренировки и работает с аренами. |
 | `SPEC-FR-1.3.5` | Администратор | Управляет справочниками арен, лиг, магазинов и источниками данных. |
 
-## 2. Функциональные требования (SPEC-FR-2.1.1 - SPEC-FR-15.1.3)
+## 2. Функциональные требования (SPEC-FR-2.1.1 - SPEC-FR-22.1.5)
 
 ### 2.1 Auth & Onboarding (SPEC-FR-2.1.1 - SPEC-FR-2.1.3)
 
@@ -247,7 +247,66 @@
 | `SPEC-FR-16.1.5` | Пользователь должен отправлять текстовые сообщения в выбранный чат; на Phase 1 сообщения сохраняются в локальном mock state без realtime. | High | `SPEC-FR-16.1.2` | optimistic send / 5 SP |
 | `SPEC-FR-16.1.6` | Мессенджер должен быть доступен из основной навигации приложения (`/messenger`) и mobile bottom nav. | High | `SPEC-FR-1.2.1`, `SPEC-FR-16.1.1` | route + nav item / 3 SP |
 
-### 17. UI/UX дизайн-система (SPEC-UI-1.1 - SPEC-UI-8.4)
+### 17.1 Подтверждение человека (SPEC-FR-17.1.1 - SPEC-FR-17.1.4)
+
+| ID | Требование | Приоритет | Зависимости | Данные / SP |
+| :--- | :--- | :--- | :--- | :--- |
+| `SPEC-FR-17.1.1` | Система должна поддерживать mock-поток подтверждения человека: старт проверки, статус `unverified` / `pending` / `verified` / `rejected`, экран результата. | High | `SPEC-FR-2.1.1`, `SPEC-FR-12.1.2` | Verification DTO / 8 SP |
+| `SPEC-FR-17.1.2` | Подтвержденный пользователь должен получать визуальную галочку рядом с аватаркой в профиле и карточках, где важна доверенность. | High | `SPEC-FR-17.1.1`, `SPEC-UI-2.1` | verified badge / 3 SP |
+| `SPEC-FR-17.1.3` | Phase 1 должен показывать пару mock-интерфейсов проверки без реального KYC: подтверждение телефона/email и ручная проверка профиля модератором. | Mid | `SPEC-FR-17.1.1`, `SPEC-FR-11.1.1` | mock verification screens / 8 SP |
+| `SPEC-FR-17.1.4` | Публичный UI не должен показывать документы или чувствительные данные проверки; доступен только итоговый статус и уровень доверия. | High | `SPEC-NFR-9` | privacy guard / 3 SP |
+
+### 18.1 Профиль, настройки и приватность (SPEC-FR-18.1.1 - SPEC-FR-18.1.5)
+
+| ID | Требование | Приоритет | Зависимости | Данные / SP |
+| :--- | :--- | :--- | :--- | :--- |
+| `SPEC-FR-18.1.1` | Профиль должен быть организован как меню/личный кабинет с разделами: «О человеке», «Настройки», «Приватность», «Подписка». | High | `SPEC-FR-2.2.1`, `SPEC-UI-7.3` | profile menu / 8 SP |
+| `SPEC-FR-18.1.2` | Раздел «О человеке» должен показывать Hockey ID, аватар, галочку подтверждения, амплуа, уровень, команды, историю участия и karma. | High | `SPEC-FR-2.2.2`, `SPEC-FR-8.2.1`, `SPEC-FR-17.1.2` | profile overview / 5 SP |
+| `SPEC-FR-18.1.3` | Раздел «Настройки» должен содержать switch-настройки уведомлений: in-app, email, push, MAX/мессенджер, события команды, SOS и напоминания. | High | `SPEC-FR-10.1.1` | NotificationPreferences DTO / 8 SP |
+| `SPEC-FR-18.1.4` | Раздел «Приватность» должен позволять mock-настройки видимости профиля: публично, только командам, только подтвержденным пользователям, скрыть контакты. | High | `SPEC-NFR-9`, `SPEC-FR-17.1.4` | PrivacySettings DTO / 8 SP |
+| `SPEC-FR-18.1.5` | Phase 1 хранит настройки профиля в mock state; Phase 2 переносит их в backend с audit trail для приватности. | Mid | `SPEC-FR-12.1.3` | mock persistence / 5 SP |
+
+### 19.1 Модель подписки (SPEC-FR-19.1.1 - SPEC-FR-19.1.4)
+
+| ID | Требование | Приоритет | Зависимости | Данные / SP |
+| :--- | :--- | :--- | :--- | :--- |
+| `SPEC-FR-19.1.1` | Система должна показывать mock-модель подписки: текущий тариф, преимущества, ограничения и дату следующего периода. | Mid | `SPEC-FR-18.1.1` | SubscriptionPlan DTO / 5 SP |
+| `SPEC-FR-19.1.2` | Пользователь должен видеть минимум три mock-тарифа: Free, Player Plus, Team Pro. | Mid | `SPEC-FR-19.1.1` | plans fixture / 3 SP |
+| `SPEC-FR-19.1.3` | Phase 1 должен поддерживать mock-upgrade/downgrade без реальной оплаты, с явной пометкой `Phase 1 mock subscription`. | Mid | `SPEC-FR-6.4.1` | subscription intent / 5 SP |
+| `SPEC-FR-19.1.4` | Entitlements подписки должны быть описаны как флаги возможностей, чтобы backend мог позже включить оплату без переписывания UI. | Mid | `SPEC-FR-12.1.2` | entitlements[] / 5 SP |
+
+### 20.1 Магазины, каталоги и площадки (SPEC-FR-20.1.1 - SPEC-FR-20.1.4)
+
+| ID | Требование | Приоритет | Зависимости | Данные / SP |
+| :--- | :--- | :--- | :--- | :--- |
+| `SPEC-FR-20.1.1` | Интеграция с магазинами должна моделироваться как partner API: каталог, цены, наличие, категории, deeplink на карточку товара. | Mid | `SPEC-FR-9.1.1`, `SPEC-FR-9.2.1`, `SPEC-FR-11.2.2` | StoreCatalog DTO / 8 SP |
+| `SPEC-FR-20.1.2` | Phase 1 должен иметь «парк моков» для магазинов: успешный feed, устаревший feed, частично пустой каталог, ошибка синхронизации. | Mid | `SPEC-FR-12.1.2`, `SPEC-NFR-10` | mock source states / 5 SP |
+| `SPEC-FR-20.1.3` | Цифровизация личных кабинетов ледовых площадок фиксируется как отдельный будущий проект; текущий продукт хранит только интеграционные границы и ссылки на возможный API. | Low | `SPEC-FR-6.2.2`, `SPEC-FR-11.2.2` | integration boundary / 3 SP |
+| `SPEC-FR-20.1.4` | Для ледовых площадок Phase 2 должен предусматривать adapter contract без реализации личного кабинета внутри текущего frontend-first MVP. | Low | `SPEC-FR-12.1.3` | adapter contract / 5 SP |
+
+### 21.1 Расширенное управление командами и событиями (SPEC-FR-21.1.1 - SPEC-FR-21.1.7)
+
+| ID | Требование | Приоритет | Зависимости | Данные / SP |
+| :--- | :--- | :--- | :--- | :--- |
+| `SPEC-FR-21.1.1` | Добавление игрока в команду должно быть доступно только для зарегистрированных пользователей платформы. | High | `SPEC-FR-2.1.1`, `SPEC-FR-3.1.2` | registered user check / 5 SP |
+| `SPEC-FR-21.1.2` | Если человек не зарегистрирован, капитан или админ команды должен отправить приглашение на email вместо прямого добавления в состав. | High | `SPEC-FR-21.1.1`, `SPEC-FR-10.1.1` | EmailInvite DTO / 8 SP |
+| `SPEC-FR-21.1.3` | Все события должны иметь явную привязку к команде, если созданы из командного сценария; `teamId` становится обязательным для team event/training. | High | `SPEC-FR-3.1.1`, `SPEC-FR-4.1.1` | teamId invariant / 5 SP |
+| `SPEC-FR-21.1.4` | Список событий должен поддерживать режимы «события моей команды» и «все события», с сортировкой по дате, типу и команде. | High | `SPEC-FR-4.2.1`, `SPEC-FR-21.1.3` | event filters / 5 SP |
+| `SPEC-FR-21.1.5` | Команда должна поддерживать роли: владелец, капитан, тренер, админ команды, игрок; права управления составом зависят от роли. | High | `SPEC-FR-3.2.1`, `SPEC-FR-22.1.4` | TeamRole DTO / 8 SP |
+| `SPEC-FR-21.1.6` | Тренер или админ команды должен назначать игроков на тренировку по позициям. | High | `SPEC-FR-21.1.5`, `SPEC-FR-3.3.2` | TrainingLineup DTO / 8 SP |
+| `SPEC-FR-21.1.7` | Для тренировок тренер или админ должен делить участников на красных и белых с указанием позиции/звена. | High | `SPEC-FR-21.1.6` | red/white lineups / 8 SP |
+
+### 22.1 Темы внутри чатов и каналы (SPEC-FR-22.1.1 - SPEC-FR-22.1.5)
+
+| ID | Требование | Приоритет | Зависимости | Данные / SP |
+| :--- | :--- | :--- | :--- | :--- |
+| `SPEC-FR-22.1.1` | Командные и событийные чаты должны поддерживать темы внутри чата по модели Telegram topics: «Общее», «Тренировки», «Состав», «Оплаты», «Медиа». | High | `SPEC-FR-16.1.1`, `SPEC-FR-16.1.2` | ChatTopic DTO / 8 SP |
+| `SPEC-FR-22.1.2` | Система должна поддерживать каналы команды для объявлений, где писать могут только роли с правом публикации. | Mid | `SPEC-FR-21.1.5` | TeamChannel DTO / 8 SP |
+| `SPEC-FR-22.1.3` | Доступ к командным темам и каналам должен быть ограничен членами команды и приглашенными участниками события. | High | `SPEC-FR-21.1.5`, `SPEC-NFR-9` | access rules / 8 SP |
+| `SPEC-FR-22.1.4` | У команды должен быть изначальный админ/владелец; он может раздавать роли и права на темы, каналы, состав и тренировки. | High | `SPEC-FR-3.1.1`, `SPEC-FR-21.1.5` | role assignments / 8 SP |
+| `SPEC-FR-22.1.5` | Phase 1 должен реализовать темы/каналы как mock UI и MSW DTO без realtime ACL; Phase 2 переносит контроль доступа в backend. | Mid | `SPEC-FR-12.1.3`, `SPEC-FR-16.1.6` | mock topics / 8 SP |
+
+### 23. UI/UX дизайн-система (SPEC-UI-1.1 - SPEC-UI-8.5)
 
 Требования `SPEC-UI-*` дополняют функциональные `SPEC-FR-*` визуальным и поведенческим слоем. Реализация — поверх `Gravity UI` без изменения API-контрактов.
 
@@ -331,6 +390,7 @@
 | `SPEC-UI-8.2` | Actionable Messages должны визуально выделяться как «инфо-блоки табло» (`IceCard`) с кнопками действий внутри ленты сообщений. | `SPEC-FR-16.1.3`, `SPEC-FR-16.1.4` |
 | `SPEC-UI-8.3` | В фокус-режиме мессенджер не использует карточную оболочку: без рамки, скруглений, тени и внешних отступов main; фон прозрачный, высота — от шапки до низа viewport; тонкие разделители только между sidebar / header / input. | `SPEC-UI-5.6`, `SPEC-FR-16.1.6` |
 | `SPEC-UI-8.4` | Заголовок списка («Мессенджер») и заголовок активного чата имеют одинаковую высоту (56px), вертикальное выравнивание текста и общую нижнюю границу. | `SPEC-UI-8.1`, `SPEC-FR-16.1.2` |
+| `SPEC-UI-8.5` | Темы и каналы внутри чата должны отображаться как горизонтальные tabs/chips с явным lock/role state для закрытых разделов. | `SPEC-FR-22.1.1`–`SPEC-FR-22.1.5`, `SPEC-FR-21.1.5` |
 
 ### Матрица SPEC-UI → SPEC-FR (сводная)
 
@@ -342,7 +402,7 @@
 | `SPEC-UI-4.1`–`4.4` | `SPEC-FR-1.2.1`, `SPEC-FR-5.1.3`, `SPEC-FR-10.1.1`, `SPEC-NFR-5`, `SPEC-NFR-7` |
 | `SPEC-UI-5.1`–`5.6` | `SPEC-FR-1.2.1`, `SPEC-FR-5.2.1`, `SPEC-FR-16.1.6`, `SPEC-NFR-5`, `SPEC-NFR-7` |
 | `SPEC-UI-6.1`–`6.6` | `SPEC-FR-13.1.1`–`SPEC-FR-15.1.3`, `SPEC-NFR-5`, `SPEC-NFR-7`, `SPEC-NFR-9` |
-| `SPEC-UI-8.1`–`8.4` | `SPEC-FR-16.1.2`–`SPEC-FR-16.1.6`, `SPEC-UI-5.6` |
+| `SPEC-UI-8.1`–`8.5` | `SPEC-FR-16.1.2`–`SPEC-FR-16.1.6`, `SPEC-FR-22.1.1`–`SPEC-FR-22.1.5`, `SPEC-UI-5.6` |
 
 ## 3. Пользовательские истории (SPEC-FR-2.1.1 - SPEC-FR-15.1.3)
 
@@ -364,6 +424,10 @@
 | `US-14` | Как капитан или игрок, я хочу разобрать короткий момент с игры, чтобы понять ошибку или удачное решение. | Mock-момент создан; разметка сохраняется; комментарии видны; mock upload явно обозначен. | `SPEC-FR-14.1.1`, `SPEC-FR-14.1.2`, `SPEC-FR-14.1.3`, `SPEC-FR-14.1.4`, `SPEC-UI-6.3`, `SPEC-UI-6.4` |
 | `US-15` | Как игрок, я хочу видеть ледовый радар, чтобы быстро выбрать полезное действие на сегодня. | Рекомендации отображаются с причиной; переход ведёт в целевой сценарий; рекомендацию можно скрыть. | `SPEC-FR-15.1.1`, `SPEC-FR-15.1.2`, `SPEC-FR-15.1.3`, `SPEC-UI-6.5`, `SPEC-UI-6.6` |
 | `US-16` | Как игрок или капитан, я хочу общаться в командных и событийных чатах и видеть активность (бронирование, заявки, SOS) как интерактивные сообщения. | Чаты доступны из навигации; список и переписка отображаются; можно отправить текст; actionable-карточки кликабельны; фокус-режим разворачивает чат на весь экран. | `SPEC-FR-16.1.1`–`SPEC-FR-16.1.6`, `SPEC-UI-8.1`–`SPEC-UI-8.4`, `SPEC-UI-5.5`, `SPEC-UI-5.6` |
+| `US-17` | Как игрок, я хочу подтвердить, что я реальный человек, чтобы капитаны и команды больше доверяли моему профилю. | Mock-проверка запускается; статус отображается; рядом с аватаром появляется галочка; приватные данные проверки не раскрываются. | `SPEC-FR-17.1.1`–`SPEC-FR-17.1.4` |
+| `US-18` | Как пользователь, я хочу управлять профилем, уведомлениями, приватностью и подпиской из одного меню. | В профиле есть разделы «О человеке», «Настройки», «Приватность», «Подписка»; switches сохраняются в mock state. | `SPEC-FR-18.1.1`–`SPEC-FR-19.1.4` |
+| `US-19` | Как капитан или тренер, я хочу добавлять только зарегистрированных игроков, приглашать незарегистрированных по email и собирать тренировочные составы красных/белых. | Прямое добавление ограничено зарегистрированными; email invite создан; события фильтруются по команде; тренер назначает позиции и цвет команды. | `SPEC-FR-21.1.1`–`SPEC-FR-21.1.7` |
+| `US-20` | Как участник команды, я хочу темы и каналы в командном чате с доступом только для членов команды и ролей. | В чате есть topics/channels; закрытые разделы показывают role/lock state; админ может раздавать роли. | `SPEC-FR-22.1.1`–`SPEC-FR-22.1.5`, `SPEC-UI-8.5` |
 
 ## 4. Use Case диаграмма (SPEC-FR-2.1.1 - SPEC-FR-15.1.3)
 
@@ -467,6 +531,49 @@ export interface HockeyProfile {
   bio?: string; // SPEC-FR-2.2.2
   profileCompleteness: number; // SPEC-FR-2.2.4
   karmaScore: number; // SPEC-FR-8.2.1
+  verificationStatus?: VerificationStatus; // SPEC-FR-17.1.1
+  privacySettings?: PrivacySettings; // SPEC-FR-18.1.4
+}
+
+export type VerificationStatus =
+  | 'unverified' // SPEC-FR-17.1.1
+  | 'pending' // SPEC-FR-17.1.1
+  | 'verified' // SPEC-FR-17.1.2
+  | 'rejected'; // SPEC-FR-17.1.1
+
+export interface VerificationRequest {
+  id: string; // SPEC-FR-17.1.1
+  userId: string; // SPEC-FR-17.1.1
+  method: 'phone_email' | 'manual_profile_review'; // SPEC-FR-17.1.3
+  status: VerificationStatus; // SPEC-FR-17.1.1
+  reviewerUserId?: string; // SPEC-FR-17.1.3
+  createdAt: string; // SPEC-FR-17.1.1
+  updatedAt: string; // SPEC-FR-17.1.1
+}
+
+export interface NotificationPreferences {
+  userId: string; // SPEC-FR-18.1.3
+  inApp: boolean; // SPEC-FR-18.1.3
+  email: boolean; // SPEC-FR-18.1.3
+  push: boolean; // SPEC-FR-18.1.3
+  maxMessenger: boolean; // SPEC-FR-18.1.3
+  teamEvents: boolean; // SPEC-FR-18.1.3
+  goalkeeperSos: boolean; // SPEC-FR-18.1.3
+  eventReminders: boolean; // SPEC-FR-18.1.3
+}
+
+export interface PrivacySettings {
+  profileVisibility: 'public' | 'teams_only' | 'verified_only' | 'private'; // SPEC-FR-18.1.4
+  showContacts: boolean; // SPEC-FR-18.1.4
+  showParticipationHistory: boolean; // SPEC-FR-18.1.4
+}
+
+export interface SubscriptionState {
+  userId: string; // SPEC-FR-19.1.1
+  planId: 'free' | 'player_plus' | 'team_pro'; // SPEC-FR-19.1.2
+  status: 'active' | 'trial' | 'cancelled' | 'mock'; // SPEC-FR-19.1.3
+  currentPeriodEndsAt?: string; // SPEC-FR-19.1.1
+  entitlements: string[]; // SPEC-FR-19.1.4
 }
 
 export interface Team {
@@ -477,14 +584,27 @@ export interface Team {
   captainUserId: string; // SPEC-FR-3.1.1
   description?: string; // SPEC-FR-3.1.1
   memberIds: string[]; // SPEC-FR-3.1.2
+  ownerUserId?: string; // SPEC-FR-22.1.4
 }
+
+export type TeamRole = 'owner' | 'captain' | 'coach' | 'team_admin' | 'player'; // SPEC-FR-21.1.5
 
 export interface RosterMember {
   teamId: string; // SPEC-FR-3.2.1
   userId: string; // SPEC-FR-3.2.1
   position: PlayerPosition; // SPEC-FR-3.2.1
   rosterStatus: 'active' | 'bench' | 'invited' | 'removed'; // SPEC-FR-3.2.2
+  teamRole?: TeamRole; // SPEC-FR-21.1.5
   joinedAt: string; // SPEC-FR-3.2.1
+}
+
+export interface EmailInvite {
+  id: string; // SPEC-FR-21.1.2
+  teamId: string; // SPEC-FR-21.1.2
+  email: string; // SPEC-FR-21.1.2
+  invitedByUserId: string; // SPEC-FR-21.1.2
+  status: 'sent' | 'accepted' | 'expired'; // SPEC-FR-21.1.2
+  createdAt: string; // SPEC-FR-21.1.2
 }
 
 export interface GameEvent {
@@ -513,6 +633,14 @@ export interface Attendance {
   userId: string; // SPEC-FR-3.3.1
   status: 'going' | 'not_going' | 'maybe'; // SPEC-FR-3.3.1
   updatedAt: string; // SPEC-FR-3.3.2
+}
+
+export interface TrainingLineupAssignment {
+  eventId: string; // SPEC-FR-21.1.6
+  userId: string; // SPEC-FR-21.1.6
+  position: PlayerPosition; // SPEC-FR-21.1.6
+  side: 'red' | 'white'; // SPEC-FR-21.1.7
+  line?: number; // SPEC-FR-21.1.7
 }
 
 export interface RecruitmentRequest {
@@ -593,6 +721,14 @@ export interface ProductOffer {
   currency: 'RUB'; // SPEC-FR-9.2.1
   availability: 'in_stock' | 'out_of_stock' | 'unknown'; // SPEC-FR-9.2.1
   externalUrl: string; // SPEC-FR-9.2.2
+}
+
+export interface StoreCatalogSyncState {
+  shopId: string; // SPEC-FR-20.1.1
+  status: 'synced' | 'stale' | 'partial' | 'failed' | 'mock'; // SPEC-FR-20.1.2
+  productCount: number; // SPEC-FR-20.1.1
+  lastSyncedAt?: string; // SPEC-FR-20.1.2
+  errorMessage?: string; // SPEC-FR-20.1.2
 }
 
 export interface Feedback {
@@ -698,6 +834,24 @@ export interface Chat {
   lastMessage?: Message; // SPEC-FR-16.1.2
   unreadCount: number; // SPEC-UI-8.1
   relatedEntityId?: string; // SPEC-FR-16.1.1
+  topicIds?: string[]; // SPEC-FR-22.1.1
+}
+
+export interface ChatTopic {
+  id: string; // SPEC-FR-22.1.1
+  chatId: string; // SPEC-FR-22.1.1
+  title: string; // SPEC-FR-22.1.1
+  visibility: 'team_members' | 'event_participants' | 'role_restricted'; // SPEC-FR-22.1.3
+  allowedRoles?: TeamRole[]; // SPEC-FR-22.1.2
+  isAnnouncementChannel?: boolean; // SPEC-FR-22.1.2
+}
+
+export interface TeamChannel {
+  id: string; // SPEC-FR-22.1.2
+  teamId: string; // SPEC-FR-22.1.2
+  title: string; // SPEC-FR-22.1.2
+  allowedPublisherRoles: TeamRole[]; // SPEC-FR-22.1.2
+  readableBy: 'team_members' | 'event_participants'; // SPEC-FR-22.1.3
 }
 
 export type MessageType = 'text' | 'actionable' | 'system'; // SPEC-FR-16.1.2
@@ -705,6 +859,7 @@ export type MessageType = 'text' | 'actionable' | 'system'; // SPEC-FR-16.1.2
 export interface Message {
   id: string; // SPEC-FR-16.1.2
   chatId: string; // SPEC-FR-16.1.2
+  topicId?: string; // SPEC-FR-22.1.1
   senderId: string; // SPEC-FR-16.1.2
   senderName: string; // SPEC-FR-16.1.2
   senderAvatarUrl?: string; // SPEC-UI-8.1
@@ -747,13 +902,23 @@ export interface SourceMeta {
 | `POST` | `/mock-api/v1/onboarding` | Сохранить выбранные роли и стартовые настройки | `SPEC-FR-2.1.2`, `SPEC-FR-2.1.3` |
 | `GET` | `/mock-api/v1/profile/me` | Получить свой `Hockey ID` | `SPEC-FR-2.2.1` |
 | `PUT` | `/mock-api/v1/profile/me` | Обновить свой `Hockey ID` | `SPEC-FR-2.2.1`, `SPEC-FR-2.2.2`, `SPEC-FR-2.2.3` |
+| `GET` | `/mock-api/v1/profile/settings` | Получить настройки профиля, уведомлений, приватности и подписки | `SPEC-FR-18.1.1`–`SPEC-FR-19.1.4` |
+| `PATCH` | `/mock-api/v1/profile/notification-preferences` | Обновить switch-настройки уведомлений | `SPEC-FR-18.1.3` |
+| `PATCH` | `/mock-api/v1/profile/privacy` | Обновить настройки приватности | `SPEC-FR-18.1.4` |
+| `POST` | `/mock-api/v1/verification-requests` | Запустить mock-подтверждение человека | `SPEC-FR-17.1.1`, `SPEC-FR-17.1.3` |
+| `PATCH` | `/mock-api/v1/verification-requests/{requestId}` | Обновить mock-статус проверки | `SPEC-FR-17.1.1`, `SPEC-FR-17.1.3` |
+| `POST` | `/mock-api/v1/subscription-intents` | Создать mock-upgrade/downgrade подписки | `SPEC-FR-19.1.1`–`SPEC-FR-19.1.4` |
 | `GET` | `/mock-api/v1/players` | Получить список игроков с фильтрами | `SPEC-FR-2.3.1`, `SPEC-FR-2.3.2` |
 | `POST` | `/mock-api/v1/teams` | Создать команду | `SPEC-FR-3.1.1` |
 | `GET` | `/mock-api/v1/teams/{teamId}/roster` | Получить состав команды | `SPEC-FR-3.2.1` |
 | `PATCH` | `/mock-api/v1/teams/{teamId}/roster/{userId}` | Изменить статус участника состава | `SPEC-FR-3.2.2` |
+| `POST` | `/mock-api/v1/teams/{teamId}/invites` | Пригласить незарегистрированного человека по email | `SPEC-FR-21.1.1`, `SPEC-FR-21.1.2` |
+| `PATCH` | `/mock-api/v1/teams/{teamId}/roles/{userId}` | Выдать роль владельца, капитана, тренера, админа или игрока | `SPEC-FR-21.1.5`, `SPEC-FR-22.1.4` |
 | `POST` | `/mock-api/v1/events` | Создать игру или тренировку | `SPEC-FR-4.1.1`, `SPEC-FR-4.1.2` |
+| `GET` | `/mock-api/v1/events?scope=team|all` | Получить события команды или все события с сортировкой | `SPEC-FR-21.1.3`, `SPEC-FR-21.1.4` |
 | `GET` | `/mock-api/v1/calendar` | Получить календарь пользователя | `SPEC-FR-4.2.1`, `SPEC-FR-4.2.2` |
 | `PATCH` | `/mock-api/v1/events/{eventId}/attendance` | Обновить свой статус участия | `SPEC-FR-3.3.1`, `SPEC-FR-3.3.2` |
+| `PATCH` | `/mock-api/v1/events/{eventId}/lineup` | Назначить позиции и красных/белых на тренировку | `SPEC-FR-21.1.6`, `SPEC-FR-21.1.7` |
 | `GET` | `/mock-api/v1/events/{eventId}/roster-status` | Получить дефицит состава | `SPEC-FR-4.3.1`, `SPEC-FR-4.3.2` |
 | `POST` | `/mock-api/v1/recruitment-requests` | Создать запрос добора или `Goalkeeper SOS` | `SPEC-FR-5.1.1`, `SPEC-FR-5.1.2`, `SPEC-FR-5.1.3` |
 | `GET` | `/mock-api/v1/recruitment-requests` | Получить релевантные запросы добора | `SPEC-FR-5.2.1` |
@@ -772,6 +937,7 @@ export interface SourceMeta {
 | `GET` | `/mock-api/v1/players/{userId}/karma` | Получить рейтинг надежности игрока | `SPEC-FR-8.2.1`, `SPEC-FR-8.2.2` |
 | `GET` | `/mock-api/v1/shops` | Получить список магазинов | `SPEC-FR-9.1.1`, `SPEC-FR-9.1.2` |
 | `GET` | `/mock-api/v1/product-offers` | Получить mock-предложения экипировки | `SPEC-FR-9.2.1`, `SPEC-FR-9.2.2` |
+| `GET` | `/mock-api/v1/shops/{shopId}/catalog` | Получить partner API mock-каталог магазина с ценами и наличием | `SPEC-FR-20.1.1`, `SPEC-FR-20.1.2` |
 | `GET` | `/mock-api/v1/notifications` | Получить уведомления пользователя | `SPEC-FR-10.1.1` |
 | `PATCH` | `/mock-api/v1/notifications/{notificationId}/read` | Отметить уведомление прочитанным | `SPEC-FR-10.1.2` |
 | `POST` | `/mock-api/v1/admin/arenas` | Добавить арену вручную | `SPEC-FR-11.1.1` |
@@ -789,6 +955,7 @@ export interface SourceMeta {
 | `GET` | `/mock-api/v1/radar/recommendations` | Получить рекомендации `Ice Radar` | `SPEC-FR-15.1.1`, `SPEC-FR-15.1.2` |
 | `PATCH` | `/mock-api/v1/radar/recommendations/{recommendationId}` | Скрыть рекомендацию или зафиксировать переход | `SPEC-FR-15.1.3` |
 | `GET` | `/mock-api/v1/messenger/chats` | Получить список чатов пользователя | `SPEC-FR-16.1.1`, `SPEC-FR-16.1.6` |
+| `GET` | `/mock-api/v1/messenger/chats/{chatId}/topics` | Получить темы и каналы чата | `SPEC-FR-22.1.1`–`SPEC-FR-22.1.5` |
 | `GET` | `/mock-api/v1/messenger/chats/{chatId}/messages` | Получить сообщения чата | `SPEC-FR-16.1.2` |
 | `POST` | `/mock-api/v1/messenger/actions/{actionId}` | Выполнить действие из actionable-сообщения | `SPEC-FR-16.1.4` |
 
@@ -844,6 +1011,11 @@ export interface SourceMeta {
 | `Highlight Analysis` | `Highlight`, `HighlightAnnotation`, `HighlightComment` | 10 моментов, 30 annotations, 20 comments | `eventId`, `teamId`, `authorUserId`, `sourceMeta` |
 | `Ice Radar` | `RadarRecommendation`, `RadarAction` | 10 активных рекомендаций, 5 dismissed/action events | `eventId`, `arenaId`, `requestId`, `targetRoute`, `reasonCode` |
 | `Messenger` | `Chat`, `Message`, `ActionableMessageData`, `ChatAction` | 3 чата (team/event/system), 10+ сообщений, 2 actionable-карточки | `relatedEntityId` → team/event, `senderId` → mock users |
+| `Verification` | `VerificationRequest`, `VerificationStatus` | 3 статуса проверки, 2 mock flow | `userId`, `reviewerUserId`, privacy guard |
+| `Profile Hub` | `NotificationPreferences`, `PrivacySettings`, `SubscriptionState` | 1 текущий профиль, 3 тарифа, 8 switches | `userId`, `planId`, `entitlements` |
+| `Advanced Team Ops` | `EmailInvite`, `TeamRole`, `TrainingLineupAssignment` | 3 роли, 5 приглашений, 2 тренировочных состава | `teamId`, `eventId`, `userId`, `side` |
+| `Chat Topics` | `ChatTopic`, `TeamChannel` | 5 тем, 2 канала, role/lock states | `chatId`, `teamId`, `allowedRoles` |
+| `Store Catalog API` | `StoreCatalogSyncState`, `ProductOffer` | 4 состояния feed/API, 30 товаров | `shopId`, `sourceMeta`, price/availability |
 
 ## 7. Нефункциональные требования (SPEC-NFR-1 - SPEC-NFR-10)
 
@@ -901,6 +1073,7 @@ export interface SourceMeta {
 - `SPEC-FR-15.1.1`–`SPEC-FR-15.1.3` допускаются как MVP-extension в mock-режиме: `Ice Radar` строится только из уже существующих событий, SOS и арен.
 - `SPEC-UI-6.5`–`SPEC-UI-6.6` входят в MVP-extension для визуализации `Ice Radar`.
 - `SPEC-FR-16.1.1`–`SPEC-FR-16.1.6` и `SPEC-UI-8.1`–`SPEC-UI-8.4`, `SPEC-UI-5.5`–`SPEC-UI-5.6` допускаются как MVP-extension в mock-режиме: мессенджер без realtime и без автогенерации чатов из backend-событий (фикстуры MSW).
+- `SPEC-FR-17.1.1`–`SPEC-FR-22.1.5` фиксируются как next-release/post-MVP требования; Phase 1 может реализовать их только как mock-интерфейсы без реального KYC, оплаты, MAX push, email delivery, ACL backend и partner API.
 
 ### 8.2 Не входит в MVP (SPEC-FR-12.1.1 - SPEC-FR-12.1.3)
 
@@ -914,6 +1087,11 @@ export interface SourceMeta {
 - `SPEC-FR-13.1.1`–`SPEC-FR-13.1.3` не входят в основной MVP; `Hockey IQ` планируется как next release после подтверждения контентной модели вопросов.
 - `SPEC-FR-14.1.1`–`SPEC-FR-14.1.4` не входят в основной MVP; `Highlight Analysis` требует отдельного решения по хранению видео, модерации и приватности.
 - `SPEC-FR-16.1.1`–`SPEC-FR-16.1.6` Phase 1 не включают realtime-доставку, голосовые сообщения и серверную синхронизацию отправленных сообщений (optimistic local state).
+- `SPEC-FR-17.1.1`–`SPEC-FR-17.1.4` MVP не включает реальный KYC, хранение документов и юридически значимую идентификацию.
+- `SPEC-FR-18.1.3` MVP не включает реальные push в MAX/email/SMS; switches управляют только mock-настройками.
+- `SPEC-FR-19.1.1`–`SPEC-FR-19.1.4` MVP не включает платежи, биллинг, чеки и управление реальными подписками.
+- `SPEC-FR-20.1.3`–`SPEC-FR-20.1.4` MVP не включает цифровые личные кабинеты ледовых площадок; это отдельный будущий проект.
+- `SPEC-FR-21.1.1`–`SPEC-FR-22.1.5` Phase 1 не включает серверный контроль доступа, реальную email-доставку и realtime topics/channels.
 
 ## 9. Матрица трассировки модулей (SPEC-FR-2.1.1 - SPEC-FR-16.1.6)
 
@@ -937,4 +1115,8 @@ export interface SourceMeta {
 | `Highlight Analysis` | `SPEC-FR-14.1.1`, `SPEC-FR-14.1.2`, `SPEC-FR-14.1.3`, `SPEC-FR-14.1.4`, `SPEC-UI-6.3`, `SPEC-UI-6.4` |
 | `Ice Radar` | `SPEC-FR-15.1.1`, `SPEC-FR-15.1.2`, `SPEC-FR-15.1.3`, `SPEC-UI-6.5`, `SPEC-UI-6.6` |
 | `Messenger` | `SPEC-FR-16.1.1`–`SPEC-FR-16.1.6`, `SPEC-UI-8.1`–`SPEC-UI-8.4`, `SPEC-UI-5.5`, `SPEC-UI-5.6` |
+| `Verification & Profile Hub` | `SPEC-FR-17.1.1`–`SPEC-FR-19.1.4`, `SPEC-NFR-9` |
+| `Store Catalog & Arena Partner Boundaries` | `SPEC-FR-20.1.1`–`SPEC-FR-20.1.4`, `SPEC-FR-9.2.1`, `SPEC-FR-11.2.2` |
+| `Advanced Team Ops` | `SPEC-FR-21.1.1`–`SPEC-FR-21.1.7`, `SPEC-FR-3.1.2`, `SPEC-FR-4.1.1` |
+| `Chat Topics & Channels` | `SPEC-FR-22.1.1`–`SPEC-FR-22.1.5`, `SPEC-UI-8.5` |
 
