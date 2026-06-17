@@ -20,6 +20,9 @@
 - **Game Feedback & Karma**: подтверждение участия, оценка надежности и уровня игрока.
 - **League Visibility**: отображение любительских лиг, команд, расписания и базовой статистики.
 - **Gear Integration Light**: справочник магазинов, переходы на сайт, цены/наличие при наличии feed/API.
+- **Verified Profile & Privacy**: подтверждение реального человека, профиль как личный кабинет, приватность и настройки уведомлений.
+- **Team Ops Advanced**: зарегистрированные игроки в составе, email-invite для незарегистрированных, тренерские назначения и красные/белые на тренировке.
+- **Chat Topics & Channels**: темы внутри командных чатов и каналы объявлений с ролями доступа.
 
 ## Предлагаемый стек
 
@@ -85,12 +88,16 @@
 | `Gear & Shops` | Магазины, товары, цены, наличие, переходы | Mock catalog cards | Partner feeds/API, affiliate tracking |
 | `Feedback & Karma` | Отзывы, надежность, подтверждение уровня | Mock post-game feedback | Reputation service, anti-abuse rules |
 | `Notifications` | Push/email/in-app уведомления | Mock notification center | Real push/email/Telegram/VK notifications |
+| `Verification & Profile Hub` | Подтверждение человека, галочка у аватара, профиль как меню, настройки и приватность | Mock verification screens, profile menu, switch-настройки | Реальная идентификация/модерация, persisted privacy settings, notification providers |
+| `Subscription` | Тарифы Free/Player Plus/Team Pro и флаги возможностей | Mock subscription cards and upgrade intent | Billing provider, invoices, entitlements service |
 | `Admin Console` | Управление справочниками и интеграциями | Optional prototype | Real moderation and data operations |
 | `Design System` | Хоккейная визуальная система, темы, motion, domain-компоненты | Токены + ключевые паттерны на Gravity UI | Расширение тем, a11y-аудит, brand kit |
 | `Hockey IQ` | Мини-тесты по правилам, тактике и хоккейным ситуациям | Mock quiz catalog, attempt flow, leaderboard | Rule/tactics content CMS, anti-cheat, seasonal ratings |
 | `Highlight Analysis` | Загрузка коротких моментов, разметка стрелками и комментарии | Mock upload, local preview, annotation JSON | Video storage, transcoding, signed URLs, coach comments |
 | `Ice Radar` | Персональные рекомендации «что сделать сегодня» | Mock recommendation cards from existing events/SOS/arenas | Recommendation service, geo/time matching, notification triggers |
-| `Messenger` | Командные и событийные чаты, actionable activity feed | Mock chats/messages, local optimistic send, focus layout | WebSocket/push, chat service, activity pipeline from bookings/SOS |
+| `Messenger` | Командные и событийные чаты, actionable activity feed, закрепление, темы и каналы | Mock chats/messages, local optimistic send, focus layout, topics/channels fixtures | WebSocket/push, chat service, activity pipeline from bookings/SOS, server-side ACL |
+| `Advanced Team Ops` | Командные роли, registered-only состав, email invites, тренировочные позиции и красные/белые | Mock role checks, invite DTO, lineup assignment UI | Team permissions service, email delivery, audit trail |
+| `Arena Partner Cabinets` | Граница будущей цифровизации личных кабинетов ледовых площадок | Только adapter contract и mock source states | Отдельный проект кабинетов площадок, partner API, SLA и договоры |
 
 ## Расширения продукта: возвращающие сценарии
 
@@ -102,6 +109,9 @@
 | `Highlight Analysis` | Игрок загружает короткий момент, ставит паузу, рисует стрелки и получает комментарии. | Mock upload без реального файла: DTO момента, annotation layer, comments. | S3/Object Storage, CDN, video transcoding, signed upload URL, moderation, coach accounts. |
 | `Ice Radar` | Система собирает релевантные подсказки: ближайший лёд, SOS, игра по району, попутчик. | Mock recommendations, собранные из существующих `events`, `arenas`, `recruitment-requests`. | Геолокация, маршруты, push, персональный ranking model, интеграции карт. |
 | `Messenger` | Игрок/капитан общается в чатах команды и события; системные действия (бронь, заявки) приходят как actionable-карточки. | `React + TS`, `MSW` (`/messenger/chats`, messages, actions), collapsible app shell, focus mode. | Realtime (WebSocket), chat persistence, push, activity bus из booking/SOS/roster. |
+| `Verification & Profile Hub` | Игрок подтверждает профиль, управляет личными данными, приватностью, уведомлениями и mock-подпиской. | Mock verification, profile menu, settings switches, subscription cards. | Real verification/moderation, push providers, billing/entitlements, privacy audit. |
+| `Advanced Team Ops` | Капитан/тренер управляет registered-only составом, приглашениями и тренировочными расстановками. | Mock user lookup, email invite state, training lineup board red/white. | Team RBAC, email delivery, event roster service, audit trail. |
+| `Chat Topics & Channels` | Команда ведет темы как в Telegram и каналы объявлений по ролям. | Mock topics/channels UI, role/lock states. | Chat ACL, realtime topics, moderation, notification routing. |
 
 ### Потоки данных новых функций
 
@@ -138,6 +148,29 @@
 5. Кнопка «Фокус на чат» сворачивает левую навигацию и правый борт; мессенджер занимает всю область под шапкой без карточной рамки (`SPEC-UI-5.6`, `SPEC-UI-8.3`).
 6. Действия из карточек отправляются в `POST /mock-api/v1/messenger/actions/{actionId}`; в Phase 2 — в activity/chat service с push-уведомлениями.
 
+#### Verification, Profile Hub и Subscription
+
+1. Пользователь открывает профиль как личный кабинет с разделами «О человеке», «Настройки», «Приватность», «Подписка».
+2. В разделе «О человеке» отображаются Hockey ID, avatar, karma, команды, история участия и статус подтверждения.
+3. Пользователь запускает mock-проверку человека: телефон/email или ручная проверка профиля; результат меняет `verificationStatus`.
+4. При `verified` рядом с аватаром показывается галочка, но документы и чувствительные данные не попадают в публичный UI.
+5. Настройки уведомлений представлены switch-полями: in-app, email, push, MAX/мессенджер, события команды, SOS, напоминания.
+6. Подписка отображается как mock-тариф Free / Player Plus / Team Pro без платежей; результат — только флаги возможностей.
+
+#### Advanced Team Ops
+
+1. Капитан или админ команды ищет игрока для добавления в состав.
+2. Если пользователь зарегистрирован, его можно добавить или пригласить с ролью; если нет — доступно только email-приглашение.
+3. Командные события создаются с явным `teamId`; список событий поддерживает режимы «моя команда» и «все».
+4. Тренер или админ назначает участников тренировки на позиции.
+5. Для тренировок участники раскладываются по красным и белым с номером звена/позиции.
+
+#### Chat Topics & Channels
+
+1. Командный чат открывается с вкладками тем: «Общее», «Тренировки», «Состав», «Оплаты», «Медиа».
+2. Каналы объявлений доступны для чтения членам команды, а публикация ограничена владельцем/капитаном/тренером/админом.
+3. Phase 1 показывает role/lock state на моках; Phase 2 переносит проверку доступа на backend ACL.
+
 ## Дизайн-система и UX-принципы
 
 ### Бренд-концепции (выбор для MVP)
@@ -168,6 +201,7 @@
     *   *Пример*: Игрок нажал «Пойду» на событие -> в чате события появилось системное сообщение «+1 защитник».
 *   **Bento-Messenger**: Интерфейс мессенджера вписывается в общую концепцию Bento Grid, позволяя видеть список чатов и активное окно как модули единого дашборда.
 *   **Telegram-like UI (Phase 1 mock)**: Список чатов с аватарами, отступами между элементами, бейджами непрочитанного; бабблы с «хвостиком», временем и статусом прочтения; actionable-карточки внутри ленты.
+*   **Темы и каналы**: Командные чаты поддерживают темы по модели Telegram topics и каналы объявлений; доступ ограничивается членами команды и ролями.
 *   **Сворачиваемый layout (SPEC-UI-5.5)**: На desktop (≥1200px) левая навигация и правый «борт» (`SideBoard`) сворачиваются отдельными кнопками в шапке; grid перестраивается без потери ширины контентной колонки.
 *   **Фокус-режим чата (SPEC-UI-5.6, SPEC-UI-8.3)**: На маршруте `/messenger` кнопка «Фокус на чат» одновременно скрывает обе боковые панели; мессенджер занимает всю ширину и высоту под шапкой без карточной рамки, скруглений и тени — контент сливается с общим фоном приложения.
 *   **Единая высота тулбаров (SPEC-UI-8.4)**: Заголовок «Мессенджер» в списке чатов и заголовок активного диалога имеют одинаковую высоту (56px) и выровненную нижнюю границу.
@@ -283,6 +317,18 @@ MOBILE (одна смена)
 | `FR-31` | Система явно разделяет mock-разбор моментов и реальную video upload интеграцию | `Highlight Analysis` | Should |
 | `FR-32` | Система показывает персональные рекомендации `Ice Radar` на сегодня | `Ice Radar` | Should |
 | `FR-33` | Пользователь может скрыть рекомендацию или перейти в связанный сценарий | `Ice Radar` | Should |
+| `FR-34` | Пользователь может пройти mock-подтверждение человека и получить галочку у аватара | `Verification & Profile Hub` | Should |
+| `FR-35` | Профиль организован как личный кабинет с разделами «О человеке», «Настройки», «Приватность», «Подписка» | `Verification & Profile Hub` | Should |
+| `FR-36` | Пользователь управляет push/email/MAX/in-app уведомлениями через switch-настройки | `Notifications` | Should |
+| `FR-37` | Пользователь управляет видимостью профиля и контактных данных | `Verification & Profile Hub` | Must |
+| `FR-38` | Система показывает mock-тарифы подписки и флаги возможностей без реальной оплаты | `Subscription` | Could |
+| `FR-39` | Магазины подключаются через partner API mock: каталог, цены, наличие и статусы синхронизации | `Gear & Shops` | Could |
+| `FR-40` | Цифровизация личных кабинетов ледовых площадок фиксируется как отдельный проект и adapter boundary | `Arena Partner Cabinets` | Post-MVP |
+| `FR-41` | В команду можно напрямую добавлять только зарегистрированных пользователей; незарегистрированным отправляется email invite | `Advanced Team Ops` | Should |
+| `FR-42` | События поддерживают режимы «моя команда» и «все события», сортировку по дате, типу и команде | `Games & Trainings` | Should |
+| `FR-43` | Тренер или админ назначает участников тренировки на позиции и делит их на красных/белых | `Advanced Team Ops` | Should |
+| `FR-44` | Командные чаты поддерживают темы и каналы с доступом для членов команды | `Messenger` | Could |
+| `FR-45` | Владелец/админ команды раздает роли и права на состав, тренировки, темы и каналы | `Advanced Team Ops` | Should |
 
 ## Таблица соответствия «Модуль -> ID требований»
 
@@ -304,6 +350,11 @@ MOBILE (одна смена)
 | `Hockey IQ` | `FR-25`, `FR-26`, `FR-27` |
 | `Highlight Analysis` | `FR-28`, `FR-29`, `FR-30`, `FR-31` |
 | `Ice Radar` | `FR-32`, `FR-33` |
+| `Verification & Profile Hub` | `FR-34`, `FR-35`, `FR-37` |
+| `Subscription` | `FR-38` |
+| `Advanced Team Ops` | `FR-41`, `FR-43`, `FR-45` |
+| `Messenger` | `FR-44` |
+| `Arena Partner Cabinets` | `FR-40` |
 
 ## Mermaid: модульная карта MVP
 
@@ -318,7 +369,7 @@ flowchart TB
     ApiClient --> MSW[Phase 1: Mock Service Worker]
     ApiClient --> Backend[Phase 2: Backend API]
 
-    MSW --> MockData[Mock Data: users, teams, games, arenas, leagues, shops, IQ, highlights, radar]
+    MSW --> MockData[Mock Data: users, teams, games, arenas, leagues, shops, IQ, highlights, radar, verification, subscriptions, chat topics]
 
     Backend --> Auth[Auth Service]
     Backend --> Profile[Hockey ID Service]
@@ -330,6 +381,9 @@ flowchart TB
     Backend --> IQ[Hockey IQ Service]
     Backend --> Video[Highlight Analysis Service]
     Backend --> Radar[Ice Radar Service]
+    Backend --> Verification[Verification and Profile Settings Service]
+    Backend --> Subscription[Subscription Entitlements Service]
+    Backend --> Chat[Chat Topics and ACL Service]
     Backend --> Integrations[Integration Layer]
 
     Integrations --> Ice[Ice Rental Portals]
@@ -415,7 +469,11 @@ sequenceDiagram
 | Hockey IQ | `IqTest`, `IqQuestion`, `IqAttempt`, `IqLeaderboardRow` | Mock quiz fixtures | CMS/admin content, ratings, anti-cheat |
 | Highlights | `Highlight`, `HighlightAnnotation`, `HighlightComment` | Mock video metadata and annotation JSON | Object storage, transcoding, CDN, moderation |
 | Ice Radar | `RadarRecommendation`, `RadarAction`, `ReasonCode` | Mock recommendations from existing fixtures | Geo/routing APIs, ranking service, push triggers |
-| Messenger | `Chat`, `Message`, `ActionableMessageData`, `ChatAction` | Mock chat fixtures, local send state | Chat DB, WebSocket gateway, activity event bus |
+| Verification | `VerificationRequest`, `VerificationStatus` | Mock phone/email and manual review screens | Verification/moderation provider, audit, privacy controls |
+| Profile Settings | `NotificationPreferences`, `PrivacySettings` | Mock switches and visibility state | Persisted settings, push providers, privacy audit trail |
+| Subscription | `SubscriptionState`, `Plan`, `Entitlement` | Mock tariffs and upgrade intent | Billing provider, entitlement service |
+| Messenger | `Chat`, `Message`, `ActionableMessageData`, `ChatAction`, `ChatTopic` | Mock chat fixtures, local send state, topics/channels | Chat DB, WebSocket gateway, activity event bus, ACL service |
+| Advanced Team Ops | `TeamRole`, `EmailInvite`, `TrainingLineupAssignment` | Mock roles, invite state, red/white lineup board | Team RBAC, email delivery, event roster service |
 
 ## Основные продуктовые потоки
 
@@ -467,6 +525,26 @@ sequenceDiagram
 
 Связанные требования: `FR-14`, `FR-15`, `FR-18`, `FR-19`, `FR-23`.
 
+### Поток 6: пользователь подтверждает профиль и настраивает приватность
+
+1. Пользователь открывает профиль как меню личного кабинета.
+2. Переходит в «О человеке» и запускает mock-подтверждение.
+3. После успешного mock-результата видит галочку рядом с аватаром.
+4. В «Настройках» включает/выключает in-app, email, push и MAX-уведомления.
+5. В «Приватности» выбирает, кто видит профиль, контакты и историю участия.
+
+Связанные требования: `FR-34`, `FR-35`, `FR-36`, `FR-37`.
+
+### Поток 7: тренер управляет тренировкой команды
+
+1. Тренер или админ команды открывает командное событие.
+2. Система показывает только события выбранной команды либо все события по фильтру.
+3. Тренер назначает игроков на позиции.
+4. Участники распределяются на красных и белых.
+5. Изменения отражаются в командном чате/теме «Тренировки».
+
+Связанные требования: `FR-41`, `FR-42`, `FR-43`, `FR-44`, `FR-45`.
+
 ## Границы MVP и отложенные функции
 
 В MVP не включать как обязательные:
@@ -477,6 +555,10 @@ sequenceDiagram
 - Полную интеграцию со всеми российскими лигами.
 - Социальную ленту с лайками, комментариями и медиа как основной сценарий.
 - Встроенный платежный split bill, если нет отдельного решения по юридической и платежной модели.
+- Реальный KYC, хранение документов и юридически значимая идентификация личности.
+- Реальная отправка push в MAX/email/SMS и полноценный billing подписок.
+- Цифровые личные кабинеты ледовых площадок внутри текущего продукта; это отдельный проект после согласования партнерской модели.
+- Серверный ACL для тем/каналов чатов и realtime topics в Phase 1.
 
 Эти функции можно держать как post-MVP backlog после проверки ядра: профиль, состав, добор, лед, базовая репутация.
 
