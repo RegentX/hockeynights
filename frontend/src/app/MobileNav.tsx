@@ -5,23 +5,9 @@
 import {Link, useLocation} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
 import {fetchChats, getTotalUnreadCount} from '@/features/messenger/api/messengerApi'
-
-/** @spec SPEC-UI-5.2 */
-interface MobileNavItem {
-  to: string
-  label: string
-  icon: string
-}
-
-const MOBILE_NAV: MobileNavItem[] = [
-  {to: '/events', label: 'События', icon: '🏒'},
-  {to: '/players', label: 'Игроки', icon: '👤'},
-  {to: '/teams', label: 'Команды', icon: '🛡'},
-  {to: '/messenger', label: 'Чат', icon: '💬'},
-  {to: '/iq', label: 'IQ', icon: '🎯'},
-  {to: '/arenas', label: 'Катки', icon: '🧊'},
-  {to: '/profile', label: 'Профиль', icon: '⚙'},
-]
+import {fetchSession} from '@/features/auth/api/sessionApi'
+import {resolveMobileNavItems} from '@/features/access/navigationAccess'
+import {shouldUsePartnerWorkspace} from '@/features/partners/sessionPersona'
 
 function formatUnreadBadge(count: number): string {
   return count > 99 ? '99+' : String(count)
@@ -32,6 +18,12 @@ function formatUnreadBadge(count: number): string {
  */
 export function MobileNav() {
   const location = useLocation()
+  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const partnerMembership = session?.user.partnerMemberships?.[0]
+  const partnerCount = session?.user.partnerMemberships?.length ?? 0
+  const showLegacyPartnerLink =
+    partnerMembership && !shouldUsePartnerWorkspace(session) && partnerCount > 1
+  const mobileNav = resolveMobileNavItems(session)
   const {data: chats = []} = useQuery({
     queryKey: ['messenger-chats'],
     queryFn: fetchChats,
@@ -40,8 +32,19 @@ export function MobileNav() {
 
   return (
     <nav className="mobile-nav" aria-label="Основная навигация">
-      {MOBILE_NAV.map((item) => {
-        const active = location.pathname === item.to
+      {showLegacyPartnerLink && (
+        <Link
+          to="/partner"
+          className={`mobile-nav__link${
+            location.pathname.startsWith('/partner') ? ' mobile-nav__link--active' : ''
+          }`}
+        >
+          <span className="mobile-nav__icon" aria-hidden>🏪</span>
+          <span className="mobile-nav__label">Партнёр</span>
+        </Link>
+      )}
+      {mobileNav.map((item) => {
+        const active = location.pathname === item.to || location.pathname.startsWith(`${item.to}/`)
         const showUnreadBadge = item.to === '/messenger' && unreadChatCount > 0
         return (
           <Link

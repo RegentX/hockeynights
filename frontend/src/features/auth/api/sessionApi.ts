@@ -19,3 +19,8 @@ export function fetchSession(): Promise<Session> {
 export function submitOnboarding(payload: OnboardingPayload): Promise<Session> {
   return apiRequest<Session>('/onboarding', {method: 'POST', body: payload})
 }
+
+/** @spec SPEC-FR-2.1.1 - Выход из mock-сессии */
+export function logoutSession(): Promise<Session> {
+  return apiRequest<Session>('/logout', {method: 'POST'})
+}

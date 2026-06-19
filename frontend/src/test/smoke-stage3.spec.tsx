@@ -288,13 +288,13 @@ describe('TASK-QA-02 UI smoke', () => {
     })
   })
 
-  /** @spec SPEC-FR-9.1.2 */
-  it('ShopsPage loads shop cards', async () => {
+  /** @spec SPEC-FR-9.1.2, SPEC-FR-9.3.1 */
+  it('ShopsPage loads marketplace feed', async () => {
     renderWithProviders(<ShopsPage />)
     await waitFor(() => {
-      expect(screen.getByText('Магазины экипировки')).toBeInTheDocument()
+      expect(screen.getByText('Маркет экипировки')).toBeInTheDocument()
       expect(screen.getByText('Pro-Hockey Москва')).toBeInTheDocument()
-      expect(screen.getAllByText('Профиль магазина').length).toBeGreaterThan(0)
+      expect(screen.getByText('Коньки Bauer Supreme')).toBeInTheDocument()
     })
   })
 

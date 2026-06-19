@@ -10,6 +10,7 @@ import {ArenaBookingPanel} from '@/features/arenas/ArenaBookingPanel'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
+import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 
 const MODE_LABELS = {
   slot_calendar: 'Слоты по времени',
@@ -31,17 +32,20 @@ export function ArenaDetailPanel({arena, slots, hasFreeSlot}: ArenaDetailPanelPr
 
   return (
     <IceCard padding="m" className="arena-detail">
-      <div className="arena-detail__head">
+      <div className="arena-detail__head hockey-row hockey-row--between">
         <div>
           <Text variant="header-2">{arena.name}</Text>
           <Text color="secondary">{arena.address}</Text>
         </div>
-        <span className={`arena-detail__mode arena-detail__mode--${arena.bookingMode}`}>
-          {MODE_LABELS[arena.bookingMode]}
-        </span>
+        <EntityProfileBadge kind="arena" />
       </div>
 
       <div className="arena-detail__meta">
+        <div className="hockey-row hockey-row--gap-8 hockey-mb-8">
+          <span className={`arena-detail__mode arena-detail__mode--${arena.bookingMode}`}>
+            {MODE_LABELS[arena.bookingMode]}
+          </span>
+        </div>
         {arena.metro && (
           <Text color="secondary">
             м. {arena.metro} · {arena.district}

@@ -13,18 +13,30 @@ export interface ExternalProductLinkProps {
   offer: ProductOffer
   /** @spec SPEC-FR-9.1.2 */
   shopName: string
+  /** @spec SPEC-FR-9.3.1 - Компактная кнопка для карточки маркетплейса */
+  compact?: boolean
 }
 
 /**
  * @spec SPEC-FR-9.2.3 - Mock-переход к покупке вместо мёртвой внешней ссылки
  */
-export function ExternalProductLink({offer, shopName}: ExternalProductLinkProps) {
+export function ExternalProductLink({offer, shopName, compact = false}: ExternalProductLinkProps) {
   const [open, setOpen] = useState(false)
 
   return (
     <>
-      <Button view="outlined" size="s" onClick={() => setOpen(true)}>
-        Купить: {offer.title}
+      <Button
+        view={compact ? 'action' : 'outlined'}
+        size={compact ? 'm' : 's'}
+        width={compact ? 'max' : undefined}
+        disabled={offer.availability === 'out_of_stock'}
+        onClick={() => setOpen(true)}
+      >
+        {offer.availability === 'out_of_stock'
+          ? 'Нет в наличии'
+          : compact
+            ? 'Купить'
+            : `Купить: ${offer.title}`}
       </Button>
       <MockShopCheckoutModal
         open={open}

@@ -1,0 +1,28 @@
+/**
+ * SPEC-FR-1.3.7, SPEC-FR-24.5.3, SPEC-FR-24.7.3
+ */
+
+import type {UserRole} from '@/entities/common/types'
+import type {Session} from '@/entities/user/types'
+import {partnerCabinetPath} from '@/features/partners/constants'
+
+const PLAYER_PERSONA_ROLES: UserRole[] = ['player', 'goalie', 'captain', 'coach']
+
+/** Роли, при которых показывается Hockey ID игрока/тренера */
+export function hasPlayerPersona(roles: UserRole[]): boolean {
+  return roles.some((role) => PLAYER_PERSONA_ROLES.includes(role))
+}
+
+/** Партнёрский кабинет — основной интерфейс, без Hockey ID игрока */
+export function shouldUsePartnerWorkspace(session: Session | undefined): boolean {
+  if (!session?.isOnboarded) return false
+  if (session.user.roles.includes('admin')) return false
+  const hasPartner = (session.user.partnerMemberships?.length ?? 0) > 0
+  if (!hasPartner) return false
+  return !hasPlayerPersona(session.user.roles)
+}
+
+export function getPrimaryPartnerPath(session: Session): string {
+  const membership = session.user.partnerMemberships?.[0]
+  return membership ? partnerCabinetPath(membership) : '/partner'
+}

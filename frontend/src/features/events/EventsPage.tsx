@@ -6,6 +6,7 @@
 import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
 import {fetchEvents} from '@/features/events/api/eventsApi'
+import {useSessionAccess} from '@/features/access/useSessionAccess'
 import {EventCard} from '@/features/events/EventCard'
 import {EventCreateForm} from '@/features/events/EventCreateForm'
 import {IceCard} from '@/shared/ui/IceCard'
@@ -20,7 +21,7 @@ import {ScrollReveal} from '@/shared/ui/ScrollStory'
  */
 export function EventsPage() {
   const {data: events = [], isLoading} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
-  const currentUserId = 'user-001'
+  const {userId, canOrganizeEvents} = useSessionAccess()
 
   const matchRows = events.map((event) => ({
     id: event.id,
@@ -34,9 +35,9 @@ export function EventsPage() {
   }))
 
   const participationHistory = events
-    .filter((event) => event.participation.some((p) => p.userId === currentUserId))
+    .filter((event) => event.participation.some((p) => p.userId === userId))
     .map((event) => {
-      const myStatus = event.participation.find((p) => p.userId === currentUserId)?.status ?? 'maybe'
+      const myStatus = event.participation.find((p) => p.userId === userId)?.status ?? 'maybe'
       return {event, myStatus}
     })
     .sort((a, b) => new Date(b.event.startsAt).getTime() - new Date(a.event.startsAt).getTime())
@@ -48,13 +49,15 @@ export function EventsPage() {
       </ScrollReveal>
 
       <div className="hockey-grid hockey-grid--cards-280">
-        <ScrollReveal direction="left">
-          <IceCard padding="m">
-            <EventCreateForm />
-          </IceCard>
-        </ScrollReveal>
+        {canOrganizeEvents && (
+          <ScrollReveal direction="left">
+            <IceCard padding="m">
+              <EventCreateForm />
+            </IceCard>
+          </ScrollReveal>
+        )}
 
-        <ScrollReveal direction="right">
+        <ScrollReveal direction={canOrganizeEvents ? 'right' : 'left'}>
           <IceCard padding="m">
             {isLoading ? (
               <ScoreboardLoader />

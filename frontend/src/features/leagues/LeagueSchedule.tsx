@@ -24,7 +24,10 @@ export function LeagueSchedule({schedule}: LeagueScheduleProps) {
       hour: '2-digit',
       minute: '2-digit',
     }),
-    title: `${item.homeTeam} — ${item.awayTeam}`,
+    title:
+      item.status === 'completed' && item.homeScore !== undefined
+        ? `${item.homeTeam} ${item.homeScore}:${item.awayScore} ${item.awayTeam}`
+        : `${item.homeTeam} — ${item.awayTeam}`,
     subtitle: [
       new Date(item.startsAt).toLocaleDateString('ru-RU'),
       item.arenaName,

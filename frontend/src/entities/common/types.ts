@@ -27,6 +27,9 @@ export type EventType = 'game' | 'training' | 'open_ice'
 /** @spec SPEC-FR-11.2.1 - Статус синхронизации источника */
 export type SyncStatus = 'mock' | 'manual' | 'synced' | 'failed' | 'stale'
 
+/** @spec SPEC-FR-24.7.9 - Статус модерации партнёрского контента */
+export type PartnerModerationStatus = 'draft' | 'pending_review' | 'published' | 'rejected'
+
 /** @spec SPEC-FR-11.2.2 - Метаданные внешнего источника */
 export interface SourceMeta {
   /** @spec SPEC-FR-11.2.2 */

@@ -4,41 +4,20 @@
  */
 
 import {useEffect, useRef, useState} from 'react'
-import {Link, Outlet, useLocation} from 'react-router-dom'
-import {useQuery} from '@tanstack/react-query'
+import {Link, Outlet, useLocation, useNavigate} from 'react-router-dom'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {fetchNotifications} from '@/features/notifications/api/notificationsApi'
 import {fetchChats, getTotalUnreadCount} from '@/features/messenger/api/messengerApi'
+import {fetchSession, logoutSession} from '@/features/auth/api/sessionApi'
+import {partnerCabinetLabel, partnerCabinetPath} from '@/features/partners/constants'
+import {resolveNavItems} from '@/features/access/navigationAccess'
+import {shouldUsePartnerWorkspace} from '@/features/partners/sessionPersona'
 import {LAUNCH_REGION} from '@/shared/config/geo'
 import {useHockeyTheme} from '@/shared/theme/HockeyThemeProvider'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {MobileNav} from '@/app/MobileNav'
 import {SideBoard} from '@/app/SideBoard'
 import {SosFab} from '@/app/SosFab'
-
-/** @spec SPEC-FR-1.2.1 - Пункт навигации */
-interface NavItem {
-  to: string
-  label: string
-}
-
-const NAV_ITEMS: NavItem[] = [
-  {to: '/profile', label: 'Профиль'},
-  {to: '/players', label: 'Игроки'},
-  {to: '/teams', label: 'Команды'},
-  {to: '/events', label: 'События'},
-  {to: '/calendar', label: 'Календарь'},
-  {to: '/sos', label: 'SOS'},
-  {to: '/arenas', label: 'Катки'},
-  {to: '/leagues', label: 'Лиги'},
-  {to: '/shops', label: 'Магазины'},
-  {to: '/iq', label: 'IQ'},
-  {to: '/radar', label: 'Радар'},
-  {to: '/highlights', label: 'Моменты'},
-  {to: '/feedback', label: 'Feedback'},
-  {to: '/notifications', label: 'Уведомления'},
-  {to: '/messenger', label: 'Мессенджер'},
-  {to: '/admin', label: 'Admin'},
-]
 
 function formatPeriodClock(): string {
   const now = new Date()
@@ -53,12 +32,23 @@ function formatPeriodClock(): string {
  */
 export function AppShell() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const {themeId, toggleTheme} = useHockeyTheme()
   const navRef = useRef<HTMLDivElement>(null)
   const [puckTop, setPuckTop] = useState(0)
   const [periodClock, setPeriodClock] = useState(formatPeriodClock)
   const [isLeftCollapsed, setIsLeftCollapsed] = useState(false)
   const [isRightCollapsed, setIsRightCollapsed] = useState(false)
+
+  const {data: session} = useQuery({
+    queryKey: ['session'],
+    queryFn: fetchSession,
+  })
+  const partnerMemberships = session?.user.partnerMemberships ?? []
+  const hasPartnerAccess = partnerMemberships.length > 0 && !shouldUsePartnerWorkspace(session)
+  const partnerWorkspace = shouldUsePartnerWorkspace(session)
+  const navItems = resolveNavItems(session)
 
   const {data: notifications = []} = useQuery({
     queryKey: ['notifications'],
@@ -72,6 +62,19 @@ export function AppShell() {
   const unreadChatCount = getTotalUnreadCount(chats)
   const isMessengerRoute = location.pathname === '/messenger'
   const isFocusMode = isLeftCollapsed && isRightCollapsed
+
+  const logoutMutation = useMutation({
+    mutationFn: logoutSession,
+    onSuccess: () => {
+      void queryClient.clear()
+      navigate('/')
+    },
+  })
+
+  function isNavActive(path: string): boolean {
+    if (path === '/partner') return location.pathname === '/partner'
+    return location.pathname === path || location.pathname.startsWith(`${path}/`)
+  }
 
   const bodyClasses = [
     'app-shell__body',
@@ -121,6 +124,17 @@ export function AppShell() {
           >
             {themeId === 'locker' ? '🧊 Лёд' : '🏒 Раздевалка'}
           </HockeyButton>
+          <HockeyButton
+            view="outlined"
+            size="s"
+            loading={logoutMutation.isPending}
+            onClick={() => logoutMutation.mutate()}
+          >
+            Выйти
+          </HockeyButton>
+          <Link to="/">
+            <HockeyButton view="outlined" size="s">Сменить роль</HockeyButton>
+          </Link>
           <div className="app-shell__panel-controls" aria-label="Управление панелями">
             <HockeyButton
               view={isLeftCollapsed ? 'action' : 'outlined'}
@@ -168,8 +182,8 @@ export function AppShell() {
               style={{['--hockey-puck-top' as string]: `${puckTop}px`}}
               aria-hidden
             />
-            {NAV_ITEMS.map((item) => {
-              const active = location.pathname === item.to
+            {navItems.map((item) => {
+              const active = isNavActive(item.to)
               const badge =
                 item.to === '/notifications' && unreadCount > 0
                   ? unreadCount
@@ -191,6 +205,33 @@ export function AppShell() {
                 </Link>
               )
             })}
+            {hasPartnerAccess && (
+              <>
+                <div className="hockey-nav__section-label">Партнёр</div>
+                <Link
+                  to="/partner"
+                  className={`hockey-nav__link${isNavActive('/partner') ? ' hockey-nav__link--active' : ''}`}
+                  data-active={isNavActive('/partner') ? 'true' : undefined}
+                >
+                  Все кабинеты
+                </Link>
+                {partnerMemberships.map((membership) => {
+                  const path = partnerCabinetPath(membership)
+                  const active = location.pathname === path
+                  return (
+                    <Link
+                      key={`${membership.kind}-${membership.entityId}`}
+                      to={path}
+                      className={`hockey-nav__link${active ? ' hockey-nav__link--active' : ''}`}
+                      data-active={active ? 'true' : undefined}
+                      title={membership.entityName}
+                    >
+                      {partnerCabinetLabel(membership)}
+                    </Link>
+                  )
+                })}
+              </>
+            )}
           </div>
         </nav>
 
@@ -198,11 +239,11 @@ export function AppShell() {
           <Outlet />
         </main>
 
-        <div className="app-shell__board-col">{!isRightCollapsed && <SideBoard />}</div>
+        <div className="app-shell__board-col">{!isRightCollapsed && !partnerWorkspace && <SideBoard />}</div>
       </div>
 
       <MobileNav />
-      <SosFab />
+      {!partnerWorkspace && <SosFab />}
     </div>
   )
 }

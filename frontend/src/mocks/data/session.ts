@@ -2,7 +2,7 @@
  * SPEC-FR-2.1.1, SPEC-FR-2.1.2, SPEC-FR-2.1.3
  */
 
-import type {Session, User} from '@/entities/user/types'
+import type {Session, User, PartnerMembership} from '@/entities/user/types'
 import type {
   HockeyProfile,
   NotificationPreferences,
@@ -107,12 +107,29 @@ export let mockProfileSettings: ProfileSettings = {
 /**
  * @spec SPEC-FR-2.1.2 - Обновление ролей после onboarding
  */
-export function completeOnboarding(displayName: string, roles: User['roles']): Session {
+export function completeOnboarding(
+  displayName: string,
+  roles: User['roles'],
+  partnerMemberships: PartnerMembership[] = [],
+): Session {
   mockUser.displayName = displayName
   mockUser.roles = roles
+  mockUser.partnerMemberships = partnerMemberships
   mockSession = {
-    user: {...mockUser, roles},
+    user: {...mockUser, roles, partnerMemberships},
     isOnboarded: true,
+  }
+  return mockSession
+}
+
+/** @spec SPEC-FR-2.1.1 - Сброс mock-сессии (выход) */
+export function resetMockSession(): Session {
+  mockUser.displayName = 'Иван Петров'
+  mockUser.roles = ['player', 'captain']
+  mockUser.partnerMemberships = undefined
+  mockSession = {
+    user: {...mockUser, partnerMemberships: undefined},
+    isOnboarded: false,
   }
   return mockSession
 }

@@ -4,6 +4,9 @@
 
 import {Navigate, Route, Routes} from 'react-router-dom'
 import {AppShell} from '@/app/AppShell'
+import {LoginLayout} from '@/app/LoginLayout'
+import {PersonaGate} from '@/app/PersonaGate'
+import {RequireAuth} from '@/app/RequireAuth'
 import {MockLoginPage} from '@/features/auth/MockLoginPage'
 import {HockeyProfileForm} from '@/features/profile/HockeyProfileForm'
 import {PlayersPage} from '@/features/players/PlayersPage'
@@ -22,6 +25,9 @@ import {IqTestsPage} from '@/features/iq/IqTestsPage'
 import {IceRadarPage} from '@/features/radar/IceRadarPage'
 import {HighlightsPage} from '@/features/highlights/HighlightsPage'
 import {MessengerPage} from '@/features/messenger/MessengerPage'
+import {LeaguePartnerDashboard} from '@/features/leagues/LeaguePartnerDashboard'
+import {ShopPartnerDashboard} from '@/features/shops/ShopPartnerDashboard'
+import {PartnerHubPage} from '@/features/partners/PartnerHubPage'
 
 /**
  * @spec SPEC-FR-1.2.1 - Маршрутизация MVP
@@ -29,10 +35,19 @@ import {MessengerPage} from '@/features/messenger/MessengerPage'
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/login" element={<MockLoginPage />} />
-      <Route element={<AppShell />}>
-        <Route path="/" element={<Navigate to="/profile" replace />} />
-        <Route path="/profile" element={<HockeyProfileForm />} />
+      <Route
+        path="/"
+        element={
+          <LoginLayout>
+            <MockLoginPage />
+          </LoginLayout>
+        }
+      />
+      <Route path="/login" element={<Navigate to="/" replace />} />
+      <Route element={<RequireAuth />}>
+        <Route element={<PersonaGate />}>
+          <Route element={<AppShell />}>
+          <Route path="/profile" element={<HockeyProfileForm />} />
         <Route path="/players" element={<PlayersPage />} />
         <Route path="/players/:userId" element={<PublicPlayerProfilePage />} />
         <Route path="/teams" element={<TeamsPage />} />
@@ -45,12 +60,17 @@ export function AppRoutes() {
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/messenger" element={<MessengerPage />} />
         <Route path="/shops" element={<ShopsPage />} />
+        <Route path="/partner" element={<PartnerHubPage />} />
+        <Route path="/partner/shops/:shopId" element={<ShopPartnerDashboard />} />
+        <Route path="/partner/leagues/:leagueId" element={<LeaguePartnerDashboard />} />
         <Route path="/iq" element={<IqTestsPage />} />
         <Route path="/radar" element={<IceRadarPage />} />
         <Route path="/highlights" element={<HighlightsPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
+          </Route>
+        </Route>
       </Route>
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }

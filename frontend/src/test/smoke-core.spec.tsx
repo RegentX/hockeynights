@@ -30,8 +30,28 @@ import type {Arena} from '@/entities/arena/types'
 import type {RecruitmentRequest} from '@/entities/recruitment/types'
 import type {Session} from '@/entities/user/types'
 import type {Club} from '@/entities/club/types'
+import type {League} from '@/entities/league/types'
+import type {LeagueScheduleImportResult} from '@/entities/league/types'
+import type {LeagueScheduleItem} from '@/entities/league/types'
+import type {LeagueTeamApplication} from '@/entities/league/types'
+import type {PartnerModerationItem} from '@/entities/admin/types'
+import type {Shop} from '@/entities/shop/types'
+import type {ProductOffer} from '@/entities/shop/types'
+import type {ShopCatalogImportJob} from '@/entities/shop/types'
 
 describe('TASK-QA-01 mock API smoke', () => {
+  /** @spec SPEC-FR-2.1.3 */
+  it('POST /logout resets mock session', async () => {
+    await mockApiPost<Session>('/onboarding', {
+      displayName: 'Игрок',
+      roles: ['player'],
+    })
+    const loggedOut = await mockApiPost<Session>('/logout', {})
+    expect(loggedOut.isOnboarded).toBe(false)
+    const session = await mockApiGet<Session>('/session')
+    expect(session.isOnboarded).toBe(false)
+  })
+
   /** @spec SPEC-FR-2.1.3 */
   it('GET /session returns mock session', async () => {
     const session = await mockApiGet<Session>('/session')
@@ -136,6 +156,182 @@ describe('TASK-QA-01 mock API smoke', () => {
     expect(club.staff.length).toBeGreaterThan(0)
   })
 
+  /** @spec SPEC-FR-24.5.3 */
+  it('PATCH /leagues/{leagueId}/profile updates league partner profile', async () => {
+    await mockApiPost<Session>('/onboarding', {
+      displayName: 'League Partner',
+      roles: ['player'],
+      partnerMemberships: [
+        {kind: 'league', entityId: 'league-001', entityName: 'Ночная Хоккейная Лига (НХЛ)'},
+      ],
+    })
+    const updated = await mockApiPatch<League>('/leagues/league-001/profile', {
+      description: 'Обновлённое описание лиги',
+      recruitingStatus: 'open',
+    })
+    expect(updated.description).toBe('Обновлённое описание лиги')
+    expect(updated.moderationStatus).toBe('pending_review')
+  })
+
+  /** @spec SPEC-FR-24.7.3, SPEC-FR-24.7.4 */
+  it('PATCH shop profile and POST product with partner membership', async () => {
+    await mockApiPost<Session>('/onboarding', {
+      displayName: 'Shop Partner',
+      roles: ['player'],
+      partnerMemberships: [
+        {kind: 'shop', entityId: 'shop-001', entityName: 'Pro-Hockey Москва'},
+      ],
+    })
+    const shop = await mockApiPatch<Shop>('/shops/shop-001/profile', {
+      deliveryInfo: 'Доставка за 24 часа',
+    })
+    expect(shop.deliveryInfo).toBe('Доставка за 24 часа')
+
+    const product = await mockApiPost<ProductOffer>('/shops/shop-001/products', {
+      title: 'Шлем CCM',
+      category: 'защита',
+      price: 15900,
+      availability: 'in_stock',
+      externalUrl: 'https://prohockey.example.ru/ccm-helmet',
+    })
+    expect(product.title).toBe('Шлем CCM')
+    expect(product.moderationStatus).toBe('pending_review')
+  })
+
+  /** @spec SPEC-FR-24.7.5 */
+  it('POST /shops/{shopId}/catalog-import imports products from feed', async () => {
+    await mockApiPost<Session>('/onboarding', {
+      displayName: 'Shop Partner',
+      roles: ['player'],
+      partnerMemberships: [
+        {kind: 'shop', entityId: 'shop-001', entityName: 'Pro-Hockey Москва'},
+      ],
+    })
+    const job = await mockApiPost<ShopCatalogImportJob>('/shops/shop-001/catalog-import', {
+      source: 'feed',
+    })
+    expect(job.importedCount).toBeGreaterThan(0)
+    expect(job.status).toBe('synced')
+  })
+
+  /** @spec SPEC-FR-24.5.4 */
+  it('GET/PATCH league applications with partner membership', async () => {
+    await mockApiPost<Session>('/onboarding', {
+      displayName: 'League Partner',
+      roles: ['player'],
+      partnerMemberships: [
+        {kind: 'league', entityId: 'league-001', entityName: 'Ночная Хоккейная Лига (НХЛ)'},
+      ],
+    })
+    const apps = await mockApiGet<LeagueTeamApplication[]>('/leagues/league-001/applications')
+    expect(apps.length).toBeGreaterThan(0)
+    const pending = apps.find((a) => a.status === 'pending')
+    expect(pending).toBeTruthy()
+    if (pending) {
+      const updated = await mockApiPatch<LeagueTeamApplication>(
+        `/leagues/league-001/applications/${pending.id}`,
+        {status: 'approved', reviewComment: 'Допущены'},
+      )
+      expect(updated.status).toBe('approved')
+    }
+  })
+
+  /** @spec SPEC-FR-24.5.4 */
+  it('POST league application as team captain', async () => {
+    await mockApiPost<Session>('/onboarding', {
+      displayName: 'League Partner',
+      roles: ['player'],
+      partnerMemberships: [
+        {kind: 'league', entityId: 'league-001', entityName: 'Ночная Хоккейная Лига (НХЛ)'},
+      ],
+    })
+    const apps = await mockApiGet<LeagueTeamApplication[]>('/leagues/league-001/applications')
+    for (const app of apps.filter((a) => a.teamId === 'team-001' && a.status !== 'rejected')) {
+      await mockApiPatch(`/leagues/league-001/applications/${app.id}`, {status: 'rejected'})
+    }
+
+    await mockApiPost<Session>('/onboarding', {
+      displayName: 'Иван Петров',
+      roles: ['player', 'captain'],
+      partnerMemberships: [],
+    })
+    const application = await mockApiPost<LeagueTeamApplication>('/leagues/league-001/applications', {
+      seasonId: 'season-001',
+      divisionId: 'div-001',
+      teamId: 'team-001',
+      teamName: 'Медведи САО',
+      captainName: 'Иван Петров',
+      contactEmail: 'captain@example.com',
+    })
+    expect(application.status).toBe('pending')
+    expect(application.teamId).toBe('team-001')
+  })
+
+  /** @spec SPEC-FR-24.5.5 */
+  it('POST/PATCH league schedule with partner membership', async () => {
+    await mockApiPost<Session>('/onboarding', {
+      displayName: 'League Partner',
+      roles: ['player'],
+      partnerMemberships: [
+        {kind: 'league', entityId: 'league-001', entityName: 'Ночная Хоккейная Лига (НХЛ)'},
+      ],
+    })
+    const item = await mockApiPost<LeagueScheduleItem>(
+      '/leagues/league-001/schedule',
+      {
+        homeTeam: 'ХК Тест',
+        awayTeam: 'ХК Демо',
+        startsAt: '2026-07-01T20:00:00+03:00',
+        arenaName: 'Тестовая арена',
+        status: 'scheduled',
+      },
+    )
+    expect(item.homeTeam).toBe('ХК Тест')
+
+    const scored = await mockApiPatch<LeagueScheduleItem>(
+      `/leagues/league-001/schedule/${item.id}`,
+      {homeScore: 5, awayScore: 1, status: 'completed'},
+    )
+    expect(scored.status).toBe('completed')
+    expect(scored.homeScore).toBe(5)
+  })
+
+  /** @spec SPEC-FR-24.5.5 */
+  it('POST league schedule CSV import with partner membership', async () => {
+    await mockApiPost<Session>('/onboarding', {
+      displayName: 'League Partner',
+      roles: ['player'],
+      partnerMemberships: [
+        {kind: 'league', entityId: 'league-001', entityName: 'Ночная Хоккейная Лига (НХЛ)'},
+      ],
+    })
+    const result = await mockApiPost<LeagueScheduleImportResult>(
+      '/leagues/league-001/schedule-import',
+      {},
+    )
+    expect(result.importedCount).toBeGreaterThan(0)
+  })
+
+  /** @spec SPEC-FR-24.7.9 */
+  it('GET/PATCH admin partner moderation queue', async () => {
+    await mockApiPost<Session>('/onboarding', {
+      displayName: 'Admin',
+      roles: ['admin'],
+      partnerMemberships: [],
+    })
+    const queue = await mockApiGet<PartnerModerationItem[]>('/admin/partner-moderation')
+    expect(queue.some((item) => item.kind === 'shop_product')).toBe(true)
+
+    const product = queue.find((item) => item.kind === 'shop_product')
+    expect(product).toBeTruthy()
+    if (product) {
+      const updated = await mockApiPatch(`/admin/partner-moderation/${product.id}`, {
+        status: 'published',
+      })
+      expect(updated.moderationStatus).toBe('published')
+    }
+  })
+
   /** @spec SPEC-FR-4.1.1 */
   it('GET /events returns events with participation', async () => {
     const events = await mockApiGet<GameEvent[]>('/events')
@@ -183,8 +379,9 @@ describe('TASK-QA-01 UI smoke', () => {
   /** @spec SPEC-FR-2.1.1 */
   it('MockLoginPage renders onboarding', () => {
     renderWithProviders(<MockLoginPage />)
-    expect(screen.getByText('Hockey ID — вход')).toBeInTheDocument()
-    expect(screen.getByText('Игрок')).toBeInTheDocument()
+    expect(screen.getByText('Hockey Nights')).toBeInTheDocument()
+    expect(screen.getByText('Войти как игрок')).toBeInTheDocument()
+    expect(screen.getByText('Войти как тренер')).toBeInTheDocument()
   })
 
   /** @spec SPEC-FR-2.2.4 */

@@ -301,6 +301,15 @@
     background: var(--hockey-line-red);
     color: #fff;
   }
+
+  &__section-label {
+    margin: 12px 12px 4px 22px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--hockey-text-muted);
+  }
 }
 
 /* SPEC-UI-5.2 Mobile bottom nav */

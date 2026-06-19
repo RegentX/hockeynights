@@ -2,7 +2,7 @@
  * SPEC-FR-11.1.1, SPEC-FR-11.1.2, SPEC-FR-11.2.1, SPEC-FR-11.2.2
  */
 
-import type {SourceMeta} from '@/entities/common/types'
+import type {PartnerModerationStatus, SourceMeta} from '@/entities/common/types'
 
 /** @spec SPEC-FR-11.1.1 - Тип сущности админки */
 export type AdminEntityType = 'arena' | 'league' | 'shop'
@@ -31,4 +31,18 @@ export interface CreateAdminEntityPayload {
   city?: string
   /** @spec SPEC-FR-11.1.1 */
   websiteUrl?: string
+}
+
+/** @spec SPEC-FR-24.7.9 - Элемент очереди модерации партнёров */
+export type PartnerModerationKind = 'league_profile' | 'shop_profile' | 'shop_product'
+
+export interface PartnerModerationItem {
+  id: string
+  kind: PartnerModerationKind
+  entityId: string
+  parentId?: string
+  title: string
+  subtitle?: string
+  moderationStatus: PartnerModerationStatus
+  submittedAt: string
 }

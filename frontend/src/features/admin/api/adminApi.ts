@@ -3,7 +3,8 @@
  */
 
 import {apiRequest} from '@/shared/api/client'
-import type {AdminEntityType, CreateAdminEntityPayload, SourceStatusItem} from '@/entities/admin/types'
+import type {AdminEntityType, CreateAdminEntityPayload, PartnerModerationItem, SourceStatusItem} from '@/entities/admin/types'
+import type {PartnerModerationStatus} from '@/entities/common/types'
 import type {Arena} from '@/entities/arena/types'
 import type {League} from '@/entities/league/types'
 import type {Shop} from '@/entities/shop/types'
@@ -38,4 +39,20 @@ export function updateEntityVisibility(
  */
 export function fetchSourceStatuses(): Promise<SourceStatusItem[]> {
   return apiRequest<SourceStatusItem[]>('/admin/sources')
+}
+
+/** @spec SPEC-FR-24.7.9 - Очередь модерации партнёров */
+export function fetchPartnerModerationQueue(): Promise<PartnerModerationItem[]> {
+  return apiRequest<PartnerModerationItem[]>('/admin/partner-moderation')
+}
+
+/** @spec SPEC-FR-24.7.9 - Решение по модерации */
+export function moderatePartnerItem(
+  itemId: string,
+  status: PartnerModerationStatus,
+): Promise<PartnerModerationItem> {
+  return apiRequest<PartnerModerationItem>(`/admin/partner-moderation/${itemId}`, {
+    method: 'PATCH',
+    body: {status},
+  })
 }

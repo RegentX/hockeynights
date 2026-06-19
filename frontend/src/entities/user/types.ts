@@ -2,7 +2,14 @@
  * SPEC-FR-2.1.1, SPEC-FR-2.1.2, SPEC-FR-2.1.3, SPEC-FR-1.3.1 - SPEC-FR-1.3.5
  */
 
-import type { UserRole } from '@/entities/common/types'
+import type {UserRole} from '@/entities/common/types'
+
+/** @spec SPEC-FR-1.3.7, SPEC-FR-1.3.9 - Привязка к партнёрской сущности */
+export interface PartnerMembership {
+  kind: 'league' | 'shop'
+  entityId: string
+  entityName: string
+}
 
 /** @spec SPEC-FR-2.1.1 - Пользователь mock-сессии */
 export interface User {
@@ -18,6 +25,8 @@ export interface User {
   city: string
   /** @spec SPEC-FR-12.1.2 */
   createdAt: string
+  /** @spec SPEC-FR-1.3.7, SPEC-FR-1.3.9 */
+  partnerMemberships?: PartnerMembership[]
 }
 
 /** @spec SPEC-FR-2.1.1 - Текущая сессия */
@@ -34,4 +43,6 @@ export interface OnboardingPayload {
   displayName: string
   /** @spec SPEC-FR-2.1.2 */
   roles: UserRole[]
+  /** @spec SPEC-FR-1.3.7, SPEC-FR-1.3.9 */
+  partnerMemberships?: PartnerMembership[]
 }

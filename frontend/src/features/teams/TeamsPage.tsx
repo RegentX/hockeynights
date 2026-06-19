@@ -8,6 +8,7 @@ import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
 import type {ClubSquad} from '@/entities/club/types'
 import {fetchTeams} from '@/features/teams/api/teamsApi'
+import {useSessionAccess} from '@/features/access/useSessionAccess'
 import {TeamCreateForm} from '@/features/teams/TeamCreateForm'
 import {TeamCrest} from '@/features/teams/TeamCrest'
 import {TeamControlCenter} from '@/features/teams/TeamControlCenter'
@@ -22,6 +23,8 @@ import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 export function TeamsPage() {
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
   const [activeSquad, setActiveSquad] = useState<ClubSquad | null>(null)
+  const {teamPermissions} = useSessionAccess()
+  const {canCreateTeam} = teamPermissions('player')
   const {data: teams = [], isLoading} = useQuery({queryKey: ['teams'], queryFn: fetchTeams})
 
   const activeTeamId = selectedTeamId ?? teams[0]?.id ?? null
@@ -32,9 +35,11 @@ export function TeamsPage() {
       <Text variant="header-1">Команды</Text>
 
       <div className="hockey-grid hockey-grid--cards-280">
-        <IceCard padding="m">
-          <TeamCreateForm />
-        </IceCard>
+        {canCreateTeam && (
+          <IceCard padding="m">
+            <TeamCreateForm />
+          </IceCard>
+        )}
 
         <IceCard padding="m">
           <Text variant="subheader-2">Мои команды</Text>

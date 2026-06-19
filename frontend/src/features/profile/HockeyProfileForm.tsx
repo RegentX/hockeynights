@@ -3,6 +3,7 @@
  * SPEC-FR-17.1.1, SPEC-FR-18.1.1, SPEC-FR-18.1.3, SPEC-FR-18.1.4, SPEC-FR-19.1.1
  */
 
+import {Navigate} from 'react-router-dom'
 import {useState} from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Card, Progress, Select, Switch, Text, TextArea, TextInput} from '@gravity-ui/uikit'
@@ -16,9 +17,14 @@ import {
   updateSubscription,
 } from '@/features/profile/api/profileApi'
 import {fetchSession} from '@/features/auth/api/sessionApi'
+import {
+  getPrimaryPartnerPath,
+  shouldUsePartnerWorkspace,
+} from '@/features/partners/sessionPersona'
 import type {HockeyProfile, ProfileSettings, SubscriptionState} from '@/entities/profile/types'
 import type {PlayerPosition, SkillLevel, UserRole} from '@/entities/common/types'
 import {CoachProfilePanel} from '@/features/profile/CoachProfilePanel'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {KarmaHint} from '@/features/karma/KarmaHint'
 import {KarmaScore} from '@/features/karma/KarmaScore'
 
@@ -578,17 +584,33 @@ function HockeyProfileHub({
  * @spec SPEC-FR-18.1.1 - Профиль как личный кабинет
  */
 export function HockeyProfileForm() {
+  const {data: session, isLoading: isSessionLoading} = useQuery({
+    queryKey: ['session'],
+    queryFn: fetchSession,
+  })
+  const partnerWorkspace = shouldUsePartnerWorkspace(session)
+
   const {data: profile, isLoading: isProfileLoading} = useQuery({
     queryKey: ['profile'],
     queryFn: fetchMyProfile,
+    enabled: !partnerWorkspace,
   })
   const {data: settings, isLoading: isSettingsLoading} = useQuery({
     queryKey: ['profile-settings'],
     queryFn: fetchProfileSettings,
+    enabled: !partnerWorkspace,
   })
 
+  if (isSessionLoading) {
+    return <ScoreboardLoader label="Загрузка" />
+  }
+
+  if (session && partnerWorkspace) {
+    return <Navigate to={getPrimaryPartnerPath(session)} replace />
+  }
+
   if (isProfileLoading || isSettingsLoading || !profile || !settings) {
-    return <Text>Загрузка профиля...</Text>
+    return <ScoreboardLoader label="Загрузка профиля" />
   }
 
   return <HockeyProfileHub key={profile.userId} profile={profile} settings={settings} />

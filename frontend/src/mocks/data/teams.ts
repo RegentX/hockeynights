@@ -142,3 +142,12 @@ export function createMockTeamInvite(teamId: string, email: string, invitedByUse
   mockTeamInvites = [invite, ...mockTeamInvites]
   return invite
 }
+
+/** @spec SPEC-FR-24.5.4 - Капитан/владелец может подать заявку в лигу */
+export function canManageTeamAsCaptain(teamId: string, userId: string): boolean {
+  const team = mockTeams.find((item) => item.id === teamId)
+  if (!team) return false
+  if (team.captainUserId === userId || team.ownerUserId === userId) return true
+  const member = mockRoster.find((m) => m.teamId === teamId && m.userId === userId)
+  return member?.teamRole === 'captain' || member?.teamRole === 'owner'
+}

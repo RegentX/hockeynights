@@ -6,8 +6,12 @@
 import {useState} from 'react'
 import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
+import {fetchSession} from '@/features/auth/api/sessionApi'
+import {PartnerAccessHint} from '@/features/partners/PartnerAccessHint'
+import {PartnerCabinetBanner} from '@/features/partners/PartnerCabinetBanner'
 import {fetchLeagues, fetchLeagueSchedule, fetchLeagueStandings} from '@/features/leagues/api/leaguesApi'
 import {LeagueCard} from '@/features/leagues/LeagueCard'
+import {LeagueProfilePanel} from '@/features/leagues/LeagueProfilePanel'
 import {LeagueSchedule} from '@/features/leagues/LeagueSchedule'
 import {LeagueStandings} from '@/features/leagues/LeagueStandings'
 import {IceCard} from '@/shared/ui/IceCard'
@@ -20,6 +24,9 @@ import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
  */
 export function LeaguesPage() {
   const [selectedLeagueId, setSelectedLeagueId] = useState<string | null>(null)
+
+  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const leagueMembership = session?.user.partnerMemberships?.find((m) => m.kind === 'league')
 
   const {data: leagues = [], isLoading} = useQuery({
     queryKey: ['leagues'],
@@ -44,6 +51,13 @@ export function LeaguesPage() {
   return (
     <div className="hockey-stack hockey-stack--gap-20">
       <Text variant="header-1">Любительские лиги</Text>
+
+      {leagueMembership ? (
+        <PartnerCabinetBanner membership={leagueMembership} />
+      ) : (
+        <PartnerAccessHint kind="league" />
+      )}
+
       <Text color="secondary">
         Данные могут быть mock, manual, imported или external — смотрите бейдж источника.
       </Text>
@@ -62,14 +76,17 @@ export function LeaguesPage() {
       </div>
 
       {activeLeagueId && selectedLeague && (
-        <IceCard padding="m">
-          <div className="hockey-row hockey-row--gap-12 hockey-row--between hockey-mb-16">
-            <div>
-              <Text variant="subheader-2">{selectedLeague.name}</Text>
-              <Text color="secondary">{selectedLeague.region}</Text>
+        <div className="hockey-stack hockey-stack--gap-16">
+          <LeagueProfilePanel league={selectedLeague} />
+
+          <IceCard padding="m">
+            <div className="hockey-row hockey-row--gap-12 hockey-row--between hockey-mb-16">
+              <div>
+                <Text variant="subheader-2">Статистика и расписание</Text>
+                <Text color="secondary">{selectedLeague.name} · {selectedLeague.region}</Text>
+              </div>
+              <SourceMetaBadge sourceMeta={selectedLeague.sourceMeta} />
             </div>
-            <SourceMetaBadge sourceMeta={selectedLeague.sourceMeta} />
-          </div>
 
           <div className="hockey-stack hockey-stack--gap-20">
             {standingsLoading ? (
@@ -88,6 +105,7 @@ export function LeaguesPage() {
             )}
           </div>
         </IceCard>
+      </div>
       )}
     </div>
   )

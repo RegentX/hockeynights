@@ -6,7 +6,9 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Select, Text} from '@gravity-ui/uikit'
 import {fetchTeamRoster, updateRosterMemberStatus, updateTeamMemberRole} from '@/features/teams/api/teamsApi'
+import {useSessionAccess} from '@/features/access/useSessionAccess'
 import type {RosterMember} from '@/entities/team/types'
+import type {TeamRole} from '@/entities/team/types'
 import {PositionLabel} from '@/shared/ui/PositionLabel'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
@@ -39,23 +41,23 @@ export interface TeamRosterProps {
  */
 export function TeamRoster({teamId}: TeamRosterProps) {
   const queryClient = useQueryClient()
-  const currentUserId = 'user-001'
+  const {userId, teamPermissions} = useSessionAccess()
   const {data: roster = [], isLoading} = useQuery({
     queryKey: ['roster', teamId],
     queryFn: () => fetchTeamRoster(teamId),
   })
 
   const mutation = useMutation({
-    mutationFn: ({userId, rosterStatus}: {userId: string; rosterStatus: RosterMember['rosterStatus']}) =>
-      updateRosterMemberStatus(teamId, userId, rosterStatus),
+    mutationFn: ({memberUserId, rosterStatus}: {memberUserId: string; rosterStatus: RosterMember['rosterStatus']}) =>
+      updateRosterMemberStatus(teamId, memberUserId, rosterStatus),
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ['roster', teamId]})
     },
   })
 
   const roleMutation = useMutation({
-    mutationFn: ({userId, teamRole}: {userId: string; teamRole: NonNullable<RosterMember['teamRole']>}) =>
-      updateTeamMemberRole(teamId, userId, teamRole),
+    mutationFn: ({memberUserId, teamRole}: {memberUserId: string; teamRole: NonNullable<RosterMember['teamRole']>}) =>
+      updateTeamMemberRole(teamId, memberUserId, teamRole),
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ['roster', teamId]})
     },
@@ -63,20 +65,26 @@ export function TeamRoster({teamId}: TeamRosterProps) {
 
   if (isLoading) return <ScoreboardLoader label="Загрузка состава" />
 
+  const myTeamRole = (roster.find((m) => m.userId === userId)?.teamRole ?? 'player') as TeamRole
+  const permissions = teamPermissions(myTeamRole)
+  const {canManageRoster, canManageRoles, isReadOnly} = permissions
+  const ownerCount = roster.filter((m) => m.teamRole === 'owner' && m.rosterStatus !== 'removed').length
+  const isOwner = myTeamRole === 'owner'
+
   const byPosition = POSITION_ORDER.map((pos) => ({
     position: pos,
     members: roster.filter((m) => m.position === pos && m.rosterStatus !== 'removed'),
   }))
-  const myRole = roster.find((m) => m.userId === currentUserId)?.teamRole ?? 'player'
-  const ownerCount = roster.filter((m) => m.teamRole === 'owner' && m.rosterStatus !== 'removed').length
-  const isOwner = myRole === 'owner'
-  const canManageRoster = myRole === 'owner' || myRole === 'captain' || myRole === 'team_admin'
-  const canManageRoles = canManageRoster
 
   return (
     <div className="hockey-stack hockey-stack--gap-16">
       <Text color="secondary">
-        Твоя роль в команде: {myRole}. {canManageRoles ? 'Доступно управление ролями.' : 'Только просмотр ролей.'}
+        Твоя роль в команде: {myTeamRole}.{' '}
+        {isReadOnly
+          ? 'Состав доступен только для просмотра — управление открыто капитану и штабу.'
+          : canManageRoles
+            ? 'Доступно управление ролями и статусами.'
+            : 'Частичный доступ к управлению командой.'}
       </Text>
       {byPosition.map(({position, members}) => (
         <div key={position}>
@@ -97,42 +105,45 @@ export function TeamRoster({teamId}: TeamRosterProps) {
                   </span>
                   <div className="roster-hook-slot__body">
                     <Text variant="subheader-2">{member.displayName}</Text>
-                    <Text color="secondary">Роль: {member.teamRole ?? 'player'}</Text>
+                    <Text color="secondary">
+                      Роль: {member.teamRole ?? 'player'} ·{' '}
+                      {STATUS_OPTIONS.find((o) => o.value === member.rosterStatus)?.content ?? member.rosterStatus}
+                    </Text>
                   </div>
-                  <Select
-                    value={[member.teamRole ?? 'player']}
-                    onUpdate={(v) => {
-                      if (!v[0]) return
-                      roleMutation.mutate({
-                        userId: member.userId,
-                        teamRole: v[0] as NonNullable<RosterMember['teamRole']>,
-                      })
-                    }}
-                    options={ROLE_OPTIONS}
-                    width={170}
-                    disabled={
-                      !canManageRoles ||
-                      // Передавать owner можно только от owner.
-                      (!isOwner && member.teamRole === 'owner') ||
-                      // Защита от сценария "снять последнего owner".
-                      (isOwner &&
-                        member.userId === currentUserId &&
-                        member.teamRole === 'owner' &&
-                        ownerCount <= 1)
-                    }
-                  />
-                  <Select
-                    value={[member.rosterStatus]}
-                    onUpdate={(v) =>
-                      mutation.mutate({
-                        userId: member.userId,
-                        rosterStatus: v[0] as RosterMember['rosterStatus'],
-                      })
-                    }
-                    options={STATUS_OPTIONS}
-                    width={160}
-                    disabled={!canManageRoster}
-                  />
+                  {canManageRoles && (
+                    <Select
+                      value={[member.teamRole ?? 'player']}
+                      onUpdate={(v) => {
+                        if (!v[0]) return
+                        roleMutation.mutate({
+                          memberUserId: member.userId,
+                          teamRole: v[0] as NonNullable<RosterMember['teamRole']>,
+                        })
+                      }}
+                      options={ROLE_OPTIONS}
+                      width={170}
+                      disabled={
+                        !isOwner && member.teamRole === 'owner' ||
+                        (isOwner &&
+                          member.userId === userId &&
+                          member.teamRole === 'owner' &&
+                          ownerCount <= 1)
+                      }
+                    />
+                  )}
+                  {canManageRoster && (
+                    <Select
+                      value={[member.rosterStatus]}
+                      onUpdate={(v) =>
+                        mutation.mutate({
+                          memberUserId: member.userId,
+                          rosterStatus: v[0] as RosterMember['rosterStatus'],
+                        })
+                      }
+                      options={STATUS_OPTIONS}
+                      width={160}
+                    />
+                  )}
                 </div>
               ))
             )}

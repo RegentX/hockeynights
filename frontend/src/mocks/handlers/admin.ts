@@ -11,6 +11,10 @@ import {
   getSourceStatuses,
   setEntityVisibility,
 } from '@/mocks/data/admin'
+import {getPartnerModerationQueue, moderatePartnerContent} from '@/mocks/data/partnerModeration'
+import {mockSession} from '@/mocks/data/session'
+import type {PartnerModerationKind} from '@/entities/admin/types'
+import type {PartnerModerationStatus} from '@/entities/common/types'
 
 /** @spec SPEC-FR-11.1.1 - Handlers админки */
 export const adminHandlers = [
@@ -43,5 +47,26 @@ export const adminHandlers = [
 
   http.get('/mock-api/v1/admin/sources', () => {
     return HttpResponse.json(getSourceStatuses())
+  }),
+
+  http.get('/mock-api/v1/admin/partner-moderation', () => {
+    if (!mockSession.user.roles.includes('admin')) {
+      return HttpResponse.json({message: 'Только для администратора'}, {status: 403})
+    }
+    return HttpResponse.json(getPartnerModerationQueue())
+  }),
+
+  http.patch('/mock-api/v1/admin/partner-moderation/:itemId', async ({params, request}) => {
+    if (!mockSession.user.roles.includes('admin')) {
+      return HttpResponse.json({message: 'Только для администратора'}, {status: 403})
+    }
+    const itemId = params.itemId as string
+    const [kind, entityId] = itemId.split(':') as [PartnerModerationKind, string]
+    const body = (await request.json()) as {status: PartnerModerationStatus}
+    const updated = moderatePartnerContent(kind, entityId, body.status)
+    if (!updated) {
+      return HttpResponse.json({message: 'Элемент модерации не найден'}, {status: 404})
+    }
+    return HttpResponse.json(updated)
   }),
 ]

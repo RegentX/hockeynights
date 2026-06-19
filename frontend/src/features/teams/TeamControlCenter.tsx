@@ -10,23 +10,12 @@ import {Button, Text, TextInput} from '@gravity-ui/uikit'
 import type {Team, TeamRole} from '@/entities/team/types'
 import type {ClubSquad} from '@/entities/club/types'
 import type {Chat} from '@/entities/messenger/types'
+import {useSessionAccess} from '@/features/access/useSessionAccess'
 import {AddTeamMember} from '@/features/teams/AddTeamMember'
 import {TeamRoster} from '@/features/teams/TeamRoster'
 import {fetchTeamRoster} from '@/features/teams/api/teamsApi'
 import {TrainingLineupBoard} from '@/features/teams/TrainingLineupBoard'
 import {createChannelOrChat, fetchTeamChats} from '@/features/messenger/api/messengerApi'
-
-const ROLE_PRIORITY: Record<TeamRole, number> = {
-  owner: 5,
-  captain: 4,
-  team_admin: 3,
-  coach: 2,
-  player: 1,
-}
-
-function hasMinRole(role: TeamRole, minRole: TeamRole): boolean {
-  return ROLE_PRIORITY[role] >= ROLE_PRIORITY[minRole]
-}
 
 export interface TeamControlCenterProps {
   team: Team
@@ -36,7 +25,7 @@ export interface TeamControlCenterProps {
 /** @spec SPEC-FR-21.1.5 - Центр управления командой по ролям */
 export function TeamControlCenter({team, activeSquad}: TeamControlCenterProps) {
   const queryClient = useQueryClient()
-  const currentUserId = 'user-001'
+  const {userId, teamPermissions} = useSessionAccess()
   const [newChannelTitle, setNewChannelTitle] = useState('')
   const [newChannelTag, setNewChannelTag] = useState('')
   const [newChatTitle, setNewChatTitle] = useState('')
@@ -52,11 +41,14 @@ export function TeamControlCenter({team, activeSquad}: TeamControlCenterProps) {
     queryFn: () => fetchTeamChats(team.id),
   })
 
-  const myRole = (roster.find((m) => m.userId === currentUserId)?.teamRole ?? 'player') as TeamRole
-  const canManageRoster = hasMinRole(myRole, 'team_admin')
-  const canCreateChannel = hasMinRole(myRole, 'captain')
-  const canCreateChat = hasMinRole(myRole, 'coach')
-  const canEditLineup = hasMinRole(myRole, 'coach')
+  const myRole = (roster.find((m) => m.userId === userId)?.teamRole ?? 'player') as TeamRole
+  const {
+    canManageRoster,
+    canCreateChannel,
+    canCreateChat,
+    canEditLineup,
+    isReadOnly,
+  } = teamPermissions(myRole)
   const squadTag = activeSquad?.id
 
   const createTeamChannelMutation = useMutation({
@@ -120,15 +112,17 @@ export function TeamControlCenter({team, activeSquad}: TeamControlCenterProps) {
           Состав: {canManageRoster ? 'управление доступно' : 'только просмотр'}
         </span>
         <span className={`team-control-center__badge ${canCreateChannel ? 'is-enabled' : ''}`}>
-          Каналы: {canCreateChannel ? 'создание доступно' : 'нужна роль captain+'}
+          Каналы: {canCreateChannel ? 'создание доступно' : isReadOnly ? 'недоступно' : 'нужна роль captain+'}
         </span>
         <span className={`team-control-center__badge ${canCreateChat ? 'is-enabled' : ''}`}>
-          Чаты: {canCreateChat ? 'создание доступно' : 'нужна роль coach+'}
+          Чаты: {canCreateChat ? 'создание доступно' : isReadOnly ? 'недоступно' : 'нужна роль coach+'}
         </span>
       </div>
-      <Text color="secondary">
-        Матрица прав (mock): owner/captain/team_admin — роли и состав; coach+ — командные чаты и план тренировки.
-      </Text>
+      {!isReadOnly && (
+        <Text color="secondary">
+          Права зависят от роли в сессии (капитан/тренер) и роли в составе команды.
+        </Text>
+      )}
 
       <div className="team-control-center__comms hockey-grid hockey-grid--cards-280">
         <div className="team-control-center__panel hockey-stack hockey-stack--gap-10">
@@ -155,6 +149,7 @@ export function TeamControlCenter({team, activeSquad}: TeamControlCenterProps) {
           )}
         </div>
 
+        {canCreateChannel && (
         <div className="team-control-center__panel hockey-stack hockey-stack--gap-10">
           <Text variant="subheader-2">Создать канал</Text>
           <TextInput
@@ -185,7 +180,9 @@ export function TeamControlCenter({team, activeSquad}: TeamControlCenterProps) {
             <Text color="secondary">Нужны права капитана или владельца.</Text>
           )}
         </div>
+        )}
 
+        {canCreateChat && (
         <div className="team-control-center__panel hockey-stack hockey-stack--gap-10">
           <Text variant="subheader-2">Создать командный чат</Text>
           <TextInput
@@ -223,6 +220,7 @@ export function TeamControlCenter({team, activeSquad}: TeamControlCenterProps) {
             </Button>
           )}
         </div>
+        )}
       </div>
 
       {statusMessage && <Text color="secondary">{statusMessage}</Text>}

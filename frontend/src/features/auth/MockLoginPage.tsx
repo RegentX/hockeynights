@@ -1,13 +1,16 @@
 /**
- * SPEC-FR-2.1.1, SPEC-FR-2.1.2, SPEC-FR-1.3.1, SPEC-FR-1.3.2, SPEC-FR-1.3.3, SPEC-FR-1.3.4
+ * SPEC-FR-2.1.1, SPEC-FR-2.1.2, SPEC-FR-1.3.1, SPEC-FR-1.3.6
  */
 
 import {useState} from 'react'
-import {useMutation, useQueryClient} from '@tanstack/react-query'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Card, Checkbox, Text, TextInput} from '@gravity-ui/uikit'
-import {useNavigate} from 'react-router-dom'
-import {submitOnboarding} from '@/features/auth/api/sessionApi'
+import {Link, useNavigate} from 'react-router-dom'
+import {fetchSession, submitOnboarding} from '@/features/auth/api/sessionApi'
+import {DEMO_PARTNER_MEMBERSHIPS, partnerCabinetPath} from '@/features/partners/constants'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 import type {UserRole} from '@/entities/common/types'
+import type {OnboardingPayload, PartnerMembership} from '@/entities/user/types'
 
 const ROLE_OPTIONS: {value: UserRole; label: string; spec: string}[] = [
   {value: 'player', label: 'Игрок', spec: 'SPEC-FR-1.3.1'},
@@ -15,7 +18,10 @@ const ROLE_OPTIONS: {value: UserRole; label: string; spec: string}[] = [
   {value: 'captain', label: 'Капитан', spec: 'SPEC-FR-1.3.3'},
   {value: 'organizer', label: 'Организатор', spec: 'SPEC-FR-1.3.4'},
   {value: 'coach', label: 'Тренер', spec: 'SPEC-FR-1.3.6'},
+  {value: 'admin', label: 'Администратор', spec: 'SPEC-FR-1.3.5'},
 ]
+
+const PARTNER_OPTIONS: PartnerMembership[] = DEMO_PARTNER_MEMBERSHIPS
 
 /**
  * @spec SPEC-FR-2.1.1 - Mock-вход без реальной авторизации
@@ -26,33 +32,141 @@ export function MockLoginPage() {
   const queryClient = useQueryClient()
   const [displayName, setDisplayName] = useState('Иван Петров')
   const [roles, setRoles] = useState<UserRole[]>(['player'])
+  const [partnerIds, setPartnerIds] = useState<string[]>([])
+
+  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
 
   const onboardingMutation = useMutation({
     mutationFn: submitOnboarding,
-    onSuccess: () => {
+    onSuccess: (nextSession, variables) => {
+      queryClient.setQueryData(['session'], nextSession)
       void queryClient.invalidateQueries({queryKey: ['session']})
-      navigate('/profile')
+      navigate(resolvePostLoginPath(variables), {replace: true})
     },
   })
+
+  function resolvePostLoginPath(payload: OnboardingPayload): string {
+    const memberships = payload.partnerMemberships ?? []
+    if (memberships.length === 1) {
+      return partnerCabinetPath(memberships[0])
+    }
+    if (memberships.length > 0 && memberships.every((m) => m.kind === 'shop')) {
+      return partnerCabinetPath(memberships[0])
+    }
+    if (memberships.length > 0 && memberships.every((m) => m.kind === 'league')) {
+      return partnerCabinetPath(memberships[0])
+    }
+    if (memberships.length > 0) {
+      return '/partner'
+    }
+    if (payload.roles.includes('coach') && !payload.roles.includes('player')) {
+      return '/profile'
+    }
+    if (payload.roles.includes('admin')) {
+      return '/admin'
+    }
+    return '/profile'
+  }
+
+  function enter(payload: OnboardingPayload) {
+    onboardingMutation.mutate(payload)
+  }
 
   /** @spec SPEC-FR-2.1.2 - Переключение роли */
   function toggleRole(role: UserRole, checked: boolean) {
     setRoles((prev) => (checked ? [...prev, role] : prev.filter((r) => r !== role)))
   }
 
+  function togglePartner(entityId: string, checked: boolean) {
+    setPartnerIds((prev) =>
+      checked ? [...prev, entityId] : prev.filter((id) => id !== entityId),
+    )
+  }
+
   /** @spec SPEC-FR-2.1.2 - Отправка onboarding */
   function handleSubmit() {
     if (!displayName.trim() || roles.length === 0) return
-    onboardingMutation.mutate({displayName: displayName.trim(), roles})
+    const partnerMemberships = PARTNER_OPTIONS.filter((item) => partnerIds.includes(item.entityId))
+    enter({displayName: displayName.trim(), roles, partnerMemberships})
   }
+
+  const isSwitching = session?.isOnboarded
 
   return (
     <Card view="filled" className="hockey-form-shell hockey-form-shell--480">
       <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
-        <Text variant="header-1">Hockey ID — вход</Text>
-        <Text color="secondary">
-          Mock-сессия Phase 1. Выберите роли и начните работу с профилем.
-        </Text>
+        <Text variant="header-1">Hockey Nights</Text>
+        {isSwitching ? (
+          <Text color="secondary">
+            Сейчас вы вошли как <strong>{session.user.displayName}</strong>
+            {session.user.partnerMemberships?.length
+              ? ` · партнёр: ${session.user.partnerMemberships.map((m) => m.entityName).join(', ')}`
+              : ''}
+            . Выберите другую роль ниже — переключение без выхода.
+          </Text>
+        ) : (
+          <Text color="secondary">
+            Выберите роль и войдите в mock-демо.
+          </Text>
+        )}
+
+        {isSwitching && (
+          <div className="hockey-row hockey-row--gap-8 hockey-row--wrap">
+            <Link to="/profile">
+              <HockeyButton view="outlined" size="s">Продолжить в приложении</HockeyButton>
+            </Link>
+          </div>
+        )}
+
+        <div className="hockey-stack hockey-stack--gap-8">
+          <Text variant="subheader-2">{isSwitching ? 'Переключить роль' : 'Быстрый вход'}</Text>
+          <Button
+            view="action"
+            size="l"
+            loading={onboardingMutation.isPending}
+            onClick={() =>
+              enter({displayName: 'Иван Петров', roles: ['player'], partnerMemberships: []})
+            }
+          >
+            Войти как игрок
+          </Button>
+          <Button
+            view="action"
+            size="l"
+            loading={onboardingMutation.isPending}
+            onClick={() =>
+              enter({displayName: 'Алексей Тренеров', roles: ['coach'], partnerMemberships: []})
+            }
+          >
+            Войти как тренер
+          </Button>
+          <Button
+            view="outlined"
+            size="l"
+            loading={onboardingMutation.isPending}
+            onClick={() => enter({
+              displayName: 'Партнёр магазина',
+              roles: ['organizer'],
+              partnerMemberships: [PARTNER_OPTIONS.find((m) => m.kind === 'shop')!],
+            })}
+          >
+            Войти как представитель магазина
+          </Button>
+          <Button
+            view="outlined"
+            size="l"
+            loading={onboardingMutation.isPending}
+            onClick={() => enter({
+              displayName: 'Партнёр лиги',
+              roles: ['organizer'],
+              partnerMemberships: [PARTNER_OPTIONS.find((m) => m.kind === 'league')!],
+            })}
+          >
+            Войти как представитель лиги
+          </Button>
+        </div>
+
+        <Text variant="subheader-2">Настроить вход вручную</Text>
 
         <TextInput
           label="Имя"
@@ -75,13 +189,31 @@ export function MockLoginPage() {
           </div>
         </div>
 
+        <div>
+          <Text variant="subheader-2">Партнёрский доступ (mock)</Text>
+          <div className="hockey-mt-8 hockey-stack hockey-stack--gap-8">
+            {PARTNER_OPTIONS.map((option) => (
+              <Checkbox
+                key={option.entityId}
+                checked={partnerIds.includes(option.entityId)}
+                onUpdate={(checked) => togglePartner(option.entityId, checked)}
+                content={
+                  option.kind === 'league'
+                    ? `Представитель лиги: ${option.entityName}`
+                    : `Представитель магазина: ${option.entityName}`
+                }
+              />
+            ))}
+          </div>
+        </div>
+
         <Button
-          view="action"
+          view="outlined"
           size="l"
           loading={onboardingMutation.isPending}
           onClick={handleSubmit}
         >
-          Войти в mock-сессию
+          {isSwitching ? 'Переключиться с выбранными настройками' : 'Войти с выбранными настройками'}
         </Button>
       </div>
     </Card>
