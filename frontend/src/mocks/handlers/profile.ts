@@ -12,7 +12,7 @@ import {
   updateMockSubscriptionState,
   updateMockVerificationStatus,
 } from '@/mocks/data/session'
-import {mockPlayers} from '@/mocks/data/players'
+import {mockPlayers, buildPublicPlayerView} from '@/mocks/data/players'
 import type {
   HockeyProfile,
   NotificationPreferences,
@@ -112,5 +112,13 @@ export const profileHandlers = [
     }
 
     return HttpResponse.json(result)
+  }),
+
+  http.get('/mock-api/v1/players/:userId', ({params}) => {
+    const view = buildPublicPlayerView(params.userId as string)
+    if (!view) {
+      return HttpResponse.json({message: 'Player not found'}, {status: 404})
+    }
+    return HttpResponse.json(view)
   }),
 ]

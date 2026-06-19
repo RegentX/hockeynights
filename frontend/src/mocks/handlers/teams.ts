@@ -20,11 +20,18 @@ import {
   createMockTeamInvite,
   createMockTeam,
   mockRoster,
+  mockTeamInvites,
   mockTeams,
+  transferMockTeamOwnership,
   updateMockTeamRole,
   updateMockRosterStatus,
 } from '@/mocks/data/teams'
 import {mockPlayers} from '@/mocks/data/players'
+import {
+  getMockTrainingLineup,
+  updateMockTrainingLineup,
+} from '@/mocks/data/trainingLineup'
+import {findMockClubByTeamId} from '@/mocks/data/clubs'
 
 /** @spec SPEC-FR-3.1.1 - Handlers команд, событий и календаря */
 export const teamHandlers = [
@@ -99,11 +106,42 @@ export const teamHandlers = [
     if (!canManageRoles) {
       return HttpResponse.json({message: 'Недостаточно прав для изменения ролей'}, {status: 403})
     }
-    const updated = updateMockTeamRole(params.teamId as string, params.userId as string, body.teamRole)
+    const teamId = params.teamId as string
+    const userId = params.userId as string
+    const target = mockRoster.find((m) => m.teamId === teamId && m.userId === userId)
+    if (!target) {
+      return HttpResponse.json({message: 'Member not found'}, {status: 404})
+    }
+
+    const isActorOwner = actor?.teamRole === 'owner'
+    const isTargetOwner = target.teamRole === 'owner'
+    const nextRole = body.teamRole
+    const owners = mockRoster.filter((m) => m.teamId === teamId && m.teamRole === 'owner')
+    const ownerCount = owners.length
+
+    if (nextRole === 'owner' && !isActorOwner) {
+      return HttpResponse.json({message: 'Только владелец может передавать ownership'}, {status: 403})
+    }
+    if (isTargetOwner && nextRole !== 'owner' && !isActorOwner) {
+      return HttpResponse.json({message: 'Только владелец может менять роль владельца'}, {status: 403})
+    }
+    if (isTargetOwner && nextRole !== 'owner' && ownerCount <= 1) {
+      return HttpResponse.json({message: 'Нельзя снять последнего владельца команды'}, {status: 400})
+    }
+
+    const updated =
+      nextRole === 'owner'
+        ? transferMockTeamOwnership(teamId, userId)
+        : updateMockTeamRole(teamId, userId, nextRole)
     if (!updated) {
       return HttpResponse.json({message: 'Member not found'}, {status: 404})
     }
     return HttpResponse.json(updated)
+  }),
+
+  http.get('/mock-api/v1/teams/:teamId/invites', ({params}) => {
+    const invites = mockTeamInvites.filter((invite) => invite.teamId === params.teamId)
+    return HttpResponse.json(invites)
   }),
 
   http.post('/mock-api/v1/teams/:teamId/invites', async ({params, request}) => {
@@ -114,6 +152,51 @@ export const teamHandlers = [
     }
     const invite = createMockTeamInvite(params.teamId as string, email)
     return HttpResponse.json(invite)
+  }),
+
+  http.get('/mock-api/v1/teams/:teamId/training-events', ({params}) => {
+    const events = mockEvents.filter(
+      (e) => e.teamId === params.teamId && e.type === 'training',
+    )
+    return HttpResponse.json(events)
+  }),
+
+  http.get('/mock-api/v1/teams/:teamId/training-lineup/:eventId', ({params}) => {
+    const actor = mockRoster.find((m) => m.teamId === params.teamId && m.userId === 'user-001')
+    const canView =
+      actor?.teamRole === 'owner' ||
+      actor?.teamRole === 'captain' ||
+      actor?.teamRole === 'coach' ||
+      actor?.teamRole === 'team_admin' ||
+      actor?.teamRole === 'player'
+    if (!canView) {
+      return HttpResponse.json({message: 'Недостаточно прав'}, {status: 403})
+    }
+    const lineup = getMockTrainingLineup(params.teamId as string, params.eventId as string)
+    return HttpResponse.json(lineup)
+  }),
+
+  http.put('/mock-api/v1/teams/:teamId/training-lineup/:eventId', async ({params, request}) => {
+    const actor = mockRoster.find((m) => m.teamId === params.teamId && m.userId === 'user-001')
+    const canEdit =
+      actor?.teamRole === 'owner' ||
+      actor?.teamRole === 'captain' ||
+      actor?.teamRole === 'coach' ||
+      actor?.teamRole === 'team_admin'
+    if (!canEdit) {
+      return HttpResponse.json({message: 'Недостаточно прав для раскладки'}, {status: 403})
+    }
+    const body = (await request.json()) as import('@/entities/team/types').TrainingLineupAssignment[]
+    const updated = updateMockTrainingLineup(params.eventId as string, body)
+    return HttpResponse.json(updated)
+  }),
+
+  http.get('/mock-api/v1/teams/:teamId/club-profile', ({params}) => {
+    const club = findMockClubByTeamId(params.teamId as string)
+    if (!club) {
+      return HttpResponse.json({message: 'Club not found for team'}, {status: 404})
+    }
+    return HttpResponse.json(club)
   }),
 
   http.get('/mock-api/v1/events', () => {

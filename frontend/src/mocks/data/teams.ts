@@ -16,7 +16,9 @@ export let mockTeams: Team[] = [
     captainUserId: 'user-001',
     ownerUserId: 'user-001',
     description: 'Регулярные тренировки по вторникам и субботам',
-    memberIds: ['user-001', 'user-003', 'user-004'],
+    memberIds: ['user-001', 'user-003', 'user-004', 'user-005'],
+    leagueId: 'league-001',
+    homeArenaId: 'arena-001',
   },
 ]
 
@@ -48,6 +50,15 @@ export let mockRoster: RosterMember[] = [
     teamRole: 'player',
     rosterStatus: 'bench',
     joinedAt: '2026-02-01T10:00:00Z',
+  },
+  {
+    teamId: 'team-001',
+    userId: 'user-005',
+    displayName: 'Михаил Орлов',
+    position: 'defense',
+    teamRole: 'coach',
+    rosterStatus: 'active',
+    joinedAt: '2026-01-08T10:00:00Z',
   },
 ]
 
@@ -98,6 +109,24 @@ export function updateMockTeamRole(
   if (index === -1) return undefined
   mockRoster[index] = {...mockRoster[index], teamRole}
   return mockRoster[index]
+}
+
+/** @spec SPEC-FR-21.1.5 - Передать ownership другому участнику команды */
+export function transferMockTeamOwnership(teamId: string, newOwnerUserId: string): RosterMember | undefined {
+  const nextOwner = mockRoster.find((m) => m.teamId === teamId && m.userId === newOwnerUserId)
+  if (!nextOwner) return undefined
+  mockRoster = mockRoster.map((member) =>
+    member.teamId === teamId && member.teamRole === 'owner' && member.userId !== newOwnerUserId
+      ? {...member, teamRole: 'captain'}
+      : member,
+  )
+  const updatedOwner = updateMockTeamRole(teamId, newOwnerUserId, 'owner')
+  const team = mockTeams.find((item) => item.id === teamId)
+  if (team) {
+    team.ownerUserId = newOwnerUserId
+    team.captainUserId = newOwnerUserId
+  }
+  return updatedOwner
 }
 
 /** @spec SPEC-FR-21.1.2 - Создать email-invite для незарегистрированного игрока */

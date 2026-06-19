@@ -24,3 +24,10 @@ export function mockApiPost<T>(path: string, body: unknown): Promise<T> {
 export function mockApiPatch<T>(path: string, body?: unknown): Promise<T> {
   return apiRequest<T>(path, {method: 'PATCH', body})
 }
+
+/**
+ * @spec SPEC-FR-12.1.1 - PUT helper через единый API client
+ */
+export function mockApiPut<T>(path: string, body: unknown): Promise<T> {
+  return apiRequest<T>(path, {method: 'PUT', body})
+}

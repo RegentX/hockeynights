@@ -68,6 +68,8 @@ export function TeamRoster({teamId}: TeamRosterProps) {
     members: roster.filter((m) => m.position === pos && m.rosterStatus !== 'removed'),
   }))
   const myRole = roster.find((m) => m.userId === currentUserId)?.teamRole ?? 'player'
+  const ownerCount = roster.filter((m) => m.teamRole === 'owner' && m.rosterStatus !== 'removed').length
+  const isOwner = myRole === 'owner'
   const canManageRoster = myRole === 'owner' || myRole === 'captain' || myRole === 'team_admin'
   const canManageRoles = canManageRoster
 
@@ -108,7 +110,16 @@ export function TeamRoster({teamId}: TeamRosterProps) {
                     }}
                     options={ROLE_OPTIONS}
                     width={170}
-                    disabled={!canManageRoles}
+                    disabled={
+                      !canManageRoles ||
+                      // Передавать owner можно только от owner.
+                      (!isOwner && member.teamRole === 'owner') ||
+                      // Защита от сценария "снять последнего owner".
+                      (isOwner &&
+                        member.userId === currentUserId &&
+                        member.teamRole === 'owner' &&
+                        ownerCount <= 1)
+                    }
                   />
                   <Select
                     value={[member.rosterStatus]}

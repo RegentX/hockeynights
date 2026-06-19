@@ -3,8 +3,14 @@
  * SPEC-FR-6.3.2, SPEC-FR-7.2.2, SPEC-FR-11.2.1, SPEC-FR-11.2.2, SPEC-FR-12.1.2
  */
 
-/** @spec SPEC-FR-1.3.1 - Роль игрока */
-export type UserRole = 'player' | 'goalie' | 'captain' | 'organizer' | 'admin'
+/** @spec SPEC-FR-1.3.1 - Роли пользователя (ТЗ §2, SRS §1.3) */
+export type UserRole =
+  | 'player' // SPEC-FR-1.3.1
+  | 'goalie' // SPEC-FR-1.3.2
+  | 'captain' // SPEC-FR-1.3.3
+  | 'organizer' // SPEC-FR-1.3.4
+  | 'coach' // SPEC-FR-1.3.6
+  | 'admin' // SPEC-FR-1.3.5
 
 /** @spec SPEC-FR-2.2.2 - Уровень мастерства */
 export type SkillLevel = 'beginner' | 'amateur' | 'advanced' | 'league' | 'unknown'

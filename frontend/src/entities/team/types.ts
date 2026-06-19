@@ -1,6 +1,7 @@
 /**
  * SPEC-FR-3.1.1, SPEC-FR-3.1.2, SPEC-FR-3.2.1, SPEC-FR-3.2.2
  * SPEC-FR-21.1.1, SPEC-FR-21.1.2, SPEC-FR-21.1.5
+ * SPEC-FR-24.4.1, SPEC-FR-24.4.2
  */
 
 import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
@@ -26,6 +27,10 @@ export interface Team {
   description?: string
   /** @spec SPEC-FR-3.1.2 */
   memberIds: string[]
+  /** @spec SPEC-FR-24.4.2 - Привязка к лиге (клубное лицо Phase 1) */
+  leagueId?: string
+  /** @spec SPEC-FR-24.4.2 - Домашняя арена */
+  homeArenaId?: string
 }
 
 /** @spec SPEC-FR-3.2.1 - Участник состава */
@@ -66,4 +71,13 @@ export interface TeamInvite {
   invitedByUserId: string
   status: 'sent' | 'accepted' | 'expired'
   createdAt: string
+}
+
+/** @spec SPEC-FR-21.1.6, SPEC-FR-24.3.2 - Раскладка на тренировке */
+export interface TrainingLineupAssignment {
+  eventId: string
+  userId: string
+  position: PlayerPosition
+  side: 'red' | 'white' | 'bench' | 'backlog'
+  line?: number
 }

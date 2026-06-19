@@ -14,6 +14,7 @@ const ROLE_OPTIONS: {value: UserRole; label: string; spec: string}[] = [
   {value: 'goalie', label: 'Вратарь', spec: 'SPEC-FR-1.3.2'},
   {value: 'captain', label: 'Капитан', spec: 'SPEC-FR-1.3.3'},
   {value: 'organizer', label: 'Организатор', spec: 'SPEC-FR-1.3.4'},
+  {value: 'coach', label: 'Тренер', spec: 'SPEC-FR-1.3.6'},
 ]
 
 /**

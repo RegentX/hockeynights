@@ -7,6 +7,7 @@ import {useState} from 'react'
 import {Label, Text} from '@gravity-ui/uikit'
 import type {League} from '@/entities/league/types'
 import {MockLeaguePortalModal} from '@/features/leagues/MockLeaguePortalModal'
+import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 import {IceCard} from '@/shared/ui/IceCard'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -35,7 +36,10 @@ export function LeagueCard({league, onSelect, selected = false}: LeagueCardProps
         className={selected ? 'ice-card--selected' : undefined}
       >
         <div className="hockey-stack hockey-stack--gap-8">
-          <Text variant="subheader-2">{league.name}</Text>
+          <div className="hockey-row hockey-row--gap-8 hockey-row--between">
+            <Text variant="subheader-2">{league.name}</Text>
+            <EntityProfileBadge kind="league" />
+          </div>
           <Text color="secondary">{league.region}</Text>
           {league.level && <Label size="s">{league.level}</Label>}
           <Label theme="warning" size="s">

@@ -7,6 +7,7 @@ import {Button, Card, Label, Text} from '@gravity-ui/uikit'
 import type {Shop} from '@/entities/shop/types'
 import {MockShopPortalModal} from '@/features/shops/MockShopPortalModal'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
+import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 
 /** @spec SPEC-FR-9.1.2 - Props карточки магазина */
 export interface ShopCardProps {
@@ -27,7 +28,10 @@ export function ShopCard({shop}: ShopCardProps) {
     <>
       <Card view="outlined" className="hockey-panel">
         <div className="hockey-stack hockey-stack--gap-8">
-          <Text variant="subheader-2">{shop.name}</Text>
+          <div className="hockey-row hockey-row--gap-8 hockey-row--between">
+            <Text variant="subheader-2">{shop.name}</Text>
+            <EntityProfileBadge kind="shop" />
+          </div>
           {shop.city && <Text color="secondary">{shop.city}</Text>}
           <Label size="s">{shop.partnerStatus}</Label>
           <Text color="secondary">{shop.categories.join(' · ')}</Text>

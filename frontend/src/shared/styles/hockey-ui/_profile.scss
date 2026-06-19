@@ -78,3 +78,495 @@
   flex-wrap: wrap;
   gap: 8px;
 }
+
+.profile-hub__role-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.profile-hub__role-badge {
+  border-radius: 999px;
+  border: 1px solid var(--hockey-card-border);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hockey-text-muted);
+
+  &.is-goalie {
+    color: #ff6b6b;
+    border-color: rgba(255, 107, 107, 0.4);
+    background: rgba(255, 107, 107, 0.1);
+  }
+
+  &.is-coach {
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(56, 189, 248, 0.1);
+  }
+}
+
+.profile-hub__goalie-panel {
+  border: 1px solid rgba(255, 107, 107, 0.25);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(255, 107, 107, 0.06);
+}
+
+.profile-hub__goalie-score {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-hub__history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-hub__history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.profile-hub__history-status {
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 4px 8px;
+
+  &.is-confirmed {
+    color: #36b37e;
+    background: rgba(54, 179, 126, 0.12);
+  }
+
+  &.is-pending {
+    color: var(--hockey-text-muted);
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+.club-profile__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.club-profile__badge {
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: var(--hockey-text-muted);
+  border: 1px solid var(--hockey-card-border);
+}
+
+.club-profile__link-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.club-profile__section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.club-profile__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.club-profile__tab {
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
+
+  &.is-active {
+    border-color: rgba(83, 159, 255, 0.42);
+    background: rgba(83, 159, 255, 0.12);
+  }
+}
+
+.club-profile__active-squad {
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.club-profile__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.club-profile__list-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.club-profile__chip {
+  border-radius: 999px;
+  border: 1px solid var(--hockey-card-border);
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--hockey-text-muted);
+  white-space: nowrap;
+}
+
+.club-profile__chip--role {
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.club-profile__link {
+  color: #539fff;
+  text-decoration: none;
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.entity-profile-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--hockey-card-border);
+  color: var(--hockey-text-muted);
+  white-space: nowrap;
+
+  &--league {
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.35);
+    background: rgba(251, 191, 36, 0.1);
+  }
+
+  &--arena {
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.35);
+    background: rgba(56, 189, 248, 0.1);
+  }
+
+  &--shop {
+    color: #a78bfa;
+    border-color: rgba(167, 139, 250, 0.35);
+    background: rgba(167, 139, 250, 0.1);
+  }
+}
+
+.coach-profile__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.coach-profile__badge {
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.coach-profile__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.public-player-profile__header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.public-player-profile__grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) 1fr;
+  gap: 16px;
+  align-items: start;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hockey-player-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.training-lineup__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.training-lineup__board-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.training-lineup__template-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.training-lineup__preset-row {
+  display: grid;
+  grid-template-columns: 1fr auto minmax(220px, 280px);
+  gap: 8px;
+  align-items: center;
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.training-lineup__preset-input {
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: inherit;
+  padding: 8px 10px;
+}
+
+.training-lineup__warnings {
+  border: 1px solid rgba(255, 107, 107, 0.35);
+  border-radius: 12px;
+  background: rgba(255, 107, 107, 0.08);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.training-lineup__warning-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.training-lineup__board {
+  position: relative;
+  height: 360px;
+  border-radius: 16px;
+  border: 1px solid var(--hockey-card-border);
+  background:
+    radial-gradient(circle at center, rgba(56, 189, 248, 0.08) 0, rgba(56, 189, 248, 0.03) 30%, transparent 31%),
+    linear-gradient(
+      to right,
+      rgba(255, 107, 107, 0.08) 0%,
+      rgba(255, 107, 107, 0.04) 49.5%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgba(255, 255, 255, 0.04) 100%
+    );
+  overflow: hidden;
+}
+
+.training-lineup__board::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.training-lineup__board-slot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  min-height: 54px;
+  border-radius: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+
+  &.is-drop-active {
+    border-color: rgba(83, 159, 255, 0.8);
+    background: rgba(83, 159, 255, 0.15);
+  }
+}
+
+.training-lineup__board-player {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 8px;
+  border: 1px solid var(--hockey-card-border);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 11px;
+  text-align: center;
+  padding: 4px;
+  cursor: grab;
+  user-select: none;
+  gap: 2px;
+
+  small {
+    opacity: 0.75;
+  }
+
+  &--red {
+    background: rgba(255, 107, 107, 0.2);
+  }
+
+  &--white {
+    background: rgba(255, 255, 255, 0.16);
+  }
+}
+
+.training-lineup__board-empty {
+  font-size: 11px;
+  color: var(--hockey-text-muted);
+}
+
+.training-lineup__sides {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.training-lineup__side {
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid var(--hockey-card-border);
+
+  &--red {
+    background: rgba(255, 107, 107, 0.06);
+    border-color: rgba(255, 107, 107, 0.2);
+  }
+
+  &--white {
+    background: rgba(255, 255, 255, 0.04);
+  }
+}
+
+.training-lineup__formation-slot {
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.training-lineup__utility-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.training-lineup__utility-panel {
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.training-lineup__list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &.is-drop-active {
+    outline: 1px dashed rgba(83, 159, 255, 0.5);
+    outline-offset: 4px;
+  }
+}
+
+.training-lineup__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.training-lineup__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.training-lineup__row--empty {
+  opacity: 0.7;
+
+  &.is-drop-active {
+    border-color: rgba(83, 159, 255, 0.6);
+    background: rgba(83, 159, 255, 0.12);
+  }
+}
+
+.training-lineup__draggable {
+  cursor: grab;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}

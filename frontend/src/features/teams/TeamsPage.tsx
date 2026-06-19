@@ -6,10 +6,12 @@
 import {useState} from 'react'
 import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
+import type {ClubSquad} from '@/entities/club/types'
 import {fetchTeams} from '@/features/teams/api/teamsApi'
 import {TeamCreateForm} from '@/features/teams/TeamCreateForm'
 import {TeamCrest} from '@/features/teams/TeamCrest'
 import {TeamControlCenter} from '@/features/teams/TeamControlCenter'
+import {ClubProfilePanel} from '@/features/teams/ClubProfilePanel'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
@@ -19,6 +21,7 @@ import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
  */
 export function TeamsPage() {
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
+  const [activeSquad, setActiveSquad] = useState<ClubSquad | null>(null)
   const {data: teams = [], isLoading} = useQuery({queryKey: ['teams'], queryFn: fetchTeams})
 
   const activeTeamId = selectedTeamId ?? teams[0]?.id ?? null
@@ -66,8 +69,9 @@ export function TeamsPage() {
             city={activeTeam.city}
             skillLevel={activeTeam.skillLevel}
           />
-          <div className="hockey-mt-16 hockey-mb-12">
-            <TeamControlCenter team={activeTeam} />
+          <div className="hockey-mt-16 hockey-mb-12 hockey-stack hockey-stack--gap-16">
+            <ClubProfilePanel team={activeTeam} onActiveSquadChange={setActiveSquad} />
+            <TeamControlCenter team={activeTeam} activeSquad={activeSquad} />
           </div>
         </div>
       )}

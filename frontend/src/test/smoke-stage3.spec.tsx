@@ -264,6 +264,7 @@ describe('TASK-QA-02 UI smoke', () => {
     await waitFor(() => {
       expect(screen.getByText('Любительские лиги')).toBeInTheDocument()
       expect(screen.getAllByText(/Ночная Хоккейная Лига|НХЛ/i).length).toBeGreaterThan(0)
+      expect(screen.getAllByText('Профиль лиги').length).toBeGreaterThan(0)
       expect(screen.getByRole('table', {name: /Турнирная таблица/i})).toBeInTheDocument()
       expect(screen.getAllByText('Медведи САО').length).toBeGreaterThan(0)
     })
@@ -293,6 +294,7 @@ describe('TASK-QA-02 UI smoke', () => {
     await waitFor(() => {
       expect(screen.getByText('Магазины экипировки')).toBeInTheDocument()
       expect(screen.getByText('Pro-Hockey Москва')).toBeInTheDocument()
+      expect(screen.getAllByText('Профиль магазина').length).toBeGreaterThan(0)
     })
   })
 

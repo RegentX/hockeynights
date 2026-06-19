@@ -15,8 +15,10 @@ import {
   updatePrivacySettings,
   updateSubscription,
 } from '@/features/profile/api/profileApi'
+import {fetchSession} from '@/features/auth/api/sessionApi'
 import type {HockeyProfile, ProfileSettings, SubscriptionState} from '@/entities/profile/types'
-import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
+import type {PlayerPosition, SkillLevel, UserRole} from '@/entities/common/types'
+import {CoachProfilePanel} from '@/features/profile/CoachProfilePanel'
 import {KarmaHint} from '@/features/karma/KarmaHint'
 import {KarmaScore} from '@/features/karma/KarmaScore'
 
@@ -94,14 +96,88 @@ function ProfileHubTabs({
   )
 }
 
+const ROLE_LABELS: Record<UserRole, string> = {
+  player: 'Игрок',
+  goalie: 'Вратарь',
+  captain: 'Капитан',
+  organizer: 'Организатор',
+  coach: 'Тренер',
+  admin: 'Админ',
+}
+
+function ProfileRoleBadges({roles}: {roles: UserRole[]}) {
+  if (roles.length === 0) return null
+  return (
+    <div className="profile-hub__role-badges">
+      {roles.map((role) => (
+        <span
+          key={role}
+          className={`profile-hub__role-badge ${
+            role === 'goalie' ? 'is-goalie' : role === 'coach' ? 'is-coach' : ''
+          }`}
+        >
+          {ROLE_LABELS[role]}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+function ParticipationHistorySection({
+  profile,
+  showHistory,
+}: {
+  profile: HockeyProfile
+  showHistory: boolean
+}) {
+  const history = profile.participationHistory ?? []
+  if (!showHistory) {
+    return (
+      <Text color="secondary">
+        История участия скрыта настройками приватности.
+      </Text>
+    )
+  }
+  if (history.length === 0) {
+    return <Text color="secondary">Пока нет подтверждённых участий в событиях.</Text>
+  }
+
+  return (
+    <ul className="profile-hub__history">
+      {history.map((record) => (
+        <li key={record.eventId} className="profile-hub__history-item">
+          <div>
+            <Text variant="subheader-2">{record.eventTitle}</Text>
+            <Text color="secondary">
+              {new Date(record.eventDate).toLocaleDateString('ru-RU')}
+              {record.teamName ? ` · ${record.teamName}` : ''}
+            </Text>
+          </div>
+          <span
+            className={`profile-hub__history-status ${
+              record.confirmed ? 'is-confirmed' : 'is-pending'
+            }`}
+          >
+            {record.confirmed ? 'Подтверждено' : 'Ожидает'}
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 function ProfileAboutSection({
   profile,
+  settings,
+  userRoles,
   onSaveProfile,
   onStartVerification,
   isSaving,
   isVerifying,
 }: {
   profile: HockeyProfile
+  settings: ProfileSettings
+  userRoles: UserRole[]
   onSaveProfile: (next: Partial<HockeyProfile>) => void
   onStartVerification: () => void
   isSaving: boolean
@@ -125,6 +201,9 @@ function ProfileAboutSection({
     profile.verificationStatus === 'rejected' ? 'Проверка отклонена' :
     'Профиль не подтвержден'
 
+  const isGoalieProfile =
+    userRoles.includes('goalie') || profile.position === 'goalie'
+
   return (
     <Card view="filled">
       <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
@@ -138,6 +217,28 @@ function ProfileAboutSection({
             {profile.verificationStatus === 'verified' ? '✓' : '•'} {verificationLabel}
           </span>
         </div>
+
+        <ProfileRoleBadges roles={userRoles} />
+
+        {userRoles.includes('coach') && <CoachProfilePanel />}
+
+        {isGoalieProfile && (
+          <div className="profile-hub__goalie-panel">
+            <Text variant="subheader-2">Профиль вратаря</Text>
+            <Text color="secondary">
+              Приоритетные SOS-запросы и отдельная метрика надёжности выходов.
+            </Text>
+            {profile.goalieReliabilityScore != null && (
+              <div className="profile-hub__goalie-score">
+                <Text color="secondary">Надёжность выходов</Text>
+                <Progress
+                  value={profile.goalieReliabilityScore}
+                  text={`${profile.goalieReliabilityScore}%`}
+                />
+              </div>
+            )}
+          </div>
+        )}
 
         <div>
           <Text color="secondary">Заполненность профиля</Text>
@@ -209,6 +310,14 @@ function ProfileAboutSection({
         <Text color="secondary">
           Предпочитаемые арены: {(form.preferredArenaIds ?? []).join(', ') || 'не выбраны'}
         </Text>
+
+        <div className="hockey-stack hockey-stack--gap-8">
+          <Text variant="subheader-2">История участия</Text>
+          <ParticipationHistorySection
+            profile={profile}
+            showHistory={settings.privacy.showParticipationHistory}
+          />
+        </div>
 
         <div className="profile-hub__actions">
           <Button view="outlined" loading={isVerifying} onClick={onStartVerification}>
@@ -383,6 +492,12 @@ function HockeyProfileHub({
   const queryClient = useQueryClient()
   const [activeSection, setActiveSection] = useState<ProfileHubSection>('about')
 
+  const {data: session} = useQuery({
+    queryKey: ['session'],
+    queryFn: fetchSession,
+  })
+  const userRoles = session?.user.roles ?? []
+
   const saveProfileMutation = useMutation({
     mutationFn: updateMyProfile,
     onSuccess: () => {
@@ -422,6 +537,8 @@ function HockeyProfileHub({
     activeSection === 'about' ? (
       <ProfileAboutSection
         profile={profile}
+        settings={settings}
+        userRoles={userRoles}
         onSaveProfile={(next) => saveProfileMutation.mutate(next)}
         onStartVerification={() => verifyMutation.mutate()}
         isSaving={saveProfileMutation.isPending}

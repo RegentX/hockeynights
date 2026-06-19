@@ -3,7 +3,7 @@
  */
 
 import {apiRequest} from '@/shared/api/client'
-import type {PlayerListItem} from '@/entities/profile/types'
+import type {PlayerListItem, PublicPlayerView} from '@/entities/profile/types'
 import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
 
 /** @spec SPEC-FR-2.3.2 - Параметры фильтра игроков */
@@ -27,4 +27,9 @@ export function fetchPlayers(filters: PlayersFilterParams = {}): Promise<PlayerL
 
   const query = params.toString()
   return apiRequest<PlayerListItem[]>(`/players${query ? `?${query}` : ''}`)
+}
+
+/** @spec SPEC-FR-24.1.3 - Публичный профиль игрока */
+export function fetchPublicPlayer(userId: string): Promise<PublicPlayerView> {
+  return apiRequest<PublicPlayerView>(`/players/${userId}`)
 }

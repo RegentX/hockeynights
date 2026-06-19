@@ -1,6 +1,7 @@
 /**
  * SPEC-FR-2.2.1, SPEC-FR-2.2.2, SPEC-FR-2.2.3, SPEC-FR-2.2.4, SPEC-FR-8.2.1
  * SPEC-FR-17.1.1, SPEC-FR-18.1.3, SPEC-FR-18.1.4, SPEC-FR-19.1.1
+ * SPEC-FR-24.1.4, SPEC-FR-24.2.3
  */
 
 import type { PlayerPosition, SkillLevel } from '@/entities/common/types'
@@ -37,6 +38,20 @@ export interface HockeyProfile {
   achievements?: string[]
   /** @spec SPEC-FR-17.1.1 */
   verificationStatus?: VerificationStatus
+  /** @spec SPEC-FR-2.2.5, SPEC-FR-24.1.4 */
+  participationHistory?: ParticipationRecord[]
+  /** @spec SPEC-FR-5.2.4, SPEC-FR-24.2.3 (goalie only) */
+  goalieReliabilityScore?: number
+}
+
+/** @spec SPEC-FR-24.1.4 - Запись об участии в событии */
+export interface ParticipationRecord {
+  eventId: string
+  eventTitle: string
+  eventDate: string
+  teamName?: string
+  role: 'player' | 'goalie' | 'coach'
+  confirmed: boolean
 }
 
 /** @spec SPEC-FR-2.3.1 - Карточка игрока для списка */
@@ -45,6 +60,15 @@ export interface PlayerListItem extends HockeyProfile {
   displayName: string
   /** @spec SPEC-FR-2.3.1 */
   avatarUrl?: string
+}
+
+/** @spec SPEC-FR-24.1.3 - Публичный просмотр профиля игрока */
+export interface PublicPlayerView {
+  player: PlayerListItem
+  visibility: 'full' | 'limited' | 'hidden'
+  contactsVisible: boolean
+  participationHistoryVisible: boolean
+  participationHistory?: ParticipationRecord[]
 }
 
 /** @spec SPEC-FR-17.1.1 - Статус подтверждения пользователя */

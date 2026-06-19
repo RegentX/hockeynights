@@ -7,6 +7,7 @@ import {AppShell} from '@/app/AppShell'
 import {MockLoginPage} from '@/features/auth/MockLoginPage'
 import {HockeyProfileForm} from '@/features/profile/HockeyProfileForm'
 import {PlayersPage} from '@/features/players/PlayersPage'
+import {PublicPlayerProfilePage} from '@/features/players/PublicPlayerProfilePage'
 import {ArenasPage} from '@/features/arenas/ArenasPage'
 import {TeamsPage} from '@/features/teams/TeamsPage'
 import {EventsPage} from '@/features/events/EventsPage'
@@ -33,6 +34,7 @@ export function AppRoutes() {
         <Route path="/" element={<Navigate to="/profile" replace />} />
         <Route path="/profile" element={<HockeyProfileForm />} />
         <Route path="/players" element={<PlayersPage />} />
+        <Route path="/players/:userId" element={<PublicPlayerProfilePage />} />
         <Route path="/teams" element={<TeamsPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/calendar" element={<CalendarPage />} />

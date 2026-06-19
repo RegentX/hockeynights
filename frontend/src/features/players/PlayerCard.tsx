@@ -1,8 +1,10 @@
 /**
  * SPEC-FR-2.3.1, SPEC-FR-8.2.1, SPEC-FR-8.2.2
  * SPEC-UI-2.1, SPEC-UI-1.3, SPEC-UI-1.4
+ * SPEC-FR-24.2.1, SPEC-FR-24.2.3
  */
 
+import {Link} from 'react-router-dom'
 import {Text} from '@gravity-ui/uikit'
 import type {PlayerListItem} from '@/entities/profile/types'
 import {KarmaScore} from '@/features/karma/KarmaScore'
@@ -22,22 +24,32 @@ const SKILL_LABELS: Record<string, string> = {
 export interface PlayerCardProps {
   /** @spec SPEC-FR-2.3.1 */
   player: PlayerListItem
+  /** Отключить переход на публичный профиль (на странице профиля) */
+  linkable?: boolean
 }
 
 /**
  * @spec SPEC-UI-2.1 - Hockey card с номером, амплуа, karma, надёжностью
  * @spec SPEC-FR-2.3.1 - Карточка игрока
  */
-export function PlayerCard({player}: PlayerCardProps) {
+export function PlayerCard({player, linkable = true}: PlayerCardProps) {
   const jerseyNumber = String(player.userId.replace(/\D/g, '').slice(-2) || '00').padStart(2, '0')
-  const reliability = Math.min(100, player.karmaScore)
+  const isGoalie = player.position === 'goalie'
+  const reliability =
+    isGoalie && player.goalieReliabilityScore != null
+      ? player.goalieReliabilityScore
+      : Math.min(100, player.karmaScore)
+  const reliabilityLabel = isGoalie && player.goalieReliabilityScore != null
+    ? 'Надёжность выходов'
+    : 'Надёжность'
 
-  return (
+  const card = (
     <IceCard padding="m">
       <div className="hockey-player-card">
         <div className="hockey-player-card__header">
           <div>
             <PositionLabel position={player.position} />
+            {isGoalie && <span className="hockey-player-card__goalie-badge">SOS</span>}
             <Text variant="subheader-2" className="hockey-text-mt-6">
               {player.displayName}
             </Text>
@@ -53,7 +65,7 @@ export function PlayerCard({player}: PlayerCardProps) {
 
         <div>
           <Text color="secondary" className="hockey-text-caption">
-            Надёжность
+            {reliabilityLabel}
           </Text>
           <div className="hockey-player-card__reliability" aria-hidden>
             <div
@@ -66,5 +78,13 @@ export function PlayerCard({player}: PlayerCardProps) {
         <KarmaScore score={player.karmaScore} />
       </div>
     </IceCard>
+  )
+
+  if (!linkable) return card
+
+  return (
+    <Link to={`/players/${player.userId}`} className="hockey-player-card-link">
+      {card}
+    </Link>
   )
 }

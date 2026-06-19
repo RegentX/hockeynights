@@ -6,6 +6,7 @@
 import {Text} from '@gravity-ui/uikit'
 import type {Arena} from '@/entities/arena/types'
 import {ExternalBookingButton} from '@/features/arenas/ExternalBookingButton'
+import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 import {IceCard} from '@/shared/ui/IceCard'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -44,9 +45,12 @@ export function RinkCard({
       <div className="hockey-stack hockey-stack--gap-10">
         <div className="hockey-row hockey-row--gap-8 hockey-row--between">
           <Text variant="subheader-2">{arena.name}</Text>
-          <span className={`rink-card__mode rink-card__mode--${arena.bookingMode}`}>
-            {BOOKING_MODE_LABELS[arena.bookingMode]}
-          </span>
+          <div className="hockey-row hockey-row--gap-8">
+            <EntityProfileBadge kind="arena" />
+            <span className={`rink-card__mode rink-card__mode--${arena.bookingMode}`}>
+              {BOOKING_MODE_LABELS[arena.bookingMode]}
+            </span>
+          </div>
         </div>
         {showSlotLamp && (
           <span

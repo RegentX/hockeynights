@@ -5,7 +5,12 @@
 import {useState} from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
-import {addTeamMember, fetchTeamRoster, inviteTeamMemberByEmail} from '@/features/teams/api/teamsApi'
+import {
+  addTeamMember,
+  fetchTeamInvites,
+  fetchTeamRoster,
+  inviteTeamMemberByEmail,
+} from '@/features/teams/api/teamsApi'
 import {fetchPlayers} from '@/features/players/api/playersApi'
 
 /** @spec SPEC-FR-3.1.2 - Props добавления игрока */
@@ -28,6 +33,10 @@ export function AddTeamMember({teamId}: AddTeamMemberProps) {
     queryKey: ['roster', teamId],
     queryFn: () => fetchTeamRoster(teamId),
   })
+  const {data: invites = []} = useQuery({
+    queryKey: ['team-invites', teamId],
+    queryFn: () => fetchTeamInvites(teamId),
+  })
 
   const addMemberMutation = useMutation({
     mutationFn: (userId: string) => addTeamMember(teamId, userId),
@@ -44,6 +53,7 @@ export function AddTeamMember({teamId}: AddTeamMemberProps) {
   const inviteMutation = useMutation({
     mutationFn: (email: string) => inviteTeamMemberByEmail(teamId, email),
     onSuccess: (invite) => {
+      void queryClient.invalidateQueries({queryKey: ['team-invites', teamId]})
       setInviteEmail('')
       setStatusMessage(`Приглашение отправлено на ${invite.email}`)
     },
@@ -100,6 +110,16 @@ export function AddTeamMember({teamId}: AddTeamMemberProps) {
           Отправить приглашение
         </Button>
       </div>
+      {invites.length > 0 && (
+        <div className="hockey-stack hockey-stack--gap-6">
+          <Text variant="subheader-2">Последние email-приглашения</Text>
+          {invites.slice(0, 3).map((invite) => (
+            <Text key={invite.id} color="secondary">
+              {invite.email} · {invite.status} · {new Date(invite.createdAt).toLocaleDateString('ru-RU')}
+            </Text>
+          ))}
+        </div>
+      )}
       {statusMessage && <Text color="secondary">{statusMessage}</Text>}
     </div>
   )

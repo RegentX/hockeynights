@@ -4,7 +4,9 @@
  */
 
 import {apiRequest} from '@/shared/api/client'
-import type {CreateTeamPayload, RosterMember, Team, TeamInvite, TeamRole} from '@/entities/team/types'
+import type {CreateTeamPayload, RosterMember, Team, TeamInvite, TeamRole, TrainingLineupAssignment} from '@/entities/team/types'
+import type {GameEvent} from '@/entities/event/types'
+import type {Club} from '@/entities/club/types'
 
 /**
  * @spec SPEC-FR-3.1.1 - Список команд
@@ -73,4 +75,36 @@ export function inviteTeamMemberByEmail(teamId: string, email: string): Promise<
     method: 'POST',
     body: {email},
   })
+}
+
+/** @spec SPEC-FR-21.1.2 - Получить историю email-инвайтов команды */
+export function fetchTeamInvites(teamId: string): Promise<TeamInvite[]> {
+  return apiRequest<TeamInvite[]>(`/teams/${teamId}/invites`)
+}
+
+/** @spec SPEC-FR-24.3.2 - Тренировки команды для раскладки */
+export function fetchTeamTrainingEvents(teamId: string): Promise<GameEvent[]> {
+  return apiRequest<GameEvent[]>(`/teams/${teamId}/training-events`)
+}
+
+/** @spec SPEC-FR-21.1.6 - Получить раскладку тренировки */
+export function fetchTrainingLineup(teamId: string, eventId: string): Promise<TrainingLineupAssignment[]> {
+  return apiRequest<TrainingLineupAssignment[]>(`/teams/${teamId}/training-lineup/${eventId}`)
+}
+
+/** @spec SPEC-FR-21.1.6 - Сохранить раскладку тренировки */
+export function updateTrainingLineup(
+  teamId: string,
+  eventId: string,
+  assignments: TrainingLineupAssignment[],
+): Promise<TrainingLineupAssignment[]> {
+  return apiRequest<TrainingLineupAssignment[]>(`/teams/${teamId}/training-lineup/${eventId}`, {
+    method: 'PUT',
+    body: assignments,
+  })
+}
+
+/** @spec SPEC-FR-24.4.3 - Профиль клуба для выбранной команды */
+export function fetchTeamClubProfile(teamId: string): Promise<Club> {
+  return apiRequest<Club>(`/teams/${teamId}/club-profile`)
 }

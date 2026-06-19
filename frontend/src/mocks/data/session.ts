@@ -44,6 +44,31 @@ export let mockProfile: HockeyProfile = {
   karmaScore: 74,
   achievements: ['10 игр подряд без пропусков', '3 SOS-выручки', '5 отзывов без no-show'],
   verificationStatus: 'verified',
+  participationHistory: [
+    {
+      eventId: 'event-001',
+      eventTitle: 'Тренировка вторник',
+      eventDate: '2026-06-10T19:00:00Z',
+      teamName: 'Медведи САО',
+      role: 'player',
+      confirmed: true,
+    },
+    {
+      eventId: 'event-002',
+      eventTitle: 'Товарищеская игра',
+      eventDate: '2026-06-07T20:30:00Z',
+      teamName: 'Медведи САО',
+      role: 'player',
+      confirmed: true,
+    },
+    {
+      eventId: 'event-003',
+      eventTitle: 'Открытый лёд',
+      eventDate: '2026-05-28T18:00:00Z',
+      role: 'player',
+      confirmed: false,
+    },
+  ],
 }
 
 /** @spec SPEC-FR-18.1.3 - Настройки уведомлений */
