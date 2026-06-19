@@ -51,7 +51,7 @@ export let mockLeagues: League[] = [
 ]
 
 /** @spec SPEC-FR-7.2.1 - Mock таблицы */
-export let mockStandings: LeagueStanding[] = [
+export const mockStandings: LeagueStanding[] = [
   {leagueId: 'league-001', teamName: 'Медведи САО', gamesPlayed: 12, wins: 8, losses: 4, points: 16},
   {leagueId: 'league-001', teamName: 'Ледовые Волки', gamesPlayed: 12, wins: 7, losses: 5, points: 14},
   {leagueId: 'league-001', teamName: 'Динамо Любители', gamesPlayed: 12, wins: 5, losses: 7, points: 10},

@@ -63,6 +63,20 @@ type SavedLineupPreset = {
   assignments: TrainingLineupAssignment[]
 }
 
+let nextPresetSequence = 1
+
+function createSavedLineupPreset(
+  name: string,
+  assignments: TrainingLineupAssignment[],
+): SavedLineupPreset {
+  return {
+    id: `preset-${nextPresetSequence++}`,
+    name,
+    updatedAt: new Date().toISOString(),
+    assignments,
+  }
+}
+
 const BOARD_SLOTS: BoardSlot[] = [
   {id: 'red-goalie-1', side: 'red', position: 'goalie', line: 1, x: 10, y: 50, label: 'G'},
   {id: 'red-defense-1', side: 'red', position: 'defense', line: 1, x: 28, y: 32, label: 'D1'},
@@ -321,12 +335,7 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
     if (!canEdit || !lineupEditableForSquad) return
     const normalizedName = presetName.trim()
     if (!normalizedName) return
-    const preset: SavedLineupPreset = {
-      id: `preset-${Date.now()}`,
-      name: normalizedName,
-      updatedAt: new Date().toISOString(),
-      assignments: composedAssignments,
-    }
+    const preset = createSavedLineupPreset(normalizedName, composedAssignments)
     persistPresets([preset, ...savedPresets].slice(0, 12))
     setPresetName('')
   }

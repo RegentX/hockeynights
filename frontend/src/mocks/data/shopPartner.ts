@@ -12,7 +12,7 @@ import type {
 } from '@/entities/shop/types'
 import {addMockShopProduct, mockProductOffers} from '@/mocks/data/shops'
 
-export let mockShopCatalogState: Record<string, ShopCatalogSyncState> = {
+export const mockShopCatalogState: Record<string, ShopCatalogSyncState> = {
   'shop-001': {
     shopId: 'shop-001',
     status: 'synced',

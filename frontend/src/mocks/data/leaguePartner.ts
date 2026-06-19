@@ -12,11 +12,11 @@ import type {
 } from '@/entities/league/types'
 import {addMockScheduleItem} from '@/mocks/data/leagues'
 
-export let mockLeagueSeasons: LeagueSeason[] = [
+export const mockLeagueSeasons: LeagueSeason[] = [
   {id: 'season-001', leagueId: 'league-001', name: '2026 Summer', status: 'active'},
 ]
 
-export let mockLeagueDivisions: LeagueDivision[] = [
+export const mockLeagueDivisions: LeagueDivision[] = [
   {id: 'div-001', leagueId: 'league-001', seasonId: 'season-001', name: 'Division A', level: 'amateur'},
   {id: 'div-002', leagueId: 'league-001', seasonId: 'season-001', name: 'Division B', level: 'advanced'},
 ]
