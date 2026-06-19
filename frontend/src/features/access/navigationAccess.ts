@@ -50,7 +50,7 @@ function partnerCatalogItems(session: Session): NavItem[] {
     items.push({to: '/leagues', label: 'Каталог лиг'})
   }
   if (memberships.some((m) => m.kind === 'shop')) {
-    items.push({to: '/shops', label: 'Каталог магазинов'})
+    items.push({to: '/shops', label: 'Маркет'})
   }
   return items
 }
