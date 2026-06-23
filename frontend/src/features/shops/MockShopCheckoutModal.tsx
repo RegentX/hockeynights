@@ -9,6 +9,7 @@ import type {ProductOffer} from '@/entities/shop/types'
 import type {CheckoutIntent} from '@/entities/external-flow/types'
 import {createCheckoutIntent} from '@/features/external-flows/api/externalFlowsApi'
 import {MockExternalFlowDialog} from '@/shared/ui/MockExternalFlowDialog'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-9.2.3 - Props mock-checkout */
 export interface MockShopCheckoutModalProps {
@@ -48,17 +49,26 @@ export function MockShopCheckoutModal({open, onClose, offer, shopName}: MockShop
       externalUrl={offer.externalUrl}
       footer={
         result ? (
-          <Button view="action" onClick={handleClose}>
+          <Button
+            view="action"
+            data-testid={testId('shops', 'checkout-modal', 'btn', 'confirm', offer.id)}
+            onClick={handleClose}
+          >
             Понятно
           </Button>
         ) : (
           <>
-            <Button view="flat" onClick={handleClose}>
+            <Button
+              view="flat"
+              data-testid={testId('shops', 'checkout-modal', 'btn', 'cancel', offer.id)}
+              onClick={handleClose}
+            >
               Отмена
             </Button>
             <Button
               view="action"
               loading={mutation.isPending}
+              data-testid={testId('shops', 'checkout-modal', 'btn', 'checkout', offer.id)}
               onClick={() => mutation.mutate({offerId: offer.id})}
             >
               Перейти к покупке (mock)
@@ -68,22 +78,26 @@ export function MockShopCheckoutModal({open, onClose, offer, shopName}: MockShop
       }
     >
       {result ? (
-        <div className="hockey-stack hockey-stack--gap-8">
-          <Text variant="subheader-2">Переход подготовлен (mock)</Text>
-          <Text>
+        <div className="hockey-stack hockey-stack--gap-8" data-testid={testId('shops', 'checkout-modal', 'panel', 'result', offer.id)}>
+          <Text variant="subheader-2" data-testid={testId('shops', 'checkout-modal', 'text', 'result-title', offer.id)}>
+            Переход подготовлен (mock)
+          </Text>
+          <Text data-testid={testId('shops', 'checkout-modal', 'text', 'result-offer', offer.id)}>
             {result.offerTitle} — {result.price.toLocaleString('ru-RU')} {result.currency}
           </Text>
-          <Text color="secondary">
+          <Text color="secondary" data-testid={testId('shops', 'checkout-modal', 'text', 'result-hint', offer.id)}>
             В Phase 2 откроется {result.externalUrl}. Сейчас покупка не выполняется.
           </Text>
         </div>
       ) : (
-        <div className="hockey-stack hockey-stack--gap-8">
-          <Text variant="subheader-2">{offer.title}</Text>
-          <Text>
+        <div className="hockey-stack hockey-stack--gap-8" data-testid={testId('shops', 'checkout-modal', 'panel', 'confirm', offer.id)}>
+          <Text variant="subheader-2" data-testid={testId('shops', 'checkout-modal', 'text', 'title', offer.id)}>
+            {offer.title}
+          </Text>
+          <Text data-testid={testId('shops', 'checkout-modal', 'text', 'price', offer.id)}>
             {offer.price.toLocaleString('ru-RU')} {offer.currency} · {offer.availability}
           </Text>
-          <Text color="secondary">
+          <Text color="secondary" data-testid={testId('shops', 'checkout-modal', 'text', 'hint', offer.id)}>
             Подтвердите mock-переход на сайт партнёра для демонстрации сценария покупки.
           </Text>
         </div>

@@ -6,6 +6,7 @@ import {useState} from 'react'
 import {Button} from '@gravity-ui/uikit'
 import type {ProductOffer} from '@/entities/shop/types'
 import {MockShopCheckoutModal} from '@/features/shops/MockShopCheckoutModal'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-9.2.3 - Props mock-покупки */
 export interface ExternalProductLinkProps {
@@ -30,6 +31,7 @@ export function ExternalProductLink({offer, shopName, compact = false}: External
         size={compact ? 'm' : 's'}
         width={compact ? 'max' : undefined}
         disabled={offer.availability === 'out_of_stock'}
+        data-testid={testId('shops', 'product-link', 'btn', 'buy', offer.id)}
         onClick={() => setOpen(true)}
       >
         {offer.availability === 'out_of_stock'

@@ -9,6 +9,7 @@ import type {CreateFeedbackPayload} from '@/entities/feedback/types'
 import {submitFeedback} from '@/features/feedback/api/feedbackApi'
 import {useFeedbackEligibleEvents} from '@/features/feedback/useFeedbackEligibility'
 import {fetchPlayers} from '@/features/players/api/playersApi'
+import {testId} from '@/shared/testing/testId'
 
 const ATTENDANCE_OPTIONS = [
   {value: 'confirmed', content: 'Пришёл вовремя'},
@@ -86,56 +87,87 @@ export function PostGameFeedbackForm() {
 
   if (events.length === 0) {
     return (
-      <Text color="secondary">
+      <Text color="secondary" data-testid={testId('feedback', 'form', 'empty')}>
         Feedback доступен только после участия в событии со статусом «иду».
       </Text>
     )
   }
 
   return (
-    <Card view="outlined" className="hockey-panel hockey-form-shell hockey-form-shell--560">
+    <Card
+      view="outlined"
+      className="hockey-panel hockey-form-shell hockey-form-shell--560"
+      data-testid={testId('feedback', 'form', 'form')}
+    >
       <div className="hockey-stack hockey-stack--gap-12">
-        <Text variant="subheader-2">Post-game feedback</Text>
+        <Text variant="subheader-2" data-testid={testId('feedback', 'form', 'text', 'title')}>
+          Post-game feedback
+        </Text>
 
         <Select
           label="Событие"
           value={[eventId]}
           onUpdate={(v) => setEventId(v[0] ?? '')}
           options={events.map((e) => ({value: e.id, content: e.title}))}
+          data-testid={testId('feedback', 'form', 'select', 'event')}
         />
         <Select
           label="Игрок"
           value={[toUserId]}
           onUpdate={(v) => setToUserId(v[0] ?? '')}
           options={participantOptions}
+          data-testid={testId('feedback', 'form', 'select', 'player')}
         />
         <Select
           label="Явка"
           value={[attendanceRating]}
           onUpdate={(v) => setAttendanceRating(v[0] as CreateFeedbackPayload['attendanceRating'])}
           options={ATTENDANCE_OPTIONS}
+          data-testid={testId('feedback', 'form', 'select', 'attendance')}
         />
         <Select
           label="Уровень"
           value={[skillMatchRating]}
           onUpdate={(v) => setSkillMatchRating(v[0] as CreateFeedbackPayload['skillMatchRating'])}
           options={SKILL_OPTIONS}
+          data-testid={testId('feedback', 'form', 'select', 'skill')}
         />
         <Select
           label="Поведение"
           value={[behaviorRating]}
           onUpdate={(v) => setBehaviorRating(v[0] as CreateFeedbackPayload['behaviorRating'])}
           options={BEHAVIOR_OPTIONS}
+          data-testid={testId('feedback', 'form', 'select', 'behavior')}
         />
-        <div>
-          <Text color="secondary">Комментарий</Text>
-          <TextArea value={comment} onUpdate={setComment} minRows={3} />
+        <div data-testid={testId('feedback', 'form', 'field', 'comment')}>
+          <Text color="secondary" data-testid={testId('feedback', 'form', 'text', 'comment-label')}>
+            Комментарий
+          </Text>
+          <TextArea
+            value={comment}
+            onUpdate={setComment}
+            minRows={3}
+            data-testid={testId('feedback', 'form', 'field', 'comment-input')}
+          />
         </div>
 
-        {error && <Text color="danger">{error}</Text>}
-        {mutation.isSuccess && <Text color="positive">Feedback отправлен</Text>}
+        {error && (
+          <Text color="danger" data-testid={testId('feedback', 'form', 'text', 'error')}>
+            {error}
+          </Text>
+        )}
+        {mutation.isSuccess && (
+          <Text color="positive" data-testid={testId('feedback', 'form', 'text', 'success')}>
+            Feedback отправлен
+          </Text>
+        )}
 
-        <Button view="action" loading={mutation.isPending} onClick={handleSubmit}>
+        <Button
+          view="action"
+          loading={mutation.isPending}
+          onClick={handleSubmit}
+          data-testid={testId('feedback', 'form', 'btn', 'submit')}
+        >
           Отправить feedback
         </Button>
       </div>

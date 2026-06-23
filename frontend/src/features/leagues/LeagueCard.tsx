@@ -11,6 +11,7 @@ import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 import {IceCard} from '@/shared/ui/IceCard'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-7.1.2 - Props карточки лиги */
 export interface LeagueCardProps {
@@ -31,36 +32,55 @@ export function LeagueCard({league, onSelect, selected = false}: LeagueCardProps
 
   return (
     <>
-      <IceCard
-        padding="m"
-        className={selected ? 'ice-card--selected' : undefined}
-      >
-        <div className="hockey-stack hockey-stack--gap-8">
-          <div className="hockey-row hockey-row--gap-8 hockey-row--between">
-            <Text variant="subheader-2">{league.name}</Text>
-            <EntityProfileBadge kind="league" />
+      <div data-testid={testId('leagues', 'card', 'card', league.id)}>
+        <IceCard
+          padding="m"
+          className={selected ? 'ice-card--selected' : undefined}
+        >
+          <div className="hockey-stack hockey-stack--gap-8">
+            <div className="hockey-row hockey-row--gap-8 hockey-row--between">
+              <Text variant="subheader-2" data-testid={testId('leagues', 'card', 'text', 'name', league.id)}>
+                {league.name}
+              </Text>
+              <div data-testid={testId('leagues', 'card', 'badge', 'profile', league.id)}>
+                <EntityProfileBadge kind="league" />
+              </div>
+            </div>
+            <Text color="secondary" data-testid={testId('leagues', 'card', 'text', 'region', league.id)}>
+              {league.region}
+            </Text>
+            {league.level && (
+              <Label size="s" data-testid={testId('leagues', 'card', 'badge', 'level', league.id)}>
+                {league.level}
+              </Label>
+            )}
+            <Label theme="warning" size="s" data-testid={testId('leagues', 'card', 'badge', 'integration', league.id)}>
+              Интеграция: {league.integrationStatus}
+            </Label>
+            <div data-testid={testId('leagues', 'card', 'badge', 'source', league.id)}>
+              <SourceMetaBadge sourceMeta={league.sourceMeta} />
+            </div>
+            {league.websiteUrl && (
+              <HockeyButton
+                view="outlined"
+                onClick={() => setPortalOpen(true)}
+                data-testid={testId('leagues', 'card', 'btn', 'portal', league.id)}
+              >
+                Сайт лиги (mock)
+              </HockeyButton>
+            )}
+            {onSelect && (
+              <HockeyButton
+                view={selected ? 'action' : 'outlined'}
+                onClick={() => onSelect(league.id)}
+                data-testid={testId('leagues', 'card', 'btn', 'select', league.id)}
+              >
+                {selected ? '● Таблица и расписание' : 'Таблица и расписание'}
+              </HockeyButton>
+            )}
           </div>
-          <Text color="secondary">{league.region}</Text>
-          {league.level && <Label size="s">{league.level}</Label>}
-          <Label theme="warning" size="s">
-            Интеграция: {league.integrationStatus}
-          </Label>
-          <SourceMetaBadge sourceMeta={league.sourceMeta} />
-          {league.websiteUrl && (
-            <HockeyButton view="outlined" onClick={() => setPortalOpen(true)}>
-              Сайт лиги (mock)
-            </HockeyButton>
-          )}
-          {onSelect && (
-            <HockeyButton
-              view={selected ? 'action' : 'outlined'}
-              onClick={() => onSelect(league.id)}
-            >
-              {selected ? '● Таблица и расписание' : 'Таблица и расписание'}
-            </HockeyButton>
-          )}
-        </div>
-      </IceCard>
+        </IceCard>
+      </div>
       <MockLeaguePortalModal
         open={portalOpen}
         onClose={() => setPortalOpen(false)}

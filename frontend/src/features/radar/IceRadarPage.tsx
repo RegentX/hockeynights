@@ -15,6 +15,7 @@ import {
 import {RadarRecommendationCard} from '@/features/radar/RadarRecommendationCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {testId} from '@/shared/testing/testId'
 import {RADAR_LABEL} from '@/shared/config/navigationLabels'
 import {useDocumentTitle} from '@/shared/hooks/useDocumentTitle'
 
@@ -82,40 +83,56 @@ export function IceRadarPage() {
   }
 
   if (isLoading) {
-    return <ScoreboardLoader label="Загрузка подсказок…" />
+    return (
+      <div data-testid={testId('radar', 'page', 'loader')}>
+        <ScoreboardLoader label="Загрузка подсказок…" />
+      </div>
+    )
   }
 
   return (
-    <div className="radar-page">
-      <Text variant="header-1">{RADAR_LABEL}</Text>
-      <Text color="secondary">
+    <div className="radar-page" data-testid={testId('radar', 'page', 'page')}>
+      <Text variant="header-1" data-testid={testId('radar', 'page', 'text', 'title')}>{RADAR_LABEL}</Text>
+      <Text color="secondary" data-testid={testId('radar', 'page', 'text', 'subtitle')}>
         Персональные подсказки на сегодня — SOS, игры, слоты и лиги рядом с тобой.
       </Text>
 
       {recommendations.length === 0 ? (
-        <EmptyNetState
-          title="Подсказок пока нет"
-          copy="Все рекомендации скрыты. Загляните позже — список обновляется."
-        />
+        <div data-testid={testId('radar', 'page', 'empty')}>
+          <EmptyNetState
+            title="Подсказок пока нет"
+            copy="Все рекомендации скрыты. Загляните позже - список обновляется."
+          />
+        </div>
       ) : (
-        <div className="radar-page__layout">
-          <div className="radar-page__zones" aria-hidden>
-            <span className="radar-page__ring radar-page__ring--outer" />
-            <span className="radar-page__ring radar-page__ring--mid" />
-            <span className="radar-page__ring radar-page__ring--inner" />
-            <span className="radar-page__blip" />
+        <div className="radar-page__layout" data-testid={testId('radar', 'page', 'panel', 'layout')}>
+          <div className="radar-page__zones" aria-hidden data-testid={testId('radar', 'page', 'panel', 'zones-visual')}>
+            <span className="radar-page__ring radar-page__ring--outer" data-testid={testId('radar', 'page', 'badge', 'ring-outer')} />
+            <span className="radar-page__ring radar-page__ring--mid" data-testid={testId('radar', 'page', 'badge', 'ring-mid')} />
+            <span className="radar-page__ring radar-page__ring--inner" data-testid={testId('radar', 'page', 'badge', 'ring-inner')} />
+            <span className="radar-page__blip" data-testid={testId('radar', 'page', 'badge', 'blip')} />
           </div>
 
-          <div className="radar-page__zones-list">
+          <div className="radar-page__zones-list" data-testid={testId('radar', 'page', 'list', 'zones')}>
             {grouped.map((zone) => (
-              <section key={zone.key} className={`radar-zone radar-zone--${zone.key}`}>
-                <div className="radar-zone__label">{zone.label}</div>
+              <section
+                key={zone.key}
+                className={`radar-zone radar-zone--${zone.key}`}
+                data-testid={testId('radar', 'page', 'panel', 'zone', zone.key)}
+              >
+                <div className="radar-zone__label" data-testid={testId('radar', 'page', 'text', 'zone-label', zone.key)}>
+                  {zone.label}
+                </div>
                 {zone.items.length === 0 ? (
-                  <Text color="secondary" className="radar-zone__empty">
+                  <Text
+                    color="secondary"
+                    className="radar-zone__empty"
+                    data-testid={testId('radar', 'page', 'empty', 'zone', zone.key)}
+                  >
                     Нет сигналов
                   </Text>
                 ) : (
-                  <div className="radar-zone__cards">
+                  <div className="radar-zone__cards" data-testid={testId('radar', 'page', 'list', 'cards', zone.key)}>
                     {zone.items.map((item) => (
                       <RadarRecommendationCard
                         key={item.id}

@@ -14,6 +14,7 @@ import {LeagueStandings} from '@/features/leagues/LeagueStandings'
 import {IceCard} from '@/shared/ui/IceCard'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
+import {testId} from '@/shared/testing/testId'
 import {ARENAS_LABEL, RADAR_LABEL} from '@/shared/config/navigationLabels'
 
 /**
@@ -43,44 +44,44 @@ export function SideBoard() {
   const topRadar = radarItems.slice(0, 2)
 
   return (
-    <aside className="side-board" aria-label="Борт арены">
-      <IceCard padding="s">
+    <aside className="side-board" aria-label="Борт арены" data-testid={testId('app', 'side-board', 'panel')}>
+      <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'hero')}>
         <div className="side-board__hero">
-          <ScoreboardText tone="accent">HOCKEY SOCIAL</ScoreboardText>
-          <Text color="secondary">Панель событий и подсказок</Text>
+          <ScoreboardText tone="accent" data-testid={testId('app', 'side-board', 'text', 'hero-title')}>HOCKEY SOCIAL</ScoreboardText>
+          <Text color="secondary" data-testid={testId('app', 'side-board', 'text', 'hero-subtitle')}>Панель событий и подсказок</Text>
         </div>
       </IceCard>
 
-      <IceCard padding="s">
-        <div className="side-board__title">{RADAR_LABEL}</div>
+      <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'radar')}>
+        <div className="side-board__title" data-testid={testId('app', 'side-board', 'text', 'radar-title')}>{RADAR_LABEL}</div>
         {topRadar.length === 0 ? (
-          <Text color="secondary">Нет активных подсказок</Text>
+          <Text color="secondary" data-testid={testId('app', 'side-board', 'empty', 'radar')}>Нет активных подсказок</Text>
         ) : (
           topRadar.map((item) => (
-            <div key={item.id} className="side-board__item">
-              <ScoreboardText tone="accent">{item.reasonText}</ScoreboardText>
-              <Text>{item.title}</Text>
+            <div key={item.id} className="side-board__item" data-testid={testId('app', 'side-board', 'item', 'radar', item.id)}>
+              <ScoreboardText tone="accent" data-testid={testId('app', 'side-board', 'text', 'radar-reason', item.id)}>{item.reasonText}</ScoreboardText>
+              <Text data-testid={testId('app', 'side-board', 'text', 'radar-title-item', item.id)}>{item.title}</Text>
             </div>
           ))
         )}
         <div className="side-board__cta">
-          <Link to="/radar">
-            <HockeyButton view="outlined" size="s">
-              {RADAR_LABEL}
+          <Link to="/radar" data-testid={testId('app', 'side-board', 'link', 'radar')}>
+            <HockeyButton view="outlined" size="s" data-testid={testId('app', 'side-board', 'btn', 'open-radar')}>
+                {RADAR_LABEL}
             </HockeyButton>
           </Link>
         </div>
       </IceCard>
 
-      <IceCard padding="s">
-        <div className="side-board__title">Goalkeeper SOS</div>
-        <Text>
+      <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'sos')}>
+        <div className="side-board__title" data-testid={testId('app', 'side-board', 'text', 'sos-title')}>Goalkeeper SOS</div>
+        <Text data-testid={testId('app', 'side-board', 'text', 'sos-count')}>
           Открытых запросов:{' '}
-          <ScoreboardText tone="accent">{openSos}</ScoreboardText>
+          <ScoreboardText tone="accent" data-testid={testId('app', 'side-board', 'text', 'sos-count-value')}>{openSos}</ScoreboardText>
         </Text>
         <div className="side-board__cta">
-          <Link to="/sos">
-            <HockeyButton variant="sos" size="m">
+          <Link to="/sos" data-testid={testId('app', 'side-board', 'link', 'sos')}>
+            <HockeyButton variant="sos" size="m" data-testid={testId('app', 'side-board', 'btn', 'sos')}>
               SOS
             </HockeyButton>
           </Link>
@@ -88,16 +89,16 @@ export function SideBoard() {
       </IceCard>
 
       {featuredLeague && standings.length > 0 && (
-        <IceCard padding="s">
-          <div className="side-board__title">Топ таблицы</div>
+        <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'standings')}>
+          <div className="side-board__title" data-testid={testId('app', 'side-board', 'text', 'standings-title')}>Топ таблицы</div>
           <LeagueStandings
             standings={standings}
             leagueName={featuredLeague.name}
             compact
           />
           <div className="side-board__cta side-board__cta--sm">
-            <Link to="/leagues">
-              <HockeyButton view="outlined" size="s">
+            <Link to="/leagues" data-testid={testId('app', 'side-board', 'link', 'leagues')}>
+              <HockeyButton view="outlined" size="s" data-testid={testId('app', 'side-board', 'btn', 'all-leagues')}>
                 Все лиги
               </HockeyButton>
             </Link>
@@ -105,28 +106,28 @@ export function SideBoard() {
         </IceCard>
       )}
 
-      <IceCard padding="s">
-        <div className="side-board__title">Ближайшие события</div>
+      <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'events')}>
+        <div className="side-board__title" data-testid={testId('app', 'side-board', 'text', 'events-title')}>Ближайшие события</div>
         {upcoming.length === 0 ? (
-          <Text color="secondary">Событий нет</Text>
+          <Text color="secondary" data-testid={testId('app', 'side-board', 'empty', 'events')}>Событий нет</Text>
         ) : (
           upcoming.map((event) => (
-            <div key={event.id} className="side-board__item">
-              <ScoreboardText>
+            <div key={event.id} className="side-board__item" data-testid={testId('app', 'side-board', 'item', 'event', event.id)}>
+              <ScoreboardText data-testid={testId('app', 'side-board', 'text', 'event-time', event.id)}>
                 {new Date(event.startsAt).toLocaleTimeString('ru-RU', {
                   hour: '2-digit',
                   minute: '2-digit',
                 })}
               </ScoreboardText>
-              <Text>{event.title}</Text>
-              <Text color="secondary">{event.arenaName ?? event.arenaId}</Text>
+              <Text data-testid={testId('app', 'side-board', 'text', 'event-title', event.id)}>{event.title}</Text>
+              <Text color="secondary" data-testid={testId('app', 'side-board', 'text', 'event-arena', event.id)}>{event.arenaName ?? event.arenaId}</Text>
             </div>
           ))
         )}
         <div className="side-board__cta side-board__cta--sm">
-          <Link to="/arenas">
-            <HockeyButton view="outlined" size="s">
-              {ARENAS_LABEL}
+          <Link to="/arenas" data-testid={testId('app', 'side-board', 'link', 'arenas')}>
+            <HockeyButton view="outlined" size="s" data-testid={testId('app', 'side-board', 'btn', 'arenas')}>
+                {ARENAS_LABEL}
             </HockeyButton>
           </Link>
         </div>

@@ -6,7 +6,7 @@ import type {ReactNode} from 'react'
 
 export function MapContainer({children}: {children?: ReactNode}) {
   return (
-    <div className="arena-map__leaflet arena-map__leaflet--mock" data-testid="osm-map">
+    <div className="arena-map__leaflet arena-map__leaflet--mock" data-testid="arenas-map-map">
       {children}
     </div>
   )

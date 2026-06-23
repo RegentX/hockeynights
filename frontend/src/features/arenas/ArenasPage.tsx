@@ -18,6 +18,7 @@ import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
+import {testId} from '@/shared/testing/testId'
 import {ARENAS_PAGE_TITLE} from '@/shared/config/navigationLabels'
 import {useDocumentTitle} from '@/shared/hooks/useDocumentTitle'
 
@@ -49,10 +50,10 @@ export function ArenasPage() {
   )
 
   return (
-    <div className="arenas-page">
+    <div className="arenas-page" data-testid={testId('arenas', 'page')}>
       <ScrollReveal direction="down">
-        <Text variant="header-1" className="variable-font-header">{ARENAS_PAGE_TITLE}</Text>
-        <Text color="secondary">
+        <Text variant="header-1" className="variable-font-header" data-testid={testId('arenas', 'page', 'text', 'title')}>{ARENAS_PAGE_TITLE}</Text>
+        <Text color="secondary" data-testid={testId('arenas', 'page', 'text', 'subtitle')}>
           Карта площадок и разные способы записи: слоты по времени или заявка через портал.
         </Text>
       </ScrollReveal>
@@ -60,29 +61,33 @@ export function ArenasPage() {
       <ArenaFilters filters={filters} onChange={setFilters} />
 
       {isLoading && (
-        <>
+        <div data-testid={testId('arenas', 'page', 'loader')}>
           <ScoreboardLoader label="Загрузка арен" />
           <IceSkeleton count={2} height={200} />
-        </>
+        </div>
       )}
 
       {!isLoading && arenas.length === 0 && (
-        <EmptyNetState copy="По выбранным фильтрам площадки не найдены." />
+        <div data-testid={testId('arenas', 'page', 'empty')}>
+          <EmptyNetState copy="По выбранным фильтрам площадки не найдены." />
+        </div>
       )}
 
       {!isLoading && arenas.length > 0 && (
-        <div className="arenas-page__layout">
-          <div className="arenas-page__map-col">
-            <IceCard padding="m">
-              <ArenaMap
-                arenas={arenas}
-                selectedArenaId={activeArenaId}
-                onSelectArena={setSelectedArenaId}
-                freeSlotArenaIds={freeSlotArenaIds}
-              />
-            </IceCard>
+        <div className="arenas-page__layout" data-testid={testId('arenas', 'page', 'layout')}>
+          <div className="arenas-page__map-col" data-testid={testId('arenas', 'page', 'map-col')}>
+            <div data-testid={testId('arenas', 'page', 'card', 'map')}>
+              <IceCard padding="m">
+                <ArenaMap
+                  arenas={arenas}
+                  selectedArenaId={activeArenaId}
+                  onSelectArena={setSelectedArenaId}
+                  freeSlotArenaIds={freeSlotArenaIds}
+                />
+              </IceCard>
+            </div>
 
-            <div className="arenas-page__list">
+            <div className="arenas-page__list" data-testid={testId('arenas', 'page', 'list')}>
               {arenas.map((arena, index) => (
                 <ScrollReveal key={arena.id} direction={index % 2 === 0 ? 'left' : 'right'}>
                   <RinkCard
@@ -100,7 +105,7 @@ export function ArenasPage() {
             </div>
           </div>
 
-          <div className="arenas-page__detail-col">
+          <div className="arenas-page__detail-col" data-testid={testId('arenas', 'page', 'detail-col')}>
             {activeArena ? (
               <ArenaDetailPanel
                 arena={activeArena}
@@ -108,7 +113,9 @@ export function ArenasPage() {
                 hasFreeSlot={arenaHasFreeSlots(activeArena.id)}
               />
             ) : (
-              <EmptyNetState copy="Выберите площадку на карте или в списке." />
+              <div data-testid={testId('arenas', 'page', 'empty', 'detail')}>
+                <EmptyNetState copy="Выберите площадку на карте или в списке." />
+              </div>
             )}
           </div>
         </div>

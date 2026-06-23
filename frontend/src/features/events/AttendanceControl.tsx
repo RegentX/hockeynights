@@ -6,6 +6,7 @@ import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {Button, Text} from '@gravity-ui/uikit'
 import {updateAttendance} from '@/features/events/api/eventsApi'
 import type {AttendanceStatus} from '@/entities/common/types'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-3.3.1 - Props контроля посещаемости */
 export interface AttendanceControlProps {
@@ -37,15 +38,18 @@ export function AttendanceControl({eventId, currentStatus}: AttendanceControlPro
   ]
 
   return (
-    <div className="hockey-stack hockey-stack--gap-6">
-      <Text color="secondary">RSVP на матч/тренировку</Text>
-      <div className="hockey-row hockey-row--gap-8">
+    <div className="hockey-stack hockey-stack--gap-6" data-testid={testId('events', 'attendance', 'panel', eventId)}>
+      <Text color="secondary" data-testid={testId('events', 'attendance', 'text', 'label', eventId)}>
+        RSVP на матч/тренировку
+      </Text>
+      <div className="hockey-row hockey-row--gap-8" data-testid={testId('events', 'attendance', 'list', eventId)}>
         {buttons.map((btn) => (
           <Button
             key={btn.status}
             view={currentStatus === btn.status ? 'action' : 'outlined'}
             loading={mutation.isPending}
             onClick={() => mutation.mutate(btn.status)}
+            data-testid={testId('events', 'attendance', 'btn', btn.status, eventId)}
           >
             {btn.label}
           </Button>

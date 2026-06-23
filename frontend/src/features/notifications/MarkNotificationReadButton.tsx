@@ -5,6 +5,7 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {Button} from '@gravity-ui/uikit'
 import {markNotificationAsRead} from '@/features/notifications/api/notificationsApi'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-10.1.2 - Props кнопки */
 export interface MarkNotificationReadButtonProps {
@@ -26,7 +27,13 @@ export function MarkNotificationReadButton({notificationId}: MarkNotificationRea
   })
 
   return (
-    <Button size="s" view="flat" loading={mutation.isPending} onClick={() => mutation.mutate()}>
+    <Button
+      size="s"
+      view="flat"
+      loading={mutation.isPending}
+      onClick={() => mutation.mutate()}
+      data-testid={testId('notifications', 'mark-read', 'btn', 'read', notificationId)}
+    >
       Прочитано
     </Button>
   )

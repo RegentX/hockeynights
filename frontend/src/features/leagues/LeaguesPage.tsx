@@ -17,6 +17,7 @@ import {LeagueStandings} from '@/features/leagues/LeagueStandings'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
+import {testId} from '@/shared/testing/testId'
 
 /**
  * @spec SPEC-UI-2.7 - Табло турнирной таблицы с автовыбором лиги
@@ -49,22 +50,30 @@ export function LeaguesPage() {
   })
 
   return (
-    <div className="hockey-stack hockey-stack--gap-20">
-      <Text variant="header-1">Любительские лиги</Text>
+    <div className="hockey-stack hockey-stack--gap-20" data-testid={testId('leagues', 'page')}>
+      <Text variant="header-1" data-testid={testId('leagues', 'page', 'text', 'title')}>
+        Любительские лиги
+      </Text>
 
-      {leagueMembership ? (
-        <PartnerCabinetBanner membership={leagueMembership} />
-      ) : (
-        <PartnerAccessHint kind="league" />
-      )}
+      <div data-testid={testId('leagues', 'page', 'panel', 'partner-access')}>
+        {leagueMembership ? (
+          <PartnerCabinetBanner membership={leagueMembership} />
+        ) : (
+          <PartnerAccessHint kind="league" />
+        )}
+      </div>
 
-      <Text color="secondary">
+      <Text color="secondary" data-testid={testId('leagues', 'page', 'text', 'subtitle')}>
         Данные могут быть mock, manual, imported или external — смотрите бейдж источника.
       </Text>
 
-      {isLoading && <ScoreboardLoader label="Загрузка лиг" />}
+      {isLoading && (
+        <div data-testid={testId('leagues', 'page', 'loader')}>
+          <ScoreboardLoader label="Загрузка лиг" />
+        </div>
+      )}
 
-      <div className="hockey-grid hockey-grid--cards-300">
+      <div className="hockey-grid hockey-grid--cards-300" data-testid={testId('leagues', 'page', 'list')}>
         {leagues.map((league) => (
           <LeagueCard
             key={league.id}
@@ -76,36 +85,48 @@ export function LeaguesPage() {
       </div>
 
       {activeLeagueId && selectedLeague && (
-        <div className="hockey-stack hockey-stack--gap-16">
+        <div className="hockey-stack hockey-stack--gap-16" data-testid={testId('leagues', 'page', 'panel', 'detail', activeLeagueId)}>
           <LeagueProfilePanel league={selectedLeague} />
 
-          <IceCard padding="m">
-            <div className="hockey-row hockey-row--gap-12 hockey-row--between hockey-mb-16">
-              <div>
-                <Text variant="subheader-2">Статистика и расписание</Text>
-                <Text color="secondary">{selectedLeague.name} · {selectedLeague.region}</Text>
+          <div data-testid={testId('leagues', 'page', 'card', 'stats', activeLeagueId)}>
+            <IceCard padding="m">
+              <div className="hockey-row hockey-row--gap-12 hockey-row--between hockey-mb-16">
+                <div>
+                  <Text variant="subheader-2" data-testid={testId('leagues', 'page', 'text', 'stats-title', activeLeagueId)}>
+                    Статистика и расписание
+                  </Text>
+                  <Text color="secondary" data-testid={testId('leagues', 'page', 'text', 'stats-subtitle', activeLeagueId)}>
+                    {selectedLeague.name} · {selectedLeague.region}
+                  </Text>
+                </div>
+                <div data-testid={testId('leagues', 'page', 'badge', 'source', activeLeagueId)}>
+                  <SourceMetaBadge sourceMeta={selectedLeague.sourceMeta} />
+                </div>
               </div>
-              <SourceMetaBadge sourceMeta={selectedLeague.sourceMeta} />
-            </div>
 
-          <div className="hockey-stack hockey-stack--gap-20">
-            {standingsLoading ? (
-              <ScoreboardLoader label="Загрузка таблицы" />
-            ) : (
-              <LeagueStandings
-                standings={standings}
-                leagueName={selectedLeague.name}
-              />
-            )}
+              <div className="hockey-stack hockey-stack--gap-20">
+                {standingsLoading ? (
+                  <div data-testid={testId('leagues', 'page', 'loader', 'standings', activeLeagueId)}>
+                    <ScoreboardLoader label="Загрузка таблицы" />
+                  </div>
+                ) : (
+                  <LeagueStandings
+                    standings={standings}
+                    leagueName={selectedLeague.name}
+                  />
+                )}
 
-            {scheduleLoading ? (
-              <ScoreboardLoader label="Загрузка расписания" />
-            ) : (
-              <LeagueSchedule schedule={schedule} />
-            )}
+                {scheduleLoading ? (
+                  <div data-testid={testId('leagues', 'page', 'loader', 'schedule', activeLeagueId)}>
+                    <ScoreboardLoader label="Загрузка расписания" />
+                  </div>
+                ) : (
+                  <LeagueSchedule schedule={schedule} />
+                )}
+              </div>
+            </IceCard>
           </div>
-        </IceCard>
-      </div>
+        </div>
       )}
     </div>
   )

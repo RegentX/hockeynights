@@ -6,6 +6,7 @@ import {useState} from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Switch, Text, TextInput} from '@gravity-ui/uikit'
 import {createLeaguePost, fetchLeaguePosts} from '@/features/leagues/api/leaguesApi'
+import {testId} from '@/shared/testing/testId'
 
 export interface LeaguePostsPanelProps {
   leagueId: string
@@ -34,19 +35,27 @@ export function LeaguePostsPanel({leagueId}: LeaguePostsPanelProps) {
   })
 
   return (
-    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12">
-      <Text variant="subheader-2">Публикации</Text>
+    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12" data-testid={testId('leagues', 'posts', 'panel', leagueId)}>
+      <Text variant="subheader-2" data-testid={testId('leagues', 'posts', 'text', 'title', leagueId)}>
+        Публикации
+      </Text>
 
-      <ul className="partner-dashboard__list">
+      <ul className="partner-dashboard__list" data-testid={testId('leagues', 'posts', 'list', leagueId)}>
         {posts.map((post) => (
-          <li key={post.id} className="partner-dashboard__list-item partner-dashboard__list-item--stack">
+          <li
+            key={post.id}
+            className="partner-dashboard__list-item partner-dashboard__list-item--stack"
+            data-testid={testId('leagues', 'posts', 'item', post.id)}
+          >
             <div>
-              <Text>
+              <Text data-testid={testId('leagues', 'posts', 'text', 'post-title', post.id)}>
                 {post.pinned ? '📌 ' : ''}
                 {post.title}
               </Text>
-              <Text color="secondary">{post.body}</Text>
-              <Text color="secondary">
+              <Text color="secondary" data-testid={testId('leagues', 'posts', 'text', 'post-body', post.id)}>
+                {post.body}
+              </Text>
+              <Text color="secondary" data-testid={testId('leagues', 'posts', 'text', 'post-date', post.id)}>
                 {new Date(post.publishedAt).toLocaleString('ru-RU')}
               </Text>
             </div>
@@ -54,11 +63,27 @@ export function LeaguePostsPanel({leagueId}: LeaguePostsPanelProps) {
         ))}
       </ul>
 
-      <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8">
-        <Text variant="subheader-2">Новая публикация</Text>
-        <TextInput label="Заголовок" value={title} onUpdate={setTitle} />
-        <TextInput label="Текст" value={body} onUpdate={setBody} />
-        <Switch checked={pinned} onUpdate={setPinned}>
+      <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8" data-testid={testId('leagues', 'posts', 'panel', 'form', leagueId)}>
+        <Text variant="subheader-2" data-testid={testId('leagues', 'posts', 'text', 'form-title', leagueId)}>
+          Новая публикация
+        </Text>
+        <TextInput
+          label="Заголовок"
+          value={title}
+          onUpdate={setTitle}
+          data-testid={testId('leagues', 'posts', 'field', 'title', leagueId)}
+        />
+        <TextInput
+          label="Текст"
+          value={body}
+          onUpdate={setBody}
+          data-testid={testId('leagues', 'posts', 'field', 'body', leagueId)}
+        />
+        <Switch
+          checked={pinned}
+          onUpdate={setPinned}
+          data-testid={testId('leagues', 'posts', 'checkbox', 'pinned', leagueId)}
+        >
           Закрепить
         </Switch>
         <Button
@@ -67,6 +92,7 @@ export function LeaguePostsPanel({leagueId}: LeaguePostsPanelProps) {
           disabled={!title.trim() || !body.trim()}
           loading={createMutation.isPending}
           onClick={() => createMutation.mutate()}
+          data-testid={testId('leagues', 'posts', 'btn', 'publish', leagueId)}
         >
           Опубликовать
         </Button>

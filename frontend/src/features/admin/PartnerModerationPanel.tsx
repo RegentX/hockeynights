@@ -5,6 +5,7 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Text} from '@gravity-ui/uikit'
 import {fetchPartnerModerationQueue, moderatePartnerItem} from '@/features/admin/api/adminApi'
+import {testId} from '@/shared/testing/testId'
 
 const KIND_LABELS: Record<string, string> = {
   league_profile: 'Профиль лиги',
@@ -33,31 +34,48 @@ export function PartnerModerationPanel() {
   })
 
   if (isLoading) {
-    return <Text color="secondary">Загрузка очереди модерации…</Text>
+    return (
+      <Text color="secondary" data-testid={testId('admin', 'moderation', 'loader')}>
+        Загрузка очереди модерации…
+      </Text>
+    )
   }
 
   if (items.length === 0) {
-    return <Text color="secondary">Нет материалов на проверке.</Text>
+    return (
+      <Text color="secondary" data-testid={testId('admin', 'moderation', 'empty')}>
+        Нет материалов на проверке.
+      </Text>
+    )
   }
 
   return (
-    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12">
-      <ul className="partner-dashboard__list">
+    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12" data-testid={testId('admin', 'moderation', 'panel')}>
+      <ul className="partner-dashboard__list" data-testid={testId('admin', 'moderation', 'list')}>
         {items.map((item) => (
-          <li key={item.id} className="partner-dashboard__list-item partner-dashboard__list-item--stack">
+          <li
+            key={item.id}
+            className="partner-dashboard__list-item partner-dashboard__list-item--stack"
+            data-testid={testId('admin', 'moderation', 'item', item.id)}
+          >
             <div>
-              <Text>{item.title}</Text>
-              <Text color="secondary">
+              <Text data-testid={testId('admin', 'moderation', 'text', 'title', item.id)}>
+                {item.title}
+              </Text>
+              <Text color="secondary" data-testid={testId('admin', 'moderation', 'text', 'kind', item.id)}>
                 {KIND_LABELS[item.kind] ?? item.kind}
                 {item.subtitle ? ` · ${item.subtitle}` : ''}
               </Text>
-              <Text color="secondary">Статус: {item.moderationStatus}</Text>
+              <Text color="secondary" data-testid={testId('admin', 'moderation', 'text', 'status', item.id)}>
+                Статус: {item.moderationStatus}
+              </Text>
             </div>
             <div className="partner-dashboard__tabs">
               <Button
                 size="s"
                 view="action"
                 loading={moderateMutation.isPending}
+                data-testid={testId('admin', 'moderation', 'btn', 'publish', item.id)}
                 onClick={() => moderateMutation.mutate({itemId: item.id, status: 'published'})}
               >
                 Опубликовать
@@ -65,6 +83,7 @@ export function PartnerModerationPanel() {
               <Button
                 size="s"
                 view="outlined"
+                data-testid={testId('admin', 'moderation', 'btn', 'reject', item.id)}
                 onClick={() => moderateMutation.mutate({itemId: item.id, status: 'rejected'})}
               >
                 Отклонить

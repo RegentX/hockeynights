@@ -6,6 +6,7 @@ import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {Switch} from '@gravity-ui/uikit'
 import type {AdminEntityType} from '@/entities/admin/types'
 import {updateEntityVisibility} from '@/features/admin/api/adminApi'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-11.1.2 - Props переключателя видимости */
 export interface VisibilityToggleProps {
@@ -38,6 +39,7 @@ export function VisibilityToggle({entityId, entityType, visible}: VisibilityTogg
     <Switch
       checked={visible}
       disabled={mutation.isPending}
+      data-testid={testId('admin', 'visibility', 'toggle', entityType, entityId)}
       onUpdate={(checked) => mutation.mutate(checked)}
     />
   )

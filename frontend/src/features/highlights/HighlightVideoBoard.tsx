@@ -14,6 +14,7 @@ import {AnnotationLayer} from '@/features/highlights/AnnotationLayer'
 import {HighlightComments} from '@/features/highlights/HighlightComments'
 import {MockUploadNotice} from '@/features/highlights/MockUploadNotice'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-14.1.1 - Props video-board */
 export interface HighlightVideoBoardProps {
@@ -57,32 +58,42 @@ export function HighlightVideoBoard({
   )
 
   return (
-    <div className="video-board">
+    <div className="video-board" data-testid={testId('highlights', 'video-board', 'video', highlight.id)}>
       <MockUploadNotice />
 
-      <div className="video-board__head">
-        <Text variant="header-2">{highlight.title}</Text>
-        <Text color="secondary">
+      <div className="video-board__head" data-testid={testId('highlights', 'video-board', 'panel', 'head', highlight.id)}>
+        <Text variant="header-2" data-testid={testId('highlights', 'video-board', 'text', 'title', highlight.id)}>
+          {highlight.title}
+        </Text>
+        <Text color="secondary" data-testid={testId('highlights', 'video-board', 'text', 'meta', highlight.id)}>
           {highlight.authorDisplayName} · {highlight.durationSeconds} с ·{' '}
           <ScoreboardText>{highlight.uploadStatus}</ScoreboardText>
         </Text>
       </div>
 
-      <div className="video-board__layout">
-        <div className="video-board__main">
-          <div className="video-board__preview" aria-label="Mock preview момента">
-            <div className="video-board__rink" />
+      <div className="video-board__layout" data-testid={testId('highlights', 'video-board', 'panel', 'layout', highlight.id)}>
+        <div className="video-board__main" data-testid={testId('highlights', 'video-board', 'panel', 'main', highlight.id)}>
+          <div
+            className="video-board__preview"
+            aria-label="Mock preview момента"
+            data-testid={testId('highlights', 'video-board', 'panel', 'preview', highlight.id)}
+          >
+            <div className="video-board__rink" data-testid={testId('highlights', 'video-board', 'panel', 'rink', highlight.id)} />
             <AnnotationLayer
               annotations={highlight.annotations}
               currentTimestampMs={timestampMs}
               durationSeconds={highlight.durationSeconds}
               onAddAnnotation={onAddAnnotation}
               isPending={isAnnotationPending}
+              highlightId={highlight.id}
             />
           </div>
 
-          <label className="video-board__scrubber">
-            <span className="video-board__scrubber-label">
+          <label
+            className="video-board__scrubber"
+            data-testid={testId('highlights', 'video-board', 'field', 'scrubber', highlight.id)}
+          >
+            <span className="video-board__scrubber-label" data-testid={testId('highlights', 'video-board', 'text', 'scrubber-label', highlight.id)}>
               Таймкод: <ScoreboardText>{formatMs(timestampMs)}</ScoreboardText>
             </span>
             <input
@@ -93,15 +104,17 @@ export function HighlightVideoBoard({
               value={timestampMs}
               onChange={(e) => setTimestampMs(Number(e.target.value))}
               aria-label="Позиция на таймлайне"
+              data-testid={testId('highlights', 'video-board', 'field', 'scrubber-input', highlight.id)}
             />
           </label>
         </div>
 
-        <aside className="video-board__aside">
+        <aside className="video-board__aside" data-testid={testId('highlights', 'video-board', 'panel', 'aside', highlight.id)}>
           <HighlightComments
             comments={sortedComments}
             onAddComment={onAddComment}
             isPending={isCommentPending}
+            highlightId={highlight.id}
           />
         </aside>
       </div>

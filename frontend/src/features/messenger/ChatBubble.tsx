@@ -6,6 +6,7 @@ import type {ActionableMessageData, ChatAction, Message} from '@/entities/messen
 import {IceCard} from '@/shared/ui/IceCard'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {Text} from '@gravity-ui/uikit'
+import {testId} from '@/shared/testing/testId'
 
 interface ChatBubbleProps {
   message: Message
@@ -17,24 +18,50 @@ interface ChatBubbleProps {
  */
 export function ChatBubble({ message, isOwn }: ChatBubbleProps) {
   return (
-    <div className={`chat-bubble-container ${isOwn ? 'chat-bubble-container--own' : ''}`}>
+    <div
+      className={`chat-bubble-container ${isOwn ? 'chat-bubble-container--own' : ''}`}
+      data-testid={testId('messenger', 'chat-bubble', 'bubble', message.id)}
+    >
       {!isOwn && (
-        <Text variant="caption-1" className="chat-bubble-sender">
+        <Text
+          variant="caption-1"
+          className="chat-bubble-sender"
+          data-testid={testId('messenger', 'chat-bubble', 'text', 'sender', message.id)}
+        >
           {message.senderName}
         </Text>
       )}
-      <div className={`chat-bubble ${isOwn ? 'chat-bubble--own' : ''}`}>
+      <div
+        className={`chat-bubble ${isOwn ? 'chat-bubble--own' : ''}`}
+        data-testid={testId('messenger', 'chat-bubble', 'panel', 'content', message.id)}
+      >
         {message.type === 'actionable' && message.actionData ? (
-          <ActionableMessage data={message.actionData} />
+          <ActionableMessage data={message.actionData} messageId={message.id} />
         ) : (
-          <Text variant="body-1">{message.content}</Text>
+          <Text
+            variant="body-1"
+            data-testid={testId('messenger', 'chat-bubble', 'text', 'content', message.id)}
+          >
+            {message.content}
+          </Text>
         )}
-        <div className="chat-bubble-meta">
-          <Text variant="caption-1" className="chat-bubble-time">
+        <div
+          className="chat-bubble-meta"
+          data-testid={testId('messenger', 'chat-bubble', 'panel', 'meta', message.id)}
+        >
+          <Text
+            variant="caption-1"
+            className="chat-bubble-time"
+            data-testid={testId('messenger', 'chat-bubble', 'text', 'time', message.id)}
+          >
             {new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
           </Text>
           {isOwn && (
-            <span className="chat-bubble-status" aria-hidden>
+            <span
+              className="chat-bubble-status"
+              aria-hidden
+              data-testid={testId('messenger', 'chat-bubble', 'badge', 'status', message.id)}
+            >
               ✓✓
             </span>
           )}
@@ -47,27 +74,50 @@ export function ChatBubble({ message, isOwn }: ChatBubbleProps) {
 /**
  * @spec SPEC-UI-8.2 - Actionable Messages (интерактивные карточки)
  */
-function ActionableMessage({data}: {data: ActionableMessageData}) {
+function ActionableMessage({data, messageId}: {data: ActionableMessageData; messageId: string}) {
   return (
-    <IceCard padding="s" className="actionable-card">
-      <div className="actionable-card__header">
-        <Text variant="subheader-1" color="primary">{data.title}</Text>
-      </div>
-      <div className="actionable-card__body">
-        <Text variant="body-1">{data.description}</Text>
-      </div>
-      <div className="actionable-card__actions">
-        {data.actions.map((action: ChatAction) => (
-          <HockeyButton
-            key={action.id}
-            size="s"
-            view={action.style === 'primary' ? 'action' : 'normal'}
-            onClick={() => console.log(`Action: ${action.action}`)}
+    <div data-testid={testId('messenger', 'chat-bubble', 'card', 'actionable', messageId)}>
+      <IceCard padding="s" className="actionable-card">
+        <div
+          className="actionable-card__header"
+          data-testid={testId('messenger', 'chat-bubble', 'panel', 'actionable-header', messageId)}
+        >
+          <Text
+            variant="subheader-1"
+            color="primary"
+            data-testid={testId('messenger', 'chat-bubble', 'text', 'actionable-title', messageId)}
           >
-            {action.label}
-          </HockeyButton>
-        ))}
-      </div>
-    </IceCard>
+            {data.title}
+          </Text>
+        </div>
+        <div
+          className="actionable-card__body"
+          data-testid={testId('messenger', 'chat-bubble', 'panel', 'actionable-body', messageId)}
+        >
+          <Text
+            variant="body-1"
+            data-testid={testId('messenger', 'chat-bubble', 'text', 'actionable-description', messageId)}
+          >
+            {data.description}
+          </Text>
+        </div>
+        <div
+          className="actionable-card__actions"
+          data-testid={testId('messenger', 'chat-bubble', 'panel', 'actionable-actions', messageId)}
+        >
+          {data.actions.map((action: ChatAction) => (
+            <HockeyButton
+              key={action.id}
+              size="s"
+              view={action.style === 'primary' ? 'action' : 'normal'}
+              onClick={() => console.log(`Action: ${action.action}`)}
+              data-testid={testId('messenger', 'chat-bubble', 'btn', 'action', messageId, action.id)}
+            >
+              {action.label}
+            </HockeyButton>
+          ))}
+        </div>
+      </IceCard>
+    </div>
   )
 }

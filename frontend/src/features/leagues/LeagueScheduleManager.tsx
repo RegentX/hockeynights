@@ -14,6 +14,7 @@ import {
   updateLeagueScheduleItem,
   updateLeagueStanding,
 } from '@/features/leagues/api/leaguesApi'
+import {testId} from '@/shared/testing/testId'
 
 const CSV_SAMPLE = `homeTeam,awayTeam,startsAt,arenaName
 Сокол Юг,Буран,2026-07-12T20:00:00+03:00,Ледовый дворец на Ходынке`
@@ -95,31 +96,47 @@ export function LeagueScheduleManager({leagueId}: LeagueScheduleManagerProps) {
   })
 
   return (
-    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-16">
-      <Text variant="subheader-2">Расписание и результаты</Text>
+    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-16" data-testid={testId('leagues', 'schedule-manager', 'panel', leagueId)}>
+      <Text variant="subheader-2" data-testid={testId('leagues', 'schedule-manager', 'text', 'title', leagueId)}>
+        Расписание и результаты
+      </Text>
 
-      <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8">
-        <Text variant="subheader-2">Импорт CSV</Text>
-        <Text color="secondary">Колонки: homeTeam, awayTeam, startsAt, arenaName</Text>
-        <TextArea value={csvText} onUpdate={setCsvText} rows={4} />
+      <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8" data-testid={testId('leagues', 'schedule-manager', 'panel', 'import', leagueId)}>
+        <Text variant="subheader-2" data-testid={testId('leagues', 'schedule-manager', 'text', 'import-title', leagueId)}>
+          Импорт CSV
+        </Text>
+        <Text color="secondary" data-testid={testId('leagues', 'schedule-manager', 'text', 'import-hint', leagueId)}>
+          Колонки: homeTeam, awayTeam, startsAt, arenaName
+        </Text>
+        <TextArea
+          value={csvText}
+          onUpdate={setCsvText}
+          rows={4}
+          data-testid={testId('leagues', 'schedule-manager', 'field', 'csv', leagueId)}
+        />
         <Button
           size="s"
           view="outlined"
           loading={importMutation.isPending}
           onClick={() => importMutation.mutate()}
+          data-testid={testId('leagues', 'schedule-manager', 'btn', 'import', leagueId)}
         >
           Импортировать расписание
         </Button>
       </div>
 
-      <ul className="partner-dashboard__list">
+      <ul className="partner-dashboard__list" data-testid={testId('leagues', 'schedule-manager', 'list', 'schedule', leagueId)}>
         {schedule.map((item) => (
-          <li key={item.id} className="partner-dashboard__list-item partner-dashboard__list-item--stack">
+          <li
+            key={item.id}
+            className="partner-dashboard__list-item partner-dashboard__list-item--stack"
+            data-testid={testId('leagues', 'schedule-manager', 'item', item.id)}
+          >
             <div>
-              <Text>
+              <Text data-testid={testId('leagues', 'schedule-manager', 'text', 'match-title', item.id)}>
                 {item.homeTeam} — {item.awayTeam}
               </Text>
-              <Text color="secondary">
+              <Text color="secondary" data-testid={testId('leagues', 'schedule-manager', 'text', 'match-meta', item.id)}>
                 {new Date(item.startsAt).toLocaleString('ru-RU')}
                 {item.arenaName ? ` · ${item.arenaName}` : ''}
                 {item.status === 'completed' && item.homeScore !== undefined
@@ -133,6 +150,7 @@ export function LeagueScheduleManager({leagueId}: LeagueScheduleManagerProps) {
                   size="s"
                   view="outlined"
                   onClick={() => scoreMutation.mutate({scheduleId: item.id, homeScore: 3, awayScore: 2})}
+                  data-testid={testId('leagues', 'schedule-manager', 'btn', 'save-score', item.id)}
                 >
                   Сохранить 3:2
                 </Button>
@@ -142,28 +160,34 @@ export function LeagueScheduleManager({leagueId}: LeagueScheduleManagerProps) {
         ))}
       </ul>
 
-      <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8">
-        <Text variant="subheader-2">Добавить матч</Text>
+      <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8" data-testid={testId('leagues', 'schedule-manager', 'panel', 'add-match', leagueId)}>
+        <Text variant="subheader-2" data-testid={testId('leagues', 'schedule-manager', 'text', 'add-match-title', leagueId)}>
+          Добавить матч
+        </Text>
         <TextInput
           label="Хозяева"
           value={matchForm.homeTeam}
           onUpdate={(value) => setMatchForm((prev) => ({...prev, homeTeam: value}))}
+          data-testid={testId('leagues', 'schedule-manager', 'field', 'home-team', leagueId)}
         />
         <TextInput
           label="Гости"
           value={matchForm.awayTeam}
           onUpdate={(value) => setMatchForm((prev) => ({...prev, awayTeam: value}))}
+          data-testid={testId('leagues', 'schedule-manager', 'field', 'away-team', leagueId)}
         />
         <TextInput
           label="Дата и время (ISO)"
           value={matchForm.startsAt}
           placeholder="2026-06-20T20:00:00+03:00"
           onUpdate={(value) => setMatchForm((prev) => ({...prev, startsAt: value}))}
+          data-testid={testId('leagues', 'schedule-manager', 'field', 'starts-at', leagueId)}
         />
         <TextInput
           label="Арена"
           value={matchForm.arenaName ?? ''}
           onUpdate={(value) => setMatchForm((prev) => ({...prev, arenaName: value}))}
+          data-testid={testId('leagues', 'schedule-manager', 'field', 'arena', leagueId)}
         />
         <Button
           view="action"
@@ -171,16 +195,25 @@ export function LeagueScheduleManager({leagueId}: LeagueScheduleManagerProps) {
           disabled={!matchForm.homeTeam.trim() || !matchForm.awayTeam.trim() || !matchForm.startsAt.trim()}
           loading={createMutation.isPending}
           onClick={() => createMutation.mutate(matchForm)}
+          data-testid={testId('leagues', 'schedule-manager', 'btn', 'add-match', leagueId)}
         >
           Добавить матч
         </Button>
       </div>
 
-      <Text variant="subheader-2">Турнирная таблица</Text>
-      <ul className="partner-dashboard__list">
+      <Text variant="subheader-2" data-testid={testId('leagues', 'schedule-manager', 'text', 'standings-title', leagueId)}>
+        Турнирная таблица
+      </Text>
+      <ul className="partner-dashboard__list" data-testid={testId('leagues', 'schedule-manager', 'list', 'standings', leagueId)}>
         {standings.map((row) => (
-          <li key={row.teamName} className="partner-dashboard__list-item">
-            <Text>{row.teamName}</Text>
+          <li
+            key={row.teamName}
+            className="partner-dashboard__list-item"
+            data-testid={testId('leagues', 'schedule-manager', 'row', row.teamName)}
+          >
+            <Text data-testid={testId('leagues', 'schedule-manager', 'cell', 'team', row.teamName)}>
+              {row.teamName}
+            </Text>
             <div className="partner-dashboard__tabs">
               <Button
                 size="s"
@@ -194,6 +227,7 @@ export function LeagueScheduleManager({leagueId}: LeagueScheduleManagerProps) {
                     points: row.points + 2,
                   })
                 }
+                data-testid={testId('leagues', 'schedule-manager', 'btn', 'win', row.teamName)}
               >
                 + победа
               </Button>
@@ -202,7 +236,11 @@ export function LeagueScheduleManager({leagueId}: LeagueScheduleManagerProps) {
         ))}
       </ul>
 
-      {statusMessage && <Text color="secondary">{statusMessage}</Text>}
+      {statusMessage && (
+        <Text color="secondary" data-testid={testId('leagues', 'schedule-manager', 'text', 'status', leagueId)}>
+          {statusMessage}
+        </Text>
+      )}
     </div>
   )
 }

@@ -8,6 +8,7 @@ import {Select, Text, TextInput} from '@gravity-ui/uikit'
 import type {CreateHighlightPayload} from '@/entities/highlight/types'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {MockUploadNotice} from '@/features/highlights/MockUploadNotice'
+import {testId} from '@/shared/testing/testId'
 
 const MOCK_CURRENT_USER_ID = 'user-001'
 
@@ -43,23 +44,32 @@ export function HighlightUploadForm({onSubmit, isPending = false}: HighlightUplo
   }
 
   return (
-    <div className="highlight-upload">
-      <Text variant="subheader-2">Новый момент</Text>
+    <div className="highlight-upload" data-testid={testId('highlights', 'upload-form', 'form')}>
+      <Text variant="subheader-2" data-testid={testId('highlights', 'upload-form', 'text', 'title')}>
+        Новый момент
+      </Text>
       <MockUploadNotice />
-      <div className="highlight-upload__fields">
+      <div className="highlight-upload__fields" data-testid={testId('highlights', 'upload-form', 'panel', 'fields')}>
         <TextInput
           placeholder="Название момента"
           value={title}
           onUpdate={setTitle}
           size="m"
+          data-testid={testId('highlights', 'upload-form', 'field', 'title')}
         />
         <Select
           value={[eventId]}
           onUpdate={(vals) => setEventId(vals[0])}
           options={EVENT_OPTIONS}
           size="m"
+          data-testid={testId('highlights', 'upload-form', 'select', 'event')}
         />
-        <HockeyButton size="m" onClick={handleSubmit} disabled={isPending || !title.trim()}>
+        <HockeyButton
+          size="m"
+          onClick={handleSubmit}
+          disabled={isPending || !title.trim()}
+          data-testid={testId('highlights', 'upload-form', 'btn', 'submit')}
+        >
           Mock-загрузка
         </HockeyButton>
       </div>

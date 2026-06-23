@@ -10,6 +10,7 @@ import type {
   HighlightAnnotation,
 } from '@/entities/highlight/types'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {testId} from '@/shared/testing/testId'
 
 const TYPE_OPTIONS = [
   {value: 'arrow', content: 'Стрелка'},
@@ -28,6 +29,7 @@ export interface AnnotationLayerProps {
     payload: Record<string, unknown>
   }) => void
   isPending?: boolean
+  highlightId: string
 }
 
 function formatMs(ms: number): string {
@@ -47,6 +49,7 @@ export function AnnotationLayer({
   durationSeconds,
   onAddAnnotation,
   isPending = false,
+  highlightId,
 }: AnnotationLayerProps) {
   const [annotationType, setAnnotationType] = useState<AnnotationType>('arrow')
   const [label, setLabel] = useState('')
@@ -77,12 +80,13 @@ export function AnnotationLayer({
   }
 
   return (
-    <div className="annotation-layer">
+    <div className="annotation-layer" data-testid={testId('highlights', 'annotation-layer', 'panel', highlightId)}>
       <svg
         className="annotation-layer__svg"
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
         aria-hidden
+        data-testid={testId('highlights', 'annotation-layer', 'panel', 'svg', highlightId)}
       >
         {visibleAnnotations.map((annotation) => {
           if (annotation.type === 'arrow') {
@@ -93,7 +97,7 @@ export function AnnotationLayer({
               y2: number
             }
             return (
-              <g key={annotation.id}>
+              <g key={annotation.id} data-testid={testId('highlights', 'annotation-layer', 'item', annotation.id)}>
                 <line
                   x1={x1}
                   y1={y1}
@@ -123,38 +127,61 @@ export function AnnotationLayer({
                 width={width}
                 height={height}
                 className="annotation-layer__zone"
+                data-testid={testId('highlights', 'annotation-layer', 'item', annotation.id)}
               />
             )
           }
           const {x, y, text} = annotation.payload as {x: number; y: number; text: string}
           return (
-            <text key={annotation.id} x={x} y={y} className="annotation-layer__text">
+            <text
+              key={annotation.id}
+              x={x}
+              y={y}
+              className="annotation-layer__text"
+              data-testid={testId('highlights', 'annotation-layer', 'item', annotation.id)}
+            >
               {text}
             </text>
           )
         })}
       </svg>
 
-      <div className="annotation-layer__form">
-        <Text variant="subheader-2">Разметка · {formatMs(currentTimestampMs)}</Text>
-        <div className="annotation-layer__fields">
+      <div className="annotation-layer__form" data-testid={testId('highlights', 'annotation-layer', 'form', highlightId)}>
+        <Text
+          variant="subheader-2"
+          data-testid={testId('highlights', 'annotation-layer', 'text', 'title', highlightId)}
+        >
+          Разметка · {formatMs(currentTimestampMs)}
+        </Text>
+        <div className="annotation-layer__fields" data-testid={testId('highlights', 'annotation-layer', 'panel', 'fields', highlightId)}>
           <Select
             value={[annotationType]}
             onUpdate={(vals) => setAnnotationType(vals[0] as AnnotationType)}
             options={TYPE_OPTIONS}
             size="m"
+            data-testid={testId('highlights', 'annotation-layer', 'select', 'type', highlightId)}
           />
           <TextInput
             placeholder="Подпись / текст"
             value={label}
             onUpdate={setLabel}
             size="m"
+            data-testid={testId('highlights', 'annotation-layer', 'field', 'label', highlightId)}
           />
-          <HockeyButton size="m" onClick={submitAnnotation} disabled={isPending}>
+          <HockeyButton
+            size="m"
+            onClick={submitAnnotation}
+            disabled={isPending}
+            data-testid={testId('highlights', 'annotation-layer', 'btn', 'add', highlightId)}
+          >
             Добавить
           </HockeyButton>
         </div>
-        <Text color="secondary" className="annotation-layer__hint">
+        <Text
+          color="secondary"
+          className="annotation-layer__hint"
+          data-testid={testId('highlights', 'annotation-layer', 'text', 'hint', highlightId)}
+        >
           Показаны метки ±1.5 с от {formatMs(currentTimestampMs)} · всего {durationSeconds} с
         </Text>
       </div>

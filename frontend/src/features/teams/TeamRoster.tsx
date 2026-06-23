@@ -11,6 +11,7 @@ import type {RosterMember} from '@/entities/team/types'
 import type {TeamRole} from '@/entities/team/types'
 import {PositionLabel} from '@/shared/ui/PositionLabel'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
+import {testId} from '@/shared/testing/testId'
 
 const STATUS_OPTIONS = [
   {value: 'active', content: 'Активен'},
@@ -63,7 +64,15 @@ export function TeamRoster({teamId}: TeamRosterProps) {
     },
   })
 
-  if (isLoading) return <ScoreboardLoader label="Загрузка состава" />
+  if (isLoading) {
+    return (
+      <ScoreboardLoader
+        label="Загрузка состава"
+        testIdPrefix="teams"
+        data-testid={testId('teams', 'team-roster', 'loader', teamId)}
+      />
+    )
+  }
 
   const myTeamRole = (roster.find((m) => m.userId === userId)?.teamRole ?? 'player') as TeamRole
   const permissions = teamPermissions(myTeamRole)
@@ -77,8 +86,8 @@ export function TeamRoster({teamId}: TeamRosterProps) {
   }))
 
   return (
-    <div className="hockey-stack hockey-stack--gap-16">
-      <Text color="secondary">
+    <div className="hockey-stack hockey-stack--gap-16" data-testid={testId('teams', 'team-roster', 'panel', teamId)}>
+      <Text color="secondary" data-testid={testId('teams', 'team-roster', 'text', 'role-hint', teamId)}>
         Твоя роль в команде: {myTeamRole}.{' '}
         {isReadOnly
           ? 'Состав доступен только для просмотра — управление открыто капитану и штабу.'
@@ -87,25 +96,25 @@ export function TeamRoster({teamId}: TeamRosterProps) {
             : 'Частичный доступ к управлению командой.'}
       </Text>
       {byPosition.map(({position, members}) => (
-        <div key={position}>
-          <PositionLabel position={position} showFull />
+        <div key={position} data-testid={testId('teams', 'team-roster', 'column', position, teamId)}>
+          <PositionLabel position={position} showFull testIdPrefix="teams" data-testid={testId('teams', 'team-roster', 'badge', 'position', position, teamId)} />
           <div className="hockey-mt-8 hockey-stack hockey-stack--gap-6">
             {members.length === 0 ? (
-              <div className="roster-hook-slot roster-hook-slot--deficit">
+              <div className="roster-hook-slot roster-hook-slot--deficit" data-testid={testId('teams', 'team-roster', 'empty', position, teamId)}>
                 <span className="roster-hook-slot__hook" aria-hidden>
                   🪝
                 </span>
-                <Text color="secondary">Слот пуст — нужен игрок</Text>
+                <Text color="secondary" data-testid={testId('teams', 'team-roster', 'text', 'empty-slot', position, teamId)}>Слот пуст — нужен игрок</Text>
               </div>
             ) : (
               members.map((member) => (
-                <div key={member.userId} className="roster-hook-slot">
+                <div key={member.userId} className="roster-hook-slot" data-testid={testId('teams', 'team-roster', 'row', member.userId)}>
                   <span className="roster-hook-slot__hook" aria-hidden>
                     🪝
                   </span>
                   <div className="roster-hook-slot__body">
-                    <Text variant="subheader-2">{member.displayName}</Text>
-                    <Text color="secondary">
+                    <Text variant="subheader-2" data-testid={testId('teams', 'team-roster', 'text', 'name', member.userId)}>{member.displayName}</Text>
+                    <Text color="secondary" data-testid={testId('teams', 'team-roster', 'text', 'role-status', member.userId)}>
                       Роль: {member.teamRole ?? 'player'} ·{' '}
                       {STATUS_OPTIONS.find((o) => o.value === member.rosterStatus)?.content ?? member.rosterStatus}
                     </Text>
@@ -129,6 +138,7 @@ export function TeamRoster({teamId}: TeamRosterProps) {
                           member.teamRole === 'owner' &&
                           ownerCount <= 1)
                       }
+                      data-testid={testId('teams', 'team-roster', 'select', 'role', member.userId)}
                     />
                   )}
                   {canManageRoster && (
@@ -142,6 +152,7 @@ export function TeamRoster({teamId}: TeamRosterProps) {
                       }
                       options={STATUS_OPTIONS}
                       width={160}
+                      data-testid={testId('teams', 'team-roster', 'select', 'status', member.userId)}
                     />
                   )}
                 </div>

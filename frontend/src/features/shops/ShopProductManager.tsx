@@ -8,6 +8,7 @@ import {Button, Checkbox, Select, Text, TextInput} from '@gravity-ui/uikit'
 import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
 import type {ProductOffer, ShopProductPayload} from '@/entities/shop/types'
 import {createShopProduct, fetchProductOffers, updateShopProduct} from '@/features/shops/api/shopsApi'
+import {testId} from '@/shared/testing/testId'
 
 const AVAILABILITY_OPTIONS = [
   {value: 'in_stock', content: 'В наличии'},
@@ -87,15 +88,17 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
   }
 
   return (
-    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12">
-      <Text variant="subheader-2">Товары магазина</Text>
-      <Text color="secondary">
+    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12" data-testid={testId('shops', shopId, 'products', 'panel')}>
+      <Text variant="subheader-2" data-testid={testId('shops', shopId, 'products', 'text', 'title')}>
+        Товары магазина
+      </Text>
+      <Text color="secondary" data-testid={testId('shops', shopId, 'products', 'text', 'hint')}>
         Добавляй позиции вручную или импортируй каталог на вкладке «Импорт».
       </Text>
 
-      <ul className="partner-dashboard__list">
+      <ul className="partner-dashboard__list" data-testid={testId('shops', shopId, 'products', 'list')}>
         {products.map((product) => (
-          <li key={product.id} className="partner-dashboard__list-item">
+          <li key={product.id} className="partner-dashboard__list-item" data-testid={testId('shops', shopId, 'products', 'item', product.id)}>
             <div className="hockey-row hockey-row--gap-12">
               {product.imageUrl && (
                 <img
@@ -104,11 +107,14 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
                   className="shop-product-thumb"
                   width={48}
                   height={48}
+                  data-testid={testId('shops', shopId, 'products', 'cell', 'image', product.id)}
                 />
               )}
               <div>
-                <Text>{product.title}</Text>
-                <Text color="secondary">
+                <Text data-testid={testId('shops', shopId, 'products', 'text', 'title', product.id)}>
+                  {product.title}
+                </Text>
+                <Text color="secondary" data-testid={testId('shops', shopId, 'products', 'text', 'meta', product.id)}>
                   {product.category} · {product.price.toLocaleString('ru-RU')} ₽ · {product.availability}
                   {product.recommendedPositions?.length
                     ? ` · ${product.recommendedPositions.join(', ')}`
@@ -117,48 +123,63 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
                 </Text>
               </div>
             </div>
-            <Button size="s" view="outlined" onClick={() => toggleAvailability(product)}>
+            <Button
+              size="s"
+              view="outlined"
+              data-testid={testId('shops', shopId, 'products', 'btn', 'toggle-availability', product.id)}
+              onClick={() => toggleAvailability(product)}
+            >
               Сменить наличие
             </Button>
           </li>
         ))}
       </ul>
 
-      <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8">
-        <Text variant="subheader-2">Добавить товар</Text>
+      <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8" data-testid={testId('shops', shopId, 'products', 'form')}>
+        <Text variant="subheader-2" data-testid={testId('shops', shopId, 'products', 'text', 'form-title')}>
+          Добавить товар
+        </Text>
         <TextInput
           label="Название"
           value={form.title}
+          data-testid={testId('shops', shopId, 'products', 'field', 'title')}
           onUpdate={(value) => setForm((prev) => ({...prev, title: value}))}
         />
         <TextInput
           label="Категория"
           value={form.category}
+          data-testid={testId('shops', shopId, 'products', 'field', 'category')}
           onUpdate={(value) => setForm((prev) => ({...prev, category: value}))}
         />
         <TextInput
           label="Цена, ₽"
           value={String(form.price || '')}
+          data-testid={testId('shops', shopId, 'products', 'field', 'price')}
           onUpdate={(value) => setForm((prev) => ({...prev, price: Number(value) || 0}))}
         />
         <TextInput
           label="Ссылка на карточку"
           value={form.externalUrl}
+          data-testid={testId('shops', shopId, 'products', 'field', 'external-url')}
           onUpdate={(value) => setForm((prev) => ({...prev, externalUrl: value}))}
         />
         <TextInput
           label="URL изображения (mock)"
           value={form.imageUrl ?? ''}
           placeholder="https://placehold.co/120x120/png?text=Product"
+          data-testid={testId('shops', shopId, 'products', 'field', 'image-url')}
           onUpdate={(value) => setForm((prev) => ({...prev, imageUrl: value}))}
         />
         <div>
-          <Text variant="caption-1" color="secondary">Рекомендованные амплуа</Text>
+          <Text variant="caption-1" color="secondary" data-testid={testId('shops', shopId, 'products', 'text', 'positions-label')}>
+            Рекомендованные амплуа
+          </Text>
           <div className="hockey-mt-8 hockey-row hockey-row--gap-12 hockey-row--wrap">
             {POSITION_OPTIONS.map((position) => (
               <Checkbox
                 key={position}
                 checked={form.recommendedPositions?.includes(position) ?? false}
+                data-testid={testId('shops', shopId, 'products', 'checkbox', 'position', position)}
                 onUpdate={(checked) => togglePosition(position, checked)}
                 content={position}
               />
@@ -169,6 +190,7 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
           label="Рекомендованный уровень"
           value={form.recommendedLevels?.[0] ? [form.recommendedLevels[0]] : []}
           options={LEVEL_OPTIONS}
+          data-testid={testId('shops', shopId, 'products', 'select', 'level')}
           onUpdate={(value) =>
             setForm((prev) => ({
               ...prev,
@@ -180,6 +202,7 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
           label="Наличие"
           value={[form.availability]}
           options={AVAILABILITY_OPTIONS}
+          data-testid={testId('shops', shopId, 'products', 'select', 'availability')}
           onUpdate={(value) =>
             setForm((prev) => ({...prev, availability: value[0] as ShopProductPayload['availability']}))
           }
@@ -188,13 +211,18 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
           view="action"
           disabled={!form.title.trim() || !form.category.trim() || !form.externalUrl.trim()}
           loading={createMutation.isPending}
+          data-testid={testId('shops', shopId, 'products', 'btn', 'add')}
           onClick={() => createMutation.mutate(form)}
         >
           Добавить товар
         </Button>
       </div>
 
-      {statusMessage && <Text color="secondary">{statusMessage}</Text>}
+      {statusMessage && (
+        <Text color="secondary" data-testid={testId('shops', shopId, 'products', 'text', 'status-message')}>
+          {statusMessage}
+        </Text>
+      )}
     </div>
   )
 }

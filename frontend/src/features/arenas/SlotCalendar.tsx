@@ -10,6 +10,7 @@ import type {IceSlot} from '@/entities/arena/types'
 import {ExternalBookingButton} from '@/features/arenas/ExternalBookingButton'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-6.3.1 */
 export interface SlotCalendarProps {
@@ -58,15 +59,21 @@ export function SlotCalendar({slots, arena}: SlotCalendarProps) {
   const selectedSlot = slots.find((s) => s.id === selectedSlotId) ?? null
 
   if (slots.length === 0) {
-    return <Text color="secondary">Свободные слоты не опубликованы.</Text>
+    return (
+      <Text color="secondary" data-testid={testId('arenas', 'slot-calendar', 'empty', arena.id)}>
+        Свободные слоты не опубликованы.
+      </Text>
+    )
   }
 
   return (
-    <div className="slot-calendar">
+    <div className="slot-calendar" data-testid={testId('arenas', 'slot-calendar', 'calendar', arena.id)}>
       {grouped.map(([day, daySlots]) => (
-        <section key={day} className="slot-calendar__day">
-          <div className="slot-calendar__day-label">{day}</div>
-          <div className="slot-calendar__grid">
+        <section key={day} className="slot-calendar__day" data-testid={testId('arenas', 'slot-calendar', 'panel', day)}>
+          <div className="slot-calendar__day-label" data-testid={testId('arenas', 'slot-calendar', 'text', 'day', day)}>
+            {day}
+          </div>
+          <div className="slot-calendar__grid" data-testid={testId('arenas', 'slot-calendar', 'list', day)}>
             {daySlots.map((slot) => {
               const selected = slot.id === selectedSlotId
               const disabled = slot.status !== 'free'
@@ -84,13 +91,18 @@ export function SlotCalendar({slots, arena}: SlotCalendarProps) {
                   onClick={() => !disabled && setSelectedSlotId(slot.id)}
                   disabled={disabled}
                   aria-pressed={selected}
+                  data-testid={testId('arenas', 'slot-calendar', 'slot', slot.id)}
                 >
-                  <ScoreboardText>{timeRange(slot)}</ScoreboardText>
-                  <span className="slot-calendar__chip-status">
+                  <ScoreboardText data-testid={testId('arenas', 'slot-calendar', 'text', 'time', slot.id)}>
+                    {timeRange(slot)}
+                  </ScoreboardText>
+                  <span className="slot-calendar__chip-status" data-testid={testId('arenas', 'slot-calendar', 'text', 'status', slot.id)}>
                     {slot.status === 'free' ? 'Свободно' : 'Занято'}
                   </span>
                   {slot.price && (
-                    <span className="slot-calendar__chip-price">{slot.price} ₽</span>
+                    <span className="slot-calendar__chip-price" data-testid={testId('arenas', 'slot-calendar', 'text', 'price', slot.id)}>
+                      {slot.price} ₽
+                    </span>
                   )}
                 </button>
               )
@@ -100,12 +112,14 @@ export function SlotCalendar({slots, arena}: SlotCalendarProps) {
       ))}
 
       {selectedSlot && selectedSlot.status === 'free' && (
-        <div className="slot-calendar__booking">
-          <Text>
+        <div className="slot-calendar__booking" data-testid={testId('arenas', 'slot-calendar', 'panel', 'booking', arena.id)}>
+          <Text data-testid={testId('arenas', 'slot-calendar', 'text', 'selected', selectedSlot.id)}>
             Выбран слот: {new Date(selectedSlot.startsAt).toLocaleString('ru-RU')}
             {selectedSlot.price ? ` · ${selectedSlot.price} RUB` : ''}
           </Text>
-          <SourceMetaBadge sourceMeta={selectedSlot.sourceMeta} />
+          <div data-testid={testId('arenas', 'slot-calendar', 'badge', 'source', selectedSlot.id)}>
+            <SourceMetaBadge sourceMeta={selectedSlot.sourceMeta} />
+          </div>
           <ExternalBookingButton
             arena={arena}
             slot={selectedSlot}

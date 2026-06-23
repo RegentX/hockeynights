@@ -5,6 +5,7 @@
 import {Select} from '@gravity-ui/uikit'
 import type {CalendarFilters as CalendarFiltersType} from '@/entities/event/types'
 import type {AttendanceStatus, EventType} from '@/entities/common/types'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-4.2.2 - Props фильтров календаря */
 export interface CalendarFiltersProps {
@@ -33,13 +34,14 @@ const STATUS_OPTIONS = [
  */
 export function CalendarFilters({filters, onChange}: CalendarFiltersProps) {
   return (
-    <div className="hockey-row hockey-row--gap-12">
+    <div className="hockey-row hockey-row--gap-12" data-testid={testId('calendar', 'filters', 'filter')}>
       <Select
         label="Тип события"
         value={[filters.type ?? '']}
         onUpdate={(v) => onChange({...filters, type: (v[0] || undefined) as EventType | undefined})}
         options={TYPE_OPTIONS}
         width={200}
+        data-testid={testId('calendar', 'filters', 'select', 'type')}
       />
       <Select
         label="Статус участия"
@@ -49,6 +51,7 @@ export function CalendarFilters({filters, onChange}: CalendarFiltersProps) {
         }
         options={STATUS_OPTIONS}
         width={200}
+        data-testid={testId('calendar', 'filters', 'select', 'attendance')}
       />
     </div>
   )

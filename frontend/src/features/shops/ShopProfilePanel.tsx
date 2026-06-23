@@ -13,6 +13,7 @@ import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {MockShopPortalModal} from '@/features/shops/MockShopPortalModal'
 import {fetchShopPromos} from '@/features/shops/api/shopsApi'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
+import {testId} from '@/shared/testing/testId'
 
 export interface ShopProfilePanelProps {
   shop: Shop
@@ -37,45 +38,73 @@ export function ShopProfilePanel({shop}: ShopProfilePanelProps) {
 
   return (
     <IceCard padding="m">
-      <div className="shop-profile hockey-stack hockey-stack--gap-12">
+      <div className="shop-profile hockey-stack hockey-stack--gap-12" data-testid={testId('shops', 'profile', 'panel', shop.id)}>
         <div className="shop-profile__header hockey-row hockey-row--between">
           <div className="hockey-stack hockey-stack--gap-4">
-            <Text variant="subheader-2">Профиль магазина</Text>
-            <Text color="secondary">{shop.name}</Text>
+            <Text variant="subheader-2" data-testid={testId('shops', 'profile', 'text', 'title', shop.id)}>
+              Профиль магазина
+            </Text>
+            <Text color="secondary" data-testid={testId('shops', 'profile', 'text', 'name', shop.id)}>
+              {shop.name}
+            </Text>
           </div>
-          <EntityProfileBadge kind="shop" />
+          <span data-testid={testId('shops', 'profile', 'badge', 'profile', shop.id)}>
+            <EntityProfileBadge kind="shop" />
+          </span>
         </div>
 
         <div className="shop-profile__info hockey-grid hockey-grid--2-cols">
           <div className="hockey-stack hockey-stack--gap-4">
-            <Text color="secondary" variant="caption-1">Город</Text>
-            <Text>{shop.city || 'Москва'}</Text>
+            <Text color="secondary" variant="caption-1" data-testid={testId('shops', 'profile', 'text', 'city-label', shop.id)}>
+              Город
+            </Text>
+            <Text data-testid={testId('shops', 'profile', 'text', 'city', shop.id)}>{shop.city || 'Москва'}</Text>
           </div>
           <div className="hockey-stack hockey-stack--gap-4">
-            <Text color="secondary" variant="caption-1">Статус</Text>
-            <Text>{shop.partnerStatus === 'partner' ? 'Официальный партнёр' : 'Магазин экипировки'}</Text>
+            <Text color="secondary" variant="caption-1" data-testid={testId('shops', 'profile', 'text', 'status-label', shop.id)}>
+              Статус
+            </Text>
+            <Text data-testid={testId('shops', 'profile', 'text', 'status', shop.id)}>
+              {shop.partnerStatus === 'partner' ? 'Официальный партнёр' : 'Магазин экипировки'}
+            </Text>
           </div>
         </div>
 
         <div className="shop-profile__categories">
-          <Text color="secondary" variant="caption-1" className="hockey-mb-4">Категории</Text>
-          <div className="hockey-row hockey-row--gap-4 hockey-row--wrap">
+          <Text color="secondary" variant="caption-1" className="hockey-mb-4" data-testid={testId('shops', 'profile', 'text', 'categories-label', shop.id)}>
+            Категории
+          </Text>
+          <div className="hockey-row hockey-row--gap-4 hockey-row--wrap" data-testid={testId('shops', 'profile', 'list', 'categories', shop.id)}>
             {shop.categories.map((cat) => (
-              <span key={cat} className="club-profile__chip">{cat}</span>
+              <span key={cat} className="club-profile__chip" data-testid={testId('shops', 'profile', 'badge', 'category', shop.id, cat)}>
+                {cat}
+              </span>
             ))}
           </div>
         </div>
 
-        {shop.description && <Text color="secondary">{shop.description}</Text>}
+        {shop.description && (
+          <Text color="secondary" data-testid={testId('shops', 'profile', 'text', 'description', shop.id)}>
+            {shop.description}
+          </Text>
+        )}
 
         {activePromos.length > 0 && (
-          <div className="shop-profile__promos hockey-stack hockey-stack--gap-8">
+          <div className="shop-profile__promos hockey-stack hockey-stack--gap-8" data-testid={testId('shops', 'profile', 'list', 'promos', shop.id)}>
             {activePromos.map((promo) => (
-              <div key={promo.id} className="shop-profile__promo-banner">
-                <Text variant="subheader-2">{promo.title}</Text>
-                {promo.subtitle && <Text color="secondary">{promo.subtitle}</Text>}
+              <div key={promo.id} className="shop-profile__promo-banner" data-testid={testId('shops', 'profile', 'card', 'promo', shop.id, promo.id)}>
+                <Text variant="subheader-2" data-testid={testId('shops', 'profile', 'text', 'promo-title', shop.id, promo.id)}>
+                  {promo.title}
+                </Text>
+                {promo.subtitle && (
+                  <Text color="secondary" data-testid={testId('shops', 'profile', 'text', 'promo-subtitle', shop.id, promo.id)}>
+                    {promo.subtitle}
+                  </Text>
+                )}
                 {promo.discountPercent && (
-                  <span className="shop-profile__promo-badge">−{promo.discountPercent}%</span>
+                  <span className="shop-profile__promo-badge" data-testid={testId('shops', 'profile', 'badge', 'promo-discount', shop.id, promo.id)}>
+                    −{promo.discountPercent}%
+                  </span>
                 )}
               </div>
             ))}
@@ -84,16 +113,23 @@ export function ShopProfilePanel({shop}: ShopProfilePanelProps) {
 
         <div className="shop-profile__actions hockey-row hockey-row--gap-8">
           {canManagePartner && (
-            <Link to={`/partner/shops/${shop.id}`}>
-              <HockeyButton view="action" size="s">Кабинет магазина</HockeyButton>
+            <Link to={`/partner/shops/${shop.id}`} data-testid={testId('shops', 'profile', 'link', 'cabinet', shop.id)}>
+              <HockeyButton view="action" size="s" data-testid={testId('shops', 'profile', 'btn', 'cabinet', shop.id)}>
+                Кабинет магазина
+              </HockeyButton>
             </Link>
           )}
-          <HockeyButton view={canManagePartner ? 'outlined' : 'action'} size="s" onClick={() => setPortalOpen(true)}>
+          <HockeyButton
+            view={canManagePartner ? 'outlined' : 'action'}
+            size="s"
+            data-testid={testId('shops', 'profile', 'btn', 'catalog', shop.id)}
+            onClick={() => setPortalOpen(true)}
+          >
             Каталог партнёра
           </HockeyButton>
           {shop.websiteUrl && (
-            <a href={shop.websiteUrl} target="_blank" rel="noreferrer">
-              <HockeyButton view="outlined" size="s">
+            <a href={shop.websiteUrl} target="_blank" rel="noreferrer" data-testid={testId('shops', 'profile', 'link', 'website', shop.id)}>
+              <HockeyButton view="outlined" size="s" data-testid={testId('shops', 'profile', 'btn', 'website', shop.id)}>
                 Перейти на сайт
               </HockeyButton>
             </a>

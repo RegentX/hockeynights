@@ -5,6 +5,7 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Text} from '@gravity-ui/uikit'
 import {fetchShopCatalogState, importShopCatalog} from '@/features/shops/api/shopsApi'
+import {testId} from '@/shared/testing/testId'
 
 const STATUS_LABELS: Record<string, string> = {
   synced: 'Синхронизирован',
@@ -36,28 +37,35 @@ export function ShopCatalogImportPanel({shopId}: ShopCatalogImportPanelProps) {
   })
 
   return (
-    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12">
-      <Text variant="subheader-2">Импорт каталога</Text>
+    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12" data-testid={testId('shops', shopId, 'import', 'panel')}>
+      <Text variant="subheader-2" data-testid={testId('shops', shopId, 'import', 'text', 'title')}>
+        Импорт каталога
+      </Text>
       {state && (
-        <div className="partner-dashboard__stats">
-          <Text>
+        <div className="partner-dashboard__stats" data-testid={testId('shops', shopId, 'import', 'panel', 'status')}>
+          <Text data-testid={testId('shops', shopId, 'import', 'text', 'status')}>
             Статус: {STATUS_LABELS[state.status] ?? state.status} · {state.productCount} позиций
           </Text>
-          <Text color="secondary">
+          <Text color="secondary" data-testid={testId('shops', shopId, 'import', 'text', 'source')}>
             Источник: {state.source}
             {state.lastSyncedAt
               ? ` · обновлено ${new Date(state.lastSyncedAt).toLocaleString('ru-RU')}`
               : ''}
           </Text>
-          {state.errorMessage && <Text color="danger">{state.errorMessage}</Text>}
+          {state.errorMessage && (
+            <Text color="danger" data-testid={testId('shops', shopId, 'import', 'text', 'error')}>
+              {state.errorMessage}
+            </Text>
+          )}
         </div>
       )}
 
-      <div className="partner-dashboard__tabs">
+      <div className="partner-dashboard__tabs" data-testid={testId('shops', shopId, 'import', 'nav')}>
         <Button
           size="s"
           view="outlined"
           loading={importMutation.isPending && importMutation.variables === 'feed'}
+          data-testid={testId('shops', shopId, 'import', 'btn', 'feed')}
           onClick={() => importMutation.mutate('feed')}
         >
           Импорт feed
@@ -66,6 +74,7 @@ export function ShopCatalogImportPanel({shopId}: ShopCatalogImportPanelProps) {
           size="s"
           view="outlined"
           loading={importMutation.isPending && importMutation.variables === 'api'}
+          data-testid={testId('shops', shopId, 'import', 'btn', 'api')}
           onClick={() => importMutation.mutate('api')}
         >
           Импорт API
@@ -74,6 +83,7 @@ export function ShopCatalogImportPanel({shopId}: ShopCatalogImportPanelProps) {
           size="s"
           view="outlined"
           loading={importMutation.isPending && importMutation.variables === 'csv'}
+          data-testid={testId('shops', shopId, 'import', 'btn', 'csv')}
           onClick={() => importMutation.mutate('csv')}
         >
           Импорт CSV
@@ -81,7 +91,7 @@ export function ShopCatalogImportPanel({shopId}: ShopCatalogImportPanelProps) {
       </div>
 
       {importMutation.data && (
-        <Text color="secondary">
+        <Text color="secondary" data-testid={testId('shops', shopId, 'import', 'text', 'result')}>
           {importMutation.data.message ?? `Импортировано ${importMutation.data.importedCount} позиций`}
         </Text>
       )}

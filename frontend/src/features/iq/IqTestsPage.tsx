@@ -18,6 +18,7 @@ import {IqAttemptFlow} from '@/features/iq/IqAttemptFlow'
 import {IqLeaderboard} from '@/features/iq/IqLeaderboard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {testId} from '@/shared/testing/testId'
 
 const MOCK_CURRENT_USER_ID = 'user-001'
 
@@ -75,25 +76,33 @@ export function IqTestsPage() {
   }, [leaderboard])
 
   return (
-    <div className="iq-page">
-      <Text variant="header-1">Hockey IQ</Text>
-      <Text color="secondary">
+    <div className="iq-page" data-testid={testId('iq', 'page', 'page')}>
+      <Text variant="header-1" data-testid={testId('iq', 'page', 'text', 'title')}>
+        Hockey IQ
+      </Text>
+      <Text color="secondary" data-testid={testId('iq', 'page', 'text', 'subtitle')}>
         Тренерская доска: быстрые тесты по правилам и игровым решениям.
       </Text>
 
-      <div className="iq-page__layout">
-        <section className="iq-page__main">
+      <div className="iq-page__layout" data-testid={testId('iq', 'page', 'panel', 'layout')}>
+        <section className="iq-page__main" data-testid={testId('iq', 'page', 'panel', 'main')}>
           {!activeTest && (
             <>
-              {testsLoading && <ScoreboardLoader label="Загрузка тестов Hockey IQ" />}
+              {testsLoading && (
+                <div data-testid={testId('iq', 'page', 'loader', 'tests')}>
+                  <ScoreboardLoader label="Загрузка тестов Hockey IQ" />
+                </div>
+              )}
               {!testsLoading && tests.length === 0 && (
-                <EmptyNetState
-                  title="Тесты не найдены"
-                  copy="Каталог Hockey IQ пока пуст."
-                />
+                <div data-testid={testId('iq', 'page', 'empty', 'tests')}>
+                  <EmptyNetState
+                    title="Тесты не найдены"
+                    copy="Каталог Hockey IQ пока пуст."
+                  />
+                </div>
               )}
               {!testsLoading && tests.length > 0 && (
-                <div className="iq-page__cards">
+                <div className="iq-page__cards" data-testid={testId('iq', 'page', 'list', 'tests')}>
                   {tests.map((test) => (
                     <IqTestCard key={test.id} test={test} onStart={startTest} />
                   ))}
@@ -105,7 +114,9 @@ export function IqTestsPage() {
           {activeTest && (
             <>
               {questionsLoading ? (
-                <ScoreboardLoader label="Подготовка вопросов" />
+                <div data-testid={testId('iq', 'page', 'loader', 'questions')}>
+                  <ScoreboardLoader label="Подготовка вопросов" />
+                </div>
               ) : (
                 <IqAttemptFlow
                   test={activeTest}
@@ -126,9 +137,11 @@ export function IqTestsPage() {
           )}
         </section>
 
-        <aside className="iq-page__side">
+        <aside className="iq-page__side" data-testid={testId('iq', 'page', 'panel', 'sidebar')}>
           {leaderboardLoading ? (
-            <ScoreboardLoader label="Загрузка рейтинга" />
+            <div data-testid={testId('iq', 'page', 'loader', 'leaderboard')}>
+              <ScoreboardLoader label="Загрузка рейтинга" />
+            </div>
           ) : (
             <IqLeaderboard rows={leaderboardWithCurrentUser} />
           )}

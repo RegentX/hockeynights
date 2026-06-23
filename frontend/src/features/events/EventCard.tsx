@@ -11,6 +11,7 @@ import {AttendanceControl} from '@/features/events/AttendanceControl'
 import {RosterNeedsWidget} from '@/features/events/RosterNeedsWidget'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-4.1.1 - Props карточки события */
 export interface EventCardProps {
@@ -42,11 +43,18 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
 
   if (compact) {
     return (
-      <div className={`scoreboard-calendar__event scoreboard-calendar__event--${event.type}`}>
-        <div className="scoreboard-calendar__event-time">{timeStr}</div>
+      <div
+        className={`scoreboard-calendar__event scoreboard-calendar__event--${event.type}`}
+        data-testid={testId('events', 'card', 'card', event.id, 'compact')}
+      >
+        <div className="scoreboard-calendar__event-time" data-testid={testId('events', 'card', 'text', 'time', event.id)}>
+          {timeStr}
+        </div>
         <div>
-          <Text variant="subheader-2">{event.title}</Text>
-          <Text color="secondary">
+          <Text variant="subheader-2" data-testid={testId('events', 'card', 'text', 'title', event.id)}>
+            {event.title}
+          </Text>
+          <Text color="secondary" data-testid={testId('events', 'card', 'text', 'meta', event.id)}>
             {TYPE_LABELS[event.type] ?? event.type} · {event.arenaName ?? event.arenaId}
           </Text>
         </div>
@@ -55,39 +63,54 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
   }
 
   return (
-    <IceCard padding="m">
-      <div className="hockey-stack hockey-stack--gap-12">
-        <div className="match-center__row match-center__row--plain">
-          <div>
-            <div className="match-center__time">{timeStr}</div>
-            <div className={`match-center__type match-center__type--${event.type}`}>
-              {TYPE_LABELS[event.type] ?? event.type}
+    <div data-testid={testId('events', 'card', 'card', event.id)}>
+      <IceCard padding="m">
+        <div className="hockey-stack hockey-stack--gap-12">
+          <div className="match-center__row match-center__row--plain">
+            <div>
+              <div className="match-center__time" data-testid={testId('events', 'card', 'text', 'time', event.id)}>
+                {timeStr}
+              </div>
+              <div
+                className={`match-center__type match-center__type--${event.type}`}
+                data-testid={testId('events', 'card', 'badge', 'type', event.id)}
+              >
+                {TYPE_LABELS[event.type] ?? event.type}
+              </div>
+            </div>
+            <div>
+              <Text variant="subheader-2" data-testid={testId('events', 'card', 'text', 'title', event.id)}>
+                {event.title}
+              </Text>
+              <Text color="secondary" data-testid={testId('events', 'card', 'text', 'arena', event.id)}>
+                {event.arenaName ?? event.arenaId}
+              </Text>
+              <Text color="secondary" data-testid={testId('events', 'card', 'text', 'datetime', event.id)}>
+                {start.toLocaleDateString('ru-RU')} —{' '}
+                {new Date(event.endsAt).toLocaleTimeString('ru-RU', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </Text>
+              {event.pricePerPlayer && (
+                <ScoreboardText tone="accent" data-testid={testId('events', 'card', 'text', 'price', event.id)}>
+                  {event.pricePerPlayer} RUB / игрок
+                </ScoreboardText>
+              )}
             </div>
           </div>
-          <div>
-            <Text variant="subheader-2">{event.title}</Text>
-            <Text color="secondary">{event.arenaName ?? event.arenaId}</Text>
-            <Text color="secondary">
-              {start.toLocaleDateString('ru-RU')} —{' '}
-              {new Date(event.endsAt).toLocaleTimeString('ru-RU', {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </Text>
-            {event.pricePerPlayer && (
-              <ScoreboardText tone="accent">{event.pricePerPlayer} RUB / игрок</ScoreboardText>
-            )}
-          </div>
-        </div>
 
-        <AttendanceControl eventId={event.id} currentStatus={currentStatus} />
-        <RosterNeedsWidget eventId={event.id} />
-        {currentStatus === 'going' && isPastEvent && (
-          <Link to="/feedback">
-            <Text color="link">Оставить отзыв после матча</Text>
-          </Link>
-        )}
-      </div>
-    </IceCard>
+          <AttendanceControl eventId={event.id} currentStatus={currentStatus} />
+          <RosterNeedsWidget eventId={event.id} />
+          {currentStatus === 'going' && isPastEvent && (
+            <Link to="/feedback" data-testid={testId('events', 'card', 'link', 'feedback', event.id)}>
+              <Text color="link" data-testid={testId('events', 'card', 'text', 'feedback', event.id)}>
+                Оставить отзыв после матча
+              </Text>
+            </Link>
+          )}
+        </div>
+      </IceCard>
+    </div>
   )
 }

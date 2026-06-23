@@ -16,6 +16,7 @@ import {
 } from '@/features/leagues/api/leaguesApi'
 import {fetchTeams} from '@/features/teams/api/teamsApi'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {testId} from '@/shared/testing/testId'
 
 const STATUS_LABELS: Record<string, string> = {
   pending: 'На рассмотрении',
@@ -91,33 +92,47 @@ export function LeagueTeamApplicationForm({league}: LeagueTeamApplicationFormPro
   })
 
   if (league.recruitingStatus === 'closed') {
-    return <Text color="secondary">Набор команд в эту лигу закрыт.</Text>
+    return (
+      <Text color="secondary" data-testid={testId('leagues', 'application', 'text', 'closed', league.id)}>
+        Набор команд в эту лигу закрыт.
+      </Text>
+    )
   }
 
   if (!isCaptain) {
     return (
-      <div className="league-profile__application hockey-stack hockey-stack--gap-8">
-        <Text color="secondary">Подать заявку может капитан или владелец команды.</Text>
-        <Link to="/">
-          <HockeyButton view="outlined" size="s">Войти как капитан</HockeyButton>
+      <div className="league-profile__application hockey-stack hockey-stack--gap-8" data-testid={testId('leagues', 'application', 'panel', 'login-hint', league.id)}>
+        <Text color="secondary" data-testid={testId('leagues', 'application', 'text', 'captain-only', league.id)}>
+          Подать заявку может капитан или владелец команды.
+        </Text>
+        <Link to="/" data-testid={testId('leagues', 'application', 'link', 'login', league.id)}>
+          <HockeyButton view="outlined" size="s" data-testid={testId('leagues', 'application', 'btn', 'login', league.id)}>
+            Войти как капитан
+          </HockeyButton>
         </Link>
       </div>
     )
   }
 
   if (!selectedTeam || !activeSeason) {
-    return <Text color="secondary">Создайте команду, чтобы подать заявку в лигу.</Text>
+    return (
+      <Text color="secondary" data-testid={testId('leagues', 'application', 'text', 'no-team', league.id)}>
+        Создайте команду, чтобы подать заявку в лигу.
+      </Text>
+    )
   }
 
   if (existing && existing.status !== 'rejected') {
     return (
-      <div className="league-profile__application hockey-stack hockey-stack--gap-8">
-        <Text variant="subheader-2">Заявка команды {selectedTeam.name}</Text>
-        <Text>
+      <div className="league-profile__application hockey-stack hockey-stack--gap-8" data-testid={testId('leagues', 'application', 'panel', 'existing', league.id)}>
+        <Text variant="subheader-2" data-testid={testId('leagues', 'application', 'text', 'existing-title', league.id)}>
+          Заявка команды {selectedTeam.name}
+        </Text>
+        <Text data-testid={testId('leagues', 'application', 'text', 'existing-status', league.id)}>
           Статус: {STATUS_LABELS[existing.status] ?? existing.status}
           {existing.reviewComment ? ` · ${existing.reviewComment}` : ''}
         </Text>
-        <Text color="secondary">
+        <Text color="secondary" data-testid={testId('leagues', 'application', 'text', 'existing-meta', league.id)}>
           Сезон {activeSeason.name} · подана{' '}
           {new Date(existing.createdAt).toLocaleString('ru-RU')}
         </Text>
@@ -128,9 +143,14 @@ export function LeagueTeamApplicationForm({league}: LeagueTeamApplicationFormPro
   const divisionOptions = divisions.map((d) => ({value: d.id, content: d.name}))
 
   return (
-    <div className="league-profile__application partner-dashboard__form hockey-stack hockey-stack--gap-10">
-      <Text variant="subheader-2">Подать заявку в лигу</Text>
-      <Text color="secondary">
+    <div
+      className="league-profile__application partner-dashboard__form hockey-stack hockey-stack--gap-10"
+      data-testid={testId('leagues', 'application', 'panel', 'form', league.id)}
+    >
+      <Text variant="subheader-2" data-testid={testId('leagues', 'application', 'text', 'form-title', league.id)}>
+        Подать заявку в лигу
+      </Text>
+      <Text color="secondary" data-testid={testId('leagues', 'application', 'text', 'form-subtitle', league.id)}>
         Команда: {selectedTeam.name} · сезон: {activeSeason.name}
       </Text>
 
@@ -140,6 +160,7 @@ export function LeagueTeamApplicationForm({league}: LeagueTeamApplicationFormPro
           value={[selectedTeam.id]}
           options={captainTeams.map((team) => ({value: team.id, content: team.name}))}
           onUpdate={(value) => setTeamId(value[0])}
+          data-testid={testId('leagues', 'application', 'select', 'team', league.id)}
         />
       )}
 
@@ -149,10 +170,16 @@ export function LeagueTeamApplicationForm({league}: LeagueTeamApplicationFormPro
           value={divisionId ? [divisionId] : []}
           options={divisionOptions}
           onUpdate={(value) => setDivisionId(value[0])}
+          data-testid={testId('leagues', 'application', 'select', 'division', league.id)}
         />
       )}
 
-      <TextInput label="Email для связи" value={contactEmail} onUpdate={setContactEmail} />
+      <TextInput
+        label="Email для связи"
+        value={contactEmail}
+        onUpdate={setContactEmail}
+        data-testid={testId('leagues', 'application', 'field', 'email', league.id)}
+      />
 
       <Button
         view="action"
@@ -160,11 +187,16 @@ export function LeagueTeamApplicationForm({league}: LeagueTeamApplicationFormPro
         disabled={!contactEmail.trim()}
         loading={submitMutation.isPending}
         onClick={() => submitMutation.mutate()}
+        data-testid={testId('leagues', 'application', 'btn', 'submit', league.id)}
       >
         Отправить заявку
       </Button>
 
-      {statusMessage && <Text color="secondary">{statusMessage}</Text>}
+      {statusMessage && (
+        <Text color="secondary" data-testid={testId('leagues', 'application', 'text', 'status', league.id)}>
+          {statusMessage}
+        </Text>
+      )}
     </div>
   )
 }

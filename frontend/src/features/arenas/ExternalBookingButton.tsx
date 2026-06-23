@@ -7,6 +7,7 @@ import {HockeyButton} from '@/shared/ui/HockeyButton'
 import type {Arena} from '@/entities/arena/types'
 import type {IceSlot} from '@/entities/arena/types'
 import {MockIceBookingModal} from '@/features/arenas/MockIceBookingModal'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-6.2.2 - Props кнопки записи */
 export interface ExternalBookingButtonProps {
@@ -35,9 +36,13 @@ export function ExternalBookingButton({
 
   if (!canBook) return null
 
+  const btnTestId = slot
+    ? testId('arenas', 'booking', 'btn', 'book', arena.id, slot.id)
+    : testId('arenas', 'booking', 'btn', 'book', arena.id)
+
   return (
     <>
-      <HockeyButton size={size} onClick={() => setOpen(true)}>
+      <HockeyButton size={size} onClick={() => setOpen(true)} data-testid={btnTestId}>
         {label}
       </HockeyButton>
       <MockIceBookingModal
