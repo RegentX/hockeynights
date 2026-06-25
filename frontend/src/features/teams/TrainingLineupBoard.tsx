@@ -486,8 +486,8 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
           <div className="training-lineup__warnings" data-testid={testId('teams', 'training-lineup-board', 'panel', 'warnings', teamId)}>
             <Text variant="subheader-2" data-testid={testId('teams', 'training-lineup-board', 'text', 'warnings-title', teamId)}>Предупреждения по расстановке</Text>
             <ul className="training-lineup__warning-list" data-testid={testId('teams', 'training-lineup-board', 'list', 'warnings', teamId)}>
-              {lineupWarnings.map((warning) => (
-                <li key={warning} data-testid={testId('teams', 'training-lineup-board', 'item', 'warning', warning.slice(0, 20))}>
+              {lineupWarnings.map((warning, index) => (
+                <li key={index} data-testid={testId('teams', 'training-lineup-board', 'item', 'warning', index)}>
                   <Text color="danger">{warning}</Text>
                 </li>
               ))}
