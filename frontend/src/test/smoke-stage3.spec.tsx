@@ -21,6 +21,7 @@ import {ShopsPage} from '@/features/shops/ShopsPage'
 import {AdminDashboard} from '@/features/admin/AdminDashboard'
 import {IqTestsPage} from '@/features/iq/IqTestsPage'
 import {IceRadarPage} from '@/features/radar/IceRadarPage'
+import {RADAR_LABEL} from '@/shared/config/navigationLabels'
 import {HighlightsPage} from '@/features/highlights/HighlightsPage'
 import type {League, LeagueScheduleItem, LeagueStanding} from '@/entities/league/types'
 import type {CreateFeedbackPayload, Feedback, KarmaInfo} from '@/entities/feedback/types'
@@ -321,7 +322,7 @@ describe('TASK-QA-02 UI smoke', () => {
   it('IceRadarPage loads radar zones and recommendations', async () => {
     renderWithProviders(<IceRadarPage />)
     await waitFor(() => {
-      expect(screen.getByText('Ледовый радар')).toBeInTheDocument()
+      expect(screen.getByText(RADAR_LABEL)).toBeInTheDocument()
       expect(screen.getByText('Ближняя зона')).toBeInTheDocument()
       expect(screen.getByText('Нужен твой амплуа — вратарь')).toBeInTheDocument()
     })

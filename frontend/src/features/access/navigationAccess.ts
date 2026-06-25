@@ -7,6 +7,7 @@ import {
   getPrimaryPartnerPath,
   shouldUsePartnerWorkspace,
 } from '@/features/partners/sessionPersona'
+import {ARENAS_LABEL, RADAR_LABEL} from '@/shared/config/navigationLabels'
 
 export interface NavItem {
   to: string
@@ -20,11 +21,11 @@ export const PLAYER_NAV_ITEMS: NavItem[] = [
   {to: '/events', label: 'События'},
   {to: '/calendar', label: 'Календарь'},
   {to: '/sos', label: 'SOS'},
-  {to: '/arenas', label: 'Катки'},
+  {to: '/arenas', label: ARENAS_LABEL},
   {to: '/leagues', label: 'Лиги'},
   {to: '/shops', label: 'Маркет'},
   {to: '/iq', label: 'IQ'},
-  {to: '/radar', label: 'Радар'},
+  {to: '/radar', label: RADAR_LABEL},
   {to: '/highlights', label: 'Моменты'},
   {to: '/feedback', label: 'Feedback'},
   {to: '/notifications', label: 'Уведомления'},
@@ -38,7 +39,7 @@ export const MOBILE_PLAYER_NAV: Array<NavItem & {icon: string}> = [
   {to: '/teams', label: 'Команды', icon: '🛡'},
   {to: '/messenger', label: 'Чат', icon: '💬'},
   {to: '/iq', label: 'IQ', icon: '🎯'},
-  {to: '/arenas', label: 'Катки', icon: '🧊'},
+  {to: '/arenas', label: ARENAS_LABEL, icon: '🧊'},
   {to: '/shops', label: 'Маркет', icon: '🛍'},
   {to: '/profile', label: 'Профиль', icon: '⚙'},
 ]

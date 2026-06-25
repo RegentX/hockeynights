@@ -14,6 +14,7 @@ import {LeagueStandings} from '@/features/leagues/LeagueStandings'
 import {IceCard} from '@/shared/ui/IceCard'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
+import {ARENAS_LABEL, RADAR_LABEL} from '@/shared/config/navigationLabels'
 
 /**
  * @spec SPEC-UI-5.1 - Борт с SOS, слотами и топом таблицы
@@ -51,7 +52,7 @@ export function SideBoard() {
       </IceCard>
 
       <IceCard padding="s">
-        <div className="side-board__title">Ледовый радар</div>
+        <div className="side-board__title">{RADAR_LABEL}</div>
         {topRadar.length === 0 ? (
           <Text color="secondary">Нет активных подсказок</Text>
         ) : (
@@ -65,7 +66,7 @@ export function SideBoard() {
         <div className="side-board__cta">
           <Link to="/radar">
             <HockeyButton view="outlined" size="s">
-              Открыть радар
+              {RADAR_LABEL}
             </HockeyButton>
           </Link>
         </div>
@@ -105,7 +106,7 @@ export function SideBoard() {
       )}
 
       <IceCard padding="s">
-        <div className="side-board__title">Ближайший лёд</div>
+        <div className="side-board__title">Ближайшие события</div>
         {upcoming.length === 0 ? (
           <Text color="secondary">Событий нет</Text>
         ) : (
@@ -125,7 +126,7 @@ export function SideBoard() {
         <div className="side-board__cta side-board__cta--sm">
           <Link to="/arenas">
             <HockeyButton view="outlined" size="s">
-              Катки
+              {ARENAS_LABEL}
             </HockeyButton>
           </Link>
         </div>

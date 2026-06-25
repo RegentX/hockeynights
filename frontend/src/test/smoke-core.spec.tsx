@@ -18,6 +18,7 @@ import {EventsPage} from '@/features/events/EventsPage'
 import {CalendarPage} from '@/features/calendar/CalendarPage'
 import {SosPage} from '@/features/sos/SosPage'
 import {ArenasPage} from '@/features/arenas/ArenasPage'
+import {ARENAS_PAGE_TITLE} from '@/shared/config/navigationLabels'
 import type {GameEvent} from '@/entities/event/types'
 import type {HockeyProfile} from '@/entities/profile/types'
 import type {PlayerListItem} from '@/entities/profile/types'
@@ -445,7 +446,7 @@ describe('TASK-QA-01 UI smoke', () => {
   it('ArenasPage loads rink cards', async () => {
     renderWithProviders(<ArenasPage />)
     await waitFor(() => {
-      expect(screen.getByText('Катки Москвы')).toBeInTheDocument()
+      expect(screen.getByText(ARENAS_PAGE_TITLE)).toBeInTheDocument()
       expect(screen.getAllByText(/Ходынке/i).length).toBeGreaterThan(0)
       expect(screen.getAllByText('Профиль арены').length).toBeGreaterThan(0)
     })
