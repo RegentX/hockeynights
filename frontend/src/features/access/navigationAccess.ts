@@ -38,7 +38,7 @@ export const MOBILE_PLAYER_NAV: Array<NavItem & {icon: string}> = [
   {to: '/players', label: 'Игроки', icon: '👤'},
   {to: '/teams', label: 'Команды', icon: '🛡'},
   {to: '/messenger', label: 'Чат', icon: '💬'},
-  {to: '/iq', label: 'IQ', icon: '🎯'},
+  {to: '/radar', label: RADAR_LABEL, icon: '🔍'},
   {to: '/arenas', label: ARENAS_LABEL, icon: '🧊'},
   {to: '/shops', label: 'Маркет', icon: '🛍'},
   {to: '/profile', label: 'Профиль', icon: '⚙'},
