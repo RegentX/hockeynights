@@ -4,8 +4,8 @@ FROM node:22-alpine AS build
 
 WORKDIR /app
 
-COPY frontend/package.json frontend/package-lock.json ./
-RUN npm ci
+COPY frontend/package.json ./
+RUN npm install
 
 COPY frontend/ ./
 
