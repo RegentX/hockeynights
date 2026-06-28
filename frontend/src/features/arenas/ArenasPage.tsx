@@ -18,11 +18,14 @@ import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
+import {ARENAS_PAGE_TITLE} from '@/shared/config/navigationLabels'
+import {useDocumentTitle} from '@/shared/hooks/useDocumentTitle'
 
 /**
  * @spec SPEC-FR-6.1.1 - Страница списка и карты арен
  */
 export function ArenasPage() {
+  useDocumentTitle(ARENAS_PAGE_TITLE)
   const [filters, setFilters] = useState<ArenaFiltersType>({})
   const [selectedArenaId, setSelectedArenaId] = useState<string | null>(null)
 
@@ -48,7 +51,7 @@ export function ArenasPage() {
   return (
     <div className="arenas-page">
       <ScrollReveal direction="down">
-        <Text variant="header-1" className="variable-font-header">Катки Москвы</Text>
+        <Text variant="header-1" className="variable-font-header">{ARENAS_PAGE_TITLE}</Text>
         <Text color="secondary">
           Карта площадок и разные способы записи: слоты по времени или заявка через портал.
         </Text>
@@ -64,7 +67,7 @@ export function ArenasPage() {
       )}
 
       {!isLoading && arenas.length === 0 && (
-        <EmptyNetState copy="По выбранным фильтрам катки не найдены." />
+        <EmptyNetState copy="По выбранным фильтрам площадки не найдены." />
       )}
 
       {!isLoading && arenas.length > 0 && (
@@ -105,7 +108,7 @@ export function ArenasPage() {
                 hasFreeSlot={arenaHasFreeSlots(activeArena.id)}
               />
             ) : (
-              <EmptyNetState copy="Выбери каток на карте или в списке." />
+              <EmptyNetState copy="Выберите площадку на карте или в списке." />
             )}
           </div>
         </div>

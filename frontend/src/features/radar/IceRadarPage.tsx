@@ -15,6 +15,8 @@ import {
 import {RadarRecommendationCard} from '@/features/radar/RadarRecommendationCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {RADAR_LABEL} from '@/shared/config/navigationLabels'
+import {useDocumentTitle} from '@/shared/hooks/useDocumentTitle'
 
 const MOCK_CURRENT_USER_ID = 'user-001'
 
@@ -29,6 +31,7 @@ const PRIORITY_ZONES: Array<{key: RadarRecommendation['priority']; label: string
  * @spec SPEC-UI-6.5 - Радар смены с концентрическими зонами
  */
 export function IceRadarPage() {
+  useDocumentTitle(RADAR_LABEL)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -79,20 +82,20 @@ export function IceRadarPage() {
   }
 
   if (isLoading) {
-    return <ScoreboardLoader label="Сканируем лёд…" />
+    return <ScoreboardLoader label="Загрузка подсказок…" />
   }
 
   return (
     <div className="radar-page">
-      <Text variant="header-1">Ледовый радар</Text>
+      <Text variant="header-1">{RADAR_LABEL}</Text>
       <Text color="secondary">
         Персональные подсказки на сегодня — SOS, игры, слоты и лиги рядом с тобой.
       </Text>
 
       {recommendations.length === 0 ? (
         <EmptyNetState
-          title="Радар чист"
-          copy="Все рекомендации скрыты. Загляни позже — лёд обновляется."
+          title="Подсказок пока нет"
+          copy="Все рекомендации скрыты. Загляните позже — список обновляется."
         />
       ) : (
         <div className="radar-page__layout">

@@ -46,7 +46,7 @@ export function ArenaMap({
   freeSlotArenaIds,
 }: ArenaMapProps) {
   return (
-    <div className="arena-map" role="application" aria-label="Карта катков Москвы">
+    <div className="arena-map" role="application" aria-label="Карта площадок для аренды льда · Москва">
       <div className="arena-map__surface">
         <MapContainer
           center={[MOSCOW_MAP_CENTER.lat, MOSCOW_MAP_CENTER.lng]}

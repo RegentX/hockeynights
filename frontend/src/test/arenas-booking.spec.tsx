@@ -14,7 +14,7 @@ describe('Arenas map and booking modes', () => {
     renderWithProviders(<ArenasPage />)
 
     await waitFor(() => {
-      expect(screen.getByRole('application', {name: 'Карта катков Москвы'})).toBeInTheDocument()
+      expect(screen.getByRole('application', {name: 'Карта площадок для аренды льда · Москва'})).toBeInTheDocument()
       expect(screen.getAllByText(/OpenStreetMap/i).length).toBeGreaterThan(0)
       expect(screen.getByText(/Москва и ближнее Подмосковье/i)).toBeInTheDocument()
       expect(screen.getAllByText('Слоты по времени').length).toBeGreaterThan(0)
