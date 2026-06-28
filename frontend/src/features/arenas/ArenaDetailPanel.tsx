@@ -3,7 +3,7 @@
  * SPEC-UI-2.2
  */
 
-import {Text} from '@gravity-ui/uikit'
+import {Button, Text} from '@gravity-ui/uikit'
 import type {Arena} from '@/entities/arena/types'
 import type {IceSlot} from '@/entities/arena/types'
 import {ArenaBookingPanel} from '@/features/arenas/ArenaBookingPanel'
@@ -23,12 +23,14 @@ export interface ArenaDetailPanelProps {
   arena: Arena
   slots: IceSlot[]
   hasFreeSlot?: boolean
+  /** @spec SPEC-FR-6.2.1 - Закрыть деталь (без сброса фильтров) */
+  onClose?: () => void
 }
 
 /**
  * @spec SPEC-FR-6.2.1 - Детальная панель выбранной арены
  */
-export function ArenaDetailPanel({arena, slots, hasFreeSlot}: ArenaDetailPanelProps) {
+export function ArenaDetailPanel({arena, slots, hasFreeSlot, onClose}: ArenaDetailPanelProps) {
   const freeCount = slots.filter((s) => s.status === 'free').length
 
   return (
@@ -43,7 +45,21 @@ export function ArenaDetailPanel({arena, slots, hasFreeSlot}: ArenaDetailPanelPr
               {arena.address}
             </Text>
           </div>
-          <div data-testid={testId('arenas', 'detail', 'badge', 'profile', arena.id)}>
+          <div
+            className="hockey-row hockey-row--gap-8"
+            data-testid={testId('arenas', 'detail', 'badge', 'profile', arena.id)}
+          >
+            {onClose && (
+              <Button
+                view="flat"
+                size="m"
+                onClick={onClose}
+                aria-label="Закрыть детали"
+                data-testid={testId('arenas', 'detail', 'btn', 'close')}
+              >
+                ×
+              </Button>
+            )}
             <EntityProfileBadge kind="arena" />
           </div>
         </div>
