@@ -14,6 +14,7 @@ export interface ScoreboardTextProps {
   tone?: ScoreboardTone
   className?: string
   style?: CSSProperties
+  'data-testid'?: string
 }
 
 /**
@@ -24,6 +25,7 @@ export function ScoreboardText({
   tone = 'default',
   className,
   style,
+  'data-testid': dataTestId,
 }: ScoreboardTextProps) {
   const toneClass =
     tone === 'gold' ? 'scoreboard-text--gold' : tone === 'accent' ? 'scoreboard-text--accent' : ''
@@ -31,7 +33,7 @@ export function ScoreboardText({
   const classes = ['scoreboard-text', toneClass, className ?? ''].filter(Boolean).join(' ')
 
   return (
-    <span className={classes} style={style}>
+    <span className={classes} style={style} data-testid={dataTestId}>
       {children}
     </span>
   )

@@ -6,6 +6,7 @@ import {useState} from 'react'
 import {Text} from '@gravity-ui/uikit'
 import type {MarketplaceProductListing} from '@/entities/shop/types'
 import {ExternalProductLink} from '@/features/shops/ExternalProductLink'
+import {testId} from '@/shared/testing/testId'
 
 const TIER_LABELS = {
   premium: 'Топ',
@@ -30,6 +31,7 @@ export function MarketplaceProductCard({listing}: MarketplaceProductCardProps) {
   return (
     <article
       className={`marketplace-card${isPromoted ? ` marketplace-card--${shopAdTier}` : ''}`}
+      data-testid={testId('shops', 'marketplace-card', 'card', offer.id)}
     >
       <div className="marketplace-card__media">
         {offer.imageUrl && !imgError ? (
@@ -38,37 +40,48 @@ export function MarketplaceProductCard({listing}: MarketplaceProductCardProps) {
             alt={offer.title}
             className="marketplace-card__image"
             loading="lazy"
+            data-testid={testId('shops', 'marketplace-card', 'cell', 'image', offer.id)}
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="marketplace-card__placeholder" aria-hidden>
+          <div className="marketplace-card__placeholder" aria-hidden data-testid={testId('shops', 'marketplace-card', 'cell', 'placeholder', offer.id)}>
             🏒
           </div>
         )}
         <div className="marketplace-card__badges">
-          {tierLabel && <span className="marketplace-card__badge marketplace-card__badge--tier">{tierLabel}</span>}
+          {tierLabel && (
+            <span className="marketplace-card__badge marketplace-card__badge--tier" data-testid={testId('shops', 'marketplace-card', 'badge', 'tier', offer.id)}>
+              {tierLabel}
+            </span>
+          )}
           {showDiscount && (
-            <span className="marketplace-card__badge marketplace-card__badge--sale">−{promoDiscount}%</span>
+            <span className="marketplace-card__badge marketplace-card__badge--sale" data-testid={testId('shops', 'marketplace-card', 'badge', 'sale', offer.id)}>
+              −{promoDiscount}%
+            </span>
           )}
           {offer.availability === 'in_stock' && (
-            <span className="marketplace-card__badge marketplace-card__badge--stock">В наличии</span>
+            <span className="marketplace-card__badge marketplace-card__badge--stock" data-testid={testId('shops', 'marketplace-card', 'badge', 'stock', offer.id)}>
+              В наличии
+            </span>
           )}
         </div>
       </div>
 
       <div className="marketplace-card__body">
         <div className="marketplace-card__price-row">
-          <Text variant="subheader-2" className="marketplace-card__price">
+          <Text variant="subheader-2" className="marketplace-card__price" data-testid={testId('shops', 'marketplace-card', 'text', 'price', offer.id)}>
             {discountedPrice.toLocaleString('ru-RU')} ₽
           </Text>
           {showDiscount && (
-            <Text color="secondary" className="marketplace-card__price-old">
+            <Text color="secondary" className="marketplace-card__price-old" data-testid={testId('shops', 'marketplace-card', 'text', 'price-old', offer.id)}>
               {offer.price.toLocaleString('ru-RU')} ₽
             </Text>
           )}
         </div>
-        <Text className="marketplace-card__title">{offer.title}</Text>
-        <Text color="secondary" variant="caption-1" className="marketplace-card__meta">
+        <Text className="marketplace-card__title" data-testid={testId('shops', 'marketplace-card', 'text', 'title', offer.id)}>
+          {offer.title}
+        </Text>
+        <Text color="secondary" variant="caption-1" className="marketplace-card__meta" data-testid={testId('shops', 'marketplace-card', 'text', 'meta', offer.id)}>
           {shopName} · {offer.category}
         </Text>
         <div className="marketplace-card__action">

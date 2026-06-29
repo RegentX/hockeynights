@@ -14,6 +14,7 @@ import {MatchCenterFeed} from '@/shared/ui/MatchCenterFeed'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
+import {testId} from '@/shared/testing/testId'
 
 /**
  * @spec SPEC-UI-2.5 - Страница событий как матч-центр
@@ -43,43 +44,55 @@ export function EventsPage() {
     .sort((a, b) => new Date(b.event.startsAt).getTime() - new Date(a.event.startsAt).getTime())
 
   return (
-    <div className="hockey-stack hockey-stack--gap-20">
+    <div className="hockey-stack hockey-stack--gap-20" data-testid={testId('events', 'page')}>
       <ScrollReveal direction="down">
-        <Text variant="header-1" className="variable-font-header">Игры и тренировки</Text>
+        <Text variant="header-1" className="variable-font-header" data-testid={testId('events', 'page', 'text', 'title')}>
+          Игры и тренировки
+        </Text>
       </ScrollReveal>
 
-      <div className="hockey-grid hockey-grid--cards-280">
+      <div className="hockey-grid hockey-grid--cards-280" data-testid={testId('events', 'page', 'grid')}>
         {canOrganizeEvents && (
           <ScrollReveal direction="left">
-            <IceCard padding="m">
-              <EventCreateForm />
-            </IceCard>
+            <div data-testid={testId('events', 'page', 'card', 'create-form')}>
+              <IceCard padding="m">
+                <EventCreateForm />
+              </IceCard>
+            </div>
           </ScrollReveal>
         )}
 
         <ScrollReveal direction={canOrganizeEvents ? 'right' : 'left'}>
-          <IceCard padding="m">
-            {isLoading ? (
-              <ScoreboardLoader />
-            ) : (
-              <MatchCenterFeed
-                title="Матч-центр"
-                rows={matchRows}
-                empty={
-                  <EmptyNetState
-                    title="Пустая сетка"
-                    copy="Ближайших событий нет — создай игру или тренировку."
+          <div data-testid={testId('events', 'page', 'card', 'match-center')}>
+            <IceCard padding="m">
+              {isLoading ? (
+                <div data-testid={testId('events', 'page', 'loader')}>
+                  <ScoreboardLoader />
+                </div>
+              ) : (
+                <div data-testid={testId('events', 'page', 'list', 'match-center')}>
+                  <MatchCenterFeed
+                    title="Матч-центр"
+                    rows={matchRows}
+                    empty={
+                      <EmptyNetState
+                        title="Пустая сетка"
+                        copy="Ближайших событий нет — создай игру или тренировку."
+                      />
+                    }
                   />
-                }
-              />
-            )}
-          </IceCard>
+                </div>
+              )}
+            </IceCard>
+          </div>
         </ScrollReveal>
       </div>
 
       {!isLoading && events.length > 0 && (
-        <div className="hockey-stack hockey-stack--gap-12">
-          <Text variant="subheader-2">Детали событий</Text>
+        <div className="hockey-stack hockey-stack--gap-12" data-testid={testId('events', 'page', 'list', 'details')}>
+          <Text variant="subheader-2" data-testid={testId('events', 'page', 'text', 'details-title')}>
+            Детали событий
+          </Text>
           {events.map((event, index) => (
             <ScrollReveal key={event.id} direction={index % 2 === 0 ? 'up' : 'down'}>
               <EventCard event={event} />
@@ -89,30 +102,43 @@ export function EventsPage() {
       )}
 
       {!isLoading && participationHistory.length > 0 && (
-        <IceCard padding="m">
-          <div className="hockey-stack hockey-stack--gap-10">
-            <Text variant="subheader-2">Моя история участия (RSVP)</Text>
-            {participationHistory.map(({event, myStatus}) => (
-              <div key={`${event.id}-history`} className="hockey-row hockey-row--between hockey-row--gap-12">
-                <div className="hockey-stack hockey-stack--gap-4">
-                  <Text variant="body-2">{event.title}</Text>
-                  <Text color="secondary">
-                    {new Date(event.startsAt).toLocaleString('ru-RU', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}{' '}
-                    · {event.arenaName ?? event.arenaId}
+        <div data-testid={testId('events', 'page', 'card', 'history')}>
+          <IceCard padding="m">
+            <div className="hockey-stack hockey-stack--gap-10">
+              <Text variant="subheader-2" data-testid={testId('events', 'page', 'text', 'history-title')}>
+                Моя история участия (RSVP)
+              </Text>
+              {participationHistory.map(({event, myStatus}) => (
+                <div
+                  key={`${event.id}-history`}
+                  className="hockey-row hockey-row--between hockey-row--gap-12"
+                  data-testid={testId('events', 'page', 'item', 'history', event.id)}
+                >
+                  <div className="hockey-stack hockey-stack--gap-4">
+                    <Text variant="body-2" data-testid={testId('events', 'page', 'text', 'history-title', event.id)}>
+                      {event.title}
+                    </Text>
+                    <Text color="secondary" data-testid={testId('events', 'page', 'text', 'history-meta', event.id)}>
+                      {new Date(event.startsAt).toLocaleString('ru-RU', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}{' '}
+                      · {event.arenaName ?? event.arenaId}
+                    </Text>
+                  </div>
+                  <Text
+                    color={myStatus === 'going' ? 'positive' : myStatus === 'not_going' ? 'danger' : 'warning'}
+                    data-testid={testId('events', 'page', 'text', 'history-status', event.id)}
+                  >
+                    {myStatus === 'going' ? 'Иду' : myStatus === 'not_going' ? 'Не иду' : 'Под вопросом'}
                   </Text>
                 </div>
-                <Text color={myStatus === 'going' ? 'positive' : myStatus === 'not_going' ? 'danger' : 'warning'}>
-                  {myStatus === 'going' ? 'Иду' : myStatus === 'not_going' ? 'Не иду' : 'Под вопросом'}
-                </Text>
-              </div>
-            ))}
-          </div>
-        </IceCard>
+              ))}
+            </div>
+          </IceCard>
+        </div>
       )}
     </div>
   )

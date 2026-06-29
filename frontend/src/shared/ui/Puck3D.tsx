@@ -7,6 +7,7 @@ import {Canvas, useFrame} from '@react-three/fiber'
 import {MeshDistortMaterial, Float, PerspectiveCamera} from '@react-three/drei'
 import {Text} from '@gravity-ui/uikit'
 import * as THREE from 'three'
+import {testId} from '@/shared/testing/testId'
 
 function PuckMesh() {
   const meshRef = useRef<THREE.Mesh>(null)
@@ -58,14 +59,14 @@ function isWebGLSupported() {
 export function Puck3D() {
   if (!isWebGLSupported()) {
     return (
-      <div className="puck-3d puck-3d--fallback">
-        <Text color="secondary">3D-preview недоступен в этой среде</Text>
+      <div className="puck-3d puck-3d--fallback" data-testid={testId('shared', 'puck-3d', 'panel', 'fallback')}>
+        <Text color="secondary" data-testid={testId('shared', 'puck-3d', 'text', 'fallback')}>3D-preview недоступен в этой среде</Text>
       </div>
     )
   }
 
   return (
-    <div className="puck-3d">
+    <div className="puck-3d" data-testid={testId('shared', 'puck-3d', 'panel')}>
       <Canvas shadows>
         <PerspectiveCamera makeDefault position={[0, 0, 5]} />
         <ambientLight intensity={0.5} />

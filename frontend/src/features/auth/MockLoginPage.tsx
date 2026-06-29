@@ -11,6 +11,7 @@ import {DEMO_PARTNER_MEMBERSHIPS, partnerCabinetPath} from '@/features/partners/
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import type {UserRole} from '@/entities/common/types'
 import type {OnboardingPayload, PartnerMembership} from '@/entities/user/types'
+import {testId} from '@/shared/testing/testId'
 
 const ROLE_OPTIONS: {value: UserRole; label: string; spec: string}[] = [
   {value: 'player', label: 'Игрок', spec: 'SPEC-FR-1.3.1'},
@@ -93,11 +94,11 @@ export function MockLoginPage() {
   const isSwitching = session?.isOnboarded
 
   return (
-    <Card view="filled" className="hockey-form-shell hockey-form-shell--480">
+    <Card view="filled" className="hockey-form-shell hockey-form-shell--480" data-testid={testId('auth', 'login', 'page')}>
       <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
-        <Text variant="header-1">Hockey Nights</Text>
+        <Text variant="header-1" data-testid={testId('auth', 'login', 'text', 'title')}>Hockey Nights</Text>
         {isSwitching ? (
-          <Text color="secondary">
+          <Text color="secondary" data-testid={testId('auth', 'login', 'text', 'switching-hint')}>
             Сейчас вы вошли как <strong>{session.user.displayName}</strong>
             {session.user.partnerMemberships?.length
               ? ` · партнёр: ${session.user.partnerMemberships.map((m) => m.entityName).join(', ')}`
@@ -105,21 +106,21 @@ export function MockLoginPage() {
             . Выберите другую роль ниже — переключение без выхода.
           </Text>
         ) : (
-          <Text color="secondary">
+          <Text color="secondary" data-testid={testId('auth', 'login', 'text', 'hint')}>
             Выберите роль и войдите в mock-демо.
           </Text>
         )}
 
         {isSwitching && (
           <div className="hockey-row hockey-row--gap-8 hockey-row--wrap">
-            <Link to="/profile">
-              <HockeyButton view="outlined" size="s">Продолжить в приложении</HockeyButton>
+            <Link to="/profile" data-testid={testId('auth', 'login', 'link', 'continue')}>
+              <HockeyButton view="outlined" size="s" data-testid={testId('auth', 'login', 'btn', 'continue')}>Продолжить в приложении</HockeyButton>
             </Link>
           </div>
         )}
 
         <div className="hockey-stack hockey-stack--gap-8">
-          <Text variant="subheader-2">{isSwitching ? 'Переключить роль' : 'Быстрый вход'}</Text>
+          <Text variant="subheader-2" data-testid={testId('auth', 'login', 'text', 'quick-login-title')}>{isSwitching ? 'Переключить роль' : 'Быстрый вход'}</Text>
           <Button
             view="action"
             size="l"
@@ -127,6 +128,7 @@ export function MockLoginPage() {
             onClick={() =>
               enter({displayName: 'Иван Петров', roles: ['player'], partnerMemberships: []})
             }
+            data-testid={testId('auth', 'login', 'btn', 'player')}
           >
             Войти как игрок
           </Button>
@@ -137,6 +139,7 @@ export function MockLoginPage() {
             onClick={() =>
               enter({displayName: 'Алексей Тренеров', roles: ['coach'], partnerMemberships: []})
             }
+            data-testid={testId('auth', 'login', 'btn', 'coach')}
           >
             Войти как тренер
           </Button>
@@ -149,6 +152,7 @@ export function MockLoginPage() {
               roles: ['organizer'],
               partnerMemberships: [PARTNER_OPTIONS.find((m) => m.kind === 'shop')!],
             })}
+            data-testid={testId('auth', 'login', 'btn', 'shop-partner')}
           >
             Войти как представитель магазина
           </Button>
@@ -161,22 +165,24 @@ export function MockLoginPage() {
               roles: ['organizer'],
               partnerMemberships: [PARTNER_OPTIONS.find((m) => m.kind === 'league')!],
             })}
+            data-testid={testId('auth', 'login', 'btn', 'league-partner')}
           >
             Войти как представитель лиги
           </Button>
         </div>
 
-        <Text variant="subheader-2">Настроить вход вручную</Text>
+        <Text variant="subheader-2" data-testid={testId('auth', 'login', 'text', 'manual-title')}>Настроить вход вручную</Text>
 
         <TextInput
           label="Имя"
           value={displayName}
           onUpdate={setDisplayName}
           size="l"
+          data-testid={testId('auth', 'login', 'field', 'display-name')}
         />
 
         <div>
-          <Text variant="subheader-2">Роли</Text>
+          <Text variant="subheader-2" data-testid={testId('auth', 'login', 'text', 'roles-title')}>Роли</Text>
           <div className="hockey-mt-8 hockey-stack hockey-stack--gap-8">
             {ROLE_OPTIONS.map((option) => (
               <Checkbox
@@ -184,13 +190,14 @@ export function MockLoginPage() {
                 checked={roles.includes(option.value)}
                 onUpdate={(checked) => toggleRole(option.value, checked)}
                 content={option.label}
+                data-testid={testId('auth', 'login', 'checkbox', 'role', option.value)}
               />
             ))}
           </div>
         </div>
 
         <div>
-          <Text variant="subheader-2">Партнёрский доступ (mock)</Text>
+          <Text variant="subheader-2" data-testid={testId('auth', 'login', 'text', 'partner-title')}>Партнёрский доступ (mock)</Text>
           <div className="hockey-mt-8 hockey-stack hockey-stack--gap-8">
             {PARTNER_OPTIONS.map((option) => (
               <Checkbox
@@ -202,6 +209,7 @@ export function MockLoginPage() {
                     ? `Представитель лиги: ${option.entityName}`
                     : `Представитель магазина: ${option.entityName}`
                 }
+                data-testid={testId('auth', 'login', 'checkbox', 'partner', option.entityId)}
               />
             ))}
           </div>
@@ -212,6 +220,7 @@ export function MockLoginPage() {
           size="l"
           loading={onboardingMutation.isPending}
           onClick={handleSubmit}
+          data-testid={testId('auth', 'login', 'btn', 'submit')}
         >
           {isSwitching ? 'Переключиться с выбранными настройками' : 'Войти с выбранными настройками'}
         </Button>

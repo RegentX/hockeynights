@@ -6,6 +6,7 @@ import {useState} from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Text, TextInput} from '@gravity-ui/uikit'
 import {createShopPromo, fetchShopPromos} from '@/features/shops/api/shopsApi'
+import {testId} from '@/shared/testing/testId'
 
 export interface ShopPromoManagerProps {
   shopId: string
@@ -39,15 +40,19 @@ export function ShopPromoManager({shopId}: ShopPromoManagerProps) {
   })
 
   return (
-    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12">
-      <Text variant="subheader-2">Промо-подборки</Text>
+    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12" data-testid={testId('shops', shopId, 'promos', 'panel')}>
+      <Text variant="subheader-2" data-testid={testId('shops', shopId, 'promos', 'text', 'title')}>
+        Промо-подборки
+      </Text>
 
-      <ul className="partner-dashboard__list">
+      <ul className="partner-dashboard__list" data-testid={testId('shops', shopId, 'promos', 'list')}>
         {promos.map((promo) => (
-          <li key={promo.id} className="partner-dashboard__list-item">
+          <li key={promo.id} className="partner-dashboard__list-item" data-testid={testId('shops', shopId, 'promos', 'item', promo.id)}>
             <div>
-              <Text>{promo.title}</Text>
-              <Text color="secondary">
+              <Text data-testid={testId('shops', shopId, 'promos', 'text', 'title', promo.id)}>
+                {promo.title}
+              </Text>
+              <Text color="secondary" data-testid={testId('shops', shopId, 'promos', 'text', 'meta', promo.id)}>
                 {promo.subtitle ?? ''}
                 {promo.discountPercent ? ` · −${promo.discountPercent}%` : ''}
                 {promo.active ? ' · активна' : ' · выключена'}
@@ -57,14 +62,25 @@ export function ShopPromoManager({shopId}: ShopPromoManagerProps) {
         ))}
       </ul>
 
-      <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8">
-        <TextInput label="Заголовок" value={title} onUpdate={setTitle} />
-        <TextInput label="Подзаголовок" value={subtitle} onUpdate={setSubtitle} />
+      <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8" data-testid={testId('shops', shopId, 'promos', 'form')}>
+        <TextInput
+          label="Заголовок"
+          value={title}
+          data-testid={testId('shops', shopId, 'promos', 'field', 'title')}
+          onUpdate={setTitle}
+        />
+        <TextInput
+          label="Подзаголовок"
+          value={subtitle}
+          data-testid={testId('shops', shopId, 'promos', 'field', 'subtitle')}
+          onUpdate={setSubtitle}
+        />
         <Button
           view="action"
           size="s"
           disabled={!title.trim()}
           loading={createMutation.isPending}
+          data-testid={testId('shops', shopId, 'promos', 'btn', 'create')}
           onClick={() => createMutation.mutate()}
         >
           Создать промо

@@ -7,6 +7,7 @@ import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {Button, Card, Select, Text, TextInput} from '@gravity-ui/uikit'
 import type {AdminEntityType} from '@/entities/admin/types'
 import {createAdminEntity} from '@/features/admin/api/adminApi'
+import {testId} from '@/shared/testing/testId'
 
 const ENTITY_OPTIONS = [
   {value: 'arena', content: 'Арена'},
@@ -42,19 +43,42 @@ export function AdminEntityForm() {
   }
 
   return (
-    <Card view="filled" className="hockey-panel hockey-form-shell hockey-form-shell--480">
+    <Card view="filled" className="hockey-panel hockey-form-shell hockey-form-shell--480" data-testid={testId('admin', 'entity-form', 'form')}>
       <div className="hockey-stack hockey-stack--gap-12">
-        <Text variant="subheader-2">Добавить запись</Text>
+        <Text variant="subheader-2" data-testid={testId('admin', 'entity-form', 'text', 'title')}>
+          Добавить запись
+        </Text>
         <Select
           label="Тип"
           value={[entityType]}
           onUpdate={(v) => setEntityType(v[0] as AdminEntityType)}
           options={ENTITY_OPTIONS}
+          data-testid={testId('admin', 'entity-form', 'select', 'type')}
         />
-        <TextInput label="Название" value={name} onUpdate={setName} />
-        <TextInput label="Город" value={city} onUpdate={setCity} />
-        <TextInput label="Сайт" value={websiteUrl} onUpdate={setWebsiteUrl} />
-        <Button view="action" loading={mutation.isPending} onClick={handleSubmit}>
+        <TextInput
+          label="Название"
+          value={name}
+          onUpdate={setName}
+          data-testid={testId('admin', 'entity-form', 'field', 'name')}
+        />
+        <TextInput
+          label="Город"
+          value={city}
+          onUpdate={setCity}
+          data-testid={testId('admin', 'entity-form', 'field', 'city')}
+        />
+        <TextInput
+          label="Сайт"
+          value={websiteUrl}
+          onUpdate={setWebsiteUrl}
+          data-testid={testId('admin', 'entity-form', 'field', 'website')}
+        />
+        <Button
+          view="action"
+          loading={mutation.isPending}
+          data-testid={testId('admin', 'entity-form', 'btn', 'create')}
+          onClick={handleSubmit}
+        >
           Создать
         </Button>
       </div>

@@ -16,6 +16,7 @@ import {MatchCenterFeed, type MatchCenterRowData} from '@/shared/ui/MatchCenterF
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {Link} from 'react-router-dom'
+import {testId} from '@/shared/testing/testId'
 
 /**
  * @spec SPEC-UI-2.5 - SOS в формате матч-центра
@@ -53,15 +54,30 @@ export function SosFeed() {
     type: 'sos',
     isSos: request.isGoalkeeperSos,
     actions: (
-      <div className="hockey-min-w-200 hockey-stack hockey-stack--gap-8">
-        {request.comment && <Text>{request.comment}</Text>}
-        <Text color="secondary">Сообщение отклика</Text>
-        <TextArea value={message} onUpdate={setMessage} minRows={2} />
+      <div
+        className="hockey-min-w-200 hockey-stack hockey-stack--gap-8"
+        data-testid={testId('sos', 'feed', 'panel', 'actions', request.id)}
+      >
+        {request.comment && (
+          <Text data-testid={testId('sos', 'feed', 'text', 'comment', request.id)}>
+            {request.comment}
+          </Text>
+        )}
+        <Text color="secondary" data-testid={testId('sos', 'feed', 'text', 'response-label', request.id)}>
+          Сообщение отклика
+        </Text>
+        <TextArea
+          value={message}
+          onUpdate={setMessage}
+          minRows={2}
+          data-testid={testId('sos', 'feed', 'field', 'response-message', request.id)}
+        />
         <div className="hockey-row hockey-row--gap-8">
           <HockeyButton
             variant="sos"
             loading={respondMutation.isPending}
             onClick={() => respondMutation.mutate({requestId: request.id, msg: message})}
+            data-testid={testId('sos', 'feed', 'btn', 'respond', request.id)}
           >
             Откликнуться
           </HockeyButton>
@@ -70,6 +86,7 @@ export function SosFeed() {
             onClick={() =>
               setExpandedRequestId(expandedRequestId === request.id ? null : request.id)
             }
+            data-testid={testId('sos', 'feed', 'btn', 'responses', request.id)}
           >
             Отклики
           </HockeyButton>
@@ -80,31 +97,42 @@ export function SosFeed() {
   }))
 
   return (
-    <div className="hockey-stack hockey-stack--gap-16">
+    <div className="hockey-stack hockey-stack--gap-16" data-testid={testId('sos', 'feed', 'feed')}>
       <Checkbox
         checked={goalieOnly}
         onUpdate={setGoalieOnly}
         content="Только Goalkeeper SOS"
+        data-testid={testId('sos', 'feed', 'checkbox', 'goalie-only')}
       />
 
-      {isLoading && <ScoreboardLoader label="Загрузка SOS" />}
+      {isLoading && (
+        <div data-testid={testId('sos', 'feed', 'loader')}>
+          <ScoreboardLoader label="Загрузка SOS" />
+        </div>
+      )}
 
       {!isLoading && (
-        <MatchCenterFeed
-          title="SOS · Матч-центр"
-          rows={rows}
-          empty={
-            <EmptyNetState
-              title="Пустая сетка"
-              copy="Открытых запросов нет — капитану пора запустить SOS."
-              action={
-                <Link to="/sos">
-                  <HockeyButton variant="sos">Запусти SOS</HockeyButton>
-                </Link>
-              }
-            />
-          }
-        />
+        <div data-testid={testId('sos', 'feed', 'table')}>
+          <MatchCenterFeed
+            title="SOS · Матч-центр"
+            rows={rows}
+            empty={
+              <div data-testid={testId('sos', 'feed', 'empty')}>
+                <EmptyNetState
+                  title="Пустая сетка"
+                  copy="Открытых запросов нет — капитану пора запустить SOS."
+                  action={
+                    <Link to="/sos" data-testid={testId('sos', 'feed', 'link', 'create-sos')}>
+                      <HockeyButton variant="sos" data-testid={testId('sos', 'feed', 'btn', 'create-sos')}>
+                        Запусти SOS
+                      </HockeyButton>
+                    </Link>
+                  }
+                />
+              </div>
+            }
+          />
+        </div>
       )}
     </div>
   )

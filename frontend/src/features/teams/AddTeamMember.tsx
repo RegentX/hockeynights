@@ -12,6 +12,7 @@ import {
   inviteTeamMemberByEmail,
 } from '@/features/teams/api/teamsApi'
 import {fetchPlayers} from '@/features/players/api/playersApi'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-3.1.2 - Props добавления игрока */
 export interface AddTeamMemberProps {
@@ -68,8 +69,8 @@ export function AddTeamMember({teamId}: AddTeamMemberProps) {
     .map((p) => ({value: p.userId, content: `${p.displayName} (${p.position})`}))
 
   return (
-    <div className="hockey-stack hockey-stack--gap-10">
-      <Text color="secondary">В команду можно добавить только зарегистрированных пользователей.</Text>
+    <div className="hockey-stack hockey-stack--gap-10" data-testid={testId('teams', 'add-team-member', 'form', teamId)}>
+      <Text color="secondary" data-testid={testId('teams', 'add-team-member', 'text', 'hint', teamId)}>В команду можно добавить только зарегистрированных пользователей.</Text>
       <div className="hockey-row hockey-row--gap-8 hockey-row--end">
         <Select
           label="Добавить зарегистрированного игрока"
@@ -78,6 +79,7 @@ export function AddTeamMember({teamId}: AddTeamMemberProps) {
           onUpdate={(v) => setSelectedUserId(v[0] ?? null)}
           placeholder={options.length ? 'Выберите игрока' : 'Все игроки уже в составе'}
           width={320}
+          data-testid={testId('teams', 'add-team-member', 'select', 'player', teamId)}
         />
         <Button
           view="action"
@@ -86,12 +88,13 @@ export function AddTeamMember({teamId}: AddTeamMemberProps) {
           onClick={() => {
             if (selectedUserId) addMemberMutation.mutate(selectedUserId)
           }}
+          data-testid={testId('teams', 'add-team-member', 'btn', 'add', teamId)}
         >
           Добавить
         </Button>
       </div>
 
-      <Text color="secondary">
+      <Text color="secondary" data-testid={testId('teams', 'add-team-member', 'text', 'invite-hint', teamId)}>
         Если игрок не зарегистрирован, отправь ему приглашение на email.
       </Text>
       <div className="hockey-row hockey-row--gap-8 hockey-row--end">
@@ -100,27 +103,31 @@ export function AddTeamMember({teamId}: AddTeamMemberProps) {
           value={inviteEmail}
           placeholder="player@example.com"
           onUpdate={setInviteEmail}
+          data-testid={testId('teams', 'add-team-member', 'field', 'invite-email', teamId)}
         />
         <Button
           view="outlined"
           loading={inviteMutation.isPending}
           disabled={!inviteEmail.trim()}
           onClick={() => inviteMutation.mutate(inviteEmail)}
+          data-testid={testId('teams', 'add-team-member', 'btn', 'invite', teamId)}
         >
           Отправить приглашение
         </Button>
       </div>
       {invites.length > 0 && (
-        <div className="hockey-stack hockey-stack--gap-6">
-          <Text variant="subheader-2">Последние email-приглашения</Text>
+        <div className="hockey-stack hockey-stack--gap-6" data-testid={testId('teams', 'add-team-member', 'list', 'invites', teamId)}>
+          <Text variant="subheader-2" data-testid={testId('teams', 'add-team-member', 'text', 'invites-title', teamId)}>Последние email-приглашения</Text>
           {invites.slice(0, 3).map((invite) => (
-            <Text key={invite.id} color="secondary">
+            <Text key={invite.id} color="secondary" data-testid={testId('teams', 'add-team-member', 'item', 'invite', invite.id)}>
               {invite.email} · {invite.status} · {new Date(invite.createdAt).toLocaleDateString('ru-RU')}
             </Text>
           ))}
         </div>
       )}
-      {statusMessage && <Text color="secondary">{statusMessage}</Text>}
+      {statusMessage && (
+        <Text color="secondary" data-testid={testId('teams', 'add-team-member', 'text', 'status', teamId)}>{statusMessage}</Text>
+      )}
     </div>
   )
 }

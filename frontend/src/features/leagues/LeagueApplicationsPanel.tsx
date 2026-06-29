@@ -11,6 +11,7 @@ import {
   fetchLeagueSeasons,
   reviewLeagueApplication,
 } from '@/features/leagues/api/leaguesApi'
+import {testId} from '@/shared/testing/testId'
 
 const STATUS_OPTIONS = [
   {value: 'pending', content: 'На рассмотрении'},
@@ -63,29 +64,41 @@ export function LeagueApplicationsPanel({leagueId}: LeagueApplicationsPanelProps
   }
 
   return (
-    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12">
-      <Text variant="subheader-2">Заявки команд</Text>
+    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12" data-testid={testId('leagues', 'applications', 'panel', leagueId)}>
+      <Text variant="subheader-2" data-testid={testId('leagues', 'applications', 'text', 'title', leagueId)}>
+        Заявки команд
+      </Text>
       {activeSeason && (
-        <Text color="secondary">
+        <Text color="secondary" data-testid={testId('leagues', 'applications', 'text', 'season', leagueId)}>
           Сезон: {activeSeason.name} · дивизионы: {divisions.map((d) => d.name).join(', ') || '—'}
         </Text>
       )}
 
-      <ul className="partner-dashboard__list">
+      <ul className="partner-dashboard__list" data-testid={testId('leagues', 'applications', 'list', leagueId)}>
         {applications.map((app) => (
-          <li key={app.id} className="partner-dashboard__list-item partner-dashboard__list-item--stack">
+          <li
+            key={app.id}
+            className="partner-dashboard__list-item partner-dashboard__list-item--stack"
+            data-testid={testId('leagues', 'applications', 'item', app.id)}
+          >
             <div>
-              <Text>{app.teamName}</Text>
-              <Text color="secondary">
+              <Text data-testid={testId('leagues', 'applications', 'text', 'team-name', app.id)}>
+                {app.teamName}
+              </Text>
+              <Text color="secondary" data-testid={testId('leagues', 'applications', 'text', 'captain', app.id)}>
                 Капитан: {app.captainName} · {app.contactEmail}
               </Text>
-              <Text color="secondary">
+              <Text color="secondary" data-testid={testId('leagues', 'applications', 'text', 'division', app.id)}>
                 Дивизион: {divisionName(app.divisionId)} · статус: {app.status}
               </Text>
-              {app.reviewComment && <Text color="secondary">Комментарий: {app.reviewComment}</Text>}
+              {app.reviewComment && (
+                <Text color="secondary" data-testid={testId('leagues', 'applications', 'text', 'review-comment', app.id)}>
+                  Комментарий: {app.reviewComment}
+                </Text>
+              )}
             </div>
             {app.status === 'pending' && (
-              <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8">
+              <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8" data-testid={testId('leagues', 'applications', 'panel', 'review', app.id)}>
                 <Select
                   label="Решение"
                   value={['approved']}
@@ -96,6 +109,7 @@ export function LeagueApplicationsPanel({leagueId}: LeagueApplicationsPanelProps
                       patch: {status: value[0] as LeagueApplicationStatus},
                     })
                   }
+                  data-testid={testId('leagues', 'applications', 'select', 'decision', app.id)}
                 />
                 <TextInput
                   label="Комментарий"
@@ -106,6 +120,7 @@ export function LeagueApplicationsPanel({leagueId}: LeagueApplicationsPanelProps
                       patch: {status: 'approved', reviewComment: value},
                     })
                   }
+                  data-testid={testId('leagues', 'applications', 'field', 'comment', app.id)}
                 />
                 <div className="partner-dashboard__tabs">
                   <Button
@@ -115,6 +130,7 @@ export function LeagueApplicationsPanel({leagueId}: LeagueApplicationsPanelProps
                     onClick={() =>
                       reviewMutation.mutate({applicationId: app.id, patch: {status: 'approved'}})
                     }
+                    data-testid={testId('leagues', 'applications', 'btn', 'approve', app.id)}
                   >
                     Одобрить
                   </Button>
@@ -124,6 +140,7 @@ export function LeagueApplicationsPanel({leagueId}: LeagueApplicationsPanelProps
                     onClick={() =>
                       reviewMutation.mutate({applicationId: app.id, patch: {status: 'rejected'}})
                     }
+                    data-testid={testId('leagues', 'applications', 'btn', 'reject', app.id)}
                   >
                     Отклонить
                   </Button>

@@ -8,6 +8,7 @@ import type {RadarRecommendation} from '@/entities/radar/types'
 import {IceCard} from '@/shared/ui/IceCard'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
+import {testId} from '@/shared/testing/testId'
 
 const TYPE_LABELS: Record<RadarRecommendation['type'], string> = {
   sos: 'SOS',
@@ -45,48 +46,78 @@ export function RadarRecommendationCard({
     : null
 
   return (
-    <IceCard
-      className={`radar-card radar-card--${recommendation.priority}`}
-      padding="s"
-    >
-      <div className="radar-card__head">
-        <span className="radar-card__type">{TYPE_LABELS[recommendation.type]}</span>
-        <span className={`radar-card__priority radar-card__priority--${recommendation.priority}`}>
-          {recommendation.priority === 'high' ? '🔴' : recommendation.priority === 'medium' ? '🟡' : '⚪'}
-        </span>
-      </div>
-
-      <Text variant="subheader-2">{recommendation.title}</Text>
-
-      <div className="radar-card__meta">
-        {recommendation.district && (
-          <Text color="secondary">{recommendation.district}</Text>
-        )}
-        {timeLabel && <ScoreboardText>{timeLabel}</ScoreboardText>}
-      </div>
-
-      <div className="radar-card__cta-row">
-        <Text className="radar-card__reason" color="secondary">
-          {recommendation.reasonText}
-        </Text>
-        <div className="radar-card__actions">
-          <HockeyButton
-            size="s"
-            view="outlined"
-            onClick={() => onDismiss(recommendation)}
-            disabled={isPending}
+    <div data-testid={testId('radar', 'recommendation-card', 'card', recommendation.id)}>
+      <IceCard
+        className={`radar-card radar-card--${recommendation.priority}`}
+        padding="s"
+      >
+        <div className="radar-card__head" data-testid={testId('radar', 'recommendation-card', 'panel', 'head', recommendation.id)}>
+          <span
+            className="radar-card__type"
+            data-testid={testId('radar', 'recommendation-card', 'badge', 'type', recommendation.id)}
           >
-            Скрыть
-          </HockeyButton>
-          <HockeyButton
-            size="m"
-            onClick={() => onNavigate(recommendation)}
-            disabled={isPending}
+            {TYPE_LABELS[recommendation.type]}
+          </span>
+          <span
+            className={`radar-card__priority radar-card__priority--${recommendation.priority}`}
+            data-testid={testId('radar', 'recommendation-card', 'badge', 'priority', recommendation.id)}
           >
-            Выйти на лёд
-          </HockeyButton>
+            {recommendation.priority === 'high' ? '🔴' : recommendation.priority === 'medium' ? '🟡' : '⚪'}
+          </span>
         </div>
-      </div>
-    </IceCard>
+
+        <Text
+          variant="subheader-2"
+          data-testid={testId('radar', 'recommendation-card', 'text', 'title', recommendation.id)}
+        >
+          {recommendation.title}
+        </Text>
+
+        <div className="radar-card__meta" data-testid={testId('radar', 'recommendation-card', 'panel', 'meta', recommendation.id)}>
+          {recommendation.district && (
+            <Text
+              color="secondary"
+              data-testid={testId('radar', 'recommendation-card', 'text', 'district', recommendation.id)}
+            >
+              {recommendation.district}
+            </Text>
+          )}
+          {timeLabel && (
+            <ScoreboardText data-testid={testId('radar', 'recommendation-card', 'text', 'time', recommendation.id)}>
+              {timeLabel}
+            </ScoreboardText>
+          )}
+        </div>
+
+        <div className="radar-card__cta-row" data-testid={testId('radar', 'recommendation-card', 'panel', 'cta', recommendation.id)}>
+          <Text
+            className="radar-card__reason"
+            color="secondary"
+            data-testid={testId('radar', 'recommendation-card', 'text', 'reason', recommendation.id)}
+          >
+            {recommendation.reasonText}
+          </Text>
+          <div className="radar-card__actions">
+            <HockeyButton
+              size="s"
+              view="outlined"
+              onClick={() => onDismiss(recommendation)}
+              disabled={isPending}
+              data-testid={testId('radar', 'recommendation-card', 'btn', 'dismiss', recommendation.id)}
+            >
+              Скрыть
+            </HockeyButton>
+            <HockeyButton
+              size="m"
+              onClick={() => onNavigate(recommendation)}
+              disabled={isPending}
+              data-testid={testId('radar', 'recommendation-card', 'btn', 'navigate', recommendation.id)}
+            >
+              Выйти на лёд
+            </HockeyButton>
+          </div>
+        </div>
+      </IceCard>
+    </div>
   )
 }

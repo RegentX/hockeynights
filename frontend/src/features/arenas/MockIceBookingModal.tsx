@@ -10,6 +10,7 @@ import type {Arena} from '@/entities/arena/types'
 import type {IceBookingRequest} from '@/entities/external-flow/types'
 import {submitIceBooking} from '@/features/external-flows/api/externalFlowsApi'
 import {MockExternalFlowDialog} from '@/shared/ui/MockExternalFlowDialog'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-6.4.2 - Props mock-бронирования */
 export interface MockIceBookingModalProps {
@@ -63,51 +64,84 @@ export function MockIceBookingModal({open, onClose, arena, slot}: MockIceBooking
       externalUrl={externalUrl}
       footer={
         result ? (
-          <Button view="action" onClick={handleClose}>
+          <Button view="action" onClick={handleClose} data-testid={testId('arenas', 'ice-booking', 'modal', 'btn', 'done')}>
             Готово
           </Button>
         ) : (
           <>
-            <Button view="flat" onClick={handleClose}>
+            <Button view="flat" onClick={handleClose} data-testid={testId('arenas', 'ice-booking', 'modal', 'btn', 'cancel')}>
               Отмена
             </Button>
-            <Button view="action" loading={mutation.isPending} onClick={handleSubmit}>
+            <Button
+              view="action"
+              loading={mutation.isPending}
+              onClick={handleSubmit}
+              data-testid={testId('arenas', 'ice-booking', 'modal', 'btn', 'submit')}
+            >
               Отправить заявку
             </Button>
           </>
         )
       }
     >
-      {result ? (
-        <div className="hockey-stack hockey-stack--gap-8">
-          <Text variant="subheader-2">Заявка принята (mock)</Text>
-          <Text>Код подтверждения: {result.confirmationCode}</Text>
-          {result.slotLabel && <Text color="secondary">Слот: {result.slotLabel}</Text>}
-          <Text color="secondary">
-            В Phase 2 заявка уйдёт на портал аренды. Сейчас это только демонстрация UX.
-          </Text>
-        </div>
-      ) : (
-        <div className="hockey-stack hockey-stack--gap-12">
-          <Text color="secondary">{arena.address}</Text>
-          {slot ? (
-            <Text>
-              Слот: {new Date(slot.startsAt).toLocaleString('ru-RU')}
-              {slot.price ? ` · ${slot.price} RUB` : ''}
+      <div data-testid={testId('arenas', 'ice-booking', 'modal')}>
+        {result ? (
+          <div className="hockey-stack hockey-stack--gap-8" data-testid={testId('arenas', 'ice-booking', 'modal', 'panel', 'success')}>
+            <Text variant="subheader-2" data-testid={testId('arenas', 'ice-booking', 'modal', 'text', 'success-title')}>
+              Заявка принята (mock)
             </Text>
-          ) : (
-            <Text color="secondary">Общая заявка на аренду льда без привязки к слоту</Text>
-          )}
-          <TextInput label="Телефон для связи" value={phone} onUpdate={setPhone} />
-          <div>
-            <Text color="secondary">Комментарий</Text>
-            <TextArea value={comment} onUpdate={setComment} minRows={2} />
+            <Text data-testid={testId('arenas', 'ice-booking', 'modal', 'text', 'confirmation-code')}>
+              Код подтверждения: {result.confirmationCode}
+            </Text>
+            {result.slotLabel && (
+              <Text color="secondary" data-testid={testId('arenas', 'ice-booking', 'modal', 'text', 'slot-label')}>
+                Слот: {result.slotLabel}
+              </Text>
+            )}
+            <Text color="secondary" data-testid={testId('arenas', 'ice-booking', 'modal', 'text', 'phase-note')}>
+              В Phase 2 заявка уйдёт на портал аренды. Сейчас это только демонстрация UX.
+            </Text>
           </div>
-          {mutation.isError && (
-            <Text color="danger">Не удалось отправить заявку</Text>
-          )}
-        </div>
-      )}
+        ) : (
+          <div className="hockey-stack hockey-stack--gap-12" data-testid={testId('arenas', 'ice-booking', 'modal', 'panel', 'form')}>
+            <Text color="secondary" data-testid={testId('arenas', 'ice-booking', 'modal', 'text', 'address')}>
+              {arena.address}
+            </Text>
+            {slot ? (
+              <Text data-testid={testId('arenas', 'ice-booking', 'modal', 'text', 'slot')}>
+                Слот: {new Date(slot.startsAt).toLocaleString('ru-RU')}
+                {slot.price ? ` · ${slot.price} RUB` : ''}
+              </Text>
+            ) : (
+              <Text color="secondary" data-testid={testId('arenas', 'ice-booking', 'modal', 'text', 'general-request')}>
+                Общая заявка на аренду льда без привязки к слоту
+              </Text>
+            )}
+            <TextInput
+              label="Телефон для связи"
+              value={phone}
+              onUpdate={setPhone}
+              data-testid={testId('arenas', 'ice-booking', 'modal', 'field', 'phone')}
+            />
+            <div>
+              <Text color="secondary" data-testid={testId('arenas', 'ice-booking', 'modal', 'text', 'comment-label')}>
+                Комментарий
+              </Text>
+              <TextArea
+                value={comment}
+                onUpdate={setComment}
+                minRows={2}
+                data-testid={testId('arenas', 'ice-booking', 'modal', 'field', 'comment')}
+              />
+            </div>
+            {mutation.isError && (
+              <Text color="danger" data-testid={testId('arenas', 'ice-booking', 'modal', 'text', 'error')}>
+                Не удалось отправить заявку
+              </Text>
+            )}
+          </div>
+        )}
+      </div>
     </MockExternalFlowDialog>
   )
 }

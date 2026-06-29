@@ -12,6 +12,7 @@ import {CalendarFilters} from '@/features/calendar/CalendarFilters'
 import {EventCard} from '@/features/events/EventCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {testId} from '@/shared/testing/testId'
 
 const MONTH_SHORT = [
   'янв', 'фев', 'мар', 'апр', 'май', 'июн',
@@ -42,25 +43,34 @@ export function CalendarPage() {
   }, [events])
 
   return (
-    <div className="hockey-stack hockey-stack--gap-16">
-      <Text variant="header-1">Календарь</Text>
+    <div className="hockey-stack hockey-stack--gap-16" data-testid={testId('calendar', 'page')}>
+      <Text variant="header-1" data-testid={testId('calendar', 'page', 'text', 'title')}>
+        Календарь
+      </Text>
       <CalendarFilters filters={filters} onChange={setFilters} />
 
-      {isLoading && <ScoreboardLoader label="Загрузка календаря" />}
+      {isLoading && (
+        <div data-testid={testId('calendar', 'page', 'loader')}>
+          <ScoreboardLoader label="Загрузка календаря" />
+        </div>
+      )}
 
       {!isLoading && events.length > 0 && (
-        <div className="scoreboard-calendar">
+        <div className="scoreboard-calendar" data-testid={testId('calendar', 'page', 'calendar')}>
           {byDay.map(([dayKey, dayEvents]) => {
             const date = new Date(dayKey)
+            const daySlug = testId(dayKey)
             return (
-              <div key={dayKey} className="scoreboard-calendar__day">
-                <div className="scoreboard-calendar__date">
-                  <div className="scoreboard-calendar__date-day">{date.getDate()}</div>
-                  <div className="scoreboard-calendar__date-month">
+              <div key={dayKey} className="scoreboard-calendar__day" data-testid={testId('calendar', 'page', 'panel', 'day', daySlug)}>
+                <div className="scoreboard-calendar__date" data-testid={testId('calendar', 'page', 'panel', 'date', daySlug)}>
+                  <div className="scoreboard-calendar__date-day" data-testid={testId('calendar', 'page', 'text', 'day', daySlug)}>
+                    {date.getDate()}
+                  </div>
+                  <div className="scoreboard-calendar__date-month" data-testid={testId('calendar', 'page', 'text', 'month', daySlug)}>
                     {MONTH_SHORT[date.getMonth()]}
                   </div>
                 </div>
-                <div className="scoreboard-calendar__events">
+                <div className="scoreboard-calendar__events" data-testid={testId('calendar', 'page', 'list', 'events', daySlug)}>
                   {dayEvents.map((event) => (
                     <EventCard key={event.id} event={event} compact />
                   ))}
@@ -72,10 +82,12 @@ export function CalendarPage() {
       )}
 
       {!isLoading && events.length === 0 && (
-        <EmptyNetState
-          title="Пустая сетка"
-          copy="События не найдены по выбранным фильтрам."
-        />
+        <div data-testid={testId('calendar', 'page', 'empty')}>
+          <EmptyNetState
+            title="Пустая сетка"
+            copy="События не найдены по выбранным фильтрам."
+          />
+        </div>
       )}
     </div>
   )

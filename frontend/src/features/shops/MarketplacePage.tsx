@@ -11,6 +11,7 @@ import {fetchMarketplaceFeed} from '@/features/shops/api/marketplaceApi'
 import {MarketplaceProductCard} from '@/features/shops/MarketplaceProductCard'
 import {MarketplaceShopStrip} from '@/features/shops/MarketplaceShopStrip'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
+import {testId} from '@/shared/testing/testId'
 
 const SORT_OPTIONS = [
   {value: 'recommended', content: 'Рекомендуемые'},
@@ -56,10 +57,12 @@ export function MarketplacePage() {
   }
 
   return (
-    <div className="marketplace hockey-stack hockey-stack--gap-20">
+    <div className="marketplace hockey-stack hockey-stack--gap-20" data-testid={testId('shops', 'marketplace', 'page')}>
       <div className="marketplace__hero">
-        <Text variant="header-1">Маркет экипировки</Text>
-        <Text color="secondary">
+        <Text variant="header-1" data-testid={testId('shops', 'marketplace', 'text', 'title')}>
+          Маркет экипировки
+        </Text>
+        <Text color="secondary" data-testid={testId('shops', 'marketplace', 'text', 'subtitle')}>
           Лента товаров от партнёрских магазинов — как маркетплейс, с приоритетом для продвигаемых продавцов.
         </Text>
       </div>
@@ -77,13 +80,15 @@ export function MarketplacePage() {
           onUpdate={setSearchInput}
           size="xl"
           hasClear
+          data-testid={testId('shops', 'marketplace', 'field', 'search')}
         />
 
-        <div className="marketplace__filters">
+        <div className="marketplace__filters" data-testid={testId('shops', 'marketplace', 'filter')}>
           <div className="marketplace__chips">
             <Button
               view={!filters.category ? 'action' : 'outlined'}
               size="s"
+              data-testid={testId('shops', 'marketplace', 'btn', 'category-all')}
               onClick={() => patchFilters({category: undefined})}
             >
               Все категории
@@ -93,6 +98,7 @@ export function MarketplacePage() {
                 key={category}
                 view={filters.category === category ? 'action' : 'outlined'}
                 size="s"
+                data-testid={testId('shops', 'marketplace', 'btn', 'category', category)}
                 onClick={() => patchFilters({category})}
               >
                 {category}
@@ -107,6 +113,7 @@ export function MarketplacePage() {
               onUpdate={(value) => patchFilters({sort: value[0] as MarketplaceSort})}
               options={SORT_OPTIONS}
               width="max"
+              data-testid={testId('shops', 'marketplace', 'select', 'sort')}
             />
             <Select
               label="Для позиции"
@@ -117,38 +124,51 @@ export function MarketplacePage() {
               }}
               options={POSITION_OPTIONS}
               width="max"
+              data-testid={testId('shops', 'marketplace', 'select', 'position')}
             />
             <div className="marketplace__switch">
               <Switch
                 checked={Boolean(filters.inStockOnly)}
                 onUpdate={(checked) => patchFilters({inStockOnly: checked})}
+                data-testid={testId('shops', 'marketplace', 'toggle', 'in-stock')}
               />
-              <Text>Только в наличии</Text>
+              <Text data-testid={testId('shops', 'marketplace', 'text', 'in-stock-label')}>Только в наличии</Text>
             </div>
           </div>
         </div>
       </div>
 
       <div className="marketplace__feed-header hockey-row hockey-row--between">
-        <Text variant="subheader-2">
+        <Text variant="subheader-2" data-testid={testId('shops', 'marketplace', 'text', 'feed-count')}>
           {isFetching ? 'Обновляем ленту…' : `${listings.length} товаров`}
         </Text>
         {filters.shopId && (
-          <Button view="outlined" size="s" onClick={() => patchFilters({shopId: undefined})}>
+          <Button
+            view="outlined"
+            size="s"
+            data-testid={testId('shops', 'marketplace', 'btn', 'clear-shop-filter')}
+            onClick={() => patchFilters({shopId: undefined})}
+          >
             Сбросить фильтр магазина
           </Button>
         )}
       </div>
 
       {isLoading ? (
-        <ScoreboardLoader label="Загрузка маркетплейса" />
+        <div data-testid={testId('shops', 'marketplace', 'loader')}>
+          <ScoreboardLoader label="Загрузка маркетплейса" />
+        </div>
       ) : listings.length === 0 ? (
-        <div className="marketplace__empty">
-          <Text variant="subheader-2">Ничего не нашли</Text>
-          <Text color="secondary">Попробуйте другой запрос или снимите фильтры.</Text>
+        <div className="marketplace__empty" data-testid={testId('shops', 'marketplace', 'empty')}>
+          <Text variant="subheader-2" data-testid={testId('shops', 'marketplace', 'text', 'empty-title')}>
+            Ничего не нашли
+          </Text>
+          <Text color="secondary" data-testid={testId('shops', 'marketplace', 'text', 'empty-hint')}>
+            Попробуйте другой запрос или снимите фильтры.
+          </Text>
         </div>
       ) : (
-        <div className="marketplace__grid">
+        <div className="marketplace__grid" data-testid={testId('shops', 'marketplace', 'list')}>
           {listings.map((listing) => (
             <MarketplaceProductCard key={listing.offer.id} listing={listing} />
           ))}

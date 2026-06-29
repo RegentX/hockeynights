@@ -8,6 +8,7 @@ import {Button, Select, Text, TextArea, TextInput} from '@gravity-ui/uikit'
 import {createTeam} from '@/features/teams/api/teamsApi'
 import type {SkillLevel} from '@/entities/common/types'
 import {DEFAULT_CITY} from '@/shared/config/geo'
+import {testId} from '@/shared/testing/testId'
 
 const SKILL_OPTIONS = [
   {value: 'beginner', content: 'Дебютант'},
@@ -41,21 +42,22 @@ export function TeamCreateForm() {
   }
 
   return (
-    <div className="hockey-stack hockey-stack--gap-12">
-      <Text variant="subheader-2">Создать команду</Text>
-      <TextInput label="Название" value={name} onUpdate={setName} />
-      <TextInput label="Город" value={city} onUpdate={setCity} />
+    <div className="hockey-stack hockey-stack--gap-12" data-testid={testId('teams', 'team-create-form', 'form')}>
+      <Text variant="subheader-2" data-testid={testId('teams', 'team-create-form', 'text', 'title')}>Создать команду</Text>
+      <TextInput label="Название" value={name} onUpdate={setName} data-testid={testId('teams', 'team-create-form', 'field', 'name')} />
+      <TextInput label="Город" value={city} onUpdate={setCity} data-testid={testId('teams', 'team-create-form', 'field', 'city')} />
       <Select
         label="Уровень"
         value={[skillLevel]}
         onUpdate={(v) => setSkillLevel(v[0] as SkillLevel)}
         options={SKILL_OPTIONS}
+        data-testid={testId('teams', 'team-create-form', 'select', 'skill-level')}
       />
       <div>
-        <Text color="secondary">Описание</Text>
-        <TextArea value={description} onUpdate={setDescription} minRows={2} />
+        <Text color="secondary" data-testid={testId('teams', 'team-create-form', 'text', 'description-label')}>Описание</Text>
+        <TextArea value={description} onUpdate={setDescription} minRows={2} data-testid={testId('teams', 'team-create-form', 'field', 'description')} />
       </div>
-      <Button view="action" loading={mutation.isPending} onClick={handleSubmit}>
+      <Button view="action" loading={mutation.isPending} onClick={handleSubmit} data-testid={testId('teams', 'team-create-form', 'btn', 'submit')}>
         Создать команду
       </Button>
     </div>

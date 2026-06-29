@@ -6,6 +6,7 @@
 import type {LeagueScheduleItem} from '@/entities/league/types'
 import {MatchCenterFeed, type MatchCenterRowData} from '@/shared/ui/MatchCenterFeed'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-7.2.1 - Props расписания */
 export interface LeagueScheduleProps {
@@ -37,16 +38,29 @@ export function LeagueSchedule({schedule}: LeagueScheduleProps) {
     type: 'game',
   }))
 
-  return (
-    <MatchCenterFeed
-      title="Расписание лиги"
-      rows={rows}
-      empty={
+  if (rows.length === 0) {
+    return (
+      <div data-testid={testId('leagues', 'schedule', 'empty')}>
         <EmptyNetState
           title="Нет матчей"
           copy="Расписание лиги пока недоступно."
         />
-      }
-    />
+      </div>
+    )
+  }
+
+  return (
+    <div data-testid={testId('leagues', 'schedule', 'list')}>
+      <MatchCenterFeed
+        title="Расписание лиги"
+        rows={rows}
+        empty={
+          <EmptyNetState
+            title="Нет матчей"
+            copy="Расписание лиги пока недоступно."
+          />
+        }
+      />
+    </div>
   )
 }

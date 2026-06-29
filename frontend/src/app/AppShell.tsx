@@ -18,6 +18,7 @@ import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {MobileNav} from '@/app/MobileNav'
 import {SideBoard} from '@/app/SideBoard'
 import {SosFab} from '@/app/SosFab'
+import {testId, routeToTestSlug} from '@/shared/testing/testId'
 
 function formatPeriodClock(): string {
   const now = new Date()
@@ -100,20 +101,20 @@ export function AppShell() {
   }, [])
 
   return (
-    <div className="app-shell">
-      <header className="app-shell__header">
-        <div className="app-shell__brand">
-          <div className="app-shell__crest" aria-hidden>
+    <div className="app-shell" data-testid={testId('app', 'shell', 'page')}>
+      <header className="app-shell__header" data-testid={testId('app', 'shell', 'header')}>
+        <div className="app-shell__brand" data-testid={testId('app', 'shell', 'brand')}>
+          <div className="app-shell__crest" aria-hidden data-testid={testId('app', 'shell', 'icon', 'crest')}>
             <span className="app-shell__crest-icon">🏒</span>
           </div>
           <div className="app-shell__brand-text">
-            <span className="app-shell__title">Hockey Nights</span>
-            <span className="app-shell__region">{LAUNCH_REGION}</span>
+            <span className="app-shell__title" data-testid={testId('app', 'shell', 'text', 'title')}>Hockey Nights</span>
+            <span className="app-shell__region" data-testid={testId('app', 'shell', 'text', 'region')}>{LAUNCH_REGION}</span>
           </div>
         </div>
 
-        <div className="app-shell__header-actions">
-          <span className="app-shell__period" aria-live="polite">
+        <div className="app-shell__header-actions" data-testid={testId('app', 'shell', 'header-actions')}>
+          <span className="app-shell__period" aria-live="polite" data-testid={testId('app', 'shell', 'text', 'period-clock')}>
             {periodClock}
           </span>
           <HockeyButton
@@ -121,6 +122,7 @@ export function AppShell() {
             size="s"
             onClick={toggleTheme}
             aria-label="Переключить тему"
+            data-testid={testId('app', 'shell', 'btn', 'toggle-theme')}
           >
             {themeId === 'locker' ? '🧊 Лёд' : '🏒 Раздевалка'}
           </HockeyButton>
@@ -129,18 +131,20 @@ export function AppShell() {
             size="s"
             loading={logoutMutation.isPending}
             onClick={() => logoutMutation.mutate()}
+            data-testid={testId('app', 'shell', 'btn', 'logout')}
           >
             Выйти
           </HockeyButton>
-          <Link to="/">
-            <HockeyButton view="outlined" size="s">Сменить роль</HockeyButton>
+          <Link to="/" data-testid={testId('app', 'shell', 'link', 'switch-role')}>
+            <HockeyButton view="outlined" size="s" data-testid={testId('app', 'shell', 'btn', 'switch-role')}>Сменить роль</HockeyButton>
           </Link>
-          <div className="app-shell__panel-controls" aria-label="Управление панелями">
+          <div className="app-shell__panel-controls" aria-label="Управление панелями" data-testid={testId('app', 'shell', 'panel-controls')}>
             <HockeyButton
               view={isLeftCollapsed ? 'action' : 'outlined'}
               size="s"
               onClick={() => setIsLeftCollapsed((prev) => !prev)}
               aria-label={isLeftCollapsed ? 'Показать левую панель' : 'Свернуть левую панель'}
+              data-testid={testId('app', 'shell', 'btn', 'toggle-left-panel')}
             >
               {isLeftCollapsed ? 'Показать меню' : 'Свернуть меню'}
             </HockeyButton>
@@ -149,6 +153,7 @@ export function AppShell() {
               size="s"
               onClick={() => setIsRightCollapsed((prev) => !prev)}
               aria-label={isRightCollapsed ? 'Показать правую панель' : 'Свернуть правую панель'}
+              data-testid={testId('app', 'shell', 'btn', 'toggle-right-panel')}
             >
               {isRightCollapsed ? 'Показать борт' : 'Свернуть борт'}
             </HockeyButton>
@@ -166,6 +171,7 @@ export function AppShell() {
                   setIsRightCollapsed(true)
                 }}
                 aria-label={isFocusMode ? 'Выйти из фокус-режима' : 'Включить фокус-режим'}
+                data-testid={testId('app', 'shell', 'btn', 'toggle-focus-mode')}
               >
                 {isFocusMode ? 'Обычный режим' : 'Фокус на чат'}
               </HockeyButton>
@@ -174,8 +180,8 @@ export function AppShell() {
         </div>
       </header>
 
-      <div className={bodyClasses}>
-        <nav className="app-shell__nav-col" aria-label="Основная навигация">
+      <div className={bodyClasses} data-testid={testId('app', 'shell', 'body')}>
+        <nav className="app-shell__nav-col" aria-label="Основная навигация" data-testid={testId('app', 'nav', 'nav')}>
           <div className="hockey-nav" ref={navRef}>
             <span
               className="hockey-nav__puck hockey-nav-puck"
@@ -199,19 +205,25 @@ export function AppShell() {
                   className={`hockey-nav__link${active ? ' hockey-nav__link--active' : ''}`}
                   data-active={active ? 'true' : undefined}
                   aria-current={active ? 'page' : undefined}
+                  data-testid={testId('app', 'nav', 'link', routeToTestSlug(item.to))}
                 >
                   {item.label}
-                  {badge !== null && <span className="hockey-nav__badge">{badge}</span>}
+                  {badge !== null && (
+                    <span className="hockey-nav__badge" data-testid={testId('app', 'nav', 'badge', routeToTestSlug(item.to))}>
+                      {badge}
+                    </span>
+                  )}
                 </Link>
               )
             })}
             {hasPartnerAccess && (
               <>
-                <div className="hockey-nav__section-label">Партнёр</div>
+                <div className="hockey-nav__section-label" data-testid={testId('app', 'nav', 'text', 'partner-section')}>Партнёр</div>
                 <Link
                   to="/partner"
                   className={`hockey-nav__link${isNavActive('/partner') ? ' hockey-nav__link--active' : ''}`}
                   data-active={isNavActive('/partner') ? 'true' : undefined}
+                  data-testid={testId('app', 'nav', 'link', routeToTestSlug('/partner'))}
                 >
                   Все кабинеты
                 </Link>
@@ -225,6 +237,7 @@ export function AppShell() {
                       className={`hockey-nav__link${active ? ' hockey-nav__link--active' : ''}`}
                       data-active={active ? 'true' : undefined}
                       title={membership.entityName}
+                      data-testid={testId('app', 'nav', 'link', routeToTestSlug(path))}
                     >
                       {partnerCabinetLabel(membership)}
                     </Link>
@@ -235,11 +248,13 @@ export function AppShell() {
           </div>
         </nav>
 
-        <main className="app-shell__main-col">
+        <main className="app-shell__main-col" data-testid={testId('app', 'shell', 'main')}>
           <Outlet />
         </main>
 
-        <div className="app-shell__board-col">{!isRightCollapsed && !partnerWorkspace && <SideBoard />}</div>
+        <div className="app-shell__board-col" data-testid={testId('app', 'shell', 'board-col')}>
+          {!isRightCollapsed && !partnerWorkspace && <SideBoard />}
+        </div>
       </div>
 
       <MobileNav />

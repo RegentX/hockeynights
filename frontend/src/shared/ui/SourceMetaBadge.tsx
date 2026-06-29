@@ -4,22 +4,29 @@
 
 import {Label} from '@gravity-ui/uikit'
 import type {SourceMeta} from '@/entities/common/types'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-6.3.2 - Props бейджа источника данных */
 export interface SourceMetaBadgeProps {
   /** @spec SPEC-FR-11.2.2 */
   sourceMeta: SourceMeta
+  testIdPrefix?: string
+  'data-testid'?: string
 }
 
 /**
  * @spec SPEC-FR-6.3.2 - Отображение источника и актуальности данных
  * @spec SPEC-FR-11.2.1 - Статус syncStatus
  */
-export function SourceMetaBadge({sourceMeta}: SourceMetaBadgeProps) {
+export function SourceMetaBadge({
+  sourceMeta,
+  testIdPrefix = 'shared',
+  'data-testid': dataTestId,
+}: SourceMetaBadgeProps) {
   const updated = new Date(sourceMeta.updatedAt).toLocaleString('ru-RU')
 
   return (
-    <Label theme="info" size="s">
+    <Label theme="info" size="s" data-testid={dataTestId ?? testId(testIdPrefix, 'source-meta-badge', 'badge')}>
       {sourceMeta.syncStatus} · {sourceMeta.source} · {updated}
     </Label>
   )

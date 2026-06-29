@@ -8,6 +8,7 @@ import type {Shop} from '@/entities/shop/types'
 import {MockShopPortalModal} from '@/features/shops/MockShopPortalModal'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-9.1.2 - Props карточки магазина */
 export interface ShopCardProps {
@@ -26,18 +27,33 @@ export function ShopCard({shop}: ShopCardProps) {
 
   return (
     <>
-      <Card view="outlined" className="hockey-panel">
+      <Card view="outlined" className="hockey-panel" data-testid={testId('shops', 'shop-card', 'card', shop.id)}>
         <div className="hockey-stack hockey-stack--gap-8">
           <div className="hockey-row hockey-row--gap-8 hockey-row--between">
-            <Text variant="subheader-2">{shop.name}</Text>
-            <EntityProfileBadge kind="shop" />
+            <Text variant="subheader-2" data-testid={testId('shops', 'shop-card', 'text', 'name', shop.id)}>
+              {shop.name}
+            </Text>
+            <span data-testid={testId('shops', 'shop-card', 'badge', 'profile', shop.id)}>
+              <EntityProfileBadge kind="shop" />
+            </span>
           </div>
-          {shop.city && <Text color="secondary">{shop.city}</Text>}
-          <Label size="s">{shop.partnerStatus}</Label>
-          <Text color="secondary">{shop.categories.join(' · ')}</Text>
-          <SourceMetaBadge sourceMeta={shop.sourceMeta} />
+          {shop.city && (
+            <Text color="secondary" data-testid={testId('shops', 'shop-card', 'text', 'city', shop.id)}>
+              {shop.city}
+            </Text>
+          )}
+          <Label size="s" data-testid={testId('shops', 'shop-card', 'badge', 'status', shop.id)}>
+            {shop.partnerStatus}
+          </Label>
+          <Text color="secondary" data-testid={testId('shops', 'shop-card', 'text', 'categories', shop.id)}>
+            {shop.categories.join(' · ')}
+          </Text>
+          <span data-testid={testId('shops', 'shop-card', 'badge', 'source', shop.id)}>
+            <SourceMetaBadge sourceMeta={shop.sourceMeta} />
+          </span>
           <Button
             view="outlined"
+            data-testid={testId('shops', 'shop-card', 'btn', 'portal', shop.id)}
             onClick={(e) => {
               e.stopPropagation()
               setPortalOpen(true)

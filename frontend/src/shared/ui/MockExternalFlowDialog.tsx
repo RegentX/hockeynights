@@ -5,6 +5,7 @@
 import {Button, Dialog, Text} from '@gravity-ui/uikit'
 import type {ReactNode} from 'react'
 import type {MockExternalFlowType} from '@/entities/external-flow/types'
+import {testId} from '@/shared/testing/testId'
 
 const FLOW_LABELS: Record<MockExternalFlowType, string> = {
   ice_booking: 'Запись на лёд',
@@ -29,6 +30,7 @@ export interface MockExternalFlowDialogProps {
   children: ReactNode
   /** @spec SPEC-FR-6.4.1 */
   footer?: ReactNode
+  testIdPrefix?: string
 }
 
 /**
@@ -43,28 +45,29 @@ export function MockExternalFlowDialog({
   externalUrl,
   children,
   footer,
+  testIdPrefix = 'shared',
 }: MockExternalFlowDialogProps) {
   return (
-    <Dialog open={open} onClose={onClose} size="m">
-      <Dialog.Header caption={`Phase 1 mock · ${FLOW_LABELS[flowType]}`} />
+    <Dialog open={open} onClose={onClose} size="m" data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'modal')}>
+      <Dialog.Header caption={`Phase 1 mock · ${FLOW_LABELS[flowType]}`} data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'header')} />
       <Dialog.Body>
         <div className="hockey-stack hockey-stack--gap-12">
-          <Text variant="subheader-2">{partnerName}</Text>
-          <Text color="secondary">
+          <Text variant="subheader-2" data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'text', 'partner-name')}>{partnerName}</Text>
+          <Text color="secondary" data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'text', 'description')}>
             Это демо-интерфейс партнёрского сценария. В Phase 2 кнопка откроет реальный портал
             или partner API. Сейчас действие симулируется внутри приложения.
           </Text>
           {externalUrl && (
-            <Text color="secondary" variant="caption-2">
+            <Text color="secondary" variant="caption-2" data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'text', 'external-url')}>
               Целевой URL Phase 2: {externalUrl}
             </Text>
           )}
-          {children}
+          <div data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'panel', 'content')}>{children}</div>
         </div>
       </Dialog.Body>
-      <Dialog.Footer>
+      <Dialog.Footer data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'footer')}>
         {footer ?? (
-          <Button view="flat" onClick={onClose}>
+          <Button view="flat" onClick={onClose} data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'btn', 'close')}>
             Закрыть
           </Button>
         )}

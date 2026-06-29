@@ -5,6 +5,7 @@
 import {Card, Label, Text} from '@gravity-ui/uikit'
 import type {ProductOffer} from '@/entities/shop/types'
 import {ExternalProductLink} from '@/features/shops/ExternalProductLink'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-9.2.1 - Props списка предложений */
 export interface ProductOffersListProps {
@@ -26,23 +27,32 @@ const AVAILABILITY_LABELS: Record<ProductOffer['availability'], string> = {
  */
 export function ProductOffersList({offers, shopName}: ProductOffersListProps) {
   if (offers.length === 0) {
-    return <Text color="secondary">Предложения не найдены</Text>
+    return (
+      <Text color="secondary" data-testid={testId('shops', 'product-offers', 'empty')}>
+        Предложения не найдены
+      </Text>
+    )
   }
 
   return (
-    <div className="hockey-stack hockey-stack--gap-12">
+    <div className="hockey-stack hockey-stack--gap-12" data-testid={testId('shops', 'product-offers', 'list')}>
       {offers.map((offer) => (
-        <Card key={offer.id} view="filled" className="hockey-panel">
+        <Card key={offer.id} view="filled" className="hockey-panel" data-testid={testId('shops', 'product-offers', 'card', offer.id)}>
           <div className="hockey-row hockey-row--gap-12 hockey-row--between">
             <div className="hockey-stack hockey-stack--gap-4">
-              <Text variant="subheader-2">{offer.title}</Text>
-              <Text color="secondary">{offer.category}</Text>
-              <Text>
+              <Text variant="subheader-2" data-testid={testId('shops', 'product-offers', 'text', 'title', offer.id)}>
+                {offer.title}
+              </Text>
+              <Text color="secondary" data-testid={testId('shops', 'product-offers', 'text', 'category', offer.id)}>
+                {offer.category}
+              </Text>
+              <Text data-testid={testId('shops', 'product-offers', 'text', 'price', offer.id)}>
                 {offer.price.toLocaleString('ru-RU')} {offer.currency}
               </Text>
               <Label
                 theme={offer.availability === 'in_stock' ? 'success' : 'warning'}
                 size="s"
+                data-testid={testId('shops', 'product-offers', 'badge', 'availability', offer.id)}
               >
                 {AVAILABILITY_LABELS[offer.availability]}
               </Label>

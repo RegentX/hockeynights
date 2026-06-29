@@ -9,6 +9,7 @@ import {createEvent} from '@/features/events/api/eventsApi'
 import {fetchTeams} from '@/features/teams/api/teamsApi'
 import {mockArenas} from '@/mocks/data/arenas'
 import type {EventType, SkillLevel} from '@/entities/common/types'
+import {testId} from '@/shared/testing/testId'
 
 const TYPE_OPTIONS = [
   {value: 'game', content: 'Игра'},
@@ -73,17 +74,37 @@ export function EventCreateForm() {
   const teamOptions = teams.map((t) => ({value: t.id, content: t.name}))
 
   return (
-    <div className="hockey-stack hockey-stack--gap-12">
-      <Text variant="subheader-2">Создать событие</Text>
-      <TextInput label="Название" value={title} onUpdate={setTitle} />
-      <Select label="Тип" value={[type]} onUpdate={(v) => setType(v[0] as EventType)} options={TYPE_OPTIONS} />
-      <Select label="Арена" value={[arenaId]} onUpdate={(v) => setArenaId(v[0])} options={arenaOptions} />
+    <div className="hockey-stack hockey-stack--gap-12" data-testid={testId('events', 'create-form', 'panel')}>
+      <Text variant="subheader-2" data-testid={testId('events', 'create-form', 'text', 'title')}>
+        Создать событие
+      </Text>
+      <TextInput
+        label="Название"
+        value={title}
+        onUpdate={setTitle}
+        data-testid={testId('events', 'create-form', 'field', 'title')}
+      />
+      <Select
+        label="Тип"
+        value={[type]}
+        onUpdate={(v) => setType(v[0] as EventType)}
+        options={TYPE_OPTIONS}
+        data-testid={testId('events', 'create-form', 'select', 'type')}
+      />
+      <Select
+        label="Арена"
+        value={[arenaId]}
+        onUpdate={(v) => setArenaId(v[0])}
+        options={arenaOptions}
+        data-testid={testId('events', 'create-form', 'select', 'arena')}
+      />
       {teamOptions.length > 0 && (
         <Select
           label="Команда"
           value={teamId ? [teamId] : []}
           onUpdate={(v) => setTeamId(v[0] || undefined)}
           options={teamOptions}
+          data-testid={testId('events', 'create-form', 'select', 'team')}
         />
       )}
       <Select
@@ -91,9 +112,20 @@ export function EventCreateForm() {
         value={[skillLevel]}
         onUpdate={(v) => setSkillLevel(v[0] as SkillLevel)}
         options={SKILL_OPTIONS}
+        data-testid={testId('events', 'create-form', 'select', 'skill')}
       />
-      <TextInput label="Цена за игрока (RUB)" value={pricePerPlayer} onUpdate={setPricePerPlayer} />
-      <Button view="action" loading={mutation.isPending} onClick={handleSubmit}>
+      <TextInput
+        label="Цена за игрока (RUB)"
+        value={pricePerPlayer}
+        onUpdate={setPricePerPlayer}
+        data-testid={testId('events', 'create-form', 'field', 'price')}
+      />
+      <Button
+        view="action"
+        loading={mutation.isPending}
+        onClick={handleSubmit}
+        data-testid={testId('events', 'create-form', 'btn', 'submit')}
+      >
         Создать событие
       </Button>
     </div>

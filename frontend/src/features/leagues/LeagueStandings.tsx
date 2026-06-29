@@ -7,6 +7,7 @@ import {useMemo} from 'react'
 import type {LeagueStanding} from '@/entities/league/types'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
+import {testId} from '@/shared/testing/testId'
 
 const RANK_MEDAL: Record<number, string> = {
   1: '🥇',
@@ -22,6 +23,10 @@ export interface LeagueStandingsProps {
   leagueName?: string
   /** @spec SPEC-UI-2.7 */
   compact?: boolean
+}
+
+function rowId(row: LeagueStanding & {rank: number}): string {
+  return `${row.leagueId}-${row.teamName}`
 }
 
 /**
@@ -41,10 +46,12 @@ export function LeagueStandings({standings, leagueName, compact = false}: League
 
   if (ranked.length === 0) {
     return (
-      <EmptyNetState
-        title="Таблица пуста"
-        copy="Данные турнирной таблицы пока не загружены — проверьте источник лиги."
-      />
+      <div data-testid={testId('leagues', 'standings', 'empty')}>
+        <EmptyNetState
+          title="Таблица пуста"
+          copy="Данные турнирной таблицы пока не загружены — проверьте источник лиги."
+        />
+      </div>
     )
   }
 
@@ -55,25 +62,28 @@ export function LeagueStandings({standings, leagueName, compact = false}: League
       className={`standings-board${compact ? ' standings-board--compact' : ''}`}
       role="table"
       aria-label={leagueName ? `Турнирная таблица: ${leagueName}` : 'Турнирная таблица'}
+      data-testid={testId('leagues', 'standings', 'table')}
     >
-      <div className="standings-board__header">
-        <div className="standings-board__title">
+      <div className="standings-board__header" data-testid={testId('leagues', 'standings', 'panel', 'header')}>
+        <div className="standings-board__title" data-testid={testId('leagues', 'standings', 'text', 'title')}>
           {compact ? 'Топ-3' : 'Турнирная таблица'}
         </div>
         {leagueName && (
-          <div className="standings-board__league">{leagueName}</div>
+          <div className="standings-board__league" data-testid={testId('leagues', 'standings', 'text', 'league')}>
+            {leagueName}
+          </div>
         )}
       </div>
 
       {!compact && (
-        <div className="standings-board__cols" role="row">
-          <span role="columnheader">#</span>
-          <span role="columnheader">Команда</span>
-          <span role="columnheader">И</span>
-          <span role="columnheader">В</span>
-          <span role="columnheader">П</span>
-          <span role="columnheader">О</span>
-          <span role="columnheader">Форма</span>
+        <div className="standings-board__cols" role="row" data-testid={testId('leagues', 'standings', 'row', 'header')}>
+          <span role="columnheader" data-testid={testId('leagues', 'standings', 'column', 'rank')}>#</span>
+          <span role="columnheader" data-testid={testId('leagues', 'standings', 'column', 'team')}>Команда</span>
+          <span role="columnheader" data-testid={testId('leagues', 'standings', 'column', 'games')}>И</span>
+          <span role="columnheader" data-testid={testId('leagues', 'standings', 'column', 'wins')}>В</span>
+          <span role="columnheader" data-testid={testId('leagues', 'standings', 'column', 'losses')}>П</span>
+          <span role="columnheader" data-testid={testId('leagues', 'standings', 'column', 'points')}>О</span>
+          <span role="columnheader" data-testid={testId('leagues', 'standings', 'column', 'form')}>Форма</span>
         </div>
       )}
 
@@ -82,21 +92,27 @@ export function LeagueStandings({standings, leagueName, compact = false}: League
         const rankClass =
           row.rank <= 3 ? `standings-board__rank--${row.rank}` : ''
         const fillPercent = Math.round((row.points / maxPoints) * 100)
+        const id = rowId(row)
 
         if (compact) {
           return (
             <div
-              key={`${row.leagueId}-${row.teamName}`}
+              key={id}
               className={`standings-board__row standings-board__row--compact${isLeader ? ' standings-board__row--leader' : ''}`}
               role="row"
+              data-testid={testId('leagues', 'standings', 'row', id)}
             >
-              <div className={`standings-board__rank ${rankClass}`} role="cell">
+              <div
+                className={`standings-board__rank ${rankClass}`}
+                role="cell"
+                data-testid={testId('leagues', 'standings', 'cell', 'rank', id)}
+              >
                 {RANK_MEDAL[row.rank] ?? row.rank}
               </div>
-              <div className="standings-board__team" role="cell">
+              <div className="standings-board__team" role="cell" data-testid={testId('leagues', 'standings', 'cell', 'team', id)}>
                 {row.teamName}
               </div>
-              <div className="standings-board__stat" role="cell">
+              <div className="standings-board__stat" role="cell" data-testid={testId('leagues', 'standings', 'cell', 'points', id)}>
                 <ScoreboardText tone={isLeader ? 'gold' : 'accent'}>
                   {row.points} О
                 </ScoreboardText>
@@ -107,35 +123,37 @@ export function LeagueStandings({standings, leagueName, compact = false}: League
 
         return (
           <div
-            key={`${row.leagueId}-${row.teamName}`}
+            key={id}
             className={`standings-board__row${isLeader ? ' standings-board__row--leader' : ''}`}
             role="row"
+            data-testid={testId('leagues', 'standings', 'row', id)}
           >
             <div
               className={`standings-board__rank ${rankClass}`}
               role="cell"
               aria-label={`Место ${row.rank}`}
+              data-testid={testId('leagues', 'standings', 'cell', 'rank', id)}
             >
               {RANK_MEDAL[row.rank] ?? row.rank}
             </div>
-            <div className="standings-board__team" role="cell">
+            <div className="standings-board__team" role="cell" data-testid={testId('leagues', 'standings', 'cell', 'team', id)}>
               {row.teamName}
             </div>
-            <div className="standings-board__stat" role="cell">
+            <div className="standings-board__stat" role="cell" data-testid={testId('leagues', 'standings', 'cell', 'games', id)}>
               <ScoreboardText>{row.gamesPlayed}</ScoreboardText>
             </div>
-            <div className="standings-board__stat" role="cell">
+            <div className="standings-board__stat" role="cell" data-testid={testId('leagues', 'standings', 'cell', 'wins', id)}>
               <ScoreboardText>{row.wins}</ScoreboardText>
             </div>
-            <div className="standings-board__stat" role="cell">
+            <div className="standings-board__stat" role="cell" data-testid={testId('leagues', 'standings', 'cell', 'losses', id)}>
               <ScoreboardText>{row.losses}</ScoreboardText>
             </div>
-            <div className="standings-board__stat" role="cell">
+            <div className="standings-board__stat" role="cell" data-testid={testId('leagues', 'standings', 'cell', 'points', id)}>
               <ScoreboardText tone={isLeader ? 'gold' : 'accent'}>
                 {row.points}
               </ScoreboardText>
             </div>
-            <div className="standings-board__bar-cell" role="cell">
+            <div className="standings-board__bar-cell" role="cell" data-testid={testId('leagues', 'standings', 'cell', 'form', id)}>
               <div className="standings-board__points-bar" aria-hidden>
                 <div
                   className="standings-board__points-fill hockey-fill"

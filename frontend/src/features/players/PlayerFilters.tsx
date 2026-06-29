@@ -5,6 +5,7 @@
 import {Checkbox, Select, TextInput} from '@gravity-ui/uikit'
 import type {PlayersFilterParams} from '@/features/players/api/playersApi'
 import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-2.3.2 - Props фильтров игроков */
 export interface PlayerFiltersProps {
@@ -33,7 +34,7 @@ const SKILL_OPTIONS = [
  */
 export function PlayerFilters({filters, onChange}: PlayerFiltersProps) {
   return (
-    <div className="hockey-grid hockey-grid--filters">
+    <div className="hockey-grid hockey-grid--filters" data-testid={testId('players', 'player-filters', 'form')}>
       <Select
         label="Амплуа"
         value={[filters.position ?? '']}
@@ -41,6 +42,7 @@ export function PlayerFilters({filters, onChange}: PlayerFiltersProps) {
           onChange({...filters, position: (v[0] || undefined) as PlayerPosition | undefined})
         }
         options={POSITION_OPTIONS}
+        data-testid={testId('players', 'player-filters', 'select', 'position')}
       />
       <Select
         label="Уровень"
@@ -49,16 +51,19 @@ export function PlayerFilters({filters, onChange}: PlayerFiltersProps) {
           onChange({...filters, skillLevel: (v[0] || undefined) as SkillLevel | undefined})
         }
         options={SKILL_OPTIONS}
+        data-testid={testId('players', 'player-filters', 'select', 'skill-level')}
       />
       <TextInput
         label="Район"
         value={filters.district ?? ''}
         onUpdate={(v) => onChange({...filters, district: v || undefined})}
+        data-testid={testId('players', 'player-filters', 'field', 'district')}
       />
       <Checkbox
         checked={Boolean(filters.goalieOnly)}
         onUpdate={(checked) => onChange({...filters, goalieOnly: checked})}
         content="Только вратари"
+        data-testid={testId('players', 'player-filters', 'checkbox', 'goalie-only')}
       />
     </div>
   )

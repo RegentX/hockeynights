@@ -8,6 +8,7 @@ import {
   fetchRecruitmentResponses,
   reviewRecruitmentResponse,
 } from '@/features/sos/api/recruitmentApi'
+import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-5.2.3 - Props просмотра откликов */
 export interface SosResponseReviewProps {
@@ -34,23 +35,64 @@ export function SosResponseReview({requestId}: SosResponseReviewProps) {
     },
   })
 
-  if (isLoading) return <Text color="secondary">Загрузка откликов...</Text>
-  if (responses.length === 0) return <Text color="secondary">Откликов пока нет.</Text>
+  if (isLoading) {
+    return (
+      <Text color="secondary" data-testid={testId('sos', 'response-review', 'loader', requestId)}>
+        Загрузка откликов...
+      </Text>
+    )
+  }
+  if (responses.length === 0) {
+    return (
+      <Text color="secondary" data-testid={testId('sos', 'response-review', 'empty', requestId)}>
+        Откликов пока нет.
+      </Text>
+    )
+  }
 
   return (
-    <div className="hockey-stack hockey-stack--gap-8">
+    <div
+      className="hockey-stack hockey-stack--gap-8"
+      data-testid={testId('sos', 'response-review', 'list', requestId)}
+    >
       {responses.map((response) => (
-        <Card key={response.id} view="outlined" className="hockey-panel hockey-panel--12">
-          <Text variant="subheader-2">{response.displayName ?? response.userId}</Text>
-          {response.message && <Text color="secondary">{response.message}</Text>}
-          <Text color="secondary">Статус: {response.status}</Text>
+        <Card
+          key={response.id}
+          view="outlined"
+          className="hockey-panel hockey-panel--12"
+          data-testid={testId('sos', 'response-review', 'card', response.id)}
+        >
+          <Text
+            variant="subheader-2"
+            data-testid={testId('sos', 'response-review', 'text', 'name', response.id)}
+          >
+            {response.displayName ?? response.userId}
+          </Text>
+          {response.message && (
+            <Text
+              color="secondary"
+              data-testid={testId('sos', 'response-review', 'text', 'message', response.id)}
+            >
+              {response.message}
+            </Text>
+          )}
+          <Text
+            color="secondary"
+            data-testid={testId('sos', 'response-review', 'text', 'status', response.id)}
+          >
+            Статус: {response.status}
+          </Text>
           {response.status === 'pending' && (
-            <div className="hockey-row hockey-row--gap-8 hockey-mt-8">
+            <div
+              className="hockey-row hockey-row--gap-8 hockey-mt-8"
+              data-testid={testId('sos', 'response-review', 'panel', 'actions', response.id)}
+            >
               <Button
                 view="action"
                 size="s"
                 loading={mutation.isPending}
                 onClick={() => mutation.mutate({responseId: response.id, status: 'accepted'})}
+                data-testid={testId('sos', 'response-review', 'btn', 'accept', response.id)}
               >
                 Принять
               </Button>
@@ -59,6 +101,7 @@ export function SosResponseReview({requestId}: SosResponseReviewProps) {
                 size="s"
                 loading={mutation.isPending}
                 onClick={() => mutation.mutate({responseId: response.id, status: 'declined'})}
+                data-testid={testId('sos', 'response-review', 'btn', 'decline', response.id)}
               >
                 Отклонить
               </Button>

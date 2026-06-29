@@ -20,6 +20,7 @@ import {HighlightVideoBoard} from '@/features/highlights/HighlightVideoBoard'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {testId} from '@/shared/testing/testId'
 
 const MOCK_CURRENT_USER_ID = 'user-001'
 const MOCK_CURRENT_USER_NAME = 'Иван Петров'
@@ -85,31 +86,41 @@ export function HighlightsPage() {
   }
 
   if (listLoading) {
-    return <ScoreboardLoader label="Загружаем моменты…" />
+    return (
+      <div data-testid={testId('highlights', 'page', 'loader')}>
+        <ScoreboardLoader label="Загружаем моменты…" />
+      </div>
+    )
   }
 
   return (
-    <div className="highlights-page">
-      <Text variant="header-1">Highlight Analysis</Text>
-      <Text color="secondary">
+    <div className="highlights-page" data-testid={testId('highlights', 'page', 'page')}>
+      <Text variant="header-1" data-testid={testId('highlights', 'page', 'text', 'title')}>
+        Highlight Analysis
+      </Text>
+      <Text color="secondary" data-testid={testId('highlights', 'page', 'text', 'subtitle')}>
         Разбор коротких моментов с игры — mock-загрузка, разметка и комментарии команды.
       </Text>
 
-      <div className="highlights-page__layout">
-        <div className="highlights-page__catalog">
-          <IceCard padding="m">
-            <HighlightUploadForm
-              onSubmit={(payload) => uploadMutation.mutate(payload)}
-              isPending={uploadMutation.isPending}
-            />
-          </IceCard>
-
-          <div className="highlights-page__list">
-            {highlights.length === 0 ? (
-              <EmptyNetState
-                title="Нет моментов"
-                copy="Загрузи первый mock-момент с тренировки или игры."
+      <div className="highlights-page__layout" data-testid={testId('highlights', 'page', 'panel', 'layout')}>
+        <div className="highlights-page__catalog" data-testid={testId('highlights', 'page', 'panel', 'catalog')}>
+          <div data-testid={testId('highlights', 'page', 'card', 'upload')}>
+            <IceCard padding="m">
+              <HighlightUploadForm
+                onSubmit={(payload) => uploadMutation.mutate(payload)}
+                isPending={uploadMutation.isPending}
               />
+            </IceCard>
+          </div>
+
+          <div className="highlights-page__list" data-testid={testId('highlights', 'page', 'list', 'highlights')}>
+            {highlights.length === 0 ? (
+              <div data-testid={testId('highlights', 'page', 'empty', 'highlights')}>
+                <EmptyNetState
+                  title="Нет моментов"
+                  copy="Загрузи первый mock-момент с тренировки или игры."
+                />
+              </div>
             ) : (
               highlights.map((item) => (
                 <HighlightCard
@@ -123,21 +134,27 @@ export function HighlightsPage() {
           </div>
         </div>
 
-        <div className="highlights-page__board">
+        <div className="highlights-page__board" data-testid={testId('highlights', 'page', 'panel', 'board')}>
           {!activeId ? (
-            <EmptyNetState copy="Выбери момент из каталога слева." />
+            <div data-testid={testId('highlights', 'page', 'empty', 'board')}>
+              <EmptyNetState copy="Выбери момент из каталога слева." />
+            </div>
           ) : detailLoading || !detail ? (
-            <ScoreboardLoader label="Открываем разбор…" />
+            <div data-testid={testId('highlights', 'page', 'loader', 'detail')}>
+              <ScoreboardLoader label="Открываем разбор…" />
+            </div>
           ) : (
-            <IceCard padding="m">
-              <HighlightVideoBoard
-                highlight={detail}
-                onAddAnnotation={(payload) => annotationMutation.mutate(payload)}
-                onAddComment={(payload) => commentMutation.mutate(payload)}
-                isAnnotationPending={annotationMutation.isPending}
-                isCommentPending={commentMutation.isPending}
-              />
-            </IceCard>
+            <div data-testid={testId('highlights', 'page', 'card', 'video-board', activeId)}>
+              <IceCard padding="m">
+                <HighlightVideoBoard
+                  highlight={detail}
+                  onAddAnnotation={(payload) => annotationMutation.mutate(payload)}
+                  onAddComment={(payload) => commentMutation.mutate(payload)}
+                  isAnnotationPending={annotationMutation.isPending}
+                  isCommentPending={commentMutation.isPending}
+                />
+              </IceCard>
+            </div>
           )}
         </div>
       </div>
