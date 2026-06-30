@@ -3,6 +3,7 @@
  * RSVP состава на лиговую игру в субботу 16:00.
  */
 
+import type {AttendanceStatus} from '@/entities/common/types'
 import type {EventRsvpBoard, EventRsvpPlayer, EventRsvpStatus} from '@/entities/event/rsvpTypes'
 import {LEAGUE_SATURDAY_EVENT_ID, updateMockAttendance} from '@/mocks/data/events'
 import {mockUser} from '@/mocks/data/session'
