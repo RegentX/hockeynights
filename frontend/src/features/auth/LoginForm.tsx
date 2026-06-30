@@ -5,9 +5,9 @@
 
 import {useState} from 'react'
 import {useMutation} from '@tanstack/react-query'
-import {TextInput} from '@gravity-ui/uikit'
 import {Link} from 'react-router-dom'
 import {AuthDemoCard} from '@/features/auth/AuthDemoCard'
+import {AuthField} from '@/features/auth/AuthField'
 import {loginWithCredentials} from '@/features/auth/api/sessionApi'
 import {DEMO_EMAIL, DEMO_PASSWORD} from '@/features/auth/demoCredentials'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -62,23 +62,25 @@ export function LoginForm({onSuccess}: LoginFormProps) {
       <AuthDemoCard onApply={applyDemoCredentials} />
 
       <div className="auth-form__fields" data-testid={testId('auth', 'login', 'panel', 'fields')}>
-        <TextInput
+        <AuthField
           label="Email"
+          fieldId="auth-login-email"
           type="email"
           autoComplete="email"
           value={email}
           onUpdate={setEmail}
-          size="l"
-          data-testid={testId('auth', 'login', 'field', 'email')}
+          testIdScope="login"
+          testIdQualifier="email"
         />
-        <TextInput
+        <AuthField
           label="Пароль"
+          fieldId="auth-login-password"
           type="password"
           autoComplete="current-password"
           value={password}
           onUpdate={setPassword}
-          size="l"
-          data-testid={testId('auth', 'login', 'field', 'password')}
+          testIdScope="login"
+          testIdQualifier="password"
         />
       </div>
 

@@ -35,7 +35,7 @@ export async function loginWithCredentials(payload: LoginPayload): Promise<{ok: 
   try {
     return await apiRequest<{ok: true}>('/login', {method: 'POST', body: payload})
   } catch (error) {
-    throw new Error(parseApiErrorMessage(error, 'Не удалось войти'))
+    throw new Error(parseApiErrorMessage(error, 'Не удалось войти'), {cause: error})
   }
 }
 
@@ -46,7 +46,7 @@ export async function registerAccount(payload: RegisterPayload): Promise<{ok: tr
   try {
     return await apiRequest<{ok: true}>('/register', {method: 'POST', body: payload})
   } catch (error) {
-    throw new Error(parseApiErrorMessage(error, 'Не удалось зарегистрироваться'))
+    throw new Error(parseApiErrorMessage(error, 'Не удалось зарегистрироваться'), {cause: error})
   }
 }
 

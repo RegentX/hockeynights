@@ -5,8 +5,8 @@
 
 import {useState} from 'react'
 import {useMutation} from '@tanstack/react-query'
-import {TextInput} from '@gravity-ui/uikit'
 import {Link} from 'react-router-dom'
+import {AuthField} from '@/features/auth/AuthField'
 import {registerAccount} from '@/features/auth/api/sessionApi'
 import {TermsAcceptanceField} from '@/features/auth/TermsAcceptanceField'
 import {
@@ -81,41 +81,45 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
       </div>
 
       <div className="auth-form__fields" data-testid={testId('auth', 'register', 'panel', 'fields')}>
-        <TextInput
+        <AuthField
           label="Имя"
+          fieldId="auth-register-display-name"
           autoComplete="name"
           value={values.displayName}
           onUpdate={(value) => updateField('displayName', value)}
-          size="l"
-          data-testid={testId('auth', 'register', 'field', 'display-name')}
+          testIdScope="register"
+          testIdQualifier="display-name"
         />
-        <TextInput
+        <AuthField
           label="Email"
+          fieldId="auth-register-email"
           type="email"
           autoComplete="email"
           value={values.email}
           onUpdate={(value) => updateField('email', value)}
-          size="l"
-          data-testid={testId('auth', 'register', 'field', 'email')}
+          testIdScope="register"
+          testIdQualifier="email"
         />
-        <TextInput
+        <AuthField
           label="Пароль"
+          fieldId="auth-register-password"
           type="password"
           autoComplete="new-password"
           placeholder="Не менее 6 символов"
           value={values.password}
           onUpdate={(value) => updateField('password', value)}
-          size="l"
-          data-testid={testId('auth', 'register', 'field', 'password')}
+          testIdScope="register"
+          testIdQualifier="password"
         />
-        <TextInput
+        <AuthField
           label="Подтверждение пароля"
+          fieldId="auth-register-password-confirm"
           type="password"
           autoComplete="new-password"
           value={values.passwordConfirm}
           onUpdate={(value) => updateField('passwordConfirm', value)}
-          size="l"
-          data-testid={testId('auth', 'register', 'field', 'password-confirm')}
+          testIdScope="register"
+          testIdQualifier="password-confirm"
         />
 
         <TermsAcceptanceField
