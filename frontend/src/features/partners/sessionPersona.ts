@@ -26,3 +26,16 @@ export function getPrimaryPartnerPath(session: Session): string {
   const membership = session.user.partnerMemberships?.[0]
   return membership ? partnerCabinetPath(membership) : '/partner'
 }
+
+/** Человекочитаемая подпись текущей демо-персоны */
+export function describeSessionPersona(session: Session): string {
+  if (session.user.roles.includes('admin')) return 'Администратор'
+  const partner = session.user.partnerMemberships?.[0]
+  if (partner?.kind === 'league') return 'Представитель лиги'
+  if (partner?.kind === 'shop') return 'Представитель магазина'
+  if (session.user.roles.includes('coach')) return 'Тренер'
+  if (session.user.roles.includes('captain')) return 'Капитан'
+  if (session.user.roles.includes('goalie')) return 'Вратарь'
+  if (session.user.roles.includes('organizer')) return 'Организатор'
+  return 'Игрок'
+}

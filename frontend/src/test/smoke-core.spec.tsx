@@ -378,11 +378,12 @@ describe('TASK-QA-01 mock API smoke', () => {
 
 describe('TASK-QA-01 UI smoke', () => {
   /** @spec SPEC-FR-2.1.1 */
-  it('MockLoginPage renders onboarding', () => {
+  it('MockLoginPage renders demo login', () => {
     renderWithProviders(<MockLoginPage />)
     expect(screen.getByText('Hockey Nights')).toBeInTheDocument()
-    expect(screen.getByText('Войти как игрок')).toBeInTheDocument()
-    expect(screen.getByText('Войти как тренер')).toBeInTheDocument()
+    expect(screen.getByText('Вход / регистрация')).toBeInTheDocument()
+    expect(screen.getByText(/Демо-вход/i)).toBeInTheDocument()
+    expect(screen.getByLabelText('Email')).toHaveValue('demo@hockey.local')
   })
 
   /** @spec SPEC-FR-2.2.4 */

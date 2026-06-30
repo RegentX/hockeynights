@@ -22,10 +22,42 @@ export const mockUser: User = {
 }
 
 /** @spec SPEC-FR-2.1.3 - Mock сессия */
-export let mockSession: Session = {
-  user: mockUser,
-  isOnboarded: false,
+const MOCK_SESSION_STORAGE_KEY = 'hockey-mock-session'
+
+function loadPersistedSession(): Session | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = window.localStorage.getItem(MOCK_SESSION_STORAGE_KEY)
+    if (!raw) return null
+    return JSON.parse(raw) as Session
+  } catch {
+    return null
+  }
 }
+
+function persistMockSession(session: Session): void {
+  if (typeof window === 'undefined') return
+  window.localStorage.setItem(MOCK_SESSION_STORAGE_KEY, JSON.stringify(session))
+}
+
+function clearPersistedSession(): void {
+  if (typeof window === 'undefined') return
+  window.localStorage.removeItem(MOCK_SESSION_STORAGE_KEY)
+}
+
+export let mockSession: Session = (() => {
+  const persisted = loadPersistedSession()
+  if (persisted) {
+    mockUser.displayName = persisted.user.displayName
+    mockUser.roles = persisted.user.roles
+    mockUser.partnerMemberships = persisted.user.partnerMemberships
+    return persisted
+  }
+  return {
+    user: mockUser,
+    isOnboarded: false,
+  }
+})()
 
 /** @spec SPEC-FR-2.2.1 - Mock профиль */
 export let mockProfile: HockeyProfile = {
@@ -119,6 +151,7 @@ export function completeOnboarding(
     user: {...mockUser, roles, partnerMemberships},
     isOnboarded: true,
   }
+  persistMockSession(mockSession)
   return mockSession
 }
 
@@ -131,6 +164,7 @@ export function resetMockSession(): Session {
     user: {...mockUser, partnerMemberships: undefined},
     isOnboarded: false,
   }
+  clearPersistedSession()
   return mockSession
 }
 

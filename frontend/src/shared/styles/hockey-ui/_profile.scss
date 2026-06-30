@@ -686,3 +686,75 @@
   padding: 24px 16px;
   box-sizing: border-box;
 }
+
+.hockey-form-shell--640 {
+  width: min(100%, 640px);
+}
+
+.login-modal__demo-banner {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px dashed var(--hockey-card-border);
+  background: color-mix(in srgb, var(--hockey-ice-glow) 8%, transparent);
+}
+
+.login-modal__credentials,
+.login-modal__personas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.persona-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.persona-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--hockey-card-border);
+  background: var(--hockey-card-bg);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--hockey-ice-glow);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+}
+
+.persona-card__icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.persona-card__title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.persona-card__description,
+.persona-card__destination {
+  font-size: 13px;
+  color: var(--hockey-text-muted);
+  line-height: 1.35;
+}
+
+.persona-card__destination {
+  font-weight: 600;
+  color: var(--hockey-ice-glow);
+}

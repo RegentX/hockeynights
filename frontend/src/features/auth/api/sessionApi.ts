@@ -5,6 +5,18 @@
 import {apiRequest} from '@/shared/api/client'
 import type {OnboardingPayload, Session} from '@/entities/user/types'
 
+export interface LoginPayload {
+  email: string
+  password: string
+}
+
+/**
+ * @spec SPEC-FR-2.1.1 - Проверка демо-учётных данных
+ */
+export function loginWithCredentials(payload: LoginPayload): Promise<{ok: true}> {
+  return apiRequest<{ok: true}>('/login', {method: 'POST', body: payload})
+}
+
 /**
  * @spec SPEC-FR-2.1.1 - Получить текущую mock-сессию
  */

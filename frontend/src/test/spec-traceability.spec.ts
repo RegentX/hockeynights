@@ -11,6 +11,7 @@ const ROOT = resolve(__dirname, '..')
 
 /** @spec SPEC-FR-1.1.1 - Ключевые файлы с SPEC-ссылками */
 const TRACEABLE_FILES = [
+  'features/auth/LoginModal.tsx',
   'features/auth/MockLoginPage.tsx',
   'features/profile/HockeyProfileForm.tsx',
   'features/players/PlayerCard.tsx',
