@@ -380,9 +380,9 @@ describe('TASK-QA-01 UI smoke', () => {
   /** @spec SPEC-FR-2.1.1 */
   it('MockLoginPage renders demo login', () => {
     renderWithProviders(<MockLoginPage />)
-    expect(screen.getByText('Hockey Nights')).toBeInTheDocument()
-    expect(screen.getByText('Вход / регистрация')).toBeInTheDocument()
-    expect(screen.getByText(/Демо-вход/i)).toBeInTheDocument()
+    expect(screen.getByTestId('auth-shell-page')).toBeInTheDocument()
+    expect(screen.getByText('Вход в аккаунт')).toBeInTheDocument()
+    expect(screen.getByText(/Локальная память/i)).toBeInTheDocument()
     expect(screen.getByLabelText('Email')).toHaveValue('demo@hockey.local')
   })
 

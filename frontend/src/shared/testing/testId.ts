@@ -1,10 +1,16 @@
 /**
  * Хелпер для построения уникальных data-testid.
  *
- * Формат: {scope}-{component}-{element}[-{qualifier}]
+ * Формат: `{scope}-{component}-{element}[-{qualifier}]`
  *
- * @example testId('auth', 'login', 'btn', 'player') → 'auth-login-btn-player'
- * @example testId('leagues', 'standings', 'row', teamId) → 'leagues-standings-row-team-42'
+ * Обязательно для каждой новой/изменённой UI-фичи (см. `.cursor/rules/frontend-data-testid.mdc`):
+ * - корень страницы/модалки: `page` или `panel`
+ * - интерактив: `btn`, `link`, `field`, `checkbox`, `select`
+ * - состояния: `loader`, `empty`, `error`, `text`
+ * - списки: `list` + `row`/`card` с id или index
+ *
+ * @example testId('auth', 'login', 'btn', 'submit') → 'auth-login-btn-submit'
+ * @example testId('arenas', 'page', 'card', arenaId) → 'arenas-page-card-arena-001'
  */
 export function testId(...parts: (string | number | boolean | undefined | null)[]): string {
   return parts

@@ -6,7 +6,14 @@
 import {http, HttpResponse} from 'msw'
 import {completeOnboarding, mockSession, resetMockSession} from '@/mocks/data/session'
 import type {OnboardingPayload} from '@/entities/user/types'
-import {isDemoCredentials, DEMO_CREDENTIALS_HINT} from '@/features/auth/demoCredentials'
+import {isDemoCredentials, DEMO_EMAIL} from '@/features/auth/demoCredentials'
+import {
+  authenticateLocalUser,
+  findLocalUserByEmail,
+  registerLocalUser,
+  setPendingLocalUser,
+} from '@/features/auth/localAuthMemory'
+import {validateRegisterForm} from '@/features/auth/registrationValidation'
 
 export const sessionHandlers = [
   http.get('/mock-api/v1/session', () => {
@@ -15,10 +22,67 @@ export const sessionHandlers = [
 
   http.post('/mock-api/v1/login', async ({request}) => {
     const body = (await request.json()) as {email?: string; password?: string}
-    if (isDemoCredentials(body.email ?? '', body.password ?? '')) {
+    const email = body.email ?? ''
+    const password = body.password ?? ''
+
+    if (isDemoCredentials(email, password)) {
+      setPendingLocalUser(null)
       return HttpResponse.json({ok: true})
     }
-    return HttpResponse.json({message: DEMO_CREDENTIALS_HINT}, {status: 401})
+
+    const localUser = authenticateLocalUser(email, password)
+    if (localUser) {
+      setPendingLocalUser(localUser.id)
+      return HttpResponse.json({ok: true})
+    }
+
+    if (findLocalUserByEmail(email)) {
+      return HttpResponse.json({message: 'Неверный пароль'}, {status: 401})
+    }
+
+    return HttpResponse.json(
+      {
+        message: `Аккаунт не найден. Зарегистрируйтесь или используйте демо: ${DEMO_EMAIL}`,
+      },
+      {status: 401},
+    )
+  }),
+
+  http.post('/mock-api/v1/register', async ({request}) => {
+    const body = (await request.json()) as {
+      displayName?: string
+      email?: string
+      password?: string
+    }
+    const validationError = validateRegisterForm({
+      displayName: body.displayName ?? '',
+      email: body.email ?? '',
+      password: body.password ?? '',
+      passwordConfirm: body.password ?? '',
+      acceptTerms: true,
+    })
+    if (validationError) {
+      return HttpResponse.json({message: validationError}, {status: 400})
+    }
+    if (body.email?.trim().toLowerCase() === DEMO_EMAIL) {
+      return HttpResponse.json(
+        {message: 'Этот email уже зарегистрирован. Войдите в аккаунт.'},
+        {status: 409},
+      )
+    }
+    if (findLocalUserByEmail(body.email ?? '')) {
+      return HttpResponse.json(
+        {message: 'Пользователь с таким email уже есть. Войдите в аккаунт.'},
+        {status: 409},
+      )
+    }
+
+    registerLocalUser({
+      displayName: body.displayName!.trim(),
+      email: body.email!.trim(),
+      password: body.password!,
+    })
+    return HttpResponse.json({ok: true})
   }),
 
   http.post('/mock-api/v1/onboarding', async ({request}) => {

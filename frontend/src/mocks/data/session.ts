@@ -3,6 +3,7 @@
  */
 
 import type {Session, User, PartnerMembership} from '@/entities/user/types'
+import {clearPendingLocalUser} from '@/features/auth/localAuthMemory'
 import type {
   HockeyProfile,
   NotificationPreferences,
@@ -152,6 +153,7 @@ export function completeOnboarding(
     isOnboarded: true,
   }
   persistMockSession(mockSession)
+  clearPendingLocalUser()
   return mockSession
 }
 
@@ -165,6 +167,7 @@ export function resetMockSession(): Session {
     isOnboarded: false,
   }
   clearPersistedSession()
+  clearPendingLocalUser()
   return mockSession
 }
 

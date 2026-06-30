@@ -8,6 +8,7 @@ import {LoginLayout} from '@/app/LoginLayout'
 import {PersonaGate} from '@/app/PersonaGate'
 import {RequireAuth} from '@/app/RequireAuth'
 import {MockLoginPage} from '@/features/auth/MockLoginPage'
+import {TermsOfUsePage} from '@/features/auth/TermsOfUsePage'
 import {HockeyProfileForm} from '@/features/profile/HockeyProfileForm'
 import {PlayersPage} from '@/features/players/PlayersPage'
 import {PublicPlayerProfilePage} from '@/features/players/PublicPlayerProfilePage'
@@ -44,6 +45,22 @@ export function AppRoutes() {
         }
       />
       <Route path="/login" element={<Navigate to="/" replace />} />
+      <Route
+        path="/register"
+        element={
+          <LoginLayout>
+            <MockLoginPage />
+          </LoginLayout>
+        }
+      />
+      <Route
+        path="/terms"
+        element={
+          <LoginLayout>
+            <TermsOfUsePage />
+          </LoginLayout>
+        }
+      />
       <Route element={<RequireAuth />}>
         <Route element={<PersonaGate />}>
           <Route element={<AppShell />}>

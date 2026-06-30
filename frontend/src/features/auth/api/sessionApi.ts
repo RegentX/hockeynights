@@ -10,11 +10,44 @@ export interface LoginPayload {
   password: string
 }
 
+export interface RegisterPayload {
+  displayName: string
+  email: string
+  password: string
+}
+
+function parseApiErrorMessage(error: unknown, fallback: string): string {
+  if (!(error instanceof Error)) return fallback
+  const jsonMatch = error.message.match(/\{[\s\S]*\}/)
+  if (!jsonMatch) return fallback
+  try {
+    const body = JSON.parse(jsonMatch[0]) as {message?: string}
+    return body.message?.trim() || fallback
+  } catch {
+    return fallback
+  }
+}
+
 /**
  * @spec SPEC-FR-2.1.1 - Проверка демо-учётных данных
  */
-export function loginWithCredentials(payload: LoginPayload): Promise<{ok: true}> {
-  return apiRequest<{ok: true}>('/login', {method: 'POST', body: payload})
+export async function loginWithCredentials(payload: LoginPayload): Promise<{ok: true}> {
+  try {
+    return await apiRequest<{ok: true}>('/login', {method: 'POST', body: payload})
+  } catch (error) {
+    throw new Error(parseApiErrorMessage(error, 'Не удалось войти'))
+  }
+}
+
+/**
+ * @spec SPEC-FR-2.1.1 - Mock-регистрация (Phase 1)
+ */
+export async function registerAccount(payload: RegisterPayload): Promise<{ok: true}> {
+  try {
+    return await apiRequest<{ok: true}>('/register', {method: 'POST', body: payload})
+  } catch (error) {
+    throw new Error(parseApiErrorMessage(error, 'Не удалось зарегистрироваться'))
+  }
 }
 
 /**
