@@ -5,7 +5,7 @@
 import {Navigate, Outlet, useLocation} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
 import {fetchSession} from '@/features/auth/api/sessionApi'
-import {getPersonaHomePath, isPathAllowed} from '@/features/access/navigationAccess'
+import {getPersonaHomePath, getAllowedPathPrefixes} from '@/features/access/navigationAccess'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {testId} from '@/shared/testing/testId'
 
@@ -27,8 +27,17 @@ export function PersonaGate() {
     )
   }
 
-  if (session?.isOnboarded && !isPathAllowed(session, location.pathname)) {
-    return <Navigate to={getPersonaHomePath(session)} replace />
+  if (session?.isOnboarded) {
+    const homePath = session.homePath ?? getPersonaHomePath(session)
+    const allowedPrefixes = session.allowedPathPrefixes ?? getAllowedPathPrefixes(session)
+    const pathAllowed =
+      location.pathname === '/' ||
+      allowedPrefixes.some(
+        (prefix) => location.pathname === prefix || location.pathname.startsWith(`${prefix}/`),
+      )
+    if (!pathAllowed) {
+      return <Navigate to={homePath} replace />
+    }
   }
 
   return <Outlet />

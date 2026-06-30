@@ -1,28 +1,58 @@
 /**
- * SPEC-FR-3.3.1
+ * SPEC-FR-3.3.1, SPEC-FR-25.6.2
  */
 
-import {useMutation, useQueryClient} from '@tanstack/react-query'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Text} from '@gravity-ui/uikit'
-import {updateAttendance} from '@/features/events/api/eventsApi'
+import {updateAttendance, fetchEventRsvp, updateEventRsvp} from '@/features/events/api/eventsApi'
 import type {AttendanceStatus} from '@/entities/common/types'
+import type {EventRsvpStatus} from '@/entities/event/rsvpTypes'
+import {LEAGUE_SATURDAY_EVENT_ID} from '@/mocks/data/eventRsvp'
 import {testId} from '@/shared/testing/testId'
 
-/** @spec SPEC-FR-3.3.1 - Props контроля посещаемости */
+/** @spec SPEC-FR-3.3.1 - Props контрола посещаемости */
 export interface AttendanceControlProps {
   /** @spec SPEC-FR-4.1.1 */
   eventId: string
   /** @spec SPEC-FR-3.3.1 */
   currentStatus?: AttendanceStatus
+  /** @spec SPEC-FR-25.6.2 - Использовать RSVP API вместо attendance */
+  useRsvpApi?: boolean
+}
+
+const RSVP_BUTTONS: {status: EventRsvpStatus; label: string}[] = [
+  {status: 'confirmed', label: 'Иду'},
+  {status: 'declined', label: 'Не иду'},
+  {status: 'pending', label: 'Не ответил'},
+]
+
+const ATTENDANCE_BUTTONS: {status: AttendanceStatus; label: string}[] = [
+  {status: 'going', label: 'Иду'},
+  {status: 'not_going', label: 'Не иду'},
+  {status: 'maybe', label: 'Под вопросом'},
+]
+
+function attendanceToRsvp(status?: AttendanceStatus): EventRsvpStatus | undefined {
+  if (status === 'going') return 'confirmed'
+  if (status === 'not_going') return 'declined'
+  if (status === 'maybe') return 'pending'
+  return undefined
 }
 
 /**
  * @spec SPEC-FR-3.3.1 - Отметка участия: идёт, не идёт, под вопросом
  */
-export function AttendanceControl({eventId, currentStatus}: AttendanceControlProps) {
+export function AttendanceControl({eventId, currentStatus, useRsvpApi}: AttendanceControlProps) {
   const queryClient = useQueryClient()
+  const rsvpEnabled = useRsvpApi ?? eventId === LEAGUE_SATURDAY_EVENT_ID
 
-  const mutation = useMutation({
+  const {data: rsvpBoard} = useQuery({
+    queryKey: ['event-rsvp', eventId],
+    queryFn: () => fetchEventRsvp(eventId),
+    enabled: rsvpEnabled,
+  })
+
+  const attendanceMutation = useMutation({
     mutationFn: (status: AttendanceStatus) => updateAttendance(eventId, status),
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ['events']})
@@ -31,11 +61,43 @@ export function AttendanceControl({eventId, currentStatus}: AttendanceControlPro
     },
   })
 
-  const buttons: {status: AttendanceStatus; label: string}[] = [
-    {status: 'going', label: 'Иду'},
-    {status: 'not_going', label: 'Не иду'},
-    {status: 'maybe', label: 'Под вопросом'},
-  ]
+  const rsvpMutation = useMutation({
+    mutationFn: (status: EventRsvpStatus) => updateEventRsvp(eventId, {status}),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({queryKey: ['event-rsvp', eventId]})
+      void queryClient.invalidateQueries({queryKey: ['events']})
+      void queryClient.invalidateQueries({queryKey: ['calendar']})
+      void queryClient.invalidateQueries({queryKey: ['roster-status', eventId]})
+    },
+  })
+
+  if (rsvpEnabled && rsvpBoard) {
+    const currentRsvp =
+      rsvpBoard.players.find((player) => player.userId === 'user-001')?.status ??
+      attendanceToRsvp(currentStatus) ??
+      'pending'
+
+    return (
+      <div className="hockey-stack hockey-stack--gap-6" data-testid={testId('events', 'attendance', 'panel', eventId)}>
+        <Text color="secondary" data-testid={testId('events', 'attendance', 'text', 'label', eventId)}>
+          RSVP команды на игру
+        </Text>
+        <div className="hockey-row hockey-row--gap-8" data-testid={testId('events', 'attendance', 'list', eventId)}>
+          {RSVP_BUTTONS.map((btn) => (
+            <Button
+              key={btn.status}
+              view={currentRsvp === btn.status ? 'action' : 'outlined'}
+              loading={rsvpMutation.isPending}
+              onClick={() => rsvpMutation.mutate(btn.status)}
+              data-testid={testId('events', 'attendance', 'btn', btn.status, eventId)}
+            >
+              {btn.label}
+            </Button>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="hockey-stack hockey-stack--gap-6" data-testid={testId('events', 'attendance', 'panel', eventId)}>
@@ -43,12 +105,12 @@ export function AttendanceControl({eventId, currentStatus}: AttendanceControlPro
         RSVP на матч/тренировку
       </Text>
       <div className="hockey-row hockey-row--gap-8" data-testid={testId('events', 'attendance', 'list', eventId)}>
-        {buttons.map((btn) => (
+        {ATTENDANCE_BUTTONS.map((btn) => (
           <Button
             key={btn.status}
             view={currentStatus === btn.status ? 'action' : 'outlined'}
-            loading={mutation.isPending}
-            onClick={() => mutation.mutate(btn.status)}
+            loading={attendanceMutation.isPending}
+            onClick={() => attendanceMutation.mutate(btn.status)}
             data-testid={testId('events', 'attendance', 'btn', btn.status, eventId)}
           >
             {btn.label}

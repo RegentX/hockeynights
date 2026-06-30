@@ -10,6 +10,7 @@ import type {
   GameEvent,
   RosterStatus,
 } from '@/entities/event/types'
+import type {EventRsvpBoard, EventRsvpStatus, UpdateEventRsvpPayload} from '@/entities/event/rsvpTypes'
 
 /**
  * @spec SPEC-FR-4.1.1 - Список событий
@@ -35,6 +36,23 @@ export function fetchCalendar(filters: CalendarFilters = {}): Promise<GameEvent[
   if (filters.attendanceStatus) params.set('attendanceStatus', filters.attendanceStatus)
   const query = params.toString()
   return apiRequest<GameEvent[]>(`/calendar${query ? `?${query}` : ''}`)
+}
+
+/**
+ * @spec SPEC-FR-25.6.1 - RSVP состава на игру
+ */
+export function fetchEventRsvp(eventId: string): Promise<EventRsvpBoard> {
+  return apiRequest<EventRsvpBoard>(`/events/${eventId}/rsvp`)
+}
+
+/**
+ * @spec SPEC-FR-25.6.2 - Обновить RSVP текущего игрока
+ */
+export function updateEventRsvp(
+  eventId: string,
+  payload: UpdateEventRsvpPayload,
+): Promise<{eventId: string; userId: string; status: EventRsvpStatus; declineReason?: string; updatedAt: string}> {
+  return apiRequest(`/events/${eventId}/rsvp`, {method: 'POST', body: payload})
 }
 
 /**

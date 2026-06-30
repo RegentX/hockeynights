@@ -12,6 +12,8 @@ import {
   updateMockSubscriptionState,
   updateMockVerificationStatus,
 } from '@/mocks/data/session'
+import {getMockFavorites, updateMockFavorites} from '@/mocks/data/favorites'
+import type {PatchProfileFavoritesPayload} from '@/entities/favorites/types'
 import {mockPlayers, buildPublicPlayerView} from '@/mocks/data/players'
 import type {
   HockeyProfile,
@@ -33,6 +35,19 @@ interface PlayersQuery {
  * @spec SPEC-FR-2.2.1 - Handlers профиля и списка игроков
  */
 export const profileHandlers = [
+  http.get('/mock-api/v1/profile/favorites', () => {
+    return HttpResponse.json(getMockFavorites())
+  }),
+
+  http.patch('/mock-api/v1/profile/favorites', async ({request}) => {
+    const body = (await request.json()) as PatchProfileFavoritesPayload
+    if (!Array.isArray(body.actions)) {
+      return HttpResponse.json({message: 'actions array is required'}, {status: 400})
+    }
+    const updated = updateMockFavorites(body.actions)
+    return HttpResponse.json(updated)
+  }),
+
   http.get('/mock-api/v1/profile/me', () => {
     return HttpResponse.json(mockProfile)
   }),

@@ -59,6 +59,7 @@ describe('AuthPage login', () => {
 
     await waitFor(() => {
       expect(window.localStorage.getItem('hockey-mock-session')).toContain('"isOnboarded":true')
+      expect(window.localStorage.getItem('hockey-mock-session')).toContain('"personaId":"shop-partner"')
       expect(window.localStorage.getItem('hockey-mock-session')).toContain('shop-001')
     })
   })

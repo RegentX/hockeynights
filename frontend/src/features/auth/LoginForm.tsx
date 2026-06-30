@@ -4,12 +4,12 @@
  */
 
 import {useState} from 'react'
-import {useMutation} from '@tanstack/react-query'
+import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {Link} from 'react-router-dom'
 import {AuthDemoCard} from '@/features/auth/AuthDemoCard'
 import {AuthField} from '@/features/auth/AuthField'
-import {loginWithCredentials} from '@/features/auth/api/sessionApi'
-import {DEMO_EMAIL, DEMO_PASSWORD} from '@/features/auth/demoCredentials'
+import {authLogin, loginWithCredentials} from '@/features/auth/api/sessionApi'
+import {DEMO_EMAIL, DEMO_PASSWORD, isDemoCredentials} from '@/features/auth/demoCredentials'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {testId} from '@/shared/testing/testId'
 
@@ -18,14 +18,26 @@ export interface LoginFormProps {
 }
 
 export function LoginForm({onSuccess}: LoginFormProps) {
+  const queryClient = useQueryClient()
   const [email, setEmail] = useState(DEMO_EMAIL)
   const [password, setPassword] = useState(DEMO_PASSWORD)
   const [error, setError] = useState<string | null>(null)
 
   const loginMutation = useMutation({
-    mutationFn: loginWithCredentials,
-    onSuccess: () => {
+    mutationFn: async (payload: {email: string; password: string}) => {
+      if (isDemoCredentials(payload.email, payload.password)) {
+        return {kind: 'demo' as const, data: await authLogin(payload)}
+      }
+      await loginWithCredentials(payload)
+      return {kind: 'local' as const}
+    },
+    onSuccess: (result) => {
       setError(null)
+      if (result.kind === 'demo') {
+        queryClient.setQueryData(['auth-login'], result.data)
+      } else {
+        queryClient.removeQueries({queryKey: ['auth-login']})
+      }
       onSuccess()
     },
     onError: (err: Error) => {
