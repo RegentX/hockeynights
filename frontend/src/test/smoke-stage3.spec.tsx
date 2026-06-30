@@ -318,12 +318,13 @@ describe('TASK-QA-02 UI smoke', () => {
     })
   })
 
-  /** @spec SPEC-FR-15.1.1, SPEC-UI-6.5 */
-  it('IceRadarPage loads radar zones and recommendations', async () => {
+  /** @spec SPEC-FR-15.1.1, SPEC-UI-6.5, HOCFRONT-9 */
+  it('IceRadarPage loads league RSVP hero and recommendations', async () => {
     renderWithProviders(<IceRadarPage />)
     await waitFor(() => {
       expect(screen.getByText(RADAR_LABEL)).toBeInTheDocument()
-      expect(screen.getByText('Ближняя зона')).toBeInTheDocument()
+      expect(screen.getByText('Ближайшая игра')).toBeInTheDocument()
+      expect(screen.getByText('Кто идёт из команды')).toBeInTheDocument()
       expect(screen.getByText('Нужен твой амплуа — вратарь')).toBeInTheDocument()
     })
   })
