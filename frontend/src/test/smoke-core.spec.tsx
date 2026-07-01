@@ -7,10 +7,11 @@
  */
 
 import {screen, waitFor} from '@testing-library/react'
-import {describe, expect, it} from 'vitest'
+import {beforeEach, describe, expect, it} from 'vitest'
 import {mockApiGet, mockApiPatch, mockApiPost, mockApiPut} from '@/test/api'
 import {renderWithProviders} from '@/test/render'
-import {MockLoginPage} from '@/features/auth/MockLoginPage'
+import {MockLoginPage} from '@/pages/auth'
+import {resetMockSession} from '@/mocks/data/session'
 import {HockeyProfileForm} from '@/features/profile/HockeyProfileForm'
 import {PlayersPage} from '@/features/players/PlayersPage'
 import {TeamsPage} from '@/features/teams/TeamsPage'
@@ -377,10 +378,17 @@ describe('TASK-QA-01 mock API smoke', () => {
 })
 
 describe('TASK-QA-01 UI smoke', () => {
+  beforeEach(() => {
+    resetMockSession()
+    window.localStorage.clear()
+  })
+
   /** @spec SPEC-FR-2.1.1 */
-  it('MockLoginPage renders demo login', () => {
+  it('MockLoginPage renders demo login', async () => {
     renderWithProviders(<MockLoginPage />)
-    expect(screen.getByTestId('auth-shell-page')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('auth-shell-page')).toBeInTheDocument()
+    })
     expect(screen.getByText('Вход в аккаунт')).toBeInTheDocument()
     expect(screen.getByText(/Локальная память/i)).toBeInTheDocument()
     expect(screen.getByLabelText('Email')).toHaveValue('demo@hockey.local')

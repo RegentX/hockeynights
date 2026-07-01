@@ -5,7 +5,7 @@
 
 import {useQuery} from '@tanstack/react-query'
 import {fetchSession} from '@/features/auth/api/sessionApi'
-import {AuthPage} from '@/features/auth/AuthPage'
+import {AuthPage} from '@/pages/auth/ui/AuthPage'
 import {testId} from '@/shared/testing/testId'
 
 /**
@@ -13,7 +13,11 @@ import {testId} from '@/shared/testing/testId'
  * @spec SPEC-FR-2.1.2 - Выбор ролей через карточки персон
  */
 export function MockLoginPage() {
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {data: session, isPending} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+
+  if (isPending) {
+    return <div data-testid={testId('auth', 'page', 'root')} aria-busy="true" />
+  }
 
   return (
     <div data-testid={testId('auth', 'page', 'root')}>

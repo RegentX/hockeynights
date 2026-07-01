@@ -5,7 +5,7 @@
 import {screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {beforeEach, describe, expect, it} from 'vitest'
-import {AuthPage} from '@/features/auth/AuthPage'
+import {AuthPage} from '@/pages/auth/ui/AuthPage'
 import {DEMO_EMAIL} from '@/features/auth/demoCredentials'
 import {LOCAL_AUTH_MEMORY_KEY} from '@/features/auth/localAuthMemory'
 import {resetMockSession} from '@/mocks/data/session'
@@ -42,8 +42,8 @@ describe('AuthPage login', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Выберите демо-роль')).toBeInTheDocument()
-      expect(screen.getByTestId('auth-login-btn-player')).toBeInTheDocument()
-      expect(screen.getByTestId('auth-login-btn-admin')).toBeInTheDocument()
+      expect(screen.getByTestId('auth-persona-btn-player')).toBeInTheDocument()
+      expect(screen.getByTestId('auth-persona-btn-admin')).toBeInTheDocument()
     })
   })
 
@@ -55,7 +55,7 @@ describe('AuthPage login', () => {
     await waitFor(() => {
       expect(screen.getByText('Выберите демо-роль')).toBeInTheDocument()
     })
-    await user.click(screen.getByTestId('auth-login-btn-shop-partner'))
+    await user.click(screen.getByTestId('auth-persona-btn-shop-partner'))
 
     await waitFor(() => {
       expect(window.localStorage.getItem('hockey-mock-session')).toContain('"isOnboarded":true')
@@ -78,7 +78,7 @@ describe('AuthPage login', () => {
       expect(screen.getByText('Выберите демо-роль')).toBeInTheDocument()
     })
 
-    await user.click(screen.getByTestId('auth-login-btn-back-credentials'))
+    await user.click(screen.getByTestId('auth-persona-btn-back-credentials'))
     await user.click(screen.getByTestId('auth-shell-tab-login'))
     await waitFor(() => {
       expect(screen.getByText('Вход в аккаунт')).toBeInTheDocument()

@@ -3,7 +3,7 @@
  * Форма входа (email + пароль).
  */
 
-import {useState} from 'react'
+import {useState, type FormEvent} from 'react'
 import {useMutation} from '@tanstack/react-query'
 import {Link} from 'react-router-dom'
 import {AuthDemoCard} from '@/features/auth/AuthDemoCard'
@@ -39,7 +39,8 @@ export function LoginForm({onSuccess}: LoginFormProps) {
     setError(null)
   }
 
-  function handleSubmit() {
+  function handleSubmit(event?: FormEvent) {
+    event?.preventDefault()
     setError(null)
     loginMutation.mutate({email: email.trim(), password})
   }
@@ -61,44 +62,47 @@ export function LoginForm({onSuccess}: LoginFormProps) {
 
       <AuthDemoCard onApply={applyDemoCredentials} />
 
-      <div className="auth-form__fields" data-testid={testId('auth', 'login', 'panel', 'fields')}>
-        <AuthField
-          label="Email"
-          fieldId="auth-login-email"
-          type="email"
-          autoComplete="email"
-          value={email}
-          onUpdate={setEmail}
-          testIdScope="login"
-          testIdQualifier="email"
-        />
-        <AuthField
-          label="Пароль"
-          fieldId="auth-login-password"
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onUpdate={setPassword}
-          testIdScope="login"
-          testIdQualifier="password"
-        />
-      </div>
-
-      {error && (
-        <div className="auth-alert auth-alert--error" data-testid={testId('auth', 'login', 'text', 'error')}>
-          {error}
+      <form className="auth-form__submit" onSubmit={handleSubmit} noValidate>
+        <div className="auth-form__fields" data-testid={testId('auth', 'login', 'panel', 'fields')}>
+          <AuthField
+            label="Email"
+            fieldId="auth-login-email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onUpdate={setEmail}
+            testIdScope="login"
+            testIdQualifier="email"
+          />
+          <AuthField
+            label="Пароль"
+            fieldId="auth-login-password"
+            type="password"
+            autoComplete="current-password"
+            value={password}
+            onUpdate={setPassword}
+            testIdScope="login"
+            testIdQualifier="password"
+          />
         </div>
-      )}
 
-      <HockeyButton
-        view="action"
-        size="l"
-        loading={loginMutation.isPending}
-        onClick={handleSubmit}
-        data-testid={testId('auth', 'login', 'btn', 'submit')}
-      >
-        Войти
-      </HockeyButton>
+        {error && (
+          <div className="auth-alert auth-alert--error" data-testid={testId('auth', 'login', 'text', 'error')}>
+            {error}
+          </div>
+        )}
+
+        <HockeyButton
+          type="submit"
+          view="action"
+          size="l"
+          loading={loginMutation.isPending}
+          disabled={loginMutation.isPending}
+          data-testid={testId('auth', 'login', 'btn', 'submit')}
+        >
+          Войти
+        </HockeyButton>
+      </form>
 
       <p className="auth-form__footer" data-testid={testId('auth', 'login', 'panel', 'footer')}>
         <span className="auth-form__subtitle">Нет аккаунта? </span>
@@ -112,6 +116,7 @@ export function LoginForm({onSuccess}: LoginFormProps) {
         <span className="auth-form__footer-sep"> · </span>
         <Link
           to="/terms"
+          state={{from: 'login'}}
           className="auth-form__switch-link"
           data-testid={testId('auth', 'login', 'link', 'terms')}
         >

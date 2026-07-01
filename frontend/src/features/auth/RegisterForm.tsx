@@ -3,7 +3,7 @@
  * Форма регистрации (mock Phase 1 + localAuthMemory).
  */
 
-import {useState} from 'react'
+import {useState, type FormEvent} from 'react'
 import {useMutation} from '@tanstack/react-query'
 import {Link} from 'react-router-dom'
 import {AuthField} from '@/features/auth/AuthField'
@@ -47,7 +47,8 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
     setValues((prev) => ({...prev, [key]: value}))
   }
 
-  function handleSubmit() {
+  function handleSubmit(event?: FormEvent) {
+    event?.preventDefault()
     const validationError = validateRegisterForm(values)
     if (validationError) {
       setError(validationError)
@@ -80,69 +81,72 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
         Данные хранятся в <strong>localStorage</strong> и доступны только на этом устройстве.
       </div>
 
-      <div className="auth-form__fields" data-testid={testId('auth', 'register', 'panel', 'fields')}>
-        <AuthField
-          label="Имя"
-          fieldId="auth-register-display-name"
-          autoComplete="name"
-          value={values.displayName}
-          onUpdate={(value) => updateField('displayName', value)}
-          testIdScope="register"
-          testIdQualifier="display-name"
-        />
-        <AuthField
-          label="Email"
-          fieldId="auth-register-email"
-          type="email"
-          autoComplete="email"
-          value={values.email}
-          onUpdate={(value) => updateField('email', value)}
-          testIdScope="register"
-          testIdQualifier="email"
-        />
-        <AuthField
-          label="Пароль"
-          fieldId="auth-register-password"
-          type="password"
-          autoComplete="new-password"
-          placeholder="Не менее 6 символов"
-          value={values.password}
-          onUpdate={(value) => updateField('password', value)}
-          testIdScope="register"
-          testIdQualifier="password"
-        />
-        <AuthField
-          label="Подтверждение пароля"
-          fieldId="auth-register-password-confirm"
-          type="password"
-          autoComplete="new-password"
-          value={values.passwordConfirm}
-          onUpdate={(value) => updateField('passwordConfirm', value)}
-          testIdScope="register"
-          testIdQualifier="password-confirm"
-        />
+      <form className="auth-form__submit" onSubmit={handleSubmit} noValidate>
+        <div className="auth-form__fields" data-testid={testId('auth', 'register', 'panel', 'fields')}>
+          <AuthField
+            label="Имя"
+            fieldId="auth-register-display-name"
+            autoComplete="name"
+            value={values.displayName}
+            onUpdate={(value) => updateField('displayName', value)}
+            testIdScope="register"
+            testIdQualifier="display-name"
+          />
+          <AuthField
+            label="Email"
+            fieldId="auth-register-email"
+            type="email"
+            autoComplete="email"
+            value={values.email}
+            onUpdate={(value) => updateField('email', value)}
+            testIdScope="register"
+            testIdQualifier="email"
+          />
+          <AuthField
+            label="Пароль"
+            fieldId="auth-register-password"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Не менее 6 символов"
+            value={values.password}
+            onUpdate={(value) => updateField('password', value)}
+            testIdScope="register"
+            testIdQualifier="password"
+          />
+          <AuthField
+            label="Подтверждение пароля"
+            fieldId="auth-register-password-confirm"
+            type="password"
+            autoComplete="new-password"
+            value={values.passwordConfirm}
+            onUpdate={(value) => updateField('passwordConfirm', value)}
+            testIdScope="register"
+            testIdQualifier="password-confirm"
+          />
 
-        <TermsAcceptanceField
-          checked={values.acceptTerms}
-          onUpdate={(checked) => updateField('acceptTerms', checked)}
-        />
-      </div>
-
-      {error && (
-        <div className="auth-alert auth-alert--error" data-testid={testId('auth', 'register', 'text', 'error')}>
-          {error}
+          <TermsAcceptanceField
+            checked={values.acceptTerms}
+            onUpdate={(checked) => updateField('acceptTerms', checked)}
+          />
         </div>
-      )}
 
-      <HockeyButton
-        view="action"
-        size="l"
-        loading={registerMutation.isPending}
-        onClick={handleSubmit}
-        data-testid={testId('auth', 'register', 'btn', 'submit')}
-      >
-        Зарегистрироваться
-      </HockeyButton>
+        {error && (
+          <div className="auth-alert auth-alert--error" data-testid={testId('auth', 'register', 'text', 'error')}>
+            {error}
+          </div>
+        )}
+
+        <HockeyButton
+          type="submit"
+          view="action"
+          size="l"
+          loading={registerMutation.isPending}
+          disabled={registerMutation.isPending}
+          data-testid={testId('auth', 'register', 'btn', 'submit')}
+        >
+          Зарегистрироваться
+        </HockeyButton>
+      </form>
 
       <p className="auth-form__footer" data-testid={testId('auth', 'register', 'panel', 'footer')}>
         <span className="auth-form__subtitle">Уже есть аккаунт? </span>

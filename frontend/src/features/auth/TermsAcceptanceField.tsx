@@ -45,6 +45,7 @@ export function TermsAcceptanceField({checked, onUpdate}: TermsAcceptanceFieldPr
             </span>
             <Link
               to="/terms"
+              state={{from: 'register'}}
               className="auth-terms-field__link auth-terms-field__link--secondary"
               data-testid={testId('auth', 'register', 'link', 'read-terms-page')}
             >

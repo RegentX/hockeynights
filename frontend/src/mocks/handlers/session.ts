@@ -13,7 +13,7 @@ import {
   registerLocalUser,
   setPendingLocalUser,
 } from '@/features/auth/localAuthMemory'
-import {validateRegisterForm} from '@/features/auth/registrationValidation'
+import {validateRegisterPayload} from '@/features/auth/registrationValidation'
 
 export const sessionHandlers = [
   http.get('/mock-api/v1/session', () => {
@@ -54,12 +54,10 @@ export const sessionHandlers = [
       email?: string
       password?: string
     }
-    const validationError = validateRegisterForm({
-      displayName: body.displayName ?? '',
-      email: body.email ?? '',
-      password: body.password ?? '',
-      passwordConfirm: body.password ?? '',
-      acceptTerms: true,
+    const validationError = validateRegisterPayload({
+      displayName: body.displayName,
+      email: body.email,
+      password: body.password,
     })
     if (validationError) {
       return HttpResponse.json({message: validationError}, {status: 400})
