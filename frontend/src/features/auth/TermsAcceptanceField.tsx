@@ -5,7 +5,6 @@
 
 import {useState, type MouseEvent} from 'react'
 import {Checkbox} from '@gravity-ui/uikit'
-import {Link} from 'react-router-dom'
 import {TermsOfUseModal} from '@/features/auth/TermsOfUseModal'
 import {testId} from '@/shared/testing/testId'
 
@@ -40,23 +39,13 @@ export function TermsAcceptanceField({checked, onUpdate}: TermsAcceptanceFieldPr
             >
               условия использования
             </button>
-            <span className="auth-terms-field__sep" aria-hidden>
-              ·
-            </span>
-            <Link
-              to="/terms"
-              state={{from: 'register'}}
-              className="auth-terms-field__link auth-terms-field__link--secondary"
-              data-testid={testId('auth', 'register', 'link', 'read-terms-page')}
-            >
-              на странице
-            </Link>
           </span>
         }
         data-testid={testId('auth', 'register', 'checkbox', 'terms')}
       />
 
       <TermsOfUseModal
+        key={modalOpen ? 'open' : 'closed'}
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onAccept={() => onUpdate(true)}

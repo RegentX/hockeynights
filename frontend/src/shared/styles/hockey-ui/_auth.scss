@@ -1,12 +1,14 @@
 .login-layout {
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: 24px 16px;
   box-sizing: border-box;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 
   > * {
     width: 100%;
@@ -29,6 +31,7 @@
   position: relative;
   width: min(100%, 920px);
   margin-inline: auto;
+  margin-block: auto;
   flex-shrink: 0;
   z-index: 1;
 
@@ -307,6 +310,14 @@
     &:hover {
       text-decoration: underline;
     }
+
+    &[type='button'] {
+      padding: 0;
+      border: none;
+      background: none;
+      font: inherit;
+      cursor: pointer;
+    }
   }
 
   &__submit {
@@ -555,9 +566,58 @@
 }
 
 .terms-modal .g-dialog__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
   max-height: min(70vh, 560px);
   overflow: hidden;
   padding-top: 0;
+}
+
+.terms-modal__scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 4px;
+}
+
+.terms-modal__expand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-inline-start: auto;
+  padding: 0;
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--hockey-card-bg-solid, var(--hockey-card-bg)) 80%, transparent);
+  color: var(--hockey-text-muted);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--hockey-ice-glow);
+    border-color: color-mix(in srgb, var(--hockey-ice-glow) 35%, transparent);
+  }
+}
+
+.g-dialog.terms-modal--expanded {
+  width: min(calc(100vw - 24px), 960px);
+  max-width: none;
+  height: min(calc(100dvh - 24px), 900px);
+  max-height: none;
+}
+
+.g-dialog.terms-modal--expanded .g-dialog__body {
+  max-height: none;
+  flex: 1 1 auto;
+}
+
+.g-dialog.terms-modal--expanded .terms-modal__scroll {
+  max-height: none;
 }
 
 .terms-doc {
@@ -565,6 +625,12 @@
   flex-direction: column;
   gap: 16px;
   min-height: 0;
+}
+
+.terms-doc--embedded .terms-doc__body {
+  max-height: none;
+  overflow: visible;
+  padding-right: 0;
 }
 
 .terms-doc__header {
@@ -637,6 +703,7 @@
 .terms-page {
   width: min(100%, 720px);
   margin-inline: auto;
+  margin-block: auto;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;

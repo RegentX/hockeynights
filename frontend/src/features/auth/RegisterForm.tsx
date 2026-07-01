@@ -5,7 +5,6 @@
 
 import {useState, type FormEvent} from 'react'
 import {useMutation} from '@tanstack/react-query'
-import {Link} from 'react-router-dom'
 import {AuthField} from '@/features/auth/AuthField'
 import {registerAccount} from '@/features/auth/api/sessionApi'
 import {TermsAcceptanceField} from '@/features/auth/TermsAcceptanceField'
@@ -147,17 +146,6 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
           Зарегистрироваться
         </HockeyButton>
       </form>
-
-      <p className="auth-form__footer" data-testid={testId('auth', 'register', 'panel', 'footer')}>
-        <span className="auth-form__subtitle">Уже есть аккаунт? </span>
-        <Link
-          to="/"
-          className="auth-form__switch-link"
-          data-testid={testId('auth', 'register', 'link', 'login')}
-        >
-          Войти
-        </Link>
-      </p>
     </section>
   )
 }

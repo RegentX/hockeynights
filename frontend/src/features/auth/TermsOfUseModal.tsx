@@ -3,7 +3,9 @@
  * Модальное окно с условиями использования (как в мессенджерах при регистрации).
  */
 
-import {Dialog} from '@gravity-ui/uikit'
+import {useState} from 'react'
+import {Dialog, Icon} from '@gravity-ui/uikit'
+import {ArrowsExpand, ChevronsCollapseFromLines} from '@gravity-ui/icons'
 import {TermsOfUseDocument} from '@/features/auth/TermsOfUseDocument'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {testId} from '@/shared/testing/testId'
@@ -16,31 +18,58 @@ export interface TermsOfUseModalProps {
 }
 
 export function TermsOfUseModal({open, onClose, onAccept}: TermsOfUseModalProps) {
+  const [expanded, setExpanded] = useState(false)
+
+  function handleClose() {
+    setExpanded(false)
+    onClose()
+  }
+
   function handleAccept() {
     onAccept?.()
-    onClose()
+    handleClose()
+  }
+
+  function toggleExpanded() {
+    setExpanded((value) => !value)
   }
 
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       size="l"
-      className="terms-modal"
+      contentOverflow="auto"
+      className={`terms-modal${expanded ? ' terms-modal--expanded' : ''}`}
+      modalClassName={expanded ? 'terms-modal__overlay--expanded' : undefined}
       data-testid={testId('auth', 'terms', 'modal')}
     >
       <Dialog.Header
         caption="Перед регистрацией ознакомьтесь с правилами"
+        insertAfter={
+          <button
+            type="button"
+            className="terms-modal__expand-btn"
+            onClick={toggleExpanded}
+            aria-label={expanded ? 'Свернуть окно' : 'Открыть на весь экран'}
+            aria-pressed={expanded}
+            data-testid={testId('auth', 'terms', 'btn', expanded ? 'collapse' : 'expand')}
+          >
+            <Icon data={expanded ? ChevronsCollapseFromLines : ArrowsExpand} size={16} />
+          </button>
+        }
         data-testid={testId('auth', 'terms', 'text', 'modal-caption')}
       />
       <Dialog.Body>
-        <TermsOfUseDocument />
+        <div className="terms-modal__scroll" data-testid={testId('auth', 'terms', 'panel', 'scroll')}>
+          <TermsOfUseDocument embedded />
+        </div>
       </Dialog.Body>
       <Dialog.Footer data-testid={testId('auth', 'terms', 'panel', 'modal-footer')}>
         <HockeyButton
           view="flat"
           size="m"
-          onClick={onClose}
+          onClick={handleClose}
           data-testid={testId('auth', 'terms', 'btn', 'close')}
         >
           Закрыть

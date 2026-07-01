@@ -21,26 +21,6 @@ describe('TermsOfUsePage', () => {
     expect(screen.getByTestId('auth-terms-link-register')).toHaveAttribute('href', '/register')
   })
 
-  it('navigates back to login when opened from login flow', async () => {
-    const user = userEvent.setup()
-    renderWithProviders(
-      <Routes>
-        <Route path="/" element={<AuthPage />} />
-        <Route path="/terms" element={<TermsOfUsePage />} />
-      </Routes>,
-      {routerProps: {initialEntries: ['/']}},
-    )
-
-    await user.click(screen.getByTestId('auth-login-link-terms'))
-    expect(screen.getByTestId('auth-terms-page')).toBeInTheDocument()
-
-    await user.click(screen.getByTestId('auth-terms-btn-back'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Вход в аккаунт')).toBeInTheDocument()
-    })
-  })
-
   it('navigates back to register when opened from registration flow', async () => {
     const user = userEvent.setup()
     renderWithProviders(
@@ -56,5 +36,20 @@ describe('TermsOfUsePage', () => {
     await waitFor(() => {
       expect(screen.getByText('Создать аккаунт')).toBeInTheDocument()
     })
+  })
+})
+
+describe('TermsOfUseModal from login form', () => {
+  it('opens modal from login and supports fullscreen toggle', async () => {
+    const user = userEvent.setup()
+    renderWithProviders(<AuthPage />)
+
+    await user.click(screen.getByTestId('auth-login-btn-open-terms'))
+
+    expect(screen.getByTestId('auth-terms-modal')).toBeInTheDocument()
+    expect(screen.getByText('4. Сообщения и контент')).toBeInTheDocument()
+
+    await user.click(screen.getByTestId('auth-terms-btn-expand'))
+    expect(screen.getByTestId('auth-terms-btn-collapse')).toBeInTheDocument()
   })
 })

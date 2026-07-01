@@ -10,9 +10,12 @@ import {
 } from '@/features/auth/termsOfUseContent'
 import {testId} from '@/shared/testing/testId'
 
-export function TermsOfUseDocument() {
+export function TermsOfUseDocument({embedded = false}: {embedded?: boolean}) {
   return (
-    <article className="terms-doc" data-testid={testId('auth', 'terms', 'panel', 'document')}>
+    <article
+      className={`terms-doc${embedded ? ' terms-doc--embedded' : ''}`}
+      data-testid={testId('auth', 'terms', 'panel', 'document')}
+    >
       <header className="terms-doc__header" data-testid={testId('auth', 'terms', 'panel', 'header')}>
         <h2 className="terms-doc__title" data-testid={testId('auth', 'terms', 'text', 'title')}>
           {TERMS_OF_USE_TITLE}
