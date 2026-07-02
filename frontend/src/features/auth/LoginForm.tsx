@@ -5,9 +5,9 @@
 
 import {useState, type FormEvent} from 'react'
 import {useMutation} from '@tanstack/react-query'
+import {Link} from 'react-router-dom'
 import {AuthDemoCard} from '@/features/auth/AuthDemoCard'
 import {AuthField} from '@/features/auth/AuthField'
-import {TermsOfUseModal} from '@/features/auth/TermsOfUseModal'
 import {loginWithCredentials} from '@/features/auth/api/sessionApi'
 import {DEMO_EMAIL, DEMO_PASSWORD} from '@/features/auth/demoCredentials'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -21,7 +21,6 @@ export function LoginForm({onSuccess}: LoginFormProps) {
   const [email, setEmail] = useState(DEMO_EMAIL)
   const [password, setPassword] = useState(DEMO_PASSWORD)
   const [error, setError] = useState<string | null>(null)
-  const [termsOpen, setTermsOpen] = useState(false)
 
   const loginMutation = useMutation({
     mutationFn: loginWithCredentials,
@@ -106,21 +105,14 @@ export function LoginForm({onSuccess}: LoginFormProps) {
       </form>
 
       <p className="auth-form__footer" data-testid={testId('auth', 'login', 'panel', 'footer')}>
-        <button
-          type="button"
+        <Link
+          to="/terms"
           className="auth-form__switch-link"
-          onClick={() => setTermsOpen(true)}
-          data-testid={testId('auth', 'login', 'btn', 'open-terms')}
+          data-testid={testId('auth', 'login', 'link', 'terms')}
         >
           Условия использования
-        </button>
+        </Link>
       </p>
-
-      <TermsOfUseModal
-        key={termsOpen ? 'open' : 'closed'}
-        open={termsOpen}
-        onClose={() => setTermsOpen(false)}
-      />
     </section>
   )
 }

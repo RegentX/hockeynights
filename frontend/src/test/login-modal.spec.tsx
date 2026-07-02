@@ -5,16 +5,19 @@
 import {screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {beforeEach, describe, expect, it} from 'vitest'
+import {Route, Routes} from 'react-router-dom'
 import {AuthPage} from '@/pages/auth/ui/AuthPage'
 import {DEMO_EMAIL} from '@/features/auth/demoCredentials'
 import {LOCAL_AUTH_MEMORY_KEY} from '@/features/auth/localAuthMemory'
+import {TermsOfUsePage} from '@/features/auth/TermsOfUsePage'
 import {resetMockSession} from '@/mocks/data/session'
+import {clearTestStorage} from '@/test/clearTestStorage'
 import {renderWithProviders} from '@/test/render'
 
 describe('AuthPage login', () => {
   beforeEach(() => {
     resetMockSession()
-    window.localStorage.clear()
+    clearTestStorage()
   })
 
   it('rejects invalid credentials', async () => {
@@ -100,7 +103,7 @@ describe('AuthPage login', () => {
 describe('AuthPage register', () => {
   beforeEach(() => {
     resetMockSession()
-    window.localStorage.clear()
+    clearTestStorage()
   })
 
   it('shows registration form on /register route', () => {
@@ -139,26 +142,38 @@ describe('AuthPage register', () => {
     })
   })
 
-  it('opens terms modal and accepts from registration', async () => {
+  it('opens terms page from registration and returns back', async () => {
     const user = userEvent.setup()
-    renderWithProviders(<AuthPage />, {routerProps: {initialEntries: ['/register']}})
+    renderWithProviders(
+      <Routes>
+        <Route path="/register" element={<AuthPage />} />
+        <Route path="/terms" element={<TermsOfUsePage />} />
+      </Routes>,
+      {routerProps: {initialEntries: ['/register']}},
+    )
 
     await user.type(screen.getByLabelText('Имя'), 'Читатель Условий')
     await user.type(screen.getByLabelText('Email'), 'terms@hockey.local')
     await user.type(screen.getByLabelText('Пароль'), 'secret12')
     await user.type(screen.getByLabelText('Подтверждение пароля'), 'secret12')
 
-    await user.click(screen.getByTestId('auth-register-btn-open-terms'))
+    await user.click(screen.getByTestId('auth-register-link-terms'))
     await waitFor(() => {
-      expect(screen.getByTestId('auth-terms-modal')).toBeInTheDocument()
+      expect(screen.getByTestId('auth-terms-page')).toBeInTheDocument()
       expect(screen.getByText('1. Введение')).toBeInTheDocument()
       expect(screen.getByText('4. Сообщения и контент')).toBeInTheDocument()
     })
-    await user.click(screen.getByTestId('auth-terms-btn-accept'))
+    await user.click(screen.getByTestId('auth-terms-btn-collapse'))
 
     await waitFor(() => {
-      expect(screen.queryByTestId('auth-terms-modal')).not.toBeInTheDocument()
+      expect(screen.getByText('Создать аккаунт')).toBeInTheDocument()
     })
+
+    await user.type(screen.getByLabelText('Имя'), 'Читатель Условий')
+    await user.type(screen.getByLabelText('Email'), 'terms@hockey.local')
+    await user.type(screen.getByLabelText('Пароль'), 'secret12')
+    await user.type(screen.getByLabelText('Подтверждение пароля'), 'secret12')
+    await user.click(screen.getByRole('checkbox'))
 
     await user.click(screen.getByRole('button', {name: 'Зарегистрироваться'}))
     await waitFor(() => {

@@ -17,7 +17,6 @@ const TRACEABLE_FILES = [
   'features/auth/AuthShell.tsx',
   'features/auth/AuthDemoCard.tsx',
   'features/auth/TermsOfUseDocument.tsx',
-  'features/auth/TermsOfUseModal.tsx',
   'features/auth/TermsOfUsePage.tsx',
   'features/auth/TermsAcceptanceField.tsx',
   'features/auth/RegisterForm.tsx',

@@ -6,6 +6,7 @@
 import {useQuery} from '@tanstack/react-query'
 import {fetchSession} from '@/features/auth/api/sessionApi'
 import {AuthPage} from '@/pages/auth/ui/AuthPage'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {testId} from '@/shared/testing/testId'
 
 /**
@@ -16,7 +17,15 @@ export function MockLoginPage() {
   const {data: session, isPending} = useQuery({queryKey: ['session'], queryFn: fetchSession})
 
   if (isPending) {
-    return <div data-testid={testId('auth', 'page', 'root')} aria-busy="true" />
+    return (
+      <div data-testid={testId('auth', 'page', 'root')}>
+        <ScoreboardLoader
+          label="Загрузка"
+          testIdPrefix="auth"
+          data-testid={testId('auth', 'page', 'loader')}
+        />
+      </div>
+    )
   }
 
   return (

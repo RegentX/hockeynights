@@ -7,6 +7,7 @@ import '../index.scss'
 import {cleanup} from '@testing-library/react'
 import {afterAll, afterEach, beforeAll, vi} from 'vitest'
 import {server} from '@/test/msw-server'
+import {clearTestStorage} from '@/test/clearTestStorage'
 
 /** @spec SPEC-NFR-2 - Polyfills для Gravity UI в jsdom */
 class ResizeObserverStub {
@@ -56,5 +57,6 @@ beforeAll(() => server.listen({onUnhandledRequest: 'error'}))
 afterEach(() => {
     cleanup()
     server.resetHandlers()
+    clearTestStorage()
 })
 afterAll(() => server.close())

@@ -3,9 +3,8 @@
  * Чекбокс принятия условий — компактная однострочная разметка.
  */
 
-import {useState, type MouseEvent} from 'react'
 import {Checkbox} from '@gravity-ui/uikit'
-import {TermsOfUseModal} from '@/features/auth/TermsOfUseModal'
+import {Link} from 'react-router-dom'
 import {testId} from '@/shared/testing/testId'
 
 export interface TermsAcceptanceFieldProps {
@@ -14,14 +13,6 @@ export interface TermsAcceptanceFieldProps {
 }
 
 export function TermsAcceptanceField({checked, onUpdate}: TermsAcceptanceFieldProps) {
-  const [modalOpen, setModalOpen] = useState(false)
-
-  function openTermsModal(event: MouseEvent<HTMLButtonElement>) {
-    event.preventDefault()
-    event.stopPropagation()
-    setModalOpen(true)
-  }
-
   return (
     <div className="auth-terms-field" data-testid={testId('auth', 'register', 'panel', 'terms')}>
       <Checkbox
@@ -31,24 +22,16 @@ export function TermsAcceptanceField({checked, onUpdate}: TermsAcceptanceFieldPr
         content={
           <span className="auth-terms-field__label">
             Я принимаю{' '}
-            <button
-              type="button"
+            <Link
+              to="/terms"
               className="auth-terms-field__link"
-              onClick={openTermsModal}
-              data-testid={testId('auth', 'register', 'btn', 'open-terms')}
+              data-testid={testId('auth', 'register', 'link', 'terms')}
             >
               условия использования
-            </button>
+            </Link>
           </span>
         }
         data-testid={testId('auth', 'register', 'checkbox', 'terms')}
-      />
-
-      <TermsOfUseModal
-        key={modalOpen ? 'open' : 'closed'}
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onAccept={() => onUpdate(true)}
       />
     </div>
   )
