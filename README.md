@@ -27,7 +27,7 @@ docker run --rm -p 8080:80 hockeynights
 
 ### Переменные сборки
 
-Переменные `VITE_*` задаются на этапе сборки образа:
+Переменные `VITE_*` задаются на этапе сборки образа. Для dev/qa стендов по умолчанию - `mock`:
 
 ```bash
 docker build \
@@ -40,10 +40,12 @@ docker build \
 
 ## Локальная разработка
 
+Требуется **Node.js 22+** (`.nvmrc`).
+
 ```bash
 cd frontend
-npm install
+npm ci          # не npm install - используем lockfile
 npm run dev
 ```
 
-Подробнее — в [frontend/README.md](frontend/README.md).
+Перед push обязательно прогоните проверки качества - см. раздел **Workflow разработчика** в [frontend/README.md](frontend/README.md).

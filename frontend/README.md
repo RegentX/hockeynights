@@ -8,15 +8,108 @@
 - TanStack Query
 - Mock Service Worker (MSW)
 
+## Требования
+
+- **Node.js 22+** (см. `.nvmrc` в корне репозитория)
+- **npm** (используем `package-lock.json` - lockfile коммитится в репозиторий)
+
+## Первичная настройка
+
+```bash
+# из корня репозитория
+nvm use          # или: nvm install
+
+cd frontend
+npm ci           # строго по lockfile; также установит husky pre-commit hooks
+```
+
+Создайте `frontend/.env.local` для локальной разработки **без бэкенда**:
+
+```env
+VITE_API_MODE=mock
+VITE_BACKEND_URL=/api/v1
+```
+
 ## Запуск
 
 ```bash
-npm install
-npm run dev
-npm test
+npm run dev      # http://localhost:5173
+npm test         # unit/integration тесты (Vitest)
 ```
 
 Откройте `http://localhost:5173/login` для mock-onboarding.
+
+## Workflow разработчика
+
+```
+feature/HOCFRONT-XX → PR в develop → CI (quality) → merge → деплой на dev
+                                              merge в preprod → деплой на qa
+```
+
+1. `git checkout -b feature/HOCFRONT-XX`
+2. Разработка (`npm run dev`)
+3. Перед коммитом/push - проверки (см. ниже)
+4. `git commit` — husky автоматически запускает eslint + prettier на staged-файлах
+5. `git push` → открыть PR в `develop`
+6. Дождаться зелёного CI (job `quality`)
+
+На PR **деплой не запускается**. Деплой - только при push в `develop` (dev) или `preprod` (qa).
+
+## Проверки перед push (обязательно)
+
+CI на PR запускает те же гейты. Чтобы не ловить падения в GitHub Actions, локально:
+
+```bash
+npm run format:check   # Prettier - проверка без записи
+npm run lint           # ESLint
+npm run typecheck      # TypeScript (app + tests + vite config)
+npm test
+npm run build
+```
+
+Быстрое исправление форматирования и линта:
+
+```bash
+npm run format         # Prettier - записать исправления
+npm run lint:fix       # ESLint - автофикс
+```
+
+Или одной командой перед push:
+
+```bash
+npm run format && npm run lint:fix && npm run typecheck && npm test && npm run build
+```
+
+### Зависимости
+
+- После изменения `package.json`: `npm install` → **закоммитить** обновлённый `package-lock.json`
+- В CI всегда `npm ci` - если lockfile не синхронизирован, пайплайн упадёт
+
+## Настройка IDE (IntelliJ IDEA / Cursor)
+
+Чтобы не было расхождений с CI:
+
+1. **Formatter:** Prettier (`esbenp.prettier-vscode`), не встроенный форматтер IDEA
+2. **Format on save:** включить
+3. **Node:** версия 22 (`.nvmrc`)
+4. Если `@/` в тестах подсвечивается красным: `TypeScript: Restart TS Server`
+
+Конфиг Prettier: `frontend/.prettierrc.json`
+
+## Pre-commit (husky)
+
+При `git commit` на staged-файлах автоматически:
+
+- `*.{ts,tsx}` → `eslint --fix` + `prettier --write`
+- `*.{json,css,scss,md}` → `prettier --write`
+
+Hook срабатывает только на **добавленные в коммит** файлы. Если закоммитить без `git add` или обойти hook — CI всё равно проверит весь проект через `format:check`.
+
+Переустановка hooks (если не сработали после `git clone`):
+
+```bash
+cd frontend && npm ci
+```
 
 ## Реализованные SPEC
 
@@ -79,3 +172,5 @@ npm test
 VITE_API_MODE=backend
 VITE_BACKEND_URL=/api/v1
 ```
+
+На dev/qa стендах те же переменные задаются при сборке Docker-образа (GitHub Environment variables).
