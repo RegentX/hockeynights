@@ -2,11 +2,12 @@
  * SPEC-FR-2.1.3
  */
 
-import {Navigate, Outlet} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
+import {Navigate, Outlet} from 'react-router-dom'
+
 import {fetchSession} from '@/features/auth/api/sessionApi'
-import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {testId} from '@/shared/testing/testId'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 /** @spec SPEC-FR-2.1.3 - Доступ только после mock-onboarding */
 export function RequireAuth() {

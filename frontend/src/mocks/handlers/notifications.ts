@@ -3,6 +3,7 @@
  */
 
 import {http, HttpResponse} from 'msw'
+
 import {markNotificationRead, mockNotifications} from '@/mocks/data/notifications'
 import {mockUser} from '@/mocks/data/session'
 

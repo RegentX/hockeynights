@@ -21,7 +21,8 @@ export let mockLeagues: League[] = [
     integrationStatus: 'mock',
     sourceMeta: mockSource,
     visible: true,
-    description: 'Любительская лига Москвы: вечерние игры, несколько дивизионов, набор команд круглый год.',
+    description:
+      'Любительская лига Москвы: вечерние игры, несколько дивизионов, набор команд круглый год.',
     contactEmail: 'office@nhl-amateur.example.ru',
     contactPhone: '+7 495 111-22-33',
     rulesSummary: '6x6, периоды по 15 минут, минимум 12 игроков в заявке',
@@ -52,9 +53,30 @@ export let mockLeagues: League[] = [
 
 /** @spec SPEC-FR-7.2.1 - Mock таблицы */
 export const mockStandings: LeagueStanding[] = [
-  {leagueId: 'league-001', teamName: 'Медведи САО', gamesPlayed: 12, wins: 8, losses: 4, points: 16},
-  {leagueId: 'league-001', teamName: 'Ледовые Волки', gamesPlayed: 12, wins: 7, losses: 5, points: 14},
-  {leagueId: 'league-001', teamName: 'Динамо Любители', gamesPlayed: 12, wins: 5, losses: 7, points: 10},
+  {
+    leagueId: 'league-001',
+    teamName: 'Медведи САО',
+    gamesPlayed: 12,
+    wins: 8,
+    losses: 4,
+    points: 16,
+  },
+  {
+    leagueId: 'league-001',
+    teamName: 'Ледовые Волки',
+    gamesPlayed: 12,
+    wins: 7,
+    losses: 5,
+    points: 14,
+  },
+  {
+    leagueId: 'league-001',
+    teamName: 'Динамо Любители',
+    gamesPlayed: 12,
+    wins: 5,
+    losses: 7,
+    points: 10,
+  },
   {leagueId: 'league-002', teamName: 'ХК Сокол', gamesPlayed: 10, wins: 6, losses: 4, points: 12},
 ]
 
@@ -142,7 +164,10 @@ export function setLeagueVisibility(leagueId: string, visible: boolean): void {
 }
 
 /** @spec SPEC-FR-24.5.3 - Обновить партнёрский профиль лиги */
-export function updateMockLeagueProfile(leagueId: string, patch: Partial<League>): League | undefined {
+export function updateMockLeagueProfile(
+  leagueId: string,
+  patch: Partial<League>,
+): League | undefined {
   const index = mockLeagues.findIndex((l) => l.id === leagueId)
   if (index === -1) return undefined
   mockLeagues[index] = {

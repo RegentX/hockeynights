@@ -3,16 +3,15 @@
 /* SPEC-UI-6.3, SPEC-UI-6.4 Highlight Analysis */
 .highlights-page {
   display: flex;
-      flex-direction: column;
-      gap: 16px;
-
+  flex-direction: column;
+  gap: 16px;
 }
 
 .highlights-page__layout {
   display: grid;
-      grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
-      gap: 16px;
-      align-items: start;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
 
   @include breakpoint($max: 1024px) {
     grid-template-columns: 1fr;
@@ -22,97 +21,88 @@
 .highlights-page__catalog,
 .highlights-page__list {
   display: flex;
-    flex-direction: column;
-    gap: 12px;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .highlight-card--selected .ice-card {
   border-color: var(--hockey-line-red);
-    box-shadow: 0 0 0 1px rgba(225, 6, 0, 0.25);
+  box-shadow: 0 0 0 1px rgba(225, 6, 0, 0.25);
 }
 
 .highlight-card {
   border: none;
-      background: transparent;
-      padding: 0;
-      cursor: pointer;
-      text-align: left;
-      width: 100%;
-
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
 }
 
 .highlight-card__head {
   display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 8px;
-
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .highlight-card__badge {
   font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--hockey-text-muted);
-
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hockey-text-muted);
 }
 
 .highlight-card__meta {
   display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-top: 6px;
-
+  gap: 10px;
+  align-items: center;
+  margin-top: 6px;
 }
 
 .highlight-upload {
   display: flex;
-      flex-direction: column;
-      gap: 10px;
-
+  flex-direction: column;
+  gap: 10px;
 }
 
 .highlight-upload__fields {
   display: flex;
-      flex-direction: column;
-      gap: 8px;
-
+  flex-direction: column;
+  gap: 8px;
 }
 
 .highlight-mock-notice {
   display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px dashed var(--hockey-card-border);
-      background: rgba(225, 6, 0, 0.04);
-
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px dashed var(--hockey-card-border);
+  background: rgba(225, 6, 0, 0.04);
 }
 
 .highlight-mock-notice__badge {
   font-family: var(--hockey-font-scoreboard);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--hockey-line-red);
-
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--hockey-line-red);
 }
 
 .video-board {
   display: flex;
-      flex-direction: column;
-      gap: 14px;
-
+  flex-direction: column;
+  gap: 14px;
 }
 
 .video-board__layout {
   display: grid;
-      grid-template-columns: minmax(0, 1fr) 300px;
-      gap: 16px;
-      align-items: start;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+  align-items: start;
 
   @include breakpoint($max: 1024px) {
     grid-template-columns: 1fr;
@@ -121,106 +111,95 @@
 
 .video-board__preview {
   position: relative;
-      aspect-ratio: 16 / 9;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--hockey-card-border);
-      background: #0a1628;
-
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--hockey-card-border);
+  background: #0a1628;
 }
 
 .video-board__rink {
   position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 40%),
-        repeating-linear-gradient(
-          90deg,
-          rgba(255, 255, 255, 0.04) 0,
-          rgba(255, 255, 255, 0.04) 1px,
-          transparent 1px,
-          transparent 12%
-        ),
-        #102a43;
-
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 40%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.04) 0,
+      rgba(255, 255, 255, 0.04) 1px,
+      transparent 1px,
+      transparent 12%
+    ),
+    #102a43;
 }
 
 .video-board__scrubber {
   display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 10px;
-
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
 }
 
 .video-board__scrubber-label {
   font-size: 13px;
-
 }
 
 .annotation-layer {
   position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .annotation-layer__svg {
   position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 .annotation-layer__arrow {
   stroke: #ffd700;
-      stroke-width: 0.8;
-      fill: none;
-
+  stroke-width: 0.8;
+  fill: none;
 }
 
 .annotation-layer__arrow-head {
   fill: #ffd700;
-
 }
 
 .annotation-layer__zone {
   fill: rgba(225, 6, 0, 0.18);
-      stroke: var(--hockey-line-red);
-      stroke-width: 0.5;
-
+  stroke: var(--hockey-line-red);
+  stroke-width: 0.5;
 }
 
 .annotation-layer__text {
   fill: #fff;
-      font-size: 4px;
-      font-weight: 700;
-
+  font-size: 4px;
+  font-weight: 700;
 }
 
 .annotation-layer__form {
   position: relative;
-      z-index: 1;
-      margin: 10px;
-      padding: 10px;
-      border-radius: 10px;
-      background: rgba(0, 0, 0, 0.72);
-      backdrop-filter: blur(4px);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-
+  z-index: 1;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .annotation-layer__fields {
   display: grid;
-      grid-template-columns: 120px minmax(0, 1fr) auto;
-      gap: 8px;
-      align-items: center;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
 
   @include breakpoint($max: 1024px) {
     grid-template-columns: 1fr;
@@ -229,80 +208,68 @@
 
 .annotation-layer__hint {
   font-size: 12px;
-
 }
 
 .highlight-comments {
   display: flex;
-      flex-direction: column;
-      gap: 12px;
-
+  flex-direction: column;
+  gap: 12px;
 }
 
 .highlight-comments__list {
   display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-height: 420px;
-      overflow-y: auto;
-
+  flex-direction: column;
+  gap: 10px;
+  max-height: 420px;
+  overflow-y: auto;
 }
 
 .highlight-comments__item {
   padding: 10px;
-      border-radius: 10px;
-      border: 1px solid var(--hockey-card-border);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-
+  border-radius: 10px;
+  border: 1px solid var(--hockey-card-border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .highlight-comments__meta {
   display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 
 .highlight-comments__tag {
   font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      padding: 2px 8px;
-      border-radius: 999px;
-
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
 }
 
 .highlight-comments__tag--tip {
   background: rgba(0, 120, 215, 0.15);
-      color: #4da3ff;
-
+  color: #4da3ff;
 }
 
 .highlight-comments__tag--mistake {
   background: rgba(225, 6, 0, 0.15);
-      color: var(--hockey-line-red);
-
+  color: var(--hockey-line-red);
 }
 
 .highlight-comments__tag--good_play {
   background: rgba(0, 160, 80, 0.15);
-      color: #3dd68c;
-
+  color: #3dd68c;
 }
 
 .highlight-comments__time {
   font-size: 12px;
-
 }
 
 .highlight-comments__form {
   display: flex;
-      flex-direction: column;
-      gap: 8px;
-
+  flex-direction: column;
+  gap: 8px;
 }
-

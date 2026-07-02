@@ -2,8 +2,9 @@
  * SPEC-UI-2.5
  */
 
-import type {ReactNode} from 'react'
 import {Text} from '@gravity-ui/uikit'
+import type {ReactNode} from 'react'
+
 import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-UI-2.5 */
@@ -54,8 +55,16 @@ export function MatchCenterFeed({
   }
 
   return (
-    <div className="match-center" data-testid={dataTestId ?? testId(testIdPrefix, 'match-center-feed', 'panel')}>
-      <div className="match-center__header" data-testid={testId(testIdPrefix, 'match-center-feed', 'header')}>{title}</div>
+    <div
+      className="match-center"
+      data-testid={dataTestId ?? testId(testIdPrefix, 'match-center-feed', 'panel')}
+    >
+      <div
+        className="match-center__header"
+        data-testid={testId(testIdPrefix, 'match-center-feed', 'header')}
+      >
+        {title}
+      </div>
       {rows.map((row) => (
         <div
           key={row.id}
@@ -63,17 +72,41 @@ export function MatchCenterFeed({
           data-testid={testId(testIdPrefix, 'match-center-feed', 'row', row.id)}
         >
           <div>
-            <div className="match-center__time" data-testid={testId(testIdPrefix, 'match-center-feed', 'cell', 'time', row.id)}>{row.time}</div>
-            <div className={`match-center__type match-center__type--${row.type}`} data-testid={testId(testIdPrefix, 'match-center-feed', 'badge', row.type, row.id)}>
+            <div
+              className="match-center__time"
+              data-testid={testId(testIdPrefix, 'match-center-feed', 'cell', 'time', row.id)}
+            >
+              {row.time}
+            </div>
+            <div
+              className={`match-center__type match-center__type--${row.type}`}
+              data-testid={testId(testIdPrefix, 'match-center-feed', 'badge', row.type, row.id)}
+            >
               {TYPE_LABELS[row.type]}
               {row.isSos && ' · Goalkeeper SOS'}
             </div>
           </div>
           <div>
-            <Text variant="subheader-2" data-testid={testId(testIdPrefix, 'match-center-feed', 'text', 'title', row.id)}>{row.title}</Text>
-            {row.subtitle && <Text color="secondary" data-testid={testId(testIdPrefix, 'match-center-feed', 'text', 'subtitle', row.id)}>{row.subtitle}</Text>}
+            <Text
+              variant="subheader-2"
+              data-testid={testId(testIdPrefix, 'match-center-feed', 'text', 'title', row.id)}
+            >
+              {row.title}
+            </Text>
+            {row.subtitle && (
+              <Text
+                color="secondary"
+                data-testid={testId(testIdPrefix, 'match-center-feed', 'text', 'subtitle', row.id)}
+              >
+                {row.subtitle}
+              </Text>
+            )}
           </div>
-          {row.actions && <div data-testid={testId(testIdPrefix, 'match-center-feed', 'cell', 'actions', row.id)}>{row.actions}</div>}
+          {row.actions && (
+            <div data-testid={testId(testIdPrefix, 'match-center-feed', 'cell', 'actions', row.id)}>
+              {row.actions}
+            </div>
+          )}
         </div>
       ))}
     </div>

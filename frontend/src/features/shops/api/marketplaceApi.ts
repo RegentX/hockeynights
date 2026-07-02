@@ -18,6 +18,8 @@ function toQuery(filters: MarketplaceFilters): string {
 }
 
 /** @spec SPEC-FR-9.3.1 - Лента маркетплейса с фильтрами */
-export function fetchMarketplaceFeed(filters: MarketplaceFilters = {}): Promise<MarketplaceFeedResponse> {
+export function fetchMarketplaceFeed(
+  filters: MarketplaceFilters = {},
+): Promise<MarketplaceFeedResponse> {
   return apiRequest<MarketplaceFeedResponse>(`/marketplace${toQuery(filters)}`)
 }

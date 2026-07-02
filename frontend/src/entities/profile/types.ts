@@ -4,7 +4,7 @@
  * SPEC-FR-24.1.4, SPEC-FR-24.2.3
  */
 
-import type { PlayerPosition, SkillLevel } from '@/entities/common/types'
+import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
 
 /** @spec SPEC-FR-2.2.1 - Hockey ID профиль */
 export interface HockeyProfile {

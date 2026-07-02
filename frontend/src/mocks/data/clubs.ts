@@ -10,7 +10,8 @@ export const mockClubs: Club[] = [
     id: 'club-001',
     name: 'ХК Медведи',
     city: 'Москва',
-    description: 'Клуб объединяет любительский и продвинутый составы, тренерский штаб и менеджмент.',
+    description:
+      'Клуб объединяет любительский и продвинутый составы, тренерский штаб и менеджмент.',
     homeArenaId: 'arena-001',
     leagueIds: ['league-001', 'league-002'],
     teamIds: ['team-001'],

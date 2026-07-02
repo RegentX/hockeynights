@@ -4,10 +4,11 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
+
 import type {IqLeaderboardRow} from '@/entities/iq/types'
+import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
-import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-13.1.3 - Props лидерборда */
 export interface IqLeaderboardProps {
@@ -46,10 +47,16 @@ export function IqLeaderboard({rows}: IqLeaderboardProps) {
               >
                 {row.rank}
               </span>
-              <span role="cell" data-testid={testId('iq', 'leaderboard', 'cell', 'name', row.userId)}>
+              <span
+                role="cell"
+                data-testid={testId('iq', 'leaderboard', 'cell', 'name', row.userId)}
+              >
                 {row.displayName}
               </span>
-              <span role="cell" data-testid={testId('iq', 'leaderboard', 'cell', 'score', row.userId)}>
+              <span
+                role="cell"
+                data-testid={testId('iq', 'leaderboard', 'cell', 'score', row.userId)}
+              >
                 <ScoreboardText tone={row.rank === 1 ? 'gold' : 'accent'}>
                   {row.score}
                 </ScoreboardText>

@@ -2,7 +2,6 @@
  * SPEC-FR-9.1.1, SPEC-FR-9.1.2, SPEC-FR-9.2.1, SPEC-FR-9.2.2
  */
 
-import {apiRequest} from '@/shared/api/client'
 import type {
   ProductOffer,
   Shop,
@@ -13,6 +12,7 @@ import type {
   ShopProductPayload,
   ShopPromo,
 } from '@/entities/shop/types'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-9.1.1 - Список магазинов
@@ -35,7 +35,10 @@ export function updateShopPartnerProfile(shopId: string, patch: Partial<Shop>): 
 }
 
 /** @spec SPEC-FR-24.7.4 - Добавить товар */
-export function createShopProduct(shopId: string, payload: ShopProductPayload): Promise<ProductOffer> {
+export function createShopProduct(
+  shopId: string,
+  payload: ShopProductPayload,
+): Promise<ProductOffer> {
   return apiRequest<ProductOffer>(`/shops/${shopId}/products`, {method: 'POST', body: payload})
 }
 

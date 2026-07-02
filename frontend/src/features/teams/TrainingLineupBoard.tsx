@@ -3,21 +3,22 @@
  * SPEC-FR-24.3.2
  */
 
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Select, Text} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {type DragEvent, useState} from 'react'
-import type {TrainingLineupAssignment} from '@/entities/team/types'
+
 import type {ClubSquad} from '@/entities/club/types'
 import type {PlayerPosition} from '@/entities/common/types'
+import type {TrainingLineupAssignment} from '@/entities/team/types'
 import {
   fetchTeamRoster,
+  fetchTeamTrainingEvents,
   fetchTrainingLineup,
   updateTrainingLineup,
-  fetchTeamTrainingEvents,
 } from '@/features/teams/api/teamsApi'
+import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-import {testId} from '@/shared/testing/testId'
 
 const POSITION_OPTIONS = [
   {value: 'goalie', content: 'Вратарь'},
@@ -93,10 +94,7 @@ const BOARD_SLOTS: BoardSlot[] = [
   {id: 'white-forward-3', side: 'white', position: 'forward', line: 3, x: 54, y: 75, label: 'F3'},
 ]
 
-const FORMATION_TEMPLATES: Record<
-  FormationTemplateId,
-  {label: string; slotOrder: string[]}
-> = {
+const FORMATION_TEMPLATES: Record<FormationTemplateId, {label: string; slotOrder: string[]}> = {
   balanced: {
     label: 'Шаблон: баланс',
     slotOrder: [
@@ -215,15 +213,22 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
 
   if (!eventId) {
     return (
-      <IceCard padding="m" data-testid={testId('teams', 'training-lineup-board', 'card', 'empty', teamId)}>
-        <Text color="secondary" data-testid={testId('teams', 'training-lineup-board', 'text', 'no-events', teamId)}>Нет предстоящих тренировок для раскладки.</Text>
+      <IceCard
+        padding="m"
+        data-testid={testId('teams', 'training-lineup-board', 'card', 'empty', teamId)}
+      >
+        <Text
+          color="secondary"
+          data-testid={testId('teams', 'training-lineup-board', 'text', 'no-events', teamId)}
+        >
+          Нет предстоящих тренировок для раскладки.
+        </Text>
       </IceCard>
     )
   }
 
   const activeRoster = roster.filter((m) => m.rosterStatus !== 'removed')
-  const lineupEditableForSquad =
-    !activeSquad?.teamId || activeSquad.teamId === teamId
+  const lineupEditableForSquad = !activeSquad?.teamId || activeSquad.teamId === teamId
 
   function getAssignment(userId: string): TrainingLineupAssignment {
     return (
@@ -394,10 +399,7 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
   const backlogPlayers = rosterWithAssignments.filter((item) => item.assignment.side === 'backlog')
   const benchPlayers = rosterWithAssignments.filter((item) => item.assignment.side === 'bench')
 
-  function playersForSideAndPosition(
-    side: (typeof TEAM_SIDES)[number],
-    position: PlayerPosition,
-  ) {
+  function playersForSideAndPosition(side: (typeof TEAM_SIDES)[number], position: PlayerPosition) {
     return rosterWithAssignments
       .filter((item) => item.assignment.side === side && item.assignment.position === position)
       .sort((a, b) => (a.assignment.line ?? 1) - (b.assignment.line ?? 1))
@@ -418,23 +420,44 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
     <IceCard padding="m" data-testid={testId('teams', 'training-lineup-board', 'card', teamId)}>
       <div className="training-lineup hockey-stack hockey-stack--gap-12">
         <div className="training-lineup__header">
-          <Text variant="subheader-2" data-testid={testId('teams', 'training-lineup-board', 'text', 'title', teamId)}>Раскладка: {trainingTitle}</Text>
-          <span className="coach-profile__badge" data-testid={testId('teams', 'training-lineup-board', 'badge', 'coach', teamId)}>Тренер</span>
+          <Text
+            variant="subheader-2"
+            data-testid={testId('teams', 'training-lineup-board', 'text', 'title', teamId)}
+          >
+            Раскладка: {trainingTitle}
+          </Text>
+          <span
+            className="coach-profile__badge"
+            data-testid={testId('teams', 'training-lineup-board', 'badge', 'coach', teamId)}
+          >
+            Тренер
+          </span>
         </div>
 
-        <Text color="secondary" data-testid={testId('teams', 'training-lineup-board', 'text', 'hint', teamId)}>
+        <Text
+          color="secondary"
+          data-testid={testId('teams', 'training-lineup-board', 'text', 'hint', teamId)}
+        >
           {canEdit && lineupEditableForSquad
             ? 'План состава: расставь игроков по позициям, раздели на красных/белых, вынеси в бэклог или на скамейку.'
             : 'Только просмотр. Редактирование доступно тренеру и админам.'}
         </Text>
         {activeSquad && (
-          <Text color="secondary" data-testid={testId('teams', 'training-lineup-board', 'text', 'squad', teamId)}>
+          <Text
+            color="secondary"
+            data-testid={testId('teams', 'training-lineup-board', 'text', 'squad', teamId)}
+          >
             Состав: {activeSquad.name}
-            {activeSquad.teamId && activeSquad.teamId !== teamId ? ' (не привязан к текущей команде)' : ''}
+            {activeSquad.teamId && activeSquad.teamId !== teamId
+              ? ' (не привязан к текущей команде)'
+              : ''}
           </Text>
         )}
 
-        <div className="training-lineup__template-row" data-testid={testId('teams', 'training-lineup-board', 'panel', 'templates', teamId)}>
+        <div
+          className="training-lineup__template-row"
+          data-testid={testId('teams', 'training-lineup-board', 'panel', 'templates', teamId)}
+        >
           {(['balanced', 'red_pressing', 'white_counter'] as const).map((templateId) => (
             <Button
               key={templateId}
@@ -442,14 +465,24 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
               view="outlined"
               disabled={!canEdit || !lineupEditableForSquad}
               onClick={() => applyTemplate(templateId)}
-              data-testid={testId('teams', 'training-lineup-board', 'btn', 'template', templateId, teamId)}
+              data-testid={testId(
+                'teams',
+                'training-lineup-board',
+                'btn',
+                'template',
+                templateId,
+                teamId,
+              )}
             >
               {FORMATION_TEMPLATES[templateId].label}
             </Button>
           ))}
         </div>
 
-        <div className="training-lineup__preset-row" data-testid={testId('teams', 'training-lineup-board', 'panel', 'presets', teamId)}>
+        <div
+          className="training-lineup__preset-row"
+          data-testid={testId('teams', 'training-lineup-board', 'panel', 'presets', teamId)}
+        >
           <input
             className="training-lineup__preset-input"
             value={presetName}
@@ -483,11 +516,31 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
         </div>
 
         {lineupWarnings.length > 0 && (
-          <div className="training-lineup__warnings" data-testid={testId('teams', 'training-lineup-board', 'panel', 'warnings', teamId)}>
-            <Text variant="subheader-2" data-testid={testId('teams', 'training-lineup-board', 'text', 'warnings-title', teamId)}>Предупреждения по расстановке</Text>
-            <ul className="training-lineup__warning-list" data-testid={testId('teams', 'training-lineup-board', 'list', 'warnings', teamId)}>
+          <div
+            className="training-lineup__warnings"
+            data-testid={testId('teams', 'training-lineup-board', 'panel', 'warnings', teamId)}
+          >
+            <Text
+              variant="subheader-2"
+              data-testid={testId(
+                'teams',
+                'training-lineup-board',
+                'text',
+                'warnings-title',
+                teamId,
+              )}
+            >
+              Предупреждения по расстановке
+            </Text>
+            <ul
+              className="training-lineup__warning-list"
+              data-testid={testId('teams', 'training-lineup-board', 'list', 'warnings', teamId)}
+            >
               {lineupWarnings.map((warning, index) => (
-                <li key={index} data-testid={testId('teams', 'training-lineup-board', 'item', 'warning', index)}>
+                <li
+                  key={index}
+                  data-testid={testId('teams', 'training-lineup-board', 'item', 'warning', index)}
+                >
                   <Text color="danger">{warning}</Text>
                 </li>
               ))}
@@ -495,9 +548,20 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
           </div>
         )}
 
-        <div className="training-lineup__board-wrap" data-testid={testId('teams', 'training-lineup-board', 'panel', 'board', teamId)}>
-          <Text variant="subheader-2" data-testid={testId('teams', 'training-lineup-board', 'text', 'board-title', teamId)}>Тактическая доска (FIFA-style)</Text>
-          <div className="training-lineup__board" data-testid={testId('teams', 'training-lineup-board', 'map', teamId)}>
+        <div
+          className="training-lineup__board-wrap"
+          data-testid={testId('teams', 'training-lineup-board', 'panel', 'board', teamId)}
+        >
+          <Text
+            variant="subheader-2"
+            data-testid={testId('teams', 'training-lineup-board', 'text', 'board-title', teamId)}
+          >
+            Тактическая доска (FIFA-style)
+          </Text>
+          <div
+            className="training-lineup__board"
+            data-testid={testId('teams', 'training-lineup-board', 'map', teamId)}
+          >
             {BOARD_SLOTS.map((slot) => {
               const slotPlayer = playerForBoardSlot(slot)
               const zoneId = `board-${slot.id}`
@@ -512,25 +576,65 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
                   onDragEnter={() => setActiveDropZone(zoneId)}
                   onDragLeave={() => setActiveDropZone((prev) => (prev === zoneId ? null : prev))}
                   onDrop={(event) =>
-                    applyDrop(
-                      {side: slot.side, position: slot.position, line: slot.line},
-                      event,
-                    )
+                    applyDrop({side: slot.side, position: slot.position, line: slot.line}, event)
                   }
-                  data-testid={testId('teams', 'training-lineup-board', 'cell', 'board-slot', slot.id)}
+                  data-testid={testId(
+                    'teams',
+                    'training-lineup-board',
+                    'cell',
+                    'board-slot',
+                    slot.id,
+                  )}
                 >
                   {slotPlayer ? (
                     <div
                       draggable={canEdit && lineupEditableForSquad}
                       onDragStart={(event) => onDragStart(slotPlayer.member.userId, event)}
                       className={`training-lineup__board-player training-lineup__board-player--${slot.side}`}
-                      data-testid={testId('teams', 'training-lineup-board', 'item', 'board-player', slotPlayer.member.userId)}
+                      data-testid={testId(
+                        'teams',
+                        'training-lineup-board',
+                        'item',
+                        'board-player',
+                        slotPlayer.member.userId,
+                      )}
                     >
-                      <span data-testid={testId('teams', 'training-lineup-board', 'text', 'board-player-name', slotPlayer.member.userId)}>{slotPlayer.member.displayName}</span>
-                      <small data-testid={testId('teams', 'training-lineup-board', 'text', 'board-player-label', slot.id)}>{slot.label}</small>
+                      <span
+                        data-testid={testId(
+                          'teams',
+                          'training-lineup-board',
+                          'text',
+                          'board-player-name',
+                          slotPlayer.member.userId,
+                        )}
+                      >
+                        {slotPlayer.member.displayName}
+                      </span>
+                      <small
+                        data-testid={testId(
+                          'teams',
+                          'training-lineup-board',
+                          'text',
+                          'board-player-label',
+                          slot.id,
+                        )}
+                      >
+                        {slot.label}
+                      </small>
                     </div>
                   ) : (
-                    <div className="training-lineup__board-empty" data-testid={testId('teams', 'training-lineup-board', 'empty', 'board-slot', slot.id)}>{slot.label}</div>
+                    <div
+                      className="training-lineup__board-empty"
+                      data-testid={testId(
+                        'teams',
+                        'training-lineup-board',
+                        'empty',
+                        'board-slot',
+                        slot.id,
+                      )}
+                    >
+                      {slot.label}
+                    </div>
                   )}
                 </div>
               )
@@ -538,27 +642,99 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
           </div>
         </div>
 
-        <div className="training-lineup__sides" data-testid={testId('teams', 'training-lineup-board', 'panel', 'sides', teamId)}>
+        <div
+          className="training-lineup__sides"
+          data-testid={testId('teams', 'training-lineup-board', 'panel', 'sides', teamId)}
+        >
           {TEAM_SIDES.map((side) => (
-            <div key={side} className={`training-lineup__side training-lineup__side--${side}`} data-testid={testId('teams', 'training-lineup-board', 'panel', 'side', side, teamId)}>
-              <Text variant="subheader-2" data-testid={testId('teams', 'training-lineup-board', 'text', 'side-title', side, teamId)}>{side === 'red' ? 'Красные (красные майки)' : 'Белые (белые майки)'}</Text>
+            <div
+              key={side}
+              className={`training-lineup__side training-lineup__side--${side}`}
+              data-testid={testId('teams', 'training-lineup-board', 'panel', 'side', side, teamId)}
+            >
+              <Text
+                variant="subheader-2"
+                data-testid={testId(
+                  'teams',
+                  'training-lineup-board',
+                  'text',
+                  'side-title',
+                  side,
+                  teamId,
+                )}
+              >
+                {side === 'red' ? 'Красные (красные майки)' : 'Белые (белые майки)'}
+              </Text>
               <div className="training-lineup__formation hockey-stack hockey-stack--gap-8">
                 {FORMATION_SLOTS.map((slot) => {
                   const players = playersForSideAndPosition(side, slot.position)
                   const missing = Math.max(slot.slots - players.length, 0)
                   return (
-                    <div key={`${side}-${slot.position}`} className="training-lineup__formation-slot" data-testid={testId('teams', 'training-lineup-board', 'column', side, slot.position, teamId)}>
-                      <Text color="secondary" data-testid={testId('teams', 'training-lineup-board', 'text', 'formation-slot', side, slot.position, teamId)}>
+                    <div
+                      key={`${side}-${slot.position}`}
+                      className="training-lineup__formation-slot"
+                      data-testid={testId(
+                        'teams',
+                        'training-lineup-board',
+                        'column',
+                        side,
+                        slot.position,
+                        teamId,
+                      )}
+                    >
+                      <Text
+                        color="secondary"
+                        data-testid={testId(
+                          'teams',
+                          'training-lineup-board',
+                          'text',
+                          'formation-slot',
+                          side,
+                          slot.position,
+                          teamId,
+                        )}
+                      >
                         {slot.label} · {players.length}/{slot.slots}
                       </Text>
-                      <ul className="training-lineup__list" data-testid={testId('teams', 'training-lineup-board', 'list', side, slot.position, teamId)}>
+                      <ul
+                        className="training-lineup__list"
+                        data-testid={testId(
+                          'teams',
+                          'training-lineup-board',
+                          'list',
+                          side,
+                          slot.position,
+                          teamId,
+                        )}
+                      >
                         {players.map(({member, assignment}) => (
-                          <li key={member.userId} className="training-lineup__row" data-testid={testId('teams', 'training-lineup-board', 'row', member.userId, side)}>
+                          <li
+                            key={member.userId}
+                            className="training-lineup__row"
+                            data-testid={testId(
+                              'teams',
+                              'training-lineup-board',
+                              'row',
+                              member.userId,
+                              side,
+                            )}
+                          >
                             <Text
                               draggable={canEdit && lineupEditableForSquad}
                               onDragStart={(event) => onDragStart(member.userId, event)}
-                              className={canEdit && lineupEditableForSquad ? 'training-lineup__draggable' : undefined}
-                              data-testid={testId('teams', 'training-lineup-board', 'text', 'player-name', member.userId, side)}
+                              className={
+                                canEdit && lineupEditableForSquad
+                                  ? 'training-lineup__draggable'
+                                  : undefined
+                              }
+                              data-testid={testId(
+                                'teams',
+                                'training-lineup-board',
+                                'text',
+                                'player-name',
+                                member.userId,
+                                side,
+                              )}
                             >
                               {member.displayName}
                             </Text>
@@ -573,14 +749,45 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
                                       line: Number(v[0]),
                                     })
                                   }
-                                  data-testid={testId('teams', 'training-lineup-board', 'select', 'line', member.userId, side)}
+                                  data-testid={testId(
+                                    'teams',
+                                    'training-lineup-board',
+                                    'select',
+                                    'line',
+                                    member.userId,
+                                    side,
+                                  )}
                                 />
-                                <Button size="s" view="outlined" onClick={() => updateAssignment(member.userId, {side: 'bench'})} data-testid={testId('teams', 'training-lineup-board', 'btn', 'bench', member.userId, side)}>
+                                <Button
+                                  size="s"
+                                  view="outlined"
+                                  onClick={() => updateAssignment(member.userId, {side: 'bench'})}
+                                  data-testid={testId(
+                                    'teams',
+                                    'training-lineup-board',
+                                    'btn',
+                                    'bench',
+                                    member.userId,
+                                    side,
+                                  )}
+                                >
                                   Скамейка
                                 </Button>
                               </div>
                             ) : (
-                              <Text color="secondary" data-testid={testId('teams', 'training-lineup-board', 'text', 'line', member.userId, side)}>Звено {assignment.line ?? 1}</Text>
+                              <Text
+                                color="secondary"
+                                data-testid={testId(
+                                  'teams',
+                                  'training-lineup-board',
+                                  'text',
+                                  'line',
+                                  member.userId,
+                                  side,
+                                )}
+                              >
+                                Звено {assignment.line ?? 1}
+                              </Text>
                             )}
                           </li>
                         ))}
@@ -589,11 +796,19 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
                             <li
                               key={`${slot.position}-empty-${idx}`}
                               className={`training-lineup__row training-lineup__row--empty ${
-                                activeDropZone === `${side}-${slot.position}-${idx}` ? 'is-drop-active' : ''
+                                activeDropZone === `${side}-${slot.position}-${idx}`
+                                  ? 'is-drop-active'
+                                  : ''
                               }`}
                               onDragOver={(event) => event.preventDefault()}
-                              onDragEnter={() => setActiveDropZone(`${side}-${slot.position}-${idx}`)}
-                              onDragLeave={() => setActiveDropZone((prev) => (prev === `${side}-${slot.position}-${idx}` ? null : prev))}
+                              onDragEnter={() =>
+                                setActiveDropZone(`${side}-${slot.position}-${idx}`)
+                              }
+                              onDragLeave={() =>
+                                setActiveDropZone((prev) =>
+                                  prev === `${side}-${slot.position}-${idx}` ? null : prev,
+                                )
+                              }
                               onDrop={(event) =>
                                 applyDrop(
                                   {
@@ -604,7 +819,15 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
                                   event,
                                 )
                               }
-                              data-testid={testId('teams', 'training-lineup-board', 'empty', 'slot', side, slot.position, idx)}
+                              data-testid={testId(
+                                'teams',
+                                'training-lineup-board',
+                                'empty',
+                                'slot',
+                                side,
+                                slot.position,
+                                idx,
+                              )}
                             >
                               <Text color="secondary">Свободный слот</Text>
                             </li>
@@ -618,10 +841,32 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
           ))}
         </div>
 
-        <div className="training-lineup__utility-grid" data-testid={testId('teams', 'training-lineup-board', 'panel', 'utility', teamId)}>
-          <div className="training-lineup__utility-panel" data-testid={testId('teams', 'training-lineup-board', 'panel', 'backlog', teamId)}>
-            <Text variant="subheader-2" data-testid={testId('teams', 'training-lineup-board', 'text', 'backlog-title', teamId)}>Бэклог игроков</Text>
-            <Text color="secondary" data-testid={testId('teams', 'training-lineup-board', 'text', 'backlog-hint', teamId)}>Игроки без назначения на красных/белых.</Text>
+        <div
+          className="training-lineup__utility-grid"
+          data-testid={testId('teams', 'training-lineup-board', 'panel', 'utility', teamId)}
+        >
+          <div
+            className="training-lineup__utility-panel"
+            data-testid={testId('teams', 'training-lineup-board', 'panel', 'backlog', teamId)}
+          >
+            <Text
+              variant="subheader-2"
+              data-testid={testId(
+                'teams',
+                'training-lineup-board',
+                'text',
+                'backlog-title',
+                teamId,
+              )}
+            >
+              Бэклог игроков
+            </Text>
+            <Text
+              color="secondary"
+              data-testid={testId('teams', 'training-lineup-board', 'text', 'backlog-hint', teamId)}
+            >
+              Игроки без назначения на красных/белых.
+            </Text>
             <ul
               className={`training-lineup__list ${activeDropZone === 'backlog' ? 'is-drop-active' : ''}`}
               onDragOver={(event) => event.preventDefault()}
@@ -631,19 +876,55 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
               data-testid={testId('teams', 'training-lineup-board', 'list', 'backlog', teamId)}
             >
               {backlogPlayers.length === 0 && (
-                <li className="training-lineup__row training-lineup__row--empty" data-testid={testId('teams', 'training-lineup-board', 'empty', 'backlog', teamId)}>
+                <li
+                  className="training-lineup__row training-lineup__row--empty"
+                  data-testid={testId('teams', 'training-lineup-board', 'empty', 'backlog', teamId)}
+                >
                   <Text color="secondary">Бэклог пуст</Text>
                 </li>
               )}
               {backlogPlayers.map(({member, assignment}) => (
-                <li key={member.userId} className="training-lineup__row" data-testid={testId('teams', 'training-lineup-board', 'row', 'backlog', member.userId)}>
+                <li
+                  key={member.userId}
+                  className="training-lineup__row"
+                  data-testid={testId(
+                    'teams',
+                    'training-lineup-board',
+                    'row',
+                    'backlog',
+                    member.userId,
+                  )}
+                >
                   <div
                     draggable={canEdit && lineupEditableForSquad}
                     onDragStart={(event) => onDragStart(member.userId, event)}
-                    className={canEdit && lineupEditableForSquad ? 'training-lineup__draggable' : undefined}
+                    className={
+                      canEdit && lineupEditableForSquad ? 'training-lineup__draggable' : undefined
+                    }
                   >
-                    <Text data-testid={testId('teams', 'training-lineup-board', 'text', 'backlog-name', member.userId)}>{member.displayName}</Text>
-                    <Text color="secondary" data-testid={testId('teams', 'training-lineup-board', 'text', 'backlog-position', member.userId)}>{member.position}</Text>
+                    <Text
+                      data-testid={testId(
+                        'teams',
+                        'training-lineup-board',
+                        'text',
+                        'backlog-name',
+                        member.userId,
+                      )}
+                    >
+                      {member.displayName}
+                    </Text>
+                    <Text
+                      color="secondary"
+                      data-testid={testId(
+                        'teams',
+                        'training-lineup-board',
+                        'text',
+                        'backlog-position',
+                        member.userId,
+                      )}
+                    >
+                      {member.position}
+                    </Text>
                   </div>
                   {canEdit && lineupEditableForSquad && (
                     <div className="training-lineup__controls">
@@ -651,13 +932,43 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
                         size="s"
                         value={[assignment.position]}
                         options={POSITION_OPTIONS}
-                        onUpdate={(v) => updateAssignment(member.userId, {position: v[0] as PlayerPosition})}
-                        data-testid={testId('teams', 'training-lineup-board', 'select', 'backlog-position', member.userId)}
+                        onUpdate={(v) =>
+                          updateAssignment(member.userId, {position: v[0] as PlayerPosition})
+                        }
+                        data-testid={testId(
+                          'teams',
+                          'training-lineup-board',
+                          'select',
+                          'backlog-position',
+                          member.userId,
+                        )}
                       />
-                      <Button size="s" view="outlined" onClick={() => assignToTeam(member.userId, 'red')} data-testid={testId('teams', 'training-lineup-board', 'btn', 'backlog-red', member.userId)}>
+                      <Button
+                        size="s"
+                        view="outlined"
+                        onClick={() => assignToTeam(member.userId, 'red')}
+                        data-testid={testId(
+                          'teams',
+                          'training-lineup-board',
+                          'btn',
+                          'backlog-red',
+                          member.userId,
+                        )}
+                      >
                         В красные
                       </Button>
-                      <Button size="s" view="outlined" onClick={() => assignToTeam(member.userId, 'white')} data-testid={testId('teams', 'training-lineup-board', 'btn', 'backlog-white', member.userId)}>
+                      <Button
+                        size="s"
+                        view="outlined"
+                        onClick={() => assignToTeam(member.userId, 'white')}
+                        data-testid={testId(
+                          'teams',
+                          'training-lineup-board',
+                          'btn',
+                          'backlog-white',
+                          member.userId,
+                        )}
+                      >
                         В белые
                       </Button>
                     </div>
@@ -667,9 +978,22 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
             </ul>
           </div>
 
-          <div className="training-lineup__utility-panel" data-testid={testId('teams', 'training-lineup-board', 'panel', 'bench', teamId)}>
-            <Text variant="subheader-2" data-testid={testId('teams', 'training-lineup-board', 'text', 'bench-title', teamId)}>Скамейка запасных</Text>
-            <Text color="secondary" data-testid={testId('teams', 'training-lineup-board', 'text', 'bench-hint', teamId)}>Резерв игроков на тренировку.</Text>
+          <div
+            className="training-lineup__utility-panel"
+            data-testid={testId('teams', 'training-lineup-board', 'panel', 'bench', teamId)}
+          >
+            <Text
+              variant="subheader-2"
+              data-testid={testId('teams', 'training-lineup-board', 'text', 'bench-title', teamId)}
+            >
+              Скамейка запасных
+            </Text>
+            <Text
+              color="secondary"
+              data-testid={testId('teams', 'training-lineup-board', 'text', 'bench-hint', teamId)}
+            >
+              Резерв игроков на тренировку.
+            </Text>
             <ul
               className={`training-lineup__list ${activeDropZone === 'bench' ? 'is-drop-active' : ''}`}
               onDragOver={(event) => event.preventDefault()}
@@ -679,41 +1003,114 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
               data-testid={testId('teams', 'training-lineup-board', 'list', 'bench', teamId)}
             >
               {benchPlayers.length === 0 && (
-                <li className="training-lineup__row training-lineup__row--empty" data-testid={testId('teams', 'training-lineup-board', 'empty', 'bench', teamId)}>
+                <li
+                  className="training-lineup__row training-lineup__row--empty"
+                  data-testid={testId('teams', 'training-lineup-board', 'empty', 'bench', teamId)}
+                >
                   <Text color="secondary">Скамейка пуста</Text>
                 </li>
               )}
               {benchPlayers.map(({member, assignment}) => (
-                <li key={member.userId} className="training-lineup__row" data-testid={testId('teams', 'training-lineup-board', 'row', 'bench', member.userId)}>
+                <li
+                  key={member.userId}
+                  className="training-lineup__row"
+                  data-testid={testId(
+                    'teams',
+                    'training-lineup-board',
+                    'row',
+                    'bench',
+                    member.userId,
+                  )}
+                >
                   <Text
                     draggable={canEdit && lineupEditableForSquad}
                     onDragStart={(event) => onDragStart(member.userId, event)}
-                    className={canEdit && lineupEditableForSquad ? 'training-lineup__draggable' : undefined}
-                    data-testid={testId('teams', 'training-lineup-board', 'text', 'bench-name', member.userId)}
+                    className={
+                      canEdit && lineupEditableForSquad ? 'training-lineup__draggable' : undefined
+                    }
+                    data-testid={testId(
+                      'teams',
+                      'training-lineup-board',
+                      'text',
+                      'bench-name',
+                      member.userId,
+                    )}
                   >
                     {member.displayName}
                   </Text>
                   {canEdit && lineupEditableForSquad ? (
                     <div className="training-lineup__controls">
-                      <Button size="s" view="outlined" onClick={() => assignToTeam(member.userId, 'red')} data-testid={testId('teams', 'training-lineup-board', 'btn', 'bench-red', member.userId)}>
+                      <Button
+                        size="s"
+                        view="outlined"
+                        onClick={() => assignToTeam(member.userId, 'red')}
+                        data-testid={testId(
+                          'teams',
+                          'training-lineup-board',
+                          'btn',
+                          'bench-red',
+                          member.userId,
+                        )}
+                      >
                         В красные
                       </Button>
-                      <Button size="s" view="outlined" onClick={() => assignToTeam(member.userId, 'white')} data-testid={testId('teams', 'training-lineup-board', 'btn', 'bench-white', member.userId)}>
+                      <Button
+                        size="s"
+                        view="outlined"
+                        onClick={() => assignToTeam(member.userId, 'white')}
+                        data-testid={testId(
+                          'teams',
+                          'training-lineup-board',
+                          'btn',
+                          'bench-white',
+                          member.userId,
+                        )}
+                      >
                         В белые
                       </Button>
-                      <Button size="s" view="outlined" onClick={() => updateAssignment(member.userId, {side: 'backlog'})} data-testid={testId('teams', 'training-lineup-board', 'btn', 'bench-backlog', member.userId)}>
+                      <Button
+                        size="s"
+                        view="outlined"
+                        onClick={() => updateAssignment(member.userId, {side: 'backlog'})}
+                        data-testid={testId(
+                          'teams',
+                          'training-lineup-board',
+                          'btn',
+                          'bench-backlog',
+                          member.userId,
+                        )}
+                      >
                         В бэклог
                       </Button>
                       <Select
                         size="s"
                         value={[assignment.position]}
                         options={POSITION_OPTIONS}
-                        onUpdate={(v) => updateAssignment(member.userId, {position: v[0] as PlayerPosition})}
-                        data-testid={testId('teams', 'training-lineup-board', 'select', 'bench-position', member.userId)}
+                        onUpdate={(v) =>
+                          updateAssignment(member.userId, {position: v[0] as PlayerPosition})
+                        }
+                        data-testid={testId(
+                          'teams',
+                          'training-lineup-board',
+                          'select',
+                          'bench-position',
+                          member.userId,
+                        )}
                       />
                     </div>
                   ) : (
-                    <Text color="secondary" data-testid={testId('teams', 'training-lineup-board', 'text', 'bench-position', member.userId)}>{assignment.position}</Text>
+                    <Text
+                      color="secondary"
+                      data-testid={testId(
+                        'teams',
+                        'training-lineup-board',
+                        'text',
+                        'bench-position',
+                        member.userId,
+                      )}
+                    >
+                      {assignment.position}
+                    </Text>
                   )}
                 </li>
               ))}
@@ -722,7 +1119,12 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
         </div>
 
         {canEdit && lineupEditableForSquad && (
-          <Button view="action" loading={saveMutation.isPending} onClick={() => saveAssignments(composedAssignments)} data-testid={testId('teams', 'training-lineup-board', 'btn', 'save', teamId)}>
+          <Button
+            view="action"
+            loading={saveMutation.isPending}
+            onClick={() => saveAssignments(composedAssignments)}
+            data-testid={testId('teams', 'training-lineup-board', 'btn', 'save', teamId)}
+          >
             Сохранить план тренировки
           </Button>
         )}

@@ -2,7 +2,7 @@
  * SPEC-FR-6.1.1, SPEC-FR-6.1.2, SPEC-FR-6.2.1, SPEC-FR-6.2.2, SPEC-FR-6.3.1, SPEC-FR-6.3.2
  */
 
-import type { SourceMeta } from '@/entities/common/types'
+import type {SourceMeta} from '@/entities/common/types'
 
 /** @spec SPEC-FR-6.2.2 - Режим записи на площадке */
 export type ArenaBookingMode = 'external_portal' | 'slot_calendar'

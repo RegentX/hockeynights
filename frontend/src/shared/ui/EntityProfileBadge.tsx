@@ -30,7 +30,9 @@ export function EntityProfileBadge({
 }: EntityProfileBadgeProps) {
   return (
     <span
-      className={['entity-profile-badge', `entity-profile-badge--${kind}`, className].filter(Boolean).join(' ')}
+      className={['entity-profile-badge', `entity-profile-badge--${kind}`, className]
+        .filter(Boolean)
+        .join(' ')}
       data-testid={dataTestId ?? testId(testIdPrefix, 'entity-profile-badge', 'badge', kind)}
     >
       {KIND_LABELS[kind]}

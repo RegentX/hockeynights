@@ -4,6 +4,7 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
+
 import {testId} from '@/shared/testing/testId'
 
 /**
@@ -12,8 +13,15 @@ import {testId} from '@/shared/testing/testId'
  */
 export function MockUploadNotice() {
   return (
-    <div className="highlight-mock-notice" role="status" data-testid={testId('highlights', 'mock-notice', 'panel')}>
-      <span className="highlight-mock-notice__badge" data-testid={testId('highlights', 'mock-notice', 'badge')}>
+    <div
+      className="highlight-mock-notice"
+      role="status"
+      data-testid={testId('highlights', 'mock-notice', 'panel')}
+    >
+      <span
+        className="highlight-mock-notice__badge"
+        data-testid={testId('highlights', 'mock-notice', 'badge')}
+      >
         Phase 1 mock upload
       </span>
       <Text color="secondary" data-testid={testId('highlights', 'mock-notice', 'text')}>

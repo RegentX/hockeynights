@@ -3,16 +3,13 @@
  */
 
 import L from 'leaflet'
+
 import type {Arena} from '@/entities/arena/types'
 
 /**
  * @spec SPEC-FR-6.1.1 - DivIcon маркера арены на OSM-карте
  */
-export function createArenaMapIcon(
-  arena: Arena,
-  selected: boolean,
-  hasFree: boolean,
-): L.DivIcon {
+export function createArenaMapIcon(arena: Arena, selected: boolean, hasFree: boolean): L.DivIcon {
   const classes = [
     'arena-map__leaflet-pin',
     `arena-map__leaflet-pin--${arena.bookingMode}`,

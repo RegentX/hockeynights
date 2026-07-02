@@ -3,6 +3,7 @@
  */
 
 import {http, HttpResponse} from 'msw'
+
 import {arenaHasFreeSlots, mockArenas, mockIceSlots} from '@/mocks/data/arenas'
 
 /** @spec SPEC-FR-6.1.2 - Handlers арен и слотов */
@@ -30,9 +31,7 @@ export const arenaHandlers = [
       result = result.filter((a) => a.bookingMode === bookingMode)
     }
     if (hasFreeSlots) {
-      result = result.filter(
-        (a) => a.bookingMode === 'slot_calendar' && arenaHasFreeSlots(a.id),
-      )
+      result = result.filter((a) => a.bookingMode === 'slot_calendar' && arenaHasFreeSlots(a.id))
     }
 
     return HttpResponse.json(result)

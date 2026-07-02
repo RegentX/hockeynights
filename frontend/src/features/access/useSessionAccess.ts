@@ -3,10 +3,11 @@
  */
 
 import {useQuery} from '@tanstack/react-query'
-import {fetchSession} from '@/features/auth/api/sessionApi'
+
+import type {TeamRole} from '@/entities/team/types'
 import {canOrganizeEvents, isPlayerOnlySession} from '@/features/access/sessionAccess'
 import {resolveTeamPermissions} from '@/features/access/teamAccess'
-import type {TeamRole} from '@/entities/team/types'
+import {fetchSession} from '@/features/auth/api/sessionApi'
 import {shouldUsePartnerWorkspace} from '@/features/partners/sessionPersona'
 
 export function useSessionAccess() {

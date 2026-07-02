@@ -2,7 +2,6 @@
  * SPEC-FR-3.3.1, SPEC-FR-3.3.2, SPEC-FR-4.1.1, SPEC-FR-4.1.2, SPEC-FR-4.2.1, SPEC-FR-4.3.1
  */
 
-import {apiRequest} from '@/shared/api/client'
 import type {AttendanceStatus} from '@/entities/common/types'
 import type {
   CalendarFilters,
@@ -10,6 +9,7 @@ import type {
   GameEvent,
   RosterStatus,
 } from '@/entities/event/types'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-4.1.1 - Список событий

@@ -2,11 +2,12 @@
  * SPEC-UI-7.2 - Interactive 3D Puck anchor using Three.js and React Three Fiber
  */
 
-import {useRef, useState} from 'react'
-import {Canvas, useFrame} from '@react-three/fiber'
-import {MeshDistortMaterial, Float, PerspectiveCamera} from '@react-three/drei'
 import {Text} from '@gravity-ui/uikit'
+import {Float, MeshDistortMaterial, PerspectiveCamera} from '@react-three/drei'
+import {Canvas, useFrame} from '@react-three/fiber'
+import {useRef, useState} from 'react'
 import * as THREE from 'three'
+
 import {testId} from '@/shared/testing/testId'
 
 function PuckMesh() {
@@ -48,8 +49,8 @@ function isWebGLSupported() {
     const canvas = document.createElement('canvas')
     return Boolean(
       canvas.getContext('webgl2') ||
-        canvas.getContext('webgl') ||
-        canvas.getContext('experimental-webgl'),
+      canvas.getContext('webgl') ||
+      canvas.getContext('experimental-webgl'),
     )
   } catch {
     return false
@@ -59,8 +60,13 @@ function isWebGLSupported() {
 export function Puck3D() {
   if (!isWebGLSupported()) {
     return (
-      <div className="puck-3d puck-3d--fallback" data-testid={testId('shared', 'puck-3d', 'panel', 'fallback')}>
-        <Text color="secondary" data-testid={testId('shared', 'puck-3d', 'text', 'fallback')}>3D-preview недоступен в этой среде</Text>
+      <div
+        className="puck-3d puck-3d--fallback"
+        data-testid={testId('shared', 'puck-3d', 'panel', 'fallback')}
+      >
+        <Text color="secondary" data-testid={testId('shared', 'puck-3d', 'text', 'fallback')}>
+          3D-preview недоступен в этой среде
+        </Text>
       </div>
     )
   }

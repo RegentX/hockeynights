@@ -2,11 +2,12 @@
  * SPEC-FR-1.2.2, SPEC-FR-12.1.1
  */
 
-import {BrowserRouter} from 'react-router-dom'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
+import {BrowserRouter} from 'react-router-dom'
+
+import {AppRoutes} from '@/app/routes'
 import {HockeyThemeProvider} from '@/shared/theme/HockeyThemeProvider'
 import {SmoothScrollProvider} from '@/shared/theme/SmoothScrollProvider'
-import {AppRoutes} from '@/app/routes'
 
 const queryClient = new QueryClient()
 

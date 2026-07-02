@@ -4,14 +4,15 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
+
 import type {Arena} from '@/entities/arena/types'
 import {ExternalBookingButton} from '@/features/arenas/ExternalBookingButton'
-import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
-import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
-import {IceCard} from '@/shared/ui/IceCard'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
-import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 import {testId} from '@/shared/testing/testId'
+import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {IceCard} from '@/shared/ui/IceCard'
+import {ScoreboardText} from '@/shared/ui/ScoreboardText'
+import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 
 const BOOKING_MODE_LABELS = {
   slot_calendar: 'Слоты',
@@ -33,12 +34,7 @@ export interface RinkCardProps {
  * @spec SPEC-UI-2.2 - Ледовая карточка катка с лампой доступности
  * @spec SPEC-FR-6.2.1 - Карточка катка
  */
-export function RinkCard({
-  arena,
-  onOpenDetails,
-  hasFreeSlot,
-  selected = false,
-}: RinkCardProps) {
+export function RinkCard({arena, onOpenDetails, hasFreeSlot, selected = false}: RinkCardProps) {
   const showSlotLamp = arena.bookingMode === 'slot_calendar' && hasFreeSlot !== undefined
 
   return (
@@ -46,7 +42,10 @@ export function RinkCard({
       <IceCard padding="m" className={selected ? 'rink-card--selected' : undefined}>
         <div className="hockey-stack hockey-stack--gap-10">
           <div className="hockey-row hockey-row--gap-8 hockey-row--between">
-            <Text variant="subheader-2" data-testid={testId('arenas', 'rink', 'text', 'name', arena.id)}>
+            <Text
+              variant="subheader-2"
+              data-testid={testId('arenas', 'rink', 'text', 'name', arena.id)}
+            >
               {arena.name}
             </Text>
             <div className="hockey-row hockey-row--gap-8">
@@ -71,25 +70,40 @@ export function RinkCard({
               {hasFreeSlot ? 'Слот свободен' : 'Занято'}
             </span>
           )}
-          <Text color="secondary" data-testid={testId('arenas', 'rink', 'text', 'address', arena.id)}>
+          <Text
+            color="secondary"
+            data-testid={testId('arenas', 'rink', 'text', 'address', arena.id)}
+          >
             {arena.address}
           </Text>
           {arena.metro && (
-            <Text color="secondary" data-testid={testId('arenas', 'rink', 'text', 'metro', arena.id)}>
+            <Text
+              color="secondary"
+              data-testid={testId('arenas', 'rink', 'text', 'metro', arena.id)}
+            >
               м. {arena.metro} · {arena.district}
             </Text>
           )}
           {arena.phone && (
-            <Text color="secondary" data-testid={testId('arenas', 'rink', 'text', 'phone', arena.id)}>
+            <Text
+              color="secondary"
+              data-testid={testId('arenas', 'rink', 'text', 'phone', arena.id)}
+            >
               {arena.phone}
             </Text>
           )}
           {arena.priceRange && (
-            <ScoreboardText tone="accent" data-testid={testId('arenas', 'rink', 'text', 'price', arena.id)}>
+            <ScoreboardText
+              tone="accent"
+              data-testid={testId('arenas', 'rink', 'text', 'price', arena.id)}
+            >
               {arena.priceRange}
             </ScoreboardText>
           )}
-          <Text color="secondary" data-testid={testId('arenas', 'rink', 'text', 'amenities', arena.id)}>
+          <Text
+            color="secondary"
+            data-testid={testId('arenas', 'rink', 'text', 'amenities', arena.id)}
+          >
             Удобства: {arena.amenities.join(', ')}
           </Text>
           <div data-testid={testId('arenas', 'rink', 'badge', 'source', arena.id)}>

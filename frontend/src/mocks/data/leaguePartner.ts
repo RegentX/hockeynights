@@ -17,8 +17,20 @@ export const mockLeagueSeasons: LeagueSeason[] = [
 ]
 
 export const mockLeagueDivisions: LeagueDivision[] = [
-  {id: 'div-001', leagueId: 'league-001', seasonId: 'season-001', name: 'Division A', level: 'amateur'},
-  {id: 'div-002', leagueId: 'league-001', seasonId: 'season-001', name: 'Division B', level: 'advanced'},
+  {
+    id: 'div-001',
+    leagueId: 'league-001',
+    seasonId: 'season-001',
+    name: 'Division A',
+    level: 'amateur',
+  },
+  {
+    id: 'div-002',
+    leagueId: 'league-001',
+    seasonId: 'season-001',
+    name: 'Division B',
+    level: 'advanced',
+  },
 ]
 
 export let mockLeagueApplications: LeagueTeamApplication[] = [

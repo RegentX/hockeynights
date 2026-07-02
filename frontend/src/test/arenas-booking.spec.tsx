@@ -5,6 +5,7 @@
 import {screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
+
 import {ArenasPage} from '@/features/arenas/ArenasPage'
 import {renderWithProviders} from '@/test/render'
 
@@ -14,7 +15,9 @@ describe('Arenas map and booking modes', () => {
     renderWithProviders(<ArenasPage />)
 
     await waitFor(() => {
-      expect(screen.getByRole('application', {name: 'Карта площадок для аренды льда · Москва'})).toBeInTheDocument()
+      expect(
+        screen.getByRole('application', {name: 'Карта площадок для аренды льда · Москва'}),
+      ).toBeInTheDocument()
       expect(screen.getAllByText(/OpenStreetMap/i).length).toBeGreaterThan(0)
       expect(screen.getByText(/Москва и ближнее Подмосковье/i)).toBeInTheDocument()
       expect(screen.getAllByText('Слоты по времени').length).toBeGreaterThan(0)

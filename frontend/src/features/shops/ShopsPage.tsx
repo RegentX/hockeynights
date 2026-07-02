@@ -3,6 +3,7 @@
  */
 
 import {useQuery} from '@tanstack/react-query'
+
 import {fetchSession} from '@/features/auth/api/sessionApi'
 import {PartnerCabinetBanner} from '@/features/partners/PartnerCabinetBanner'
 import {MarketplacePage} from '@/features/shops/MarketplacePage'
@@ -17,7 +18,10 @@ export function ShopsPage() {
   const shopMembership = session?.user.partnerMemberships?.find((m) => m.kind === 'shop')
 
   return (
-    <div className="hockey-stack hockey-stack--gap-16" data-testid={testId('shops', 'shops', 'page')}>
+    <div
+      className="hockey-stack hockey-stack--gap-16"
+      data-testid={testId('shops', 'shops', 'page')}
+    >
       {shopMembership && <PartnerCabinetBanner membership={shopMembership} />}
       <MarketplacePage />
     </div>

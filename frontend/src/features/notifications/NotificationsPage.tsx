@@ -2,8 +2,9 @@
  * SPEC-FR-10.1.1, SPEC-FR-10.1.2
  */
 
-import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
+import {useQuery} from '@tanstack/react-query'
+
 import {fetchNotifications} from '@/features/notifications/api/notificationsApi'
 import {NotificationCenter} from '@/features/notifications/NotificationCenter'
 import {testId} from '@/shared/testing/testId'
@@ -20,12 +21,18 @@ export function NotificationsPage() {
   const unreadCount = notifications.filter((n) => !n.readAt).length
 
   return (
-    <div className="hockey-stack hockey-stack--gap-16" data-testid={testId('notifications', 'page', 'page')}>
+    <div
+      className="hockey-stack hockey-stack--gap-16"
+      data-testid={testId('notifications', 'page', 'page')}
+    >
       <Text variant="header-1" data-testid={testId('notifications', 'page', 'text', 'title')}>
         Уведомления
       </Text>
       {unreadCount > 0 && (
-        <Text color="secondary" data-testid={testId('notifications', 'page', 'text', 'unread-count')}>
+        <Text
+          color="secondary"
+          data-testid={testId('notifications', 'page', 'text', 'unread-count')}
+        >
           Непрочитанных: {unreadCount}
         </Text>
       )}

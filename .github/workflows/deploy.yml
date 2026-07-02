@@ -11,6 +11,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ghcr.io/hockeynights/hockeynights-frontend
+  HUSKY: 0
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -20,7 +21,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  quality:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -30,22 +31,33 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
       - run: npm ci
 
-      - name: Lint and test
-        run: |
-          npm run lint &
-          npm test &
-          wait
+      - name: Format check
+        run: npm run format:check
 
-      - run: npm run build
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
 
   deploy:
-    needs: test
+    needs: quality
     if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/preprod')
     runs-on: ubuntu-latest
     environment: ${{ github.ref == 'refs/heads/develop' && 'dev' || 'qa' }}
@@ -54,6 +66,8 @@ jobs:
       packages: write
     env:
       IMAGE_TAG: ${{ github.ref == 'refs/heads/develop' && 'dev-latest' || 'qa-latest' }}
+      VITE_API_MODE: ${{ vars.VITE_API_MODE || 'backend' }}
+      VITE_BACKEND_URL: ${{ vars.VITE_BACKEND_URL || '/api/v1' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -75,8 +89,8 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
           build-args: |
-            VITE_API_MODE=mock
-            VITE_BACKEND_URL=/api/v1
+            VITE_API_MODE=${{ env.VITE_API_MODE }}
+            VITE_BACKEND_URL=${{ env.VITE_BACKEND_URL }}
           cache-from: type=gha,scope=${{ env.IMAGE_TAG }}
           cache-to: type=gha,mode=max,scope=${{ env.IMAGE_TAG }}
 
@@ -118,4 +132,18 @@ jobs:
             docker image prune -f
 
             docker compose ps
-            echo "Deployed ${{ github.ref_name }} → http://${{ secrets.SSH_HOST }}:${APP_PORT}"
+
+      - name: Verify deployment health
+        uses: appleboy/ssh-action@v1
+        env:
+          APP_PORT: ${{ vars.APP_PORT || '8081' }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          envs: APP_PORT
+          script: |
+            set -euo pipefail
+            curl -fsS "http://127.0.0.1:${APP_PORT}/" -o /dev/null
+            echo "Deployed ${{ github.ref_name }} (${{ env.VITE_API_MODE }}) → port ${APP_PORT}"

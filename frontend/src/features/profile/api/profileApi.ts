@@ -2,7 +2,6 @@
  * SPEC-FR-2.2.1, SPEC-FR-2.2.2, SPEC-FR-2.2.3, SPEC-FR-2.2.4
  */
 
-import {apiRequest} from '@/shared/api/client'
 import type {
   HockeyProfile,
   NotificationPreferences,
@@ -11,6 +10,7 @@ import type {
   SubscriptionState,
   VerificationStatus,
 } from '@/entities/profile/types'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-2.2.1 - Получить Hockey ID
@@ -42,17 +42,24 @@ export function updateNotificationPreferences(
 }
 
 /** @spec SPEC-FR-18.1.4 - Обновить приватность профиля */
-export function updatePrivacySettings(settings: Partial<PrivacySettings>): Promise<ProfileSettings> {
+export function updatePrivacySettings(
+  settings: Partial<PrivacySettings>,
+): Promise<ProfileSettings> {
   return apiRequest<ProfileSettings>('/profile/privacy', {method: 'PATCH', body: settings})
 }
 
 /** @spec SPEC-FR-19.1.3 - Mock-переключение тарифа подписки */
-export function updateSubscription(subscription: Partial<SubscriptionState>): Promise<ProfileSettings> {
+export function updateSubscription(
+  subscription: Partial<SubscriptionState>,
+): Promise<ProfileSettings> {
   return apiRequest<ProfileSettings>('/subscription-intents', {method: 'POST', body: subscription})
 }
 
 /** @spec SPEC-FR-17.1.1 - Запустить проверку пользователя */
-export function startVerificationRequest(): Promise<{requestId: string; status: VerificationStatus}> {
+export function startVerificationRequest(): Promise<{
+  requestId: string
+  status: VerificationStatus
+}> {
   return apiRequest<{requestId: string; status: VerificationStatus}>('/verification-requests', {
     method: 'POST',
   })

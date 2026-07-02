@@ -3,6 +3,7 @@
  */
 
 import {Checkbox, Select, TextInput} from '@gravity-ui/uikit'
+
 import type {ArenaFilters as ArenaFiltersType} from '@/entities/arena/types'
 import {testId} from '@/shared/testing/testId'
 
@@ -33,7 +34,10 @@ const AMENITY_OPTIONS = [
  */
 export function ArenaFilters({filters, onChange}: ArenaFiltersProps) {
   return (
-    <div className="hockey-grid hockey-grid--filters" data-testid={testId('arenas', 'filters', 'filter')}>
+    <div
+      className="hockey-grid hockey-grid--filters"
+      data-testid={testId('arenas', 'filters', 'filter')}
+    >
       <TextInput
         label="Район"
         value={filters.district ?? ''}

@@ -2,7 +2,12 @@
  * SPEC-FR-9.1.1, SPEC-FR-9.1.2, SPEC-FR-9.2.1, SPEC-FR-9.2.2, SPEC-FR-11.2.2
  */
 
-import type {PlayerPosition, PartnerModerationStatus, SkillLevel, SourceMeta} from '@/entities/common/types'
+import type {
+  PartnerModerationStatus,
+  PlayerPosition,
+  SkillLevel,
+  SourceMeta,
+} from '@/entities/common/types'
 
 /** @spec SPEC-FR-9.1.1 - Магазин экипировки */
 export interface Shop {

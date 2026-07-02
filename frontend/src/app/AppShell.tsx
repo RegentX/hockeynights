@@ -3,22 +3,23 @@
  * SPEC-UI-4.3, SPEC-UI-5.1, SPEC-UI-5.2, SPEC-UI-5.5, SPEC-UI-5.6, SPEC-UI-6.1
  */
 
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useEffect, useRef, useState} from 'react'
 import {Link, Outlet, useLocation, useNavigate} from 'react-router-dom'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {fetchNotifications} from '@/features/notifications/api/notificationsApi'
-import {fetchChats, getTotalUnreadCount} from '@/features/messenger/api/messengerApi'
-import {fetchSession, logoutSession} from '@/features/auth/api/sessionApi'
-import {partnerCabinetLabel, partnerCabinetPath} from '@/features/partners/constants'
-import {resolveNavItems} from '@/features/access/navigationAccess'
-import {shouldUsePartnerWorkspace} from '@/features/partners/sessionPersona'
-import {LAUNCH_REGION} from '@/shared/config/geo'
-import {useHockeyTheme} from '@/shared/theme/HockeyThemeProvider'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
+
 import {MobileNav} from '@/app/MobileNav'
 import {SideBoard} from '@/app/SideBoard'
 import {SosFab} from '@/app/SosFab'
-import {testId, routeToTestSlug} from '@/shared/testing/testId'
+import {resolveNavItems} from '@/features/access/navigationAccess'
+import {fetchSession, logoutSession} from '@/features/auth/api/sessionApi'
+import {fetchChats, getTotalUnreadCount} from '@/features/messenger/api/messengerApi'
+import {fetchNotifications} from '@/features/notifications/api/notificationsApi'
+import {partnerCabinetLabel, partnerCabinetPath} from '@/features/partners/constants'
+import {shouldUsePartnerWorkspace} from '@/features/partners/sessionPersona'
+import {LAUNCH_REGION} from '@/shared/config/geo'
+import {routeToTestSlug, testId} from '@/shared/testing/testId'
+import {useHockeyTheme} from '@/shared/theme/HockeyThemeProvider'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 function formatPeriodClock(): string {
   const now = new Date()
@@ -104,17 +105,38 @@ export function AppShell() {
     <div className="app-shell" data-testid={testId('app', 'shell', 'page')}>
       <header className="app-shell__header" data-testid={testId('app', 'shell', 'header')}>
         <div className="app-shell__brand" data-testid={testId('app', 'shell', 'brand')}>
-          <div className="app-shell__crest" aria-hidden data-testid={testId('app', 'shell', 'icon', 'crest')}>
+          <div
+            className="app-shell__crest"
+            aria-hidden
+            data-testid={testId('app', 'shell', 'icon', 'crest')}
+          >
             <span className="app-shell__crest-icon">🏒</span>
           </div>
           <div className="app-shell__brand-text">
-            <span className="app-shell__title" data-testid={testId('app', 'shell', 'text', 'title')}>Hockey Nights</span>
-            <span className="app-shell__region" data-testid={testId('app', 'shell', 'text', 'region')}>{LAUNCH_REGION}</span>
+            <span
+              className="app-shell__title"
+              data-testid={testId('app', 'shell', 'text', 'title')}
+            >
+              Hockey Nights
+            </span>
+            <span
+              className="app-shell__region"
+              data-testid={testId('app', 'shell', 'text', 'region')}
+            >
+              {LAUNCH_REGION}
+            </span>
           </div>
         </div>
 
-        <div className="app-shell__header-actions" data-testid={testId('app', 'shell', 'header-actions')}>
-          <span className="app-shell__period" aria-live="polite" data-testid={testId('app', 'shell', 'text', 'period-clock')}>
+        <div
+          className="app-shell__header-actions"
+          data-testid={testId('app', 'shell', 'header-actions')}
+        >
+          <span
+            className="app-shell__period"
+            aria-live="polite"
+            data-testid={testId('app', 'shell', 'text', 'period-clock')}
+          >
             {periodClock}
           </span>
           <HockeyButton
@@ -136,9 +158,19 @@ export function AppShell() {
             Выйти
           </HockeyButton>
           <Link to="/" data-testid={testId('app', 'shell', 'link', 'switch-role')}>
-            <HockeyButton view="outlined" size="s" data-testid={testId('app', 'shell', 'btn', 'switch-role')}>Сменить роль</HockeyButton>
+            <HockeyButton
+              view="outlined"
+              size="s"
+              data-testid={testId('app', 'shell', 'btn', 'switch-role')}
+            >
+              Сменить роль
+            </HockeyButton>
           </Link>
-          <div className="app-shell__panel-controls" aria-label="Управление панелями" data-testid={testId('app', 'shell', 'panel-controls')}>
+          <div
+            className="app-shell__panel-controls"
+            aria-label="Управление панелями"
+            data-testid={testId('app', 'shell', 'panel-controls')}
+          >
             <HockeyButton
               view={isLeftCollapsed ? 'action' : 'outlined'}
               size="s"
@@ -181,7 +213,11 @@ export function AppShell() {
       </header>
 
       <div className={bodyClasses} data-testid={testId('app', 'shell', 'body')}>
-        <nav className="app-shell__nav-col" aria-label="Основная навигация" data-testid={testId('app', 'nav', 'nav')}>
+        <nav
+          className="app-shell__nav-col"
+          aria-label="Основная навигация"
+          data-testid={testId('app', 'nav', 'nav')}
+        >
           <div className="hockey-nav" ref={navRef}>
             <span
               className="hockey-nav__puck hockey-nav-puck"
@@ -209,7 +245,10 @@ export function AppShell() {
                 >
                   {item.label}
                   {badge !== null && (
-                    <span className="hockey-nav__badge" data-testid={testId('app', 'nav', 'badge', routeToTestSlug(item.to))}>
+                    <span
+                      className="hockey-nav__badge"
+                      data-testid={testId('app', 'nav', 'badge', routeToTestSlug(item.to))}
+                    >
                       {badge}
                     </span>
                   )}
@@ -218,7 +257,12 @@ export function AppShell() {
             })}
             {hasPartnerAccess && (
               <>
-                <div className="hockey-nav__section-label" data-testid={testId('app', 'nav', 'text', 'partner-section')}>Партнёр</div>
+                <div
+                  className="hockey-nav__section-label"
+                  data-testid={testId('app', 'nav', 'text', 'partner-section')}
+                >
+                  Партнёр
+                </div>
                 <Link
                   to="/partner"
                   className={`hockey-nav__link${isNavActive('/partner') ? ' hockey-nav__link--active' : ''}`}

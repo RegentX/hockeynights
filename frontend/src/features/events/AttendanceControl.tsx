@@ -2,10 +2,11 @@
  * SPEC-FR-3.3.1
  */
 
-import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {Button, Text} from '@gravity-ui/uikit'
-import {updateAttendance} from '@/features/events/api/eventsApi'
+import {useMutation, useQueryClient} from '@tanstack/react-query'
+
 import type {AttendanceStatus} from '@/entities/common/types'
+import {updateAttendance} from '@/features/events/api/eventsApi'
 import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-3.3.1 - Props контроля посещаемости */
@@ -38,11 +39,20 @@ export function AttendanceControl({eventId, currentStatus}: AttendanceControlPro
   ]
 
   return (
-    <div className="hockey-stack hockey-stack--gap-6" data-testid={testId('events', 'attendance', 'panel', eventId)}>
-      <Text color="secondary" data-testid={testId('events', 'attendance', 'text', 'label', eventId)}>
+    <div
+      className="hockey-stack hockey-stack--gap-6"
+      data-testid={testId('events', 'attendance', 'panel', eventId)}
+    >
+      <Text
+        color="secondary"
+        data-testid={testId('events', 'attendance', 'text', 'label', eventId)}
+      >
         RSVP на матч/тренировку
       </Text>
-      <div className="hockey-row hockey-row--gap-8" data-testid={testId('events', 'attendance', 'list', eventId)}>
+      <div
+        className="hockey-row hockey-row--gap-8"
+        data-testid={testId('events', 'attendance', 'list', eventId)}
+      >
         {buttons.map((btn) => (
           <Button
             key={btn.status}

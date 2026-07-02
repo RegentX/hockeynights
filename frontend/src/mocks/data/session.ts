@@ -2,7 +2,6 @@
  * SPEC-FR-2.1.1, SPEC-FR-2.1.2, SPEC-FR-2.1.3
  */
 
-import type {Session, User, PartnerMembership} from '@/entities/user/types'
 import {clearPendingLocalUser} from '@/features/auth/localAuthMemory'
 import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
 import type {
@@ -13,6 +12,7 @@ import type {
   SubscriptionState,
   VerificationStatus,
 } from '@/entities/profile/types'
+import type {PartnerMembership, Session, User} from '@/entities/user/types'
 
 /** @spec SPEC-FR-2.1.1 - Mock пользователь по умолчанию */
 export const mockUser: User = {

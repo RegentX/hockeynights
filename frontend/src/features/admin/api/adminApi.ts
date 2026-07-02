@@ -2,21 +2,30 @@
  * SPEC-FR-11.1.1, SPEC-FR-11.1.2, SPEC-FR-11.2.1, SPEC-FR-11.2.2
  */
 
-import {apiRequest} from '@/shared/api/client'
-import type {AdminEntityType, CreateAdminEntityPayload, PartnerModerationItem, SourceStatusItem} from '@/entities/admin/types'
-import type {PartnerModerationStatus} from '@/entities/common/types'
+import type {
+  AdminEntityType,
+  CreateAdminEntityPayload,
+  PartnerModerationItem,
+  SourceStatusItem,
+} from '@/entities/admin/types'
 import type {Arena} from '@/entities/arena/types'
+import type {PartnerModerationStatus} from '@/entities/common/types'
 import type {League} from '@/entities/league/types'
 import type {Shop} from '@/entities/shop/types'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-11.1.1 - Создать сущность
  */
-export function createAdminEntity(payload: CreateAdminEntityPayload): Promise<Arena | League | Shop> {
+export function createAdminEntity(
+  payload: CreateAdminEntityPayload,
+): Promise<Arena | League | Shop> {
   const path =
-    payload.entityType === 'arena' ? '/admin/arenas' :
-    payload.entityType === 'league' ? '/admin/leagues' :
-    '/admin/shops'
+    payload.entityType === 'arena'
+      ? '/admin/arenas'
+      : payload.entityType === 'league'
+        ? '/admin/leagues'
+        : '/admin/shops'
   return apiRequest(path, {method: 'POST', body: payload})
 }
 

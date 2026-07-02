@@ -2,8 +2,9 @@
  * SPEC-FR-24.7.5
  */
 
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Text} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+
 import {fetchShopCatalogState, importShopCatalog} from '@/features/shops/api/shopsApi'
 import {testId} from '@/shared/testing/testId'
 
@@ -37,12 +38,18 @@ export function ShopCatalogImportPanel({shopId}: ShopCatalogImportPanelProps) {
   })
 
   return (
-    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12" data-testid={testId('shops', shopId, 'import', 'panel')}>
+    <div
+      className="partner-dashboard__section hockey-stack hockey-stack--gap-12"
+      data-testid={testId('shops', shopId, 'import', 'panel')}
+    >
       <Text variant="subheader-2" data-testid={testId('shops', shopId, 'import', 'text', 'title')}>
         Импорт каталога
       </Text>
       {state && (
-        <div className="partner-dashboard__stats" data-testid={testId('shops', shopId, 'import', 'panel', 'status')}>
+        <div
+          className="partner-dashboard__stats"
+          data-testid={testId('shops', shopId, 'import', 'panel', 'status')}
+        >
           <Text data-testid={testId('shops', shopId, 'import', 'text', 'status')}>
             Статус: {STATUS_LABELS[state.status] ?? state.status} · {state.productCount} позиций
           </Text>
@@ -60,7 +67,10 @@ export function ShopCatalogImportPanel({shopId}: ShopCatalogImportPanelProps) {
         </div>
       )}
 
-      <div className="partner-dashboard__tabs" data-testid={testId('shops', shopId, 'import', 'nav')}>
+      <div
+        className="partner-dashboard__tabs"
+        data-testid={testId('shops', shopId, 'import', 'nav')}
+      >
         <Button
           size="s"
           view="outlined"
@@ -92,7 +102,8 @@ export function ShopCatalogImportPanel({shopId}: ShopCatalogImportPanelProps) {
 
       {importMutation.data && (
         <Text color="secondary" data-testid={testId('shops', shopId, 'import', 'text', 'result')}>
-          {importMutation.data.message ?? `Импортировано ${importMutation.data.importedCount} позиций`}
+          {importMutation.data.message ??
+            `Импортировано ${importMutation.data.importedCount} позиций`}
         </Text>
       )}
     </div>

@@ -2,8 +2,9 @@
  * SPEC-FR-5.2.3
  */
 
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Card, Text} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+
 import {
   fetchRecruitmentResponses,
   reviewRecruitmentResponse,

@@ -3,6 +3,7 @@
  */
 
 import {useQuery} from '@tanstack/react-query'
+
 import {fetchEvents} from '@/features/events/api/eventsApi'
 
 /**

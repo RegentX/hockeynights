@@ -3,6 +3,7 @@
  */
 
 import {Card, Label, Text} from '@gravity-ui/uikit'
+
 import type {Notification} from '@/entities/notification/types'
 import {MarkNotificationReadButton} from '@/features/notifications/MarkNotificationReadButton'
 import {testId} from '@/shared/testing/testId'
@@ -34,7 +35,10 @@ export function NotificationCenter({notifications}: NotificationCenterProps) {
   }
 
   return (
-    <div className="hockey-stack hockey-stack--gap-12" data-testid={testId('notifications', 'center', 'list')}>
+    <div
+      className="hockey-stack hockey-stack--gap-12"
+      data-testid={testId('notifications', 'center', 'list')}
+    >
       {notifications.map((notification) => (
         <Card
           key={notification.id}
@@ -58,7 +62,9 @@ export function NotificationCenter({notifications}: NotificationCenterProps) {
                   {notification.title}
                 </Text>
               </div>
-              <Text data-testid={testId('notifications', 'center', 'text', 'body', notification.id)}>
+              <Text
+                data-testid={testId('notifications', 'center', 'text', 'body', notification.id)}
+              >
                 {notification.body}
               </Text>
               <Text

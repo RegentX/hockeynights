@@ -3,14 +3,15 @@
  * SPEC-UI-1.2
  */
 
-import {useState} from 'react'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Checkbox, Select, Text, TextArea, TextInput} from '@gravity-ui/uikit'
-import {createRecruitmentRequest} from '@/features/sos/api/recruitmentApi'
-import {fetchEvents} from '@/features/events/api/eventsApi'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {useState} from 'react'
+
 import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {fetchEvents} from '@/features/events/api/eventsApi'
+import {createRecruitmentRequest} from '@/features/sos/api/recruitmentApi'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 const POSITION_OPTIONS = [
   {value: 'goalie', content: 'Вратарь'},
@@ -66,7 +67,10 @@ export function SosRequestForm() {
   }
 
   return (
-    <div className="hockey-stack hockey-stack--gap-12" data-testid={testId('sos', 'request-form', 'form')}>
+    <div
+      className="hockey-stack hockey-stack--gap-12"
+      data-testid={testId('sos', 'request-form', 'form')}
+    >
       <Text variant="subheader-2" data-testid={testId('sos', 'request-form', 'text', 'title')}>
         Запустить добор / Goalkeeper SOS
       </Text>
@@ -104,7 +108,10 @@ export function SosRequestForm() {
         data-testid={testId('sos', 'request-form', 'field', 'price')}
       />
       <div data-testid={testId('sos', 'request-form', 'field', 'comment')}>
-        <Text color="secondary" data-testid={testId('sos', 'request-form', 'text', 'comment-label')}>
+        <Text
+          color="secondary"
+          data-testid={testId('sos', 'request-form', 'text', 'comment-label')}
+        >
           Комментарий
         </Text>
         <TextArea

@@ -2,8 +2,8 @@
  * SPEC-FR-2.1.1, SPEC-FR-2.1.2, SPEC-FR-2.1.3
  */
 
-import {apiRequest} from '@/shared/api/client'
 import type {OnboardingPayload, Session} from '@/entities/user/types'
+import {apiRequest} from '@/shared/api/client'
 
 export interface LoginPayload {
   email: string

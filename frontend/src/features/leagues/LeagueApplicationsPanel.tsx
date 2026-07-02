@@ -2,8 +2,9 @@
  * SPEC-FR-24.5.4
  */
 
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+
 import type {LeagueApplicationStatus, LeagueTeamApplication} from '@/entities/league/types'
 import {
   fetchLeagueApplications,
@@ -64,17 +65,29 @@ export function LeagueApplicationsPanel({leagueId}: LeagueApplicationsPanelProps
   }
 
   return (
-    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12" data-testid={testId('leagues', 'applications', 'panel', leagueId)}>
-      <Text variant="subheader-2" data-testid={testId('leagues', 'applications', 'text', 'title', leagueId)}>
+    <div
+      className="partner-dashboard__section hockey-stack hockey-stack--gap-12"
+      data-testid={testId('leagues', 'applications', 'panel', leagueId)}
+    >
+      <Text
+        variant="subheader-2"
+        data-testid={testId('leagues', 'applications', 'text', 'title', leagueId)}
+      >
         Заявки команд
       </Text>
       {activeSeason && (
-        <Text color="secondary" data-testid={testId('leagues', 'applications', 'text', 'season', leagueId)}>
+        <Text
+          color="secondary"
+          data-testid={testId('leagues', 'applications', 'text', 'season', leagueId)}
+        >
           Сезон: {activeSeason.name} · дивизионы: {divisions.map((d) => d.name).join(', ') || '—'}
         </Text>
       )}
 
-      <ul className="partner-dashboard__list" data-testid={testId('leagues', 'applications', 'list', leagueId)}>
+      <ul
+        className="partner-dashboard__list"
+        data-testid={testId('leagues', 'applications', 'list', leagueId)}
+      >
         {applications.map((app) => (
           <li
             key={app.id}
@@ -85,20 +98,32 @@ export function LeagueApplicationsPanel({leagueId}: LeagueApplicationsPanelProps
               <Text data-testid={testId('leagues', 'applications', 'text', 'team-name', app.id)}>
                 {app.teamName}
               </Text>
-              <Text color="secondary" data-testid={testId('leagues', 'applications', 'text', 'captain', app.id)}>
+              <Text
+                color="secondary"
+                data-testid={testId('leagues', 'applications', 'text', 'captain', app.id)}
+              >
                 Капитан: {app.captainName} · {app.contactEmail}
               </Text>
-              <Text color="secondary" data-testid={testId('leagues', 'applications', 'text', 'division', app.id)}>
+              <Text
+                color="secondary"
+                data-testid={testId('leagues', 'applications', 'text', 'division', app.id)}
+              >
                 Дивизион: {divisionName(app.divisionId)} · статус: {app.status}
               </Text>
               {app.reviewComment && (
-                <Text color="secondary" data-testid={testId('leagues', 'applications', 'text', 'review-comment', app.id)}>
+                <Text
+                  color="secondary"
+                  data-testid={testId('leagues', 'applications', 'text', 'review-comment', app.id)}
+                >
                   Комментарий: {app.reviewComment}
                 </Text>
               )}
             </div>
             {app.status === 'pending' && (
-              <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8" data-testid={testId('leagues', 'applications', 'panel', 'review', app.id)}>
+              <div
+                className="partner-dashboard__form hockey-stack hockey-stack--gap-8"
+                data-testid={testId('leagues', 'applications', 'panel', 'review', app.id)}
+              >
                 <Select
                   label="Решение"
                   value={['approved']}

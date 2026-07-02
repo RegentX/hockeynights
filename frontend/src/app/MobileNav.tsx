@@ -2,13 +2,14 @@
  * SPEC-UI-5.2, SPEC-FR-1.2.1, SPEC-FR-13.1.1, SPEC-FR-16.1.1
  */
 
-import {Link, useLocation} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
-import {fetchChats, getTotalUnreadCount} from '@/features/messenger/api/messengerApi'
-import {fetchSession} from '@/features/auth/api/sessionApi'
+import {Link, useLocation} from 'react-router-dom'
+
 import {resolveMobileNavItems} from '@/features/access/navigationAccess'
+import {fetchSession} from '@/features/auth/api/sessionApi'
+import {fetchChats, getTotalUnreadCount} from '@/features/messenger/api/messengerApi'
 import {shouldUsePartnerWorkspace} from '@/features/partners/sessionPersona'
-import {testId, routeToTestSlug} from '@/shared/testing/testId'
+import {routeToTestSlug, testId} from '@/shared/testing/testId'
 
 function formatUnreadBadge(count: number): string {
   return count > 99 ? '99+' : String(count)
@@ -32,7 +33,11 @@ export function MobileNav() {
   const unreadChatCount = getTotalUnreadCount(chats)
 
   return (
-    <nav className="mobile-nav" aria-label="Основная навигация" data-testid={testId('app', 'mobile-nav', 'nav')}>
+    <nav
+      className="mobile-nav"
+      aria-label="Основная навигация"
+      data-testid={testId('app', 'mobile-nav', 'nav')}
+    >
       {showLegacyPartnerLink && (
         <Link
           to="/partner"
@@ -41,8 +46,19 @@ export function MobileNav() {
           }`}
           data-testid={testId('app', 'mobile-nav', 'link', routeToTestSlug('/partner'))}
         >
-          <span className="mobile-nav__icon" aria-hidden data-testid={testId('app', 'mobile-nav', 'icon', 'partner')}>🏪</span>
-          <span className="mobile-nav__label" data-testid={testId('app', 'mobile-nav', 'text', 'partner')}>Партнёр</span>
+          <span
+            className="mobile-nav__icon"
+            aria-hidden
+            data-testid={testId('app', 'mobile-nav', 'icon', 'partner')}
+          >
+            🏪
+          </span>
+          <span
+            className="mobile-nav__label"
+            data-testid={testId('app', 'mobile-nav', 'text', 'partner')}
+          >
+            Партнёр
+          </span>
         </Link>
       )}
       {mobileNav.map((item) => {
@@ -57,16 +73,29 @@ export function MobileNav() {
             data-testid={testId('app', 'mobile-nav', 'link', routeToTestSlug(item.to))}
           >
             <span className="mobile-nav__icon-wrap">
-              <span className="mobile-nav__icon" aria-hidden data-testid={testId('app', 'mobile-nav', 'icon', routeToTestSlug(item.to))}>
+              <span
+                className="mobile-nav__icon"
+                aria-hidden
+                data-testid={testId('app', 'mobile-nav', 'icon', routeToTestSlug(item.to))}
+              >
                 {item.icon}
               </span>
               {showUnreadBadge && (
-                <span className="mobile-nav__badge" aria-label={`${unreadChatCount} непрочитанных`} data-testid={testId('app', 'mobile-nav', 'badge', routeToTestSlug(item.to))}>
+                <span
+                  className="mobile-nav__badge"
+                  aria-label={`${unreadChatCount} непрочитанных`}
+                  data-testid={testId('app', 'mobile-nav', 'badge', routeToTestSlug(item.to))}
+                >
                   {formatUnreadBadge(unreadChatCount)}
                 </span>
               )}
             </span>
-            <span className="mobile-nav__label" data-testid={testId('app', 'mobile-nav', 'text', routeToTestSlug(item.to))}>{item.label}</span>
+            <span
+              className="mobile-nav__label"
+              data-testid={testId('app', 'mobile-nav', 'text', routeToTestSlug(item.to))}
+            >
+              {item.label}
+            </span>
           </Link>
         )
       })}

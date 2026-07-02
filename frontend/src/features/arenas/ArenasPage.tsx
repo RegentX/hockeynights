@@ -3,24 +3,25 @@
  * SPEC-UI-2.2, SPEC-UI-3.1
  */
 
-import {useMemo, useState} from 'react'
-import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
+import {useQuery} from '@tanstack/react-query'
+import {useMemo, useState} from 'react'
+
+import type {ArenaFilters as ArenaFiltersType} from '@/entities/arena/types'
 import {fetchArenas, fetchArenaSlots} from '@/features/arenas/api/arenasApi'
 import {ArenaDetailPanel} from '@/features/arenas/ArenaDetailPanel'
 import {ArenaFilters} from '@/features/arenas/ArenaFilters'
 import {ArenaMap} from '@/features/arenas/ArenaMap'
 import {RinkCard} from '@/features/arenas/RinkCard'
-import type {ArenaFilters as ArenaFiltersType} from '@/entities/arena/types'
 import {arenaHasFreeSlots} from '@/mocks/data/arenas'
-import {IceCard} from '@/shared/ui/IceCard'
-import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-import {IceSkeleton} from '@/shared/ui/IceSkeleton'
-import {EmptyNetState} from '@/shared/ui/EmptyNetState'
-import {ScrollReveal} from '@/shared/ui/ScrollStory'
-import {testId} from '@/shared/testing/testId'
 import {ARENAS_PAGE_TITLE} from '@/shared/config/navigationLabels'
 import {useDocumentTitle} from '@/shared/hooks/useDocumentTitle'
+import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {IceCard} from '@/shared/ui/IceCard'
+import {IceSkeleton} from '@/shared/ui/IceSkeleton'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
+import {ScrollReveal} from '@/shared/ui/ScrollStory'
 
 /**
  * @spec SPEC-FR-6.1.1 - Страница списка и карты арен
@@ -52,7 +53,13 @@ export function ArenasPage() {
   return (
     <div className="arenas-page" data-testid={testId('arenas', 'page')}>
       <ScrollReveal direction="down">
-        <Text variant="header-1" className="variable-font-header" data-testid={testId('arenas', 'page', 'text', 'title')}>{ARENAS_PAGE_TITLE}</Text>
+        <Text
+          variant="header-1"
+          className="variable-font-header"
+          data-testid={testId('arenas', 'page', 'text', 'title')}
+        >
+          {ARENAS_PAGE_TITLE}
+        </Text>
         <Text color="secondary" data-testid={testId('arenas', 'page', 'text', 'subtitle')}>
           Карта площадок и разные способы записи: слоты по времени или заявка через портал.
         </Text>
@@ -105,7 +112,10 @@ export function ArenasPage() {
             </div>
           </div>
 
-          <div className="arenas-page__detail-col" data-testid={testId('arenas', 'page', 'detail-col')}>
+          <div
+            className="arenas-page__detail-col"
+            data-testid={testId('arenas', 'page', 'detail-col')}
+          >
             {activeArena ? (
               <ArenaDetailPanel
                 arena={activeArena}

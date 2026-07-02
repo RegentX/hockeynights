@@ -2,9 +2,10 @@
  * SPEC-FR-8.1.1, SPEC-FR-8.1.2
  */
 
-import {useState} from 'react'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Card, Select, Text, TextArea} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {useState} from 'react'
+
 import type {CreateFeedbackPayload} from '@/entities/feedback/types'
 import {submitFeedback} from '@/features/feedback/api/feedbackApi'
 import {useFeedbackEligibleEvents} from '@/features/feedback/useFeedbackEligibility'

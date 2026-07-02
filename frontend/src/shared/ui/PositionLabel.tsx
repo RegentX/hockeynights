@@ -39,9 +39,8 @@ export function PositionLabel({
   'data-testid': dataTestId,
 }: PositionLabelProps) {
   const label = showFull
-    ? ({goalie: 'Вратарь', defense: 'Защита', forward: 'Нападение', any: 'Универсал'}[
-        position
-      ] ?? position)
+    ? ({goalie: 'Вратарь', defense: 'Защита', forward: 'Нападение', any: 'Универсал'}[position] ??
+      position)
     : POSITION_SHORT[position]
 
   return (

@@ -3,19 +3,20 @@
  * SPEC-UI-2.3
  */
 
-import {useState} from 'react'
-import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
+import {useQuery} from '@tanstack/react-query'
+import {useState} from 'react'
+
 import type {ClubSquad} from '@/entities/club/types'
-import {fetchTeams} from '@/features/teams/api/teamsApi'
 import {useSessionAccess} from '@/features/access/useSessionAccess'
+import {fetchTeams} from '@/features/teams/api/teamsApi'
+import {ClubProfilePanel} from '@/features/teams/ClubProfilePanel'
+import {TeamControlCenter} from '@/features/teams/TeamControlCenter'
 import {TeamCreateForm} from '@/features/teams/TeamCreateForm'
 import {TeamCrest} from '@/features/teams/TeamCrest'
-import {TeamControlCenter} from '@/features/teams/TeamControlCenter'
-import {ClubProfilePanel} from '@/features/teams/ClubProfilePanel'
+import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-import {testId} from '@/shared/testing/testId'
 
 /**
  * @spec SPEC-UI-2.3 - Страница команд в стиле раздевалки
@@ -32,10 +33,18 @@ export function TeamsPage() {
   const activeTeam = teams.find((t) => t.id === activeTeamId)
 
   return (
-    <div className="hockey-stack hockey-stack--gap-20" data-testid={testId('teams', 'teams-page', 'page')}>
-      <Text variant="header-1" data-testid={testId('teams', 'teams-page', 'text', 'title')}>Команды</Text>
+    <div
+      className="hockey-stack hockey-stack--gap-20"
+      data-testid={testId('teams', 'teams-page', 'page')}
+    >
+      <Text variant="header-1" data-testid={testId('teams', 'teams-page', 'text', 'title')}>
+        Команды
+      </Text>
 
-      <div className="hockey-grid hockey-grid--cards-280" data-testid={testId('teams', 'teams-page', 'panel', 'grid')}>
+      <div
+        className="hockey-grid hockey-grid--cards-280"
+        data-testid={testId('teams', 'teams-page', 'panel', 'grid')}
+      >
         {canCreateTeam && (
           <IceCard padding="m" data-testid={testId('teams', 'teams-page', 'card', 'create')}>
             <TeamCreateForm />
@@ -43,11 +52,22 @@ export function TeamsPage() {
         )}
 
         <IceCard padding="m" data-testid={testId('teams', 'teams-page', 'card', 'my-teams')}>
-          <Text variant="subheader-2" data-testid={testId('teams', 'teams-page', 'text', 'my-teams-title')}>Мои команды</Text>
+          <Text
+            variant="subheader-2"
+            data-testid={testId('teams', 'teams-page', 'text', 'my-teams-title')}
+          >
+            Мои команды
+          </Text>
           {isLoading && (
-            <ScoreboardLoader testIdPrefix="teams" data-testid={testId('teams', 'teams-page', 'loader')} />
+            <ScoreboardLoader
+              testIdPrefix="teams"
+              data-testid={testId('teams', 'teams-page', 'loader')}
+            />
           )}
-          <div className="hockey-mt-12 hockey-stack hockey-stack--gap-8" data-testid={testId('teams', 'teams-page', 'list', 'teams')}>
+          <div
+            className="hockey-mt-12 hockey-stack hockey-stack--gap-8"
+            data-testid={testId('teams', 'teams-page', 'list', 'teams')}
+          >
             {teams.map((team) => (
               <div
                 key={team.id}
@@ -59,11 +79,14 @@ export function TeamsPage() {
                 data-testid={testId('teams', 'teams-page', 'item', team.id)}
               >
                 <div
-                  className={
-                    activeTeamId === team.id ? 'locker-room' : 'team-picker-item__surface'
-                  }
+                  className={activeTeamId === team.id ? 'locker-room' : 'team-picker-item__surface'}
                 >
-                  <TeamCrest name={team.name} city={team.city} skillLevel={team.skillLevel} teamId={team.id} />
+                  <TeamCrest
+                    name={team.name}
+                    city={team.city}
+                    skillLevel={team.skillLevel}
+                    teamId={team.id}
+                  />
                 </div>
               </div>
             ))}
@@ -72,7 +95,10 @@ export function TeamsPage() {
       </div>
 
       {activeTeamId && activeTeam && (
-        <div className="locker-room" data-testid={testId('teams', 'teams-page', 'panel', 'active-team', activeTeamId)}>
+        <div
+          className="locker-room"
+          data-testid={testId('teams', 'teams-page', 'panel', 'active-team', activeTeamId)}
+        >
           <TeamCrest
             name={activeTeam.name}
             city={activeTeam.city}

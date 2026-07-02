@@ -3,6 +3,7 @@
  */
 
 import {setupServer} from 'msw/node'
+
 import {handlers} from '@/mocks/handlers'
 
 /** @spec SPEC-FR-12.1.2 - Node MSW server для тестов */

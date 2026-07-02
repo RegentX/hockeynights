@@ -21,7 +21,8 @@ export let mockShops: Shop[] = [
     partnerStatus: 'partner',
     sourceMeta: mockSource,
     visible: true,
-    description: 'Официальный партнёр HockeyNights: коньки, клюшки и защита для любителей и продвинутых игроков.',
+    description:
+      'Официальный партнёр HockeyNights: коньки, клюшки и защита для любителей и продвинутых игроков.',
     contactEmail: 'partner@prohockey.example.ru',
     contactPhone: '+7 495 000-00-01',
     deliveryInfo: 'Доставка по Москве и МО, 1–2 дня',

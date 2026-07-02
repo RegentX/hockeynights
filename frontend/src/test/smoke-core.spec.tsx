@@ -181,9 +181,7 @@ describe('TASK-QA-01 mock API smoke', () => {
     await mockApiPost<Session>('/onboarding', {
       displayName: 'Shop Partner',
       roles: ['player'],
-      partnerMemberships: [
-        {kind: 'shop', entityId: 'shop-001', entityName: 'Pro-Hockey Москва'},
-      ],
+      partnerMemberships: [{kind: 'shop', entityId: 'shop-001', entityName: 'Pro-Hockey Москва'}],
     })
     const shop = await mockApiPatch<Shop>('/shops/shop-001/profile', {
       deliveryInfo: 'Доставка за 24 часа',
@@ -206,9 +204,7 @@ describe('TASK-QA-01 mock API smoke', () => {
     await mockApiPost<Session>('/onboarding', {
       displayName: 'Shop Partner',
       roles: ['player'],
-      partnerMemberships: [
-        {kind: 'shop', entityId: 'shop-001', entityName: 'Pro-Hockey Москва'},
-      ],
+      partnerMemberships: [{kind: 'shop', entityId: 'shop-001', entityName: 'Pro-Hockey Москва'}],
     })
     const job = await mockApiPost<ShopCatalogImportJob>('/shops/shop-001/catalog-import', {
       source: 'feed',
@@ -258,14 +254,17 @@ describe('TASK-QA-01 mock API smoke', () => {
       roles: ['player', 'captain'],
       partnerMemberships: [],
     })
-    const application = await mockApiPost<LeagueTeamApplication>('/leagues/league-001/applications', {
-      seasonId: 'season-001',
-      divisionId: 'div-001',
-      teamId: 'team-001',
-      teamName: 'Медведи САО',
-      captainName: 'Иван Петров',
-      contactEmail: 'captain@example.com',
-    })
+    const application = await mockApiPost<LeagueTeamApplication>(
+      '/leagues/league-001/applications',
+      {
+        seasonId: 'season-001',
+        divisionId: 'div-001',
+        teamId: 'team-001',
+        teamName: 'Медведи САО',
+        captainName: 'Иван Петров',
+        contactEmail: 'captain@example.com',
+      },
+    )
     expect(application.status).toBe('pending')
     expect(application.teamId).toBe('team-001')
   })
@@ -279,16 +278,13 @@ describe('TASK-QA-01 mock API smoke', () => {
         {kind: 'league', entityId: 'league-001', entityName: 'Ночная Хоккейная Лига (НХЛ)'},
       ],
     })
-    const item = await mockApiPost<LeagueScheduleItem>(
-      '/leagues/league-001/schedule',
-      {
-        homeTeam: 'ХК Тест',
-        awayTeam: 'ХК Демо',
-        startsAt: '2026-07-01T20:00:00+03:00',
-        arenaName: 'Тестовая арена',
-        status: 'scheduled',
-      },
-    )
+    const item = await mockApiPost<LeagueScheduleItem>('/leagues/league-001/schedule', {
+      homeTeam: 'ХК Тест',
+      awayTeam: 'ХК Демо',
+      startsAt: '2026-07-01T20:00:00+03:00',
+      arenaName: 'Тестовая арена',
+      status: 'scheduled',
+    })
     expect(item.homeTeam).toBe('ХК Тест')
 
     const scored = await mockApiPatch<LeagueScheduleItem>(
@@ -351,9 +347,7 @@ describe('TASK-QA-01 mock API smoke', () => {
   /** @spec SPEC-FR-4.3.1 */
   it('GET /events/{id}/roster-status returns deficit', async () => {
     const events = await mockApiGet<GameEvent[]>('/events')
-    const status = await mockApiGet<{deficits: unknown[]}>(
-      `/events/${events[0].id}/roster-status`,
-    )
+    const status = await mockApiGet<{deficits: unknown[]}>(`/events/${events[0].id}/roster-status`)
     expect(status.deficits).toBeDefined()
   })
 

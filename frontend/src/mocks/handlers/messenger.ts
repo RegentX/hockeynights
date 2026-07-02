@@ -1,8 +1,14 @@
-import { http, HttpResponse } from 'msw'
+import {http, HttpResponse} from 'msw'
+
+import type {
+  ChannelSettingsPatch,
+  CreateChatPayload,
+  CreateChatTopicPayload,
+} from '@/entities/messenger/types'
 import {
+  createDirectMockChat,
   createMockChannelOrChat,
   createMockTopic,
-  createDirectMockChat,
   getMockChannelSettings,
   getMockMessages,
   getMockVisibleTopics,
@@ -11,7 +17,6 @@ import {
   patchMockChannelSettings,
   toggleMockChatPin,
 } from '@/mocks/data/messenger'
-import type {ChannelSettingsPatch, CreateChatPayload, CreateChatTopicPayload} from '@/entities/messenger/types'
 
 /** @spec SPEC-FR-16.1.1, SPEC-FR-16.1.2, SPEC-FR-16.1.3 */
 export const messengerHandlers = [
@@ -70,7 +75,7 @@ export const messengerHandlers = [
     return HttpResponse.json(topic)
   }),
 
-  http.get('/mock-api/v1/messenger/chats/:chatId/messages', ({ params, request }) => {
+  http.get('/mock-api/v1/messenger/chats/:chatId/messages', ({params, request}) => {
     const topicId = new URL(request.url).searchParams.get('topicId') ?? undefined
     const messages = getMockMessages(params.chatId as string, topicId)
     return HttpResponse.json(messages)
@@ -94,7 +99,7 @@ export const messengerHandlers = [
   }),
 
   /** @spec SPEC-FR-16.1.4 - Обработка действий в сообщениях */
-  http.post('/mock-api/v1/messenger/actions/:actionId', ({ params }) => {
-    return HttpResponse.json({ success: true, actionId: params.actionId })
+  http.post('/mock-api/v1/messenger/actions/:actionId', ({params}) => {
+    return HttpResponse.json({success: true, actionId: params.actionId})
   }),
 ]

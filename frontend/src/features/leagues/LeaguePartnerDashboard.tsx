@@ -2,22 +2,23 @@
  * SPEC-FR-24.5.3
  */
 
+import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
 import {Link, useParams} from 'react-router-dom'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
+
 import type {League} from '@/entities/league/types'
 import {fetchSession} from '@/features/auth/api/sessionApi'
 import {fetchLeagues, updateLeaguePartnerProfile} from '@/features/leagues/api/leaguesApi'
+import {LeagueAnalyticsPanel} from '@/features/leagues/LeagueAnalyticsPanel'
 import {LeagueApplicationsPanel} from '@/features/leagues/LeagueApplicationsPanel'
 import {LeaguePostsPanel} from '@/features/leagues/LeaguePostsPanel'
-import {LeagueAnalyticsPanel} from '@/features/leagues/LeagueAnalyticsPanel'
 import {LeagueScheduleManager} from '@/features/leagues/LeagueScheduleManager'
-import {IceCard} from '@/shared/ui/IceCard'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
-import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {testId} from '@/shared/testing/testId'
+import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {IceCard} from '@/shared/ui/IceCard'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const RECRUITING_OPTIONS = [
   {value: 'open', content: 'Набор открыт'},
@@ -71,8 +72,16 @@ export function LeaguePartnerDashboard() {
           <Text data-testid={testId('leagues', 'partner', 'text', 'denied')}>
             Кабинет доступен только представителю лиги. Выберите роль при входе.
           </Text>
-          <Link to="/" className="hockey-mt-12" data-testid={testId('leagues', 'partner', 'link', 'login')}>
-            <HockeyButton view="outlined" size="s" data-testid={testId('leagues', 'partner', 'btn', 'login')}>
+          <Link
+            to="/"
+            className="hockey-mt-12"
+            data-testid={testId('leagues', 'partner', 'link', 'login')}
+          >
+            <HockeyButton
+              view="outlined"
+              size="s"
+              data-testid={testId('leagues', 'partner', 'btn', 'login')}
+            >
               Перейти к входу
             </HockeyButton>
           </Link>
@@ -82,13 +91,22 @@ export function LeaguePartnerDashboard() {
   }
 
   return (
-    <div className="partner-dashboard hockey-stack hockey-stack--gap-16" data-testid={testId('leagues', 'partner', 'page', leagueId)}>
+    <div
+      className="partner-dashboard hockey-stack hockey-stack--gap-16"
+      data-testid={testId('leagues', 'partner', 'page', leagueId)}
+    >
       <div className="partner-dashboard__header hockey-row hockey-row--between">
         <div>
-          <Text variant="header-1" data-testid={testId('leagues', 'partner', 'text', 'title', leagueId)}>
+          <Text
+            variant="header-1"
+            data-testid={testId('leagues', 'partner', 'text', 'title', leagueId)}
+          >
             Кабинет лиги
           </Text>
-          <Text color="secondary" data-testid={testId('leagues', 'partner', 'text', 'subtitle', leagueId)}>
+          <Text
+            color="secondary"
+            data-testid={testId('leagues', 'partner', 'text', 'subtitle', leagueId)}
+          >
             {league.name}
           </Text>
         </div>
@@ -97,7 +115,10 @@ export function LeaguePartnerDashboard() {
         </div>
       </div>
 
-      <div className="partner-dashboard__tabs" data-testid={testId('leagues', 'partner', 'nav', leagueId)}>
+      <div
+        className="partner-dashboard__tabs"
+        data-testid={testId('leagues', 'partner', 'nav', leagueId)}
+      >
         <Button
           view={tab === 'profile' ? 'action' : 'outlined'}
           size="s"
@@ -144,7 +165,10 @@ export function LeaguePartnerDashboard() {
         <div data-testid={testId('leagues', 'partner', 'panel', 'profile', leagueId)}>
           <IceCard padding="m">
             <div className="partner-dashboard__form hockey-stack hockey-stack--gap-10">
-              <Text variant="subheader-2" data-testid={testId('leagues', 'partner', 'text', 'profile-title', leagueId)}>
+              <Text
+                variant="subheader-2"
+                data-testid={testId('leagues', 'partner', 'text', 'profile-title', leagueId)}
+              >
                 Публичный профиль лиги
               </Text>
               <TextInput
@@ -183,7 +207,10 @@ export function LeaguePartnerDashboard() {
                 }
                 data-testid={testId('leagues', 'partner', 'select', 'recruiting', leagueId)}
               />
-              <Text color="secondary" data-testid={testId('leagues', 'partner', 'text', 'moderation', leagueId)}>
+              <Text
+                color="secondary"
+                data-testid={testId('leagues', 'partner', 'text', 'moderation', leagueId)}
+              >
                 Статус модерации: {form.moderationStatus ?? 'draft'}
               </Text>
               <Button
@@ -195,7 +222,10 @@ export function LeaguePartnerDashboard() {
                 Сохранить профиль
               </Button>
               {statusMessage && (
-                <Text color="secondary" data-testid={testId('leagues', 'partner', 'text', 'status', leagueId)}>
+                <Text
+                  color="secondary"
+                  data-testid={testId('leagues', 'partner', 'text', 'status', leagueId)}
+                >
                   {statusMessage}
                 </Text>
               )}
@@ -237,7 +267,11 @@ export function LeaguePartnerDashboard() {
       )}
 
       <Link to="/leagues" data-testid={testId('leagues', 'partner', 'link', 'back', leagueId)}>
-        <HockeyButton view="outlined" size="s" data-testid={testId('leagues', 'partner', 'btn', 'back', leagueId)}>
+        <HockeyButton
+          view="outlined"
+          size="s"
+          data-testid={testId('leagues', 'partner', 'btn', 'back', leagueId)}
+        >
           ← К списку лиг
         </HockeyButton>
       </Link>

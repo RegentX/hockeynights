@@ -3,16 +3,17 @@
  * SPEC-UI-2.2
  */
 
-import {MapContainer, Marker, Popup, TileLayer} from 'react-leaflet'
 import {Text} from '@gravity-ui/uikit'
+import {MapContainer, Marker, Popup, TileLayer} from 'react-leaflet'
+
 import type {Arena, ArenaBookingMode} from '@/entities/arena/types'
-import {createArenaMapIcon} from '@/features/arenas/arenaMapIcon'
 import {
   FitMoscowRegionBounds,
   FocusSelectedArena,
   MapResizeFix,
   MoscowInitialView,
 } from '@/features/arenas/ArenaMapControls'
+import {createArenaMapIcon} from '@/features/arenas/arenaMapIcon'
 import {
   MOSCOW_MAP_CENTER,
   MOSCOW_MAP_DEFAULT_ZOOM,
@@ -47,7 +48,12 @@ export function ArenaMap({
   freeSlotArenaIds,
 }: ArenaMapProps) {
   return (
-    <div className="arena-map" role="application" aria-label="Карта площадок для аренды льда · Москва" data-testid={testId('arenas', 'map', 'map')}>
+    <div
+      className="arena-map"
+      role="application"
+      aria-label="Карта площадок для аренды льда · Москва"
+      data-testid={testId('arenas', 'map', 'map')}
+    >
       <div className="arena-map__surface" data-testid={testId('arenas', 'map', 'map', 'surface')}>
         <MapContainer
           center={[MOSCOW_MAP_CENTER.lat, MOSCOW_MAP_CENTER.lng]}
@@ -78,8 +84,13 @@ export function ArenaMap({
                 }}
               >
                 <Popup>
-                  <div className="arena-map__popup" data-testid={testId('arenas', 'map', 'map', 'popup', arena.id)}>
-                    <strong data-testid={testId('arenas', 'map', 'text', 'name', arena.id)}>{arena.name}</strong>
+                  <div
+                    className="arena-map__popup"
+                    data-testid={testId('arenas', 'map', 'map', 'popup', arena.id)}
+                  >
+                    <strong data-testid={testId('arenas', 'map', 'text', 'name', arena.id)}>
+                      {arena.name}
+                    </strong>
                     <div data-testid={testId('arenas', 'map', 'text', 'district', arena.id)}>
                       {arena.district ?? arena.city}
                     </div>
@@ -95,7 +106,11 @@ export function ArenaMap({
         <div className="arena-map__bottom-cover" aria-hidden />
       </div>
 
-      <div className="arena-map__a11y-pins" aria-hidden={false} data-testid={testId('arenas', 'map', 'list', 'a11y-pins')}>
+      <div
+        className="arena-map__a11y-pins"
+        aria-hidden={false}
+        data-testid={testId('arenas', 'map', 'list', 'a11y-pins')}
+      >
         {arenas.map((arena) => (
           <button
             key={`a11y-${arena.id}`}
@@ -112,13 +127,23 @@ export function ArenaMap({
       </div>
 
       <div className="arena-map__legend" data-testid={testId('arenas', 'map', 'map', 'legend')}>
-        <span className="arena-map__legend-item arena-map__legend-item--slot" data-testid={testId('arenas', 'map', 'badge', 'slot')}>
+        <span
+          className="arena-map__legend-item arena-map__legend-item--slot"
+          data-testid={testId('arenas', 'map', 'badge', 'slot')}
+        >
           Слоты по времени
         </span>
-        <span className="arena-map__legend-item arena-map__legend-item--portal" data-testid={testId('arenas', 'map', 'badge', 'portal')}>
+        <span
+          className="arena-map__legend-item arena-map__legend-item--portal"
+          data-testid={testId('arenas', 'map', 'badge', 'portal')}
+        >
           Запись через портал
         </span>
-        <Text color="secondary" className="arena-map__hint" data-testid={testId('arenas', 'map', 'text', 'hint')}>
+        <Text
+          color="secondary"
+          className="arena-map__hint"
+          data-testid={testId('arenas', 'map', 'text', 'hint')}
+        >
           Карта OpenStreetMap · Москва и ближнее Подмосковье
         </Text>
       </div>

@@ -4,14 +4,15 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
+
 import type {Arena} from '@/entities/arena/types'
 import type {IceSlot} from '@/entities/arena/types'
 import {ArenaBookingPanel} from '@/features/arenas/ArenaBookingPanel'
-import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
+import {testId} from '@/shared/testing/testId'
+import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
-import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
-import {testId} from '@/shared/testing/testId'
+import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 
 const MODE_LABELS = {
   slot_calendar: 'Слоты по времени',
@@ -36,10 +37,16 @@ export function ArenaDetailPanel({arena, slots, hasFreeSlot}: ArenaDetailPanelPr
       <IceCard padding="m" className="arena-detail">
         <div className="arena-detail__head hockey-row hockey-row--between">
           <div>
-            <Text variant="header-2" data-testid={testId('arenas', 'detail', 'text', 'name', arena.id)}>
+            <Text
+              variant="header-2"
+              data-testid={testId('arenas', 'detail', 'text', 'name', arena.id)}
+            >
               {arena.name}
             </Text>
-            <Text color="secondary" data-testid={testId('arenas', 'detail', 'text', 'address', arena.id)}>
+            <Text
+              color="secondary"
+              data-testid={testId('arenas', 'detail', 'text', 'address', arena.id)}
+            >
               {arena.address}
             </Text>
           </div>
@@ -48,7 +55,10 @@ export function ArenaDetailPanel({arena, slots, hasFreeSlot}: ArenaDetailPanelPr
           </div>
         </div>
 
-        <div className="arena-detail__meta" data-testid={testId('arenas', 'detail', 'panel', 'meta', arena.id)}>
+        <div
+          className="arena-detail__meta"
+          data-testid={testId('arenas', 'detail', 'panel', 'meta', arena.id)}
+        >
           <div className="hockey-row hockey-row--gap-8 hockey-mb-8">
             <span
               className={`arena-detail__mode arena-detail__mode--${arena.bookingMode}`}
@@ -58,23 +68,35 @@ export function ArenaDetailPanel({arena, slots, hasFreeSlot}: ArenaDetailPanelPr
             </span>
           </div>
           {arena.metro && (
-            <Text color="secondary" data-testid={testId('arenas', 'detail', 'text', 'metro', arena.id)}>
+            <Text
+              color="secondary"
+              data-testid={testId('arenas', 'detail', 'text', 'metro', arena.id)}
+            >
               м. {arena.metro} · {arena.district}
             </Text>
           )}
           {arena.priceRange && (
-            <ScoreboardText tone="accent" data-testid={testId('arenas', 'detail', 'text', 'price', arena.id)}>
+            <ScoreboardText
+              tone="accent"
+              data-testid={testId('arenas', 'detail', 'text', 'price', arena.id)}
+            >
               {arena.priceRange}
             </ScoreboardText>
           )}
-          <Text color="secondary" data-testid={testId('arenas', 'detail', 'text', 'amenities', arena.id)}>
+          <Text
+            color="secondary"
+            data-testid={testId('arenas', 'detail', 'text', 'amenities', arena.id)}
+          >
             Удобства: {arena.amenities.join(', ')}
           </Text>
           <div data-testid={testId('arenas', 'detail', 'badge', 'source', arena.id)}>
             <SourceMetaBadge sourceMeta={arena.sourceMeta} />
           </div>
           {arena.bookingMode === 'slot_calendar' && (
-            <Text color="secondary" data-testid={testId('arenas', 'detail', 'text', 'free-slots', arena.id)}>
+            <Text
+              color="secondary"
+              data-testid={testId('arenas', 'detail', 'text', 'free-slots', arena.id)}
+            >
               Свободных слотов: {freeCount}
               {hasFreeSlot === false ? ' · сейчас всё занято' : ''}
             </Text>

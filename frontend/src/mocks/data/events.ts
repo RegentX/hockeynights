@@ -25,9 +25,27 @@ export let mockEvents: GameEvent[] = [
     ],
     pricePerPlayer: 1500,
     participation: [
-      {eventId: 'event-001', userId: 'user-001', displayName: 'Иван Петров', status: 'not_going', updatedAt: '2026-06-05T10:00:00Z'},
-      {eventId: 'event-001', userId: 'user-003', displayName: 'Дмитрий Козлов', status: 'going', updatedAt: '2026-06-05T10:00:00Z'},
-      {eventId: 'event-001', userId: 'user-004', displayName: 'Сергей Волков', status: 'maybe', updatedAt: '2026-06-05T10:00:00Z'},
+      {
+        eventId: 'event-001',
+        userId: 'user-001',
+        displayName: 'Иван Петров',
+        status: 'not_going',
+        updatedAt: '2026-06-05T10:00:00Z',
+      },
+      {
+        eventId: 'event-001',
+        userId: 'user-003',
+        displayName: 'Дмитрий Козлов',
+        status: 'going',
+        updatedAt: '2026-06-05T10:00:00Z',
+      },
+      {
+        eventId: 'event-001',
+        userId: 'user-004',
+        displayName: 'Сергей Волков',
+        status: 'maybe',
+        updatedAt: '2026-06-05T10:00:00Z',
+      },
     ],
   },
   {
@@ -47,9 +65,27 @@ export let mockEvents: GameEvent[] = [
     ],
     pricePerPlayer: 1400,
     participation: [
-      {eventId: 'event-003', userId: 'user-001', displayName: 'Иван Петров', status: 'going', updatedAt: '2026-06-01T12:00:00Z'},
-      {eventId: 'event-003', userId: 'user-002', displayName: 'Алексей Смирнов', status: 'going', updatedAt: '2026-06-01T12:00:00Z'},
-      {eventId: 'event-003', userId: 'user-003', displayName: 'Дмитрий Козлов', status: 'going', updatedAt: '2026-06-01T12:00:00Z'},
+      {
+        eventId: 'event-003',
+        userId: 'user-001',
+        displayName: 'Иван Петров',
+        status: 'going',
+        updatedAt: '2026-06-01T12:00:00Z',
+      },
+      {
+        eventId: 'event-003',
+        userId: 'user-002',
+        displayName: 'Алексей Смирнов',
+        status: 'going',
+        updatedAt: '2026-06-01T12:00:00Z',
+      },
+      {
+        eventId: 'event-003',
+        userId: 'user-003',
+        displayName: 'Дмитрий Козлов',
+        status: 'going',
+        updatedAt: '2026-06-01T12:00:00Z',
+      },
     ],
   },
   {

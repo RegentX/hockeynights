@@ -3,6 +3,7 @@
  */
 
 import type {ReactNode} from 'react'
+
 import {testId} from '@/shared/testing/testId'
 
 export interface LoginLayoutProps {

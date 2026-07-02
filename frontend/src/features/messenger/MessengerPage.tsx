@@ -3,9 +3,19 @@
  * SPEC-UI-8.1, SPEC-UI-8.5
  */
 
-import {useEffect, useMemo, useState} from 'react'
+import {PaperPlane} from '@gravity-ui/icons'
+import {Button, Icon, Switch, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import type {ChannelSettings, ChannelSettingsPatch, Chat, ChatTopic, ChatUser, Message} from '@/entities/messenger/types'
+import {useEffect, useMemo, useState} from 'react'
+
+import type {
+  ChannelSettings,
+  ChannelSettingsPatch,
+  Chat,
+  ChatTopic,
+  ChatUser,
+  Message,
+} from '@/entities/messenger/types'
 import {
   createChannelOrChat,
   createChatTopic,
@@ -18,10 +28,9 @@ import {
   toggleChatPin,
   updateChannelSettings,
 } from '@/features/messenger/api/messengerApi'
-import {ChatBubble} from './ChatBubble'
-import {Text, TextInput, Button, Icon, Switch} from '@gravity-ui/uikit'
-import {PaperPlane} from '@gravity-ui/icons'
 import {testId} from '@/shared/testing/testId'
+
+import {ChatBubble} from './ChatBubble'
 
 const MOBILE_BREAKPOINT = '(max-width: 768px)'
 
@@ -80,8 +89,12 @@ export function MessengerPage() {
   })
 
   const createEntityMutation = useMutation({
-    mutationFn: (payload: {type: 'channel' | 'team'; title: string; tag?: string; restrictedUserIds?: string[]}) =>
-      createChannelOrChat(payload),
+    mutationFn: (payload: {
+      type: 'channel' | 'team'
+      title: string
+      tag?: string
+      restrictedUserIds?: string[]
+    }) => createChannelOrChat(payload),
     onSuccess: (chat) => {
       void queryClient.invalidateQueries({queryKey: ['messenger-chats']})
       setSelectedChatId(chat.id)
@@ -124,7 +137,9 @@ export function MessengerPage() {
   }, [])
 
   const sortedChats = useMemo(() => {
-    const ranked = [...chats].sort((a, b) => Number(Boolean(b.isPinned)) - Number(Boolean(a.isPinned)))
+    const ranked = [...chats].sort(
+      (a, b) => Number(Boolean(b.isPinned)) - Number(Boolean(a.isPinned)),
+    )
     if (filterMode === PINNED_FILTER) {
       return ranked.filter((chat) => chat.isPinned)
     }
@@ -144,9 +159,9 @@ export function MessengerPage() {
   })
 
   const activeTopicId =
-    selectedTopicId && topics.some((topic) => topic.id === selectedTopicId) ?
-      selectedTopicId
-    : topics[0]?.id ?? null
+    selectedTopicId && topics.some((topic) => topic.id === selectedTopicId)
+      ? selectedTopicId
+      : (topics[0]?.id ?? null)
 
   const {data: messages = [], isLoading: isLoadingMessages} = useQuery({
     queryKey: ['messenger-messages', activeChatId, activeTopicId],
@@ -160,20 +175,17 @@ export function MessengerPage() {
   })
 
   const updateChannelSettingsMutation = useMutation({
-    mutationFn: ({
-      chatId,
-      patch,
-    }: {
-      chatId: string
-      patch: ChannelSettingsPatch
-    }) => updateChannelSettings(chatId, patch),
+    mutationFn: ({chatId, patch}: {chatId: string; patch: ChannelSettingsPatch}) =>
+      updateChannelSettings(chatId, patch),
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ['messenger-channel-settings', activeChatId]})
       void queryClient.invalidateQueries({queryKey: ['messenger-chats']})
       setStatusMessage('Настройки канала обновлены.')
     },
     onError: (error) => {
-      setStatusMessage(error instanceof Error ? error.message : 'Не удалось обновить настройки канала')
+      setStatusMessage(
+        error instanceof Error ? error.message : 'Не удалось обновить настройки канала',
+      )
     },
   })
 
@@ -213,7 +225,7 @@ export function MessengerPage() {
 
   const handleSendMessage = () => {
     if (!inputText.trim() || !activeChatId) return
-    
+
     const newMessage: Message = {
       id: `msg-${Date.now()}`,
       chatId: activeChatId,
@@ -224,7 +236,7 @@ export function MessengerPage() {
       topicId: activeTopicId ?? undefined,
       timestamp: new Date().toISOString(),
     }
-    
+
     queryClient.setQueryData<Message[]>(
       ['messenger-messages', activeChatId, activeTopicId],
       (prev = []) => [...prev, newMessage],
@@ -242,9 +254,9 @@ export function MessengerPage() {
 
   const availableTopicMembers = useMemo<ChatUser[]>(
     () =>
-      selectedChat?.memberIds?.length ?
-        allUsers.filter((user) => selectedChat.memberIds?.includes(user.userId))
-      : allUsers,
+      selectedChat?.memberIds?.length
+        ? allUsers.filter((user) => selectedChat.memberIds?.includes(user.userId))
+        : allUsers,
     [allUsers, selectedChat],
   )
 
@@ -311,12 +323,21 @@ export function MessengerPage() {
 
   return (
     <div className={layoutClass} data-testid={testId('messenger', 'page', 'page')}>
-      <div className="messenger-sidebar" data-testid={testId('messenger', 'page', 'nav', 'sidebar')}>
-        <div className="messenger-title messenger-title--stack" data-testid={testId('messenger', 'page', 'panel', 'sidebar-header')}>
+      <div
+        className="messenger-sidebar"
+        data-testid={testId('messenger', 'page', 'nav', 'sidebar')}
+      >
+        <div
+          className="messenger-title messenger-title--stack"
+          data-testid={testId('messenger', 'page', 'panel', 'sidebar-header')}
+        >
           <Text variant="header-2" data-testid={testId('messenger', 'page', 'text', 'title')}>
             Мессенджер
           </Text>
-          <div className="messenger-toolbar" data-testid={testId('messenger', 'page', 'nav', 'toolbar')}>
+          <div
+            className="messenger-toolbar"
+            data-testid={testId('messenger', 'page', 'nav', 'toolbar')}
+          >
             <Button
               size="s"
               view={filterMode === 'all' ? 'action' : 'outlined'}
@@ -398,7 +419,13 @@ export function MessengerPage() {
                       onClick={() =>
                         toggleMemberSelection(newEntityMembers, user.userId, setNewEntityMembers)
                       }
-                      data-testid={testId('messenger', 'page', 'item', 'entity-member', user.userId)}
+                      data-testid={testId(
+                        'messenger',
+                        'page',
+                        'item',
+                        'entity-member',
+                        user.userId,
+                      )}
                     >
                       {user.displayName}
                     </button>
@@ -424,7 +451,10 @@ export function MessengerPage() {
             data-testid={testId('messenger', 'page', 'field', 'search')}
           />
           {searchQuery.trim().length > 0 && (
-            <div className="chat-user-search" data-testid={testId('messenger', 'page', 'list', 'user-search')}>
+            <div
+              className="chat-user-search"
+              data-testid={testId('messenger', 'page', 'list', 'user-search')}
+            >
               {users.map((user) => (
                 <button
                   key={user.userId}
@@ -470,10 +500,17 @@ export function MessengerPage() {
                 onClick={() => handleSelectChat(chat.id)}
                 data-testid={testId('messenger', 'page', 'btn', 'open-chat', chat.id)}
               >
-                <span className="chat-item__avatar" aria-hidden data-testid={testId('messenger', 'page', 'badge', 'chat-avatar', chat.id)}>
+                <span
+                  className="chat-item__avatar"
+                  aria-hidden
+                  data-testid={testId('messenger', 'page', 'badge', 'chat-avatar', chat.id)}
+                >
                   {chat.title.slice(0, 1)}
                 </span>
-                <span className="chat-item__info" data-testid={testId('messenger', 'page', 'panel', 'chat-info', chat.id)}>
+                <span
+                  className="chat-item__info"
+                  data-testid={testId('messenger', 'page', 'panel', 'chat-info', chat.id)}
+                >
                   <Text
                     variant="body-2"
                     className="chat-item__title"
@@ -515,11 +552,14 @@ export function MessengerPage() {
           ))}
         </div>
       </div>
-      
+
       <div className="messenger-main" data-testid={testId('messenger', 'page', 'panel', 'main')}>
         {activeChatId ? (
           <>
-            <div className="messenger-header" data-testid={testId('messenger', 'page', 'panel', 'header')}>
+            <div
+              className="messenger-header"
+              data-testid={testId('messenger', 'page', 'panel', 'header')}
+            >
               {isMobile && (
                 <button
                   type="button"
@@ -531,18 +571,31 @@ export function MessengerPage() {
                   ←
                 </button>
               )}
-              <div className="messenger-header__title" data-testid={testId('messenger', 'page', 'panel', 'header-title')}>
-                <Text variant="subheader-2" data-testid={testId('messenger', 'page', 'text', 'active-chat-title')}>
+              <div
+                className="messenger-header__title"
+                data-testid={testId('messenger', 'page', 'panel', 'header-title')}
+              >
+                <Text
+                  variant="subheader-2"
+                  data-testid={testId('messenger', 'page', 'text', 'active-chat-title')}
+                >
                   {selectedChat?.title}
                 </Text>
                 {selectedChat?.isTyping && (
-                  <Text variant="body-1" color="secondary" data-testid={testId('messenger', 'page', 'text', 'typing')}>
+                  <Text
+                    variant="body-1"
+                    color="secondary"
+                    data-testid={testId('messenger', 'page', 'text', 'typing')}
+                  >
                     печатает...
                   </Text>
                 )}
               </div>
               {selectedChat && (
-                <div className="messenger-header__actions" data-testid={testId('messenger', 'page', 'nav', 'header-actions')}>
+                <div
+                  className="messenger-header__actions"
+                  data-testid={testId('messenger', 'page', 'nav', 'header-actions')}
+                >
                   <Button
                     size="s"
                     view={selectedChat.isPinned ? 'action' : 'outlined'}
@@ -565,7 +618,13 @@ export function MessengerPage() {
                       size="s"
                       view={showChannelSettings ? 'action' : 'outlined'}
                       onClick={() => setShowChannelSettings((prev) => !prev)}
-                      data-testid={testId('messenger', 'page', 'btn', 'channel-settings', selectedChat.id)}
+                      data-testid={testId(
+                        'messenger',
+                        'page',
+                        'btn',
+                        'channel-settings',
+                        selectedChat.id,
+                      )}
                     >
                       Настройки канала
                     </Button>
@@ -573,7 +632,10 @@ export function MessengerPage() {
                 </div>
               )}
             </div>
-            <div className="messenger-topics" data-testid={testId('messenger', 'page', 'nav', 'topics')}>
+            <div
+              className="messenger-topics"
+              data-testid={testId('messenger', 'page', 'nav', 'topics')}
+            >
               {topics.map((topic: ChatTopic) => (
                 <button
                   key={topic.id}
@@ -586,19 +648,27 @@ export function MessengerPage() {
                     {topic.title}
                   </span>
                   {topic.tag && (
-                    <small data-testid={testId('messenger', 'page', 'badge', 'topic-tag', topic.id)}>
+                    <small
+                      data-testid={testId('messenger', 'page', 'badge', 'topic-tag', topic.id)}
+                    >
                       #{topic.tag}
                     </small>
                   )}
                   {topic.restrictedUserIds && topic.restrictedUserIds.length > 0 && (
-                    <small data-testid={testId('messenger', 'page', 'badge', 'topic-locked', topic.id)}>
+                    <small
+                      data-testid={testId('messenger', 'page', 'badge', 'topic-locked', topic.id)}
+                    >
                       🔒
                     </small>
                   )}
                 </button>
               ))}
               {topics.length === 0 && (
-                <Text variant="caption-1" color="secondary" data-testid={testId('messenger', 'page', 'empty', 'topics')}>
+                <Text
+                  variant="caption-1"
+                  color="secondary"
+                  data-testid={testId('messenger', 'page', 'empty', 'topics')}
+                >
                   В этом чате пока нет тем.
                 </Text>
               )}
@@ -651,7 +721,13 @@ export function MessengerPage() {
                         onClick={() =>
                           toggleMemberSelection(newTopicMembers, user.userId, setNewTopicMembers)
                         }
-                        data-testid={testId('messenger', 'page', 'item', 'topic-member', user.userId)}
+                        data-testid={testId(
+                          'messenger',
+                          'page',
+                          'item',
+                          'topic-member',
+                          user.userId,
+                        )}
                       >
                         {user.displayName}
                       </button>
@@ -674,10 +750,16 @@ export function MessengerPage() {
                 className="messenger-channel-settings hockey-stack hockey-stack--gap-10"
                 data-testid={testId('messenger', 'page', 'panel', 'channel-settings')}
               >
-                <Text variant="subheader-2" data-testid={testId('messenger', 'page', 'text', 'channel-settings-title')}>
+                <Text
+                  variant="subheader-2"
+                  data-testid={testId('messenger', 'page', 'text', 'channel-settings-title')}
+                >
                   Настройки канала
                 </Text>
-                <div className="messenger-channel-settings__grid" data-testid={testId('messenger', 'page', 'form', 'channel-settings')}>
+                <div
+                  className="messenger-channel-settings__grid"
+                  data-testid={testId('messenger', 'page', 'form', 'channel-settings')}
+                >
                   <TextInput
                     value={channelSettings.channelTag ?? ''}
                     onChange={(e) =>
@@ -705,7 +787,14 @@ export function MessengerPage() {
                     className="messenger-composer__switch"
                     data-testid={testId('messenger', 'page', 'field', 'channel-mentions-only')}
                   >
-                    <span data-testid={testId('messenger', 'page', 'text', 'channel-mentions-only-label')}>
+                    <span
+                      data-testid={testId(
+                        'messenger',
+                        'page',
+                        'text',
+                        'channel-mentions-only-label',
+                      )}
+                    >
                       Только упоминания
                     </span>
                     <Switch
@@ -720,7 +809,14 @@ export function MessengerPage() {
                     className="messenger-composer__switch"
                     data-testid={testId('messenger', 'page', 'field', 'channel-important-only')}
                   >
-                    <span data-testid={testId('messenger', 'page', 'text', 'channel-important-only-label')}>
+                    <span
+                      data-testid={testId(
+                        'messenger',
+                        'page',
+                        'text',
+                        'channel-important-only-label',
+                      )}
+                    >
                       Только важные
                     </span>
                     <Switch
@@ -728,7 +824,12 @@ export function MessengerPage() {
                       onUpdate={(value) =>
                         handleChannelSettingsPatch({notifications: {importantOnly: value}})
                       }
-                      data-testid={testId('messenger', 'page', 'checkbox', 'channel-important-only')}
+                      data-testid={testId(
+                        'messenger',
+                        'page',
+                        'checkbox',
+                        'channel-important-only',
+                      )}
                     />
                   </label>
                   <label
@@ -750,20 +851,34 @@ export function MessengerPage() {
                     className="messenger-channel-settings__field"
                     data-testid={testId('messenger', 'page', 'field', 'channel-publish-role')}
                   >
-                    <span data-testid={testId('messenger', 'page', 'text', 'channel-publish-role-label')}>
+                    <span
+                      data-testid={testId(
+                        'messenger',
+                        'page',
+                        'text',
+                        'channel-publish-role-label',
+                      )}
+                    >
                       Писать в канал может роль не ниже
                     </span>
                     <select
                       value={channelSettings.permissions.publishMinRole}
                       onChange={(e) =>
                         handleChannelSettingsPatch({
-                          permissions: {publishMinRole: e.target.value as ChannelSettings['permissions']['publishMinRole']},
+                          permissions: {
+                            publishMinRole: e.target
+                              .value as ChannelSettings['permissions']['publishMinRole'],
+                          },
                         })
                       }
                       data-testid={testId('messenger', 'page', 'select', 'channel-publish-role')}
                     >
                       {ROLE_OPTIONS.map((role) => (
-                        <option key={role} value={role} data-testid={testId('messenger', 'page', 'item', 'publish-role', role)}>
+                        <option
+                          key={role}
+                          value={role}
+                          data-testid={testId('messenger', 'page', 'item', 'publish-role', role)}
+                        >
                           {role}
                         </option>
                       ))}
@@ -773,7 +888,9 @@ export function MessengerPage() {
                     className="messenger-channel-settings__field"
                     data-testid={testId('messenger', 'page', 'field', 'channel-manage-role')}
                   >
-                    <span data-testid={testId('messenger', 'page', 'text', 'channel-manage-role-label')}>
+                    <span
+                      data-testid={testId('messenger', 'page', 'text', 'channel-manage-role-label')}
+                    >
                       Управлять участниками может роль не ниже
                     </span>
                     <select
@@ -781,14 +898,19 @@ export function MessengerPage() {
                       onChange={(e) =>
                         handleChannelSettingsPatch({
                           permissions: {
-                            manageMembersMinRole: e.target.value as ChannelSettings['permissions']['manageMembersMinRole'],
+                            manageMembersMinRole: e.target
+                              .value as ChannelSettings['permissions']['manageMembersMinRole'],
                           },
                         })
                       }
                       data-testid={testId('messenger', 'page', 'select', 'channel-manage-role')}
                     >
                       {ROLE_OPTIONS.map((role) => (
-                        <option key={role} value={role} data-testid={testId('messenger', 'page', 'item', 'manage-role', role)}>
+                        <option
+                          key={role}
+                          value={role}
+                          data-testid={testId('messenger', 'page', 'item', 'manage-role', role)}
+                        >
                           {role}
                         </option>
                       ))}
@@ -798,7 +920,14 @@ export function MessengerPage() {
                     className="messenger-composer__switch"
                     data-testid={testId('messenger', 'page', 'field', 'channel-topic-creation')}
                   >
-                    <span data-testid={testId('messenger', 'page', 'text', 'channel-topic-creation-label')}>
+                    <span
+                      data-testid={testId(
+                        'messenger',
+                        'page',
+                        'text',
+                        'channel-topic-creation-label',
+                      )}
+                    >
                       Разрешить создание тем участникам
                     </span>
                     <Switch
@@ -806,39 +935,62 @@ export function MessengerPage() {
                       onUpdate={(value) =>
                         handleChannelSettingsPatch({permissions: {allowTopicCreation: value}})
                       }
-                      data-testid={testId('messenger', 'page', 'checkbox', 'channel-topic-creation')}
+                      data-testid={testId(
+                        'messenger',
+                        'page',
+                        'checkbox',
+                        'channel-topic-creation',
+                      )}
                     />
                   </label>
                   <label
                     className="messenger-channel-settings__field"
                     data-testid={testId('messenger', 'page', 'field', 'channel-slow-mode')}
                   >
-                    <span data-testid={testId('messenger', 'page', 'text', 'channel-slow-mode-label')}>
+                    <span
+                      data-testid={testId('messenger', 'page', 'text', 'channel-slow-mode-label')}
+                    >
                       Slow mode (сек)
                     </span>
                     <select
                       value={String(channelSettings.slowModeSeconds)}
                       onChange={(e) =>
                         handleChannelSettingsPatch({
-                          slowModeSeconds: Number(e.target.value) as ChannelSettings['slowModeSeconds'],
+                          slowModeSeconds: Number(
+                            e.target.value,
+                          ) as ChannelSettings['slowModeSeconds'],
                         })
                       }
                       data-testid={testId('messenger', 'page', 'select', 'channel-slow-mode')}
                     >
                       {SLOW_MODE_OPTIONS.map((value) => (
-                        <option key={value} value={value} data-testid={testId('messenger', 'page', 'item', 'slow-mode', value)}>
+                        <option
+                          key={value}
+                          value={value}
+                          data-testid={testId('messenger', 'page', 'item', 'slow-mode', value)}
+                        >
                           {value}
                         </option>
                       ))}
                     </select>
                   </label>
                 </div>
-                <div className="messenger-channel-settings__audit" data-testid={testId('messenger', 'page', 'list', 'channel-audit')}>
-                  <Text variant="subheader-2" data-testid={testId('messenger', 'page', 'text', 'channel-audit-title')}>
+                <div
+                  className="messenger-channel-settings__audit"
+                  data-testid={testId('messenger', 'page', 'list', 'channel-audit')}
+                >
+                  <Text
+                    variant="subheader-2"
+                    data-testid={testId('messenger', 'page', 'text', 'channel-audit-title')}
+                  >
                     История изменений
                   </Text>
                   {channelSettings.audit.length === 0 ? (
-                    <Text variant="caption-1" color="secondary" data-testid={testId('messenger', 'page', 'empty', 'channel-audit')}>
+                    <Text
+                      variant="caption-1"
+                      color="secondary"
+                      data-testid={testId('messenger', 'page', 'empty', 'channel-audit')}
+                    >
                       Пока нет изменений.
                     </Text>
                   ) : (
@@ -848,10 +1000,23 @@ export function MessengerPage() {
                         className="messenger-channel-settings__audit-item"
                         data-testid={testId('messenger', 'page', 'item', 'audit', entry.id)}
                       >
-                        <Text variant="caption-1" data-testid={testId('messenger', 'page', 'text', 'audit-action', entry.id)}>
+                        <Text
+                          variant="caption-1"
+                          data-testid={testId(
+                            'messenger',
+                            'page',
+                            'text',
+                            'audit-action',
+                            entry.id,
+                          )}
+                        >
                           {entry.actorName}: {entry.action}
                         </Text>
-                        <Text variant="caption-1" color="secondary" data-testid={testId('messenger', 'page', 'text', 'audit-time', entry.id)}>
+                        <Text
+                          variant="caption-1"
+                          color="secondary"
+                          data-testid={testId('messenger', 'page', 'text', 'audit-time', entry.id)}
+                        >
                           {new Date(entry.createdAt).toLocaleString('ru-RU')}
                         </Text>
                       </div>
@@ -860,44 +1025,76 @@ export function MessengerPage() {
                 </div>
               </div>
             )}
-            <div className="messenger-messages" data-testid={testId('messenger', 'page', 'feed', 'messages')}>
+            <div
+              className="messenger-messages"
+              data-testid={testId('messenger', 'page', 'feed', 'messages')}
+            >
               {isLoadingMessages && messages.length === 0 ? (
-                <Text variant="body-2" color="secondary" data-testid={testId('messenger', 'page', 'loader', 'messages')}>
+                <Text
+                  variant="body-2"
+                  color="secondary"
+                  data-testid={testId('messenger', 'page', 'loader', 'messages')}
+                >
                   Загрузка сообщений...
                 </Text>
               ) : messages.length === 0 ? (
-                <Text variant="body-2" color="secondary" data-testid={testId('messenger', 'page', 'empty', 'messages')}>
+                <Text
+                  variant="body-2"
+                  color="secondary"
+                  data-testid={testId('messenger', 'page', 'empty', 'messages')}
+                >
                   Сообщений пока нет
                 </Text>
               ) : (
-                messages.map(msg => (
+                messages.map((msg) => (
                   <ChatBubble key={msg.id} message={msg} isOwn={msg.senderId === 'me'} />
                 ))
               )}
             </div>
             {statusMessage && (
-              <div className="messenger-status" data-testid={testId('messenger', 'page', 'panel', 'status')}>
-                <Text variant="caption-1" color="secondary" data-testid={testId('messenger', 'page', 'text', 'status')}>
+              <div
+                className="messenger-status"
+                data-testid={testId('messenger', 'page', 'panel', 'status')}
+              >
+                <Text
+                  variant="caption-1"
+                  color="secondary"
+                  data-testid={testId('messenger', 'page', 'text', 'status')}
+                >
                   {statusMessage}
                 </Text>
               </div>
             )}
-            <div className="messenger-input" data-testid={testId('messenger', 'page', 'panel', 'input')}>
+            <div
+              className="messenger-input"
+              data-testid={testId('messenger', 'page', 'panel', 'input')}
+            >
               <TextInput
                 value={inputText}
-                onChange={e => setInputText(e.target.value)}
+                onChange={(e) => setInputText(e.target.value)}
                 placeholder="Напишите сообщение..."
-                onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
+                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                 data-testid={testId('messenger', 'page', 'field', 'message-input')}
               />
-              <Button view="action" onClick={handleSendMessage} data-testid={testId('messenger', 'page', 'btn', 'send')}>
+              <Button
+                view="action"
+                onClick={handleSendMessage}
+                data-testid={testId('messenger', 'page', 'btn', 'send')}
+              >
                 <Icon data={PaperPlane} />
               </Button>
             </div>
           </>
         ) : (
-          <div className="messenger-empty" data-testid={testId('messenger', 'page', 'empty', 'no-chat')}>
-            <Text variant="body-2" color="secondary" data-testid={testId('messenger', 'page', 'text', 'no-chat')}>
+          <div
+            className="messenger-empty"
+            data-testid={testId('messenger', 'page', 'empty', 'no-chat')}
+          >
+            <Text
+              variant="body-2"
+              color="secondary"
+              data-testid={testId('messenger', 'page', 'text', 'no-chat')}
+            >
               Выберите чат, чтобы начать общение
             </Text>
           </div>

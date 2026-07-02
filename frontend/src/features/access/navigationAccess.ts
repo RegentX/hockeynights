@@ -3,10 +3,7 @@
  */
 
 import type {Session} from '@/entities/user/types'
-import {
-  getPrimaryPartnerPath,
-  shouldUsePartnerWorkspace,
-} from '@/features/partners/sessionPersona'
+import {getPrimaryPartnerPath, shouldUsePartnerWorkspace} from '@/features/partners/sessionPersona'
 import {ARENAS_LABEL, RADAR_LABEL} from '@/shared/config/navigationLabels'
 
 export interface NavItem {

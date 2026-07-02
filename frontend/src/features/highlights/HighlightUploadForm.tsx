@@ -3,12 +3,13 @@
  * SPEC-UI-6.4
  */
 
-import {useState} from 'react'
 import {Select, Text, TextInput} from '@gravity-ui/uikit'
+import {useState} from 'react'
+
 import type {CreateHighlightPayload} from '@/entities/highlight/types'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {MockUploadNotice} from '@/features/highlights/MockUploadNotice'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 const MOCK_CURRENT_USER_ID = 'user-001'
 
@@ -45,11 +46,17 @@ export function HighlightUploadForm({onSubmit, isPending = false}: HighlightUplo
 
   return (
     <div className="highlight-upload" data-testid={testId('highlights', 'upload-form', 'form')}>
-      <Text variant="subheader-2" data-testid={testId('highlights', 'upload-form', 'text', 'title')}>
+      <Text
+        variant="subheader-2"
+        data-testid={testId('highlights', 'upload-form', 'text', 'title')}
+      >
         Новый момент
       </Text>
       <MockUploadNotice />
-      <div className="highlight-upload__fields" data-testid={testId('highlights', 'upload-form', 'panel', 'fields')}>
+      <div
+        className="highlight-upload__fields"
+        data-testid={testId('highlights', 'upload-form', 'panel', 'fields')}
+      >
         <TextInput
           placeholder="Название момента"
           value={title}

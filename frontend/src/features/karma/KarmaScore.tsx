@@ -3,8 +3,8 @@
  * SPEC-UI-1.5
  */
 
-import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 import {testId} from '@/shared/testing/testId'
+import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 
 /** @spec SPEC-FR-8.2.1 - Props karma score */
 export interface KarmaScoreProps {
@@ -28,9 +28,17 @@ export function KarmaScore({
   const tone = score >= 80 ? 'gold' : score >= 60 ? 'accent' : 'default'
 
   return (
-    <span aria-label={`Karma: ${score}`} data-testid={dataTestId ?? testId(testIdPrefix, 'karma-score', 'badge')}>
+    <span
+      aria-label={`Karma: ${score}`}
+      data-testid={dataTestId ?? testId(testIdPrefix, 'karma-score', 'badge')}
+    >
       Karma{' '}
-      <ScoreboardText tone={tone} data-testid={testId(testIdPrefix, 'karma-score', 'text', 'value')}>{score}</ScoreboardText>
+      <ScoreboardText
+        tone={tone}
+        data-testid={testId(testIdPrefix, 'karma-score', 'text', 'value')}
+      >
+        {score}
+      </ScoreboardText>
     </span>
   )
 }

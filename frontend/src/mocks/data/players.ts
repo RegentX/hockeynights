@@ -3,7 +3,12 @@
  * SPEC-FR-24.1.3
  */
 
-import type {ParticipationRecord, PlayerListItem, PrivacySettings, PublicPlayerView} from '@/entities/profile/types'
+import type {
+  ParticipationRecord,
+  PlayerListItem,
+  PrivacySettings,
+  PublicPlayerView,
+} from '@/entities/profile/types'
 
 /** @spec SPEC-FR-24.1.3 - Mock приватность публичных профилей */
 export const mockPlayerPrivacy: Record<

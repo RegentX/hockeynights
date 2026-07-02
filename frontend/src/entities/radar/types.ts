@@ -7,11 +7,7 @@ export type RadarRecommendationType = 'sos' | 'event' | 'ice_slot' | 'league' | 
 
 /** @spec SPEC-FR-15.1.2 */
 export type RadarReasonCode =
-  | 'nearby'
-  | 'position_needed'
-  | 'after_work'
-  | 'favorite_arena'
-  | 'team_activity'
+  'nearby' | 'position_needed' | 'after_work' | 'favorite_arena' | 'team_activity'
 
 /** @spec SPEC-FR-15.1.2 */
 export type RadarPriority = 'high' | 'medium' | 'low'

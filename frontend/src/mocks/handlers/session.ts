@@ -4,6 +4,7 @@
  */
 
 import {http, HttpResponse} from 'msw'
+
 import {completeOnboarding, mockSession, resetMockSession} from '@/mocks/data/session'
 import type {OnboardingPayload} from '@/entities/user/types'
 import {isDemoCredentials, DEMO_EMAIL} from '@/features/auth/demoCredentials'
@@ -15,13 +16,14 @@ import {
 } from '@/features/auth/localAuthMemory'
 import {validateRegisterPayload} from '@/features/auth/registrationValidation'
 
+/** @spec SPEC-FR-2.1.1 - Handlers сессии и onboarding */
 export const sessionHandlers = [
   http.get('/mock-api/v1/session', () => {
     return HttpResponse.json(mockSession)
   }),
 
   http.post('/mock-api/v1/login', async ({request}) => {
-    const body = (await request.json()) as {email?: string; password?: string}
+    const body = (await request.json()) as { email?: string; password?: string }
     const email = body.email ?? ''
     const password = body.password ?? ''
 
