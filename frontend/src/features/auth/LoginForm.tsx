@@ -115,15 +115,6 @@ export function LoginForm({onSuccess}: LoginFormProps) {
       </HockeyButton>
 
       <p className="auth-form__footer" data-testid={testId('auth', 'login', 'panel', 'footer')}>
-        <span className="auth-form__subtitle">Нет аккаунта? </span>
-        <Link
-          to="/register"
-          className="auth-form__switch-link"
-          data-testid={testId('auth', 'login', 'link', 'register')}
-        >
-          Зарегистрироваться
-        </Link>
-        <span className="auth-form__footer-sep"> · </span>
         <Link
           to="/terms"
           className="auth-form__switch-link"

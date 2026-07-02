@@ -140,30 +140,23 @@ describe('AuthPage register', () => {
     })
   })
 
-  it('opens terms modal and accepts from registration', async () => {
+  it('requires accepting terms before registration', async () => {
     const user = userEvent.setup()
     renderWithProviders(<AuthPage />, {routerProps: {initialEntries: ['/register']}})
+
+    expect(screen.getByTestId('auth-register-link-terms')).toHaveAttribute('href', '/terms')
 
     await user.type(screen.getByLabelText('Имя'), 'Читатель Условий')
     await user.type(screen.getByLabelText('Email'), 'terms@hockey.local')
     await user.type(screen.getByLabelText('Пароль'), 'secret12')
     await user.type(screen.getByLabelText('Подтверждение пароля'), 'secret12')
 
-    await user.click(screen.getByTestId('auth-register-btn-open-terms'))
-    await waitFor(() => {
-      expect(screen.getByTestId('auth-terms-modal')).toBeInTheDocument()
-      expect(screen.getByText('1. Введение')).toBeInTheDocument()
-      expect(screen.getByText('4. Сообщения и контент')).toBeInTheDocument()
-    })
-    await user.click(screen.getByTestId('auth-terms-btn-accept'))
+    await user.click(screen.getByRole('button', {name: 'Зарегистрироваться'}))
+    expect(screen.getByText('Примите условия использования')).toBeInTheDocument()
 
-    await waitFor(() => {
-      expect(screen.queryByTestId('auth-terms-modal')).not.toBeInTheDocument()
-    })
-
+    await user.click(screen.getByRole('checkbox'))
     await user.click(screen.getByRole('button', {name: 'Зарегистрироваться'}))
     await waitFor(() => {
-      expect(screen.queryByText('Примите условия использования')).not.toBeInTheDocument()
       expect(screen.getByText('Выберите демо-роль')).toBeInTheDocument()
     })
   })

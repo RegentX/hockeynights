@@ -3,27 +3,25 @@
  * Мини-страница условий использования (отдельный маршрут /terms).
  */
 
-import {Link} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 import {TermsOfUseDocument} from '@/features/auth/TermsOfUseDocument'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {testId} from '@/shared/testing/testId'
 
 export function TermsOfUsePage() {
+  const navigate = useNavigate()
+
   return (
     <div className="terms-page" data-testid={testId('auth', 'terms', 'page')}>
       <div className="terms-page__toolbar" data-testid={testId('auth', 'terms', 'panel', 'toolbar')}>
-        <Link to="/register" data-testid={testId('auth', 'terms', 'link', 'back-register')}>
-          <HockeyButton view="flat" size="s" data-testid={testId('auth', 'terms', 'btn', 'back')}>
-            ← Назад к регистрации
-          </HockeyButton>
-        </Link>
-        <Link
-          to="/"
-          className="terms-page__login-link"
-          data-testid={testId('auth', 'terms', 'link', 'login')}
+        <HockeyButton
+          view="flat"
+          size="s"
+          onClick={() => navigate(-1)}
+          data-testid={testId('auth', 'terms', 'btn', 'collapse')}
         >
-          Вход
-        </Link>
+          ← Свернуть
+        </HockeyButton>
       </div>
 
       <div className="terms-page__card" data-testid={testId('auth', 'terms', 'panel', 'card')}>
