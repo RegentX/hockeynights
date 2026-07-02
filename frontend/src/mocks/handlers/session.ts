@@ -5,9 +5,8 @@
 
 import {http, HttpResponse} from 'msw'
 
-import {completeOnboarding, mockSession, resetMockSession} from '@/mocks/data/session'
 import type {OnboardingPayload} from '@/entities/user/types'
-import {isDemoCredentials, DEMO_EMAIL} from '@/features/auth/demoCredentials'
+import {DEMO_EMAIL, isDemoCredentials} from '@/features/auth/demoCredentials'
 import {
   authenticateLocalUser,
   findLocalUserByEmail,
@@ -15,6 +14,7 @@ import {
   setPendingLocalUser,
 } from '@/features/auth/localAuthMemory'
 import {validateRegisterPayload} from '@/features/auth/registrationValidation'
+import {completeOnboarding, mockSession, resetMockSession} from '@/mocks/data/session'
 
 /** @spec SPEC-FR-2.1.1 - Handlers сессии и onboarding */
 export const sessionHandlers = [
@@ -23,7 +23,7 @@ export const sessionHandlers = [
   }),
 
   http.post('/mock-api/v1/login', async ({request}) => {
-    const body = (await request.json()) as { email?: string; password?: string }
+    const body = (await request.json()) as {email?: string; password?: string}
     const email = body.email ?? ''
     const password = body.password ?? ''
 
@@ -87,11 +87,7 @@ export const sessionHandlers = [
 
   http.post('/mock-api/v1/onboarding', async ({request}) => {
     const body = (await request.json()) as OnboardingPayload
-    const session = completeOnboarding(
-      body.displayName,
-      body.roles,
-      body.partnerMemberships ?? [],
-    )
+    const session = completeOnboarding(body.displayName, body.roles, body.partnerMemberships ?? [])
     return HttpResponse.json(session)
   }),
 

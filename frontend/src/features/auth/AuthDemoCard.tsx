@@ -4,9 +4,10 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
+
 import {DEMO_EMAIL, DEMO_PASSWORD} from '@/features/auth/demoCredentials'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 export interface AuthDemoCardProps {
   onApply: () => void
@@ -15,8 +16,14 @@ export interface AuthDemoCardProps {
 export function AuthDemoCard({onApply}: AuthDemoCardProps) {
   return (
     <div className="auth-demo-card" data-testid={testId('auth', 'login', 'card', 'demo')}>
-      <div className="auth-demo-card__header" data-testid={testId('auth', 'login', 'panel', 'demo-header')}>
-        <span className="auth-demo-card__badge" data-testid={testId('auth', 'login', 'text', 'demo-badge')}>
+      <div
+        className="auth-demo-card__header"
+        data-testid={testId('auth', 'login', 'panel', 'demo-header')}
+      >
+        <span
+          className="auth-demo-card__badge"
+          data-testid={testId('auth', 'login', 'text', 'demo-badge')}
+        >
           Демо
         </span>
         <Text
@@ -33,7 +40,10 @@ export function AuthDemoCard({onApply}: AuthDemoCardProps) {
       >
         <div className="auth-demo-card__field">
           <span className="auth-demo-card__field-label">Email</span>
-          <code className="auth-demo-card__value" data-testid={testId('auth', 'login', 'text', 'demo-email')}>
+          <code
+            className="auth-demo-card__value"
+            data-testid={testId('auth', 'login', 'text', 'demo-email')}
+          >
             {DEMO_EMAIL}
           </code>
         </div>

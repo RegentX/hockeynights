@@ -3,24 +3,28 @@
  * Выбор демо-роли после входа или регистрации.
  */
 
-import {useState} from 'react'
-import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
+import {useMutation, useQueryClient} from '@tanstack/react-query'
+import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
+
+import type {OnboardingPayload} from '@/entities/user/types'
 import {submitOnboarding} from '@/features/auth/api/sessionApi'
+import {getPendingLocalUser} from '@/features/auth/localAuthMemory'
 import {PERSONA_PRESETS, type PersonaPreset} from '@/features/auth/personaPresets'
 import {resolvePostLoginPath} from '@/features/auth/resolvePostLoginPath'
-import {getPendingLocalUser} from '@/features/auth/localAuthMemory'
-import type {OnboardingPayload} from '@/entities/user/types'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 export interface PersonaSelectionProps {
   isSwitching?: boolean
   onBackToCredentials?: () => void
 }
 
-export function PersonaSelection({isSwitching = false, onBackToCredentials}: PersonaSelectionProps) {
+export function PersonaSelection({
+  isSwitching = false,
+  onBackToCredentials,
+}: PersonaSelectionProps) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [error, setError] = useState<string | null>(null)
@@ -84,7 +88,10 @@ export function PersonaSelection({isSwitching = false, onBackToCredentials}: Per
       </div>
 
       {error && (
-        <div className="auth-alert auth-alert--error" data-testid={testId('auth', 'persona', 'text', 'error')}>
+        <div
+          className="auth-alert auth-alert--error"
+          data-testid={testId('auth', 'persona', 'text', 'error')}
+        >
           {error}
         </div>
       )}
