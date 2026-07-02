@@ -44,7 +44,7 @@ describe('Ice Radar page', () => {
     renderWithProviders(<IceRadarPage />)
 
     const reason = await screen.findByText('Нужен твой амплуа — вратарь')
-    const card = reason.closest('.radar-card')
+    const card = reason.closest('.radar-card') as HTMLElement | null
     expect(card).toBeTruthy()
 
     await user.click(within(card!).getByRole('button', {name: 'Скрыть'}))

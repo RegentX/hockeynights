@@ -324,9 +324,12 @@ describe('TASK-QA-01 mock API smoke', () => {
     const product = queue.find((item) => item.kind === 'shop_product')
     expect(product).toBeTruthy()
     if (product) {
-      const updated = await mockApiPatch(`/admin/partner-moderation/${product.id}`, {
-        status: 'published',
-      })
+      const updated = await mockApiPatch<PartnerModerationItem>(
+        `/admin/partner-moderation/${product.id}`,
+        {
+          status: 'published',
+        },
+      )
       expect(updated.moderationStatus).toBe('published')
     }
   })
