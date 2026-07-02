@@ -3,7 +3,7 @@
  * Форма входа (email + пароль).
  */
 
-import {useState} from 'react'
+import {useState, type FormEvent} from 'react'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {Link} from 'react-router-dom'
 import {AuthDemoCard} from '@/features/auth/AuthDemoCard'
@@ -51,15 +51,17 @@ export function LoginForm({onSuccess}: LoginFormProps) {
     setError(null)
   }
 
-  function handleSubmit() {
+  function handleSubmit(event?: FormEvent) {
+    event?.preventDefault()
     setError(null)
     loginMutation.mutate({email: email.trim(), password})
   }
 
   return (
-    <section
+    <form
       className="auth-form"
       aria-label="Вход"
+      onSubmit={handleSubmit}
       data-testid={testId('auth', 'login', 'panel', 'form')}
     >
       <header className="auth-form__header" data-testid={testId('auth', 'login', 'panel', 'header')}>
@@ -105,8 +107,8 @@ export function LoginForm({onSuccess}: LoginFormProps) {
       <HockeyButton
         view="action"
         size="l"
+        type="submit"
         loading={loginMutation.isPending}
-        onClick={handleSubmit}
         data-testid={testId('auth', 'login', 'btn', 'submit')}
       >
         Войти
@@ -130,6 +132,6 @@ export function LoginForm({onSuccess}: LoginFormProps) {
           Условия использования
         </Link>
       </p>
-    </section>
+    </form>
   )
 }

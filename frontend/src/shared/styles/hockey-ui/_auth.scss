@@ -422,7 +422,8 @@
   align-self: flex-start;
 }
 
-.login-modal__personas {
+.login-modal__personas,
+.auth-form--personas {
   display: flex;
   flex-direction: column;
   gap: 12px;

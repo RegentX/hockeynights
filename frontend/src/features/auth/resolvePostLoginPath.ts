@@ -1,11 +1,13 @@
 /**
  * SPEC-FR-2.1.2, SPEC-FR-1.3.7
  * HOCFRONT-5 — маршрут после выбора персоны.
+ * @deprecated Используйте session.homePath из selectPersona (POST /session/persona).
  */
 
 import type {OnboardingPayload} from '@/entities/user/types'
 import {partnerCabinetPath} from '@/features/partners/constants'
 
+/** @deprecated */
 export function resolvePostLoginPath(payload: OnboardingPayload): string {
   const memberships = payload.partnerMemberships ?? []
   if (memberships.length === 1) {

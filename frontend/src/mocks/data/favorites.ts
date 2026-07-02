@@ -4,6 +4,7 @@
  */
 
 import type {FavoriteAction, ProfileFavorites} from '@/entities/favorites/types'
+import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
 
 const FAVORITES_STORAGE_KEY = 'hockey-mock-favorites'
 
@@ -15,7 +16,7 @@ const DEFAULT_FAVORITE_ACTIONS: FavoriteAction[] = [
 ]
 
 function loadPersistedFavorites(): ProfileFavorites | null {
-  if (typeof window === 'undefined') return null
+  if (!canUseLocalStorage()) return null
   try {
     const raw = window.localStorage.getItem(FAVORITES_STORAGE_KEY)
     if (!raw) return null
@@ -26,7 +27,7 @@ function loadPersistedFavorites(): ProfileFavorites | null {
 }
 
 function persistFavorites(favorites: ProfileFavorites): void {
-  if (typeof window === 'undefined') return
+  if (!canUseLocalStorage()) return
   window.localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites))
 }
 

@@ -4,8 +4,9 @@
 
 import type {AttendanceStatus} from '@/entities/common/types'
 import type {CreateEventPayload, GameEvent, RosterStatus} from '@/entities/event/types'
+import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
 
-export const LEAGUE_SATURDAY_EVENT_ID = 'event-league-sat'
+export {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
 
 /** @spec SPEC-FR-4.1.1 - Mock события */
 export let mockEvents: GameEvent[] = [
@@ -26,6 +27,7 @@ export let mockEvents: GameEvent[] = [
       {position: 'forward', count: 6, filledCount: 3},
     ],
     pricePerPlayer: 1600,
+    hasTeamRsvp: true,
     participation: [
       {eventId: LEAGUE_SATURDAY_EVENT_ID, userId: 'user-001', displayName: 'Иван Петров', status: 'going', updatedAt: '2026-06-24T10:00:00Z'},
     ],

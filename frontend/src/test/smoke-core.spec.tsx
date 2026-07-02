@@ -40,13 +40,14 @@ import type {Shop} from '@/entities/shop/types'
 import type {ProductOffer} from '@/entities/shop/types'
 import type {ShopCatalogImportJob} from '@/entities/shop/types'
 
+async function mockSelectPersona(personaId: string): Promise<Session> {
+  return mockApiPost<Session>('/session/persona', {personaId})
+}
+
 describe('TASK-QA-01 mock API smoke', () => {
   /** @spec SPEC-FR-2.1.3 */
   it('POST /logout resets mock session', async () => {
-    await mockApiPost<Session>('/onboarding', {
-      displayName: 'Игрок',
-      roles: ['player'],
-    })
+    await mockSelectPersona('player')
     const loggedOut = await mockApiPost<Session>('/logout', {})
     expect(loggedOut.isOnboarded).toBe(false)
     const session = await mockApiGet<Session>('/session')
@@ -159,13 +160,7 @@ describe('TASK-QA-01 mock API smoke', () => {
 
   /** @spec SPEC-FR-24.5.3 */
   it('PATCH /leagues/{leagueId}/profile updates league partner profile', async () => {
-    await mockApiPost<Session>('/onboarding', {
-      displayName: 'League Partner',
-      roles: ['player'],
-      partnerMemberships: [
-        {kind: 'league', entityId: 'league-001', entityName: 'Ночная Хоккейная Лига (НХЛ)'},
-      ],
-    })
+    await mockSelectPersona('league-partner')
     const updated = await mockApiPatch<League>('/leagues/league-001/profile', {
       description: 'Обновлённое описание лиги',
       recruitingStatus: 'open',
@@ -176,13 +171,7 @@ describe('TASK-QA-01 mock API smoke', () => {
 
   /** @spec SPEC-FR-24.7.3, SPEC-FR-24.7.4 */
   it('PATCH shop profile and POST product with partner membership', async () => {
-    await mockApiPost<Session>('/onboarding', {
-      displayName: 'Shop Partner',
-      roles: ['player'],
-      partnerMemberships: [
-        {kind: 'shop', entityId: 'shop-001', entityName: 'Pro-Hockey Москва'},
-      ],
-    })
+    await mockSelectPersona('shop-partner')
     const shop = await mockApiPatch<Shop>('/shops/shop-001/profile', {
       deliveryInfo: 'Доставка за 24 часа',
     })
@@ -201,13 +190,7 @@ describe('TASK-QA-01 mock API smoke', () => {
 
   /** @spec SPEC-FR-24.7.5 */
   it('POST /shops/{shopId}/catalog-import imports products from feed', async () => {
-    await mockApiPost<Session>('/onboarding', {
-      displayName: 'Shop Partner',
-      roles: ['player'],
-      partnerMemberships: [
-        {kind: 'shop', entityId: 'shop-001', entityName: 'Pro-Hockey Москва'},
-      ],
-    })
+    await mockSelectPersona('shop-partner')
     const job = await mockApiPost<ShopCatalogImportJob>('/shops/shop-001/catalog-import', {
       source: 'feed',
     })
@@ -217,13 +200,7 @@ describe('TASK-QA-01 mock API smoke', () => {
 
   /** @spec SPEC-FR-24.5.4 */
   it('GET/PATCH league applications with partner membership', async () => {
-    await mockApiPost<Session>('/onboarding', {
-      displayName: 'League Partner',
-      roles: ['player'],
-      partnerMemberships: [
-        {kind: 'league', entityId: 'league-001', entityName: 'Ночная Хоккейная Лига (НХЛ)'},
-      ],
-    })
+    await mockSelectPersona('league-partner')
     const apps = await mockApiGet<LeagueTeamApplication[]>('/leagues/league-001/applications')
     expect(apps.length).toBeGreaterThan(0)
     const pending = apps.find((a) => a.status === 'pending')
@@ -239,23 +216,13 @@ describe('TASK-QA-01 mock API smoke', () => {
 
   /** @spec SPEC-FR-24.5.4 */
   it('POST league application as team captain', async () => {
-    await mockApiPost<Session>('/onboarding', {
-      displayName: 'League Partner',
-      roles: ['player'],
-      partnerMemberships: [
-        {kind: 'league', entityId: 'league-001', entityName: 'Ночная Хоккейная Лига (НХЛ)'},
-      ],
-    })
+    await mockSelectPersona('league-partner')
     const apps = await mockApiGet<LeagueTeamApplication[]>('/leagues/league-001/applications')
     for (const app of apps.filter((a) => a.teamId === 'team-001' && a.status !== 'rejected')) {
       await mockApiPatch(`/leagues/league-001/applications/${app.id}`, {status: 'rejected'})
     }
 
-    await mockApiPost<Session>('/onboarding', {
-      displayName: 'Иван Петров',
-      roles: ['player', 'captain'],
-      partnerMemberships: [],
-    })
+    await mockSelectPersona('captain')
     const application = await mockApiPost<LeagueTeamApplication>('/leagues/league-001/applications', {
       seasonId: 'season-001',
       divisionId: 'div-001',
@@ -270,13 +237,7 @@ describe('TASK-QA-01 mock API smoke', () => {
 
   /** @spec SPEC-FR-24.5.5 */
   it('POST/PATCH league schedule with partner membership', async () => {
-    await mockApiPost<Session>('/onboarding', {
-      displayName: 'League Partner',
-      roles: ['player'],
-      partnerMemberships: [
-        {kind: 'league', entityId: 'league-001', entityName: 'Ночная Хоккейная Лига (НХЛ)'},
-      ],
-    })
+    await mockSelectPersona('league-partner')
     const item = await mockApiPost<LeagueScheduleItem>(
       '/leagues/league-001/schedule',
       {
@@ -299,13 +260,7 @@ describe('TASK-QA-01 mock API smoke', () => {
 
   /** @spec SPEC-FR-24.5.5 */
   it('POST league schedule CSV import with partner membership', async () => {
-    await mockApiPost<Session>('/onboarding', {
-      displayName: 'League Partner',
-      roles: ['player'],
-      partnerMemberships: [
-        {kind: 'league', entityId: 'league-001', entityName: 'Ночная Хоккейная Лига (НХЛ)'},
-      ],
-    })
+    await mockSelectPersona('league-partner')
     const result = await mockApiPost<LeagueScheduleImportResult>(
       '/leagues/league-001/schedule-import',
       {},
@@ -315,11 +270,7 @@ describe('TASK-QA-01 mock API smoke', () => {
 
   /** @spec SPEC-FR-24.7.9 */
   it('GET/PATCH admin partner moderation queue', async () => {
-    await mockApiPost<Session>('/onboarding', {
-      displayName: 'Admin',
-      roles: ['admin'],
-      partnerMemberships: [],
-    })
+    await mockSelectPersona('admin')
     const queue = await mockApiGet<PartnerModerationItem[]>('/admin/partner-moderation')
     expect(queue.some((item) => item.kind === 'shop_product')).toBe(true)
 

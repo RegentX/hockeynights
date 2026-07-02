@@ -10,7 +10,6 @@ import type {GameEvent} from '@/entities/event/types'
 import {AttendanceControl} from '@/features/events/AttendanceControl'
 import {EventRsvpBoard} from '@/features/events/EventRsvpBoard'
 import {RosterNeedsWidget} from '@/features/events/RosterNeedsWidget'
-import {LEAGUE_SATURDAY_EVENT_ID} from '@/mocks/data/eventRsvp'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 import {testId} from '@/shared/testing/testId'
@@ -102,8 +101,13 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
             </div>
           </div>
 
-          <AttendanceControl eventId={event.id} currentStatus={currentStatus} />
-          {event.id === LEAGUE_SATURDAY_EVENT_ID && <EventRsvpBoard eventId={event.id} />}
+          <AttendanceControl
+            eventId={event.id}
+            currentStatus={currentStatus}
+            currentUserId={currentUserId}
+            useRsvpApi={event.hasTeamRsvp}
+          />
+          {event.hasTeamRsvp && <EventRsvpBoard eventId={event.id} />}
           <RosterNeedsWidget eventId={event.id} />
           {currentStatus === 'going' && isPastEvent && (
             <Link to="/feedback" data-testid={testId('events', 'card', 'link', 'feedback', event.id)}>

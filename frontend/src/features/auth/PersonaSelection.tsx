@@ -44,13 +44,16 @@ export function PersonaSelection({isSwitching = false, onBackToCredentials}: Per
 
   function selectPersonaCard(persona: AvailablePersona) {
     const preset = toPersonaPreset(persona)
-    if (!preset) return
+    if (!preset) {
+      console.warn(`[PersonaSelection] Unknown persona id: ${persona.id}`)
+      return
+    }
     personaMutation.mutate(preset)
   }
 
   return (
     <section
-      className="auth-form login-modal__personas"
+      className="auth-form auth-form--personas"
       aria-label="Выбор роли"
       data-testid={testId('auth', 'login', 'panel', 'personas')}
     >
@@ -62,13 +65,15 @@ export function PersonaSelection({isSwitching = false, onBackToCredentials}: Per
       </Text>
 
       <div className="persona-card-grid" data-testid={testId('auth', 'login', 'grid', 'personas')}>
-        {personas.map((persona) => (
+        {personas.map((persona) => {
+          const known = Boolean(toPersonaPreset(persona))
+          return (
           <button
             key={persona.id}
             type="button"
             className="persona-card"
             aria-label={`${persona.title}. ${persona.description}. ${persona.destination}`}
-            disabled={personaMutation.isPending}
+            disabled={personaMutation.isPending || !known}
             onClick={() => selectPersonaCard(persona)}
             data-testid={testId('auth', 'login', 'btn', persona.id)}
           >
@@ -79,7 +84,8 @@ export function PersonaSelection({isSwitching = false, onBackToCredentials}: Per
             <span className="persona-card__description">{persona.description}</span>
             <span className="persona-card__destination">→ {persona.destination}</span>
           </button>
-        ))}
+          )
+        })}
       </div>
 
       {!isSwitching && onBackToCredentials && (

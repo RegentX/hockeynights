@@ -6,6 +6,7 @@ import type {Session, User, PartnerMembership} from '@/entities/user/types'
 import {clearPendingLocalUser, getPendingRegistration} from '@/features/auth/localAuthMemory'
 import {getPersonaOnboardingPayload} from '@/mocks/data/personas'
 import {getPersonaHomePath, getAllowedPathPrefixes} from '@/features/access/navigationAccess'
+import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
 import type {
   HockeyProfile,
   NotificationPreferences,
@@ -28,7 +29,7 @@ export const mockUser: User = {
 const MOCK_SESSION_STORAGE_KEY = 'hockey-mock-session'
 
 function loadPersistedSession(): Session | null {
-  if (typeof window === 'undefined') return null
+  if (!canUseLocalStorage()) return null
   try {
     const raw = window.localStorage.getItem(MOCK_SESSION_STORAGE_KEY)
     if (!raw) return null
@@ -39,12 +40,12 @@ function loadPersistedSession(): Session | null {
 }
 
 function persistMockSession(session: Session): void {
-  if (typeof window === 'undefined') return
+  if (!canUseLocalStorage()) return
   window.localStorage.setItem(MOCK_SESSION_STORAGE_KEY, JSON.stringify(session))
 }
 
 function clearPersistedSession(): void {
-  if (typeof window === 'undefined') return
+  if (!canUseLocalStorage()) return
   window.localStorage.removeItem(MOCK_SESSION_STORAGE_KEY)
 }
 

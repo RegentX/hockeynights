@@ -7,7 +7,6 @@ import {Button, Text} from '@gravity-ui/uikit'
 import {updateAttendance, fetchEventRsvp, updateEventRsvp} from '@/features/events/api/eventsApi'
 import type {AttendanceStatus} from '@/entities/common/types'
 import type {EventRsvpStatus} from '@/entities/event/rsvpTypes'
-import {LEAGUE_SATURDAY_EVENT_ID} from '@/mocks/data/eventRsvp'
 import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-3.3.1 - Props контрола посещаемости */
@@ -16,6 +15,8 @@ export interface AttendanceControlProps {
   eventId: string
   /** @spec SPEC-FR-3.3.1 */
   currentStatus?: AttendanceStatus
+  /** @spec SPEC-FR-3.3.1 */
+  currentUserId?: string
   /** @spec SPEC-FR-25.6.2 - Использовать RSVP API вместо attendance */
   useRsvpApi?: boolean
 }
@@ -23,7 +24,6 @@ export interface AttendanceControlProps {
 const RSVP_BUTTONS: {status: EventRsvpStatus; label: string}[] = [
   {status: 'confirmed', label: 'Иду'},
   {status: 'declined', label: 'Не иду'},
-  {status: 'pending', label: 'Не ответил'},
 ]
 
 const ATTENDANCE_BUTTONS: {status: AttendanceStatus; label: string}[] = [
@@ -42,9 +42,14 @@ function attendanceToRsvp(status?: AttendanceStatus): EventRsvpStatus | undefine
 /**
  * @spec SPEC-FR-3.3.1 - Отметка участия: идёт, не идёт, под вопросом
  */
-export function AttendanceControl({eventId, currentStatus, useRsvpApi}: AttendanceControlProps) {
+export function AttendanceControl({
+  eventId,
+  currentStatus,
+  currentUserId = 'user-001',
+  useRsvpApi,
+}: AttendanceControlProps) {
   const queryClient = useQueryClient()
-  const rsvpEnabled = useRsvpApi ?? eventId === LEAGUE_SATURDAY_EVENT_ID
+  const rsvpEnabled = useRsvpApi ?? false
 
   const {data: rsvpBoard} = useQuery({
     queryKey: ['event-rsvp', eventId],
@@ -73,7 +78,7 @@ export function AttendanceControl({eventId, currentStatus, useRsvpApi}: Attendan
 
   if (rsvpEnabled && rsvpBoard) {
     const currentRsvp =
-      rsvpBoard.players.find((player) => player.userId === 'user-001')?.status ??
+      rsvpBoard.players.find((player) => player.userId === currentUserId)?.status ??
       attendanceToRsvp(currentStatus) ??
       'pending'
 

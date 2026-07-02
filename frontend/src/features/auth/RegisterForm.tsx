@@ -3,7 +3,7 @@
  * Форма регистрации (mock Phase 1 + localAuthMemory).
  */
 
-import {useState} from 'react'
+import {useState, type FormEvent} from 'react'
 import {useMutation} from '@tanstack/react-query'
 import {Link} from 'react-router-dom'
 import {AuthField} from '@/features/auth/AuthField'
@@ -47,7 +47,8 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
     setValues((prev) => ({...prev, [key]: value}))
   }
 
-  function handleSubmit() {
+  function handleSubmit(event?: FormEvent) {
+    event?.preventDefault()
     const validationError = validateRegisterForm(values)
     if (validationError) {
       setError(validationError)
@@ -62,9 +63,10 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
   }
 
   return (
-    <section
+    <form
       className="auth-form"
       aria-label="Регистрация"
+      onSubmit={handleSubmit}
       data-testid={testId('auth', 'register', 'panel', 'form')}
     >
       <header className="auth-form__header" data-testid={testId('auth', 'register', 'panel', 'header')}>
@@ -137,8 +139,8 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
       <HockeyButton
         view="action"
         size="l"
+        type="submit"
         loading={registerMutation.isPending}
-        onClick={handleSubmit}
         data-testid={testId('auth', 'register', 'btn', 'submit')}
       >
         Зарегистрироваться
@@ -154,6 +156,6 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
           Войти
         </Link>
       </p>
-    </section>
+    </form>
   )
 }

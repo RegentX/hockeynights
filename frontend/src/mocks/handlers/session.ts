@@ -117,6 +117,7 @@ export const sessionHandlers = [
     return HttpResponse.json({ok: true})
   }),
 
+  /** @deprecated Legacy onboarding — prefer POST /session/persona (selectMockPersona). */
   http.post('/mock-api/v1/onboarding', async ({request}) => {
     const body = (await request.json()) as OnboardingPayload
     const session = completeOnboarding(

@@ -4,6 +4,8 @@
  * Контракт и storage key сохранятся — позже заменим реализацию на backend API.
  */
 
+import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
+
 export const LOCAL_AUTH_MEMORY_KEY = 'hockey-local-auth-memory'
 export const LOCAL_AUTH_MEMORY_VERSION = 1 as const
 
@@ -36,7 +38,7 @@ function createUserId(): string {
 }
 
 export function loadLocalAuthMemory(): LocalAuthMemory {
-  if (typeof window === 'undefined') return emptyMemory()
+  if (!canUseLocalStorage()) return emptyMemory()
   try {
     const raw = window.localStorage.getItem(LOCAL_AUTH_MEMORY_KEY)
     if (!raw) return emptyMemory()
@@ -55,7 +57,7 @@ export function loadLocalAuthMemory(): LocalAuthMemory {
 }
 
 export function saveLocalAuthMemory(memory: LocalAuthMemory): void {
-  if (typeof window === 'undefined') return
+  if (!canUseLocalStorage()) return
   window.localStorage.setItem(LOCAL_AUTH_MEMORY_KEY, JSON.stringify(memory))
 }
 
@@ -107,7 +109,7 @@ export function clearPendingLocalUser(): void {
 }
 
 export function clearLocalAuthMemory(): void {
-  if (typeof window === 'undefined') return
+  if (!canUseLocalStorage()) return
   window.localStorage.removeItem(LOCAL_AUTH_MEMORY_KEY)
 }
 
