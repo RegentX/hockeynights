@@ -3,6 +3,7 @@
  */
 
 import {PasswordInput, TextInput} from '@gravity-ui/uikit'
+
 import {testId} from '@/shared/testing/testId'
 
 export interface AuthFieldProps {

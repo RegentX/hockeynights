@@ -4,10 +4,11 @@
  */
 
 import {useQuery} from '@tanstack/react-query'
+
 import {fetchSession} from '@/features/auth/api/sessionApi'
 import {AuthPage} from '@/pages/auth/ui/AuthPage'
-import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {testId} from '@/shared/testing/testId'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 /**
  * @spec SPEC-FR-2.1.1 - Mock-вход без реальной авторизации

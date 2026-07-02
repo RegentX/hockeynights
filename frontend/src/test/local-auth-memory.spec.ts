@@ -3,13 +3,14 @@
  */
 
 import {beforeEach, describe, expect, it} from 'vitest'
+
 import {
-  LOCAL_AUTH_MEMORY_KEY,
   authenticateLocalUser,
   clearLocalAuthMemory,
   findLocalUserByEmail,
   getPendingLocalUser,
   loadLocalAuthMemory,
+  LOCAL_AUTH_MEMORY_KEY,
   registerLocalUser,
 } from '@/features/auth/localAuthMemory'
 
