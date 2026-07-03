@@ -16,6 +16,12 @@ export interface AttendanceControlProps {
   eventId: string
   /** @spec SPEC-FR-3.3.1 */
   currentStatus?: AttendanceStatus
+  /** @spec SPEC-FR-3.3.1 */
+  currentUserId?: string
+  /** Заголовок события для привязки RSVP к конкретной записи */
+  eventTitle?: string
+  /** Тип события для текста подписи */
+  eventKind?: 'game' | 'training'
   /** @spec SPEC-FR-25.6.2 - Использовать RSVP API вместо attendance */
   useRsvpApi?: boolean
 }
@@ -39,10 +45,25 @@ function attendanceToRsvp(status?: AttendanceStatus): EventRsvpStatus | undefine
   return undefined
 }
 
+function buildAttendanceLabel(eventKind: 'game' | 'training' | undefined, eventTitle?: string): string {
+  const kindLabel = eventKind === 'training' ? 'тренировке' : 'игре'
+  if (eventTitle) {
+    return `Участие в ${kindLabel} «${eventTitle}»`
+  }
+  return eventKind === 'training' ? 'Участие в тренировке' : 'Участие в игре'
+}
+
 /**
  * @spec SPEC-FR-3.3.1 - Отметка участия: идёт, не идёт, под вопросом
  */
-export function AttendanceControl({eventId, currentStatus, useRsvpApi}: AttendanceControlProps) {
+export function AttendanceControl({
+  eventId,
+  currentStatus,
+  currentUserId = 'user-001',
+  eventTitle,
+  eventKind,
+  useRsvpApi,
+}: AttendanceControlProps) {
   const queryClient = useQueryClient()
   const rsvpEnabled = useRsvpApi ?? eventId === LEAGUE_SATURDAY_EVENT_ID
 
@@ -73,14 +94,14 @@ export function AttendanceControl({eventId, currentStatus, useRsvpApi}: Attendan
 
   if (rsvpEnabled && rsvpBoard) {
     const currentRsvp =
-      rsvpBoard.players.find((player) => player.userId === 'user-001')?.status ??
+      rsvpBoard.players.find((player) => player.userId === currentUserId)?.status ??
       attendanceToRsvp(currentStatus) ??
       'pending'
 
     return (
-      <div className="hockey-stack hockey-stack--gap-6" data-testid={testId('events', 'attendance', 'panel', eventId)}>
+      <div className="event-attendance hockey-stack hockey-stack--gap-6" data-testid={testId('events', 'attendance', 'panel', eventId)}>
         <Text color="secondary" data-testid={testId('events', 'attendance', 'text', 'label', eventId)}>
-          RSVP команды на игру
+          {buildAttendanceLabel('game', eventTitle ?? rsvpBoard.teamName)}
         </Text>
         <div className="hockey-row hockey-row--gap-8" data-testid={testId('events', 'attendance', 'list', eventId)}>
           {RSVP_BUTTONS.map((btn) => (
@@ -100,9 +121,9 @@ export function AttendanceControl({eventId, currentStatus, useRsvpApi}: Attendan
   }
 
   return (
-    <div className="hockey-stack hockey-stack--gap-6" data-testid={testId('events', 'attendance', 'panel', eventId)}>
+    <div className="event-attendance hockey-stack hockey-stack--gap-6" data-testid={testId('events', 'attendance', 'panel', eventId)}>
       <Text color="secondary" data-testid={testId('events', 'attendance', 'text', 'label', eventId)}>
-        RSVP на матч/тренировку
+        {buildAttendanceLabel(eventKind, eventTitle)}
       </Text>
       <div className="hockey-row hockey-row--gap-8" data-testid={testId('events', 'attendance', 'list', eventId)}>
         {ATTENDANCE_BUTTONS.map((btn) => (

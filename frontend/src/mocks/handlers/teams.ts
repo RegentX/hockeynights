@@ -203,6 +203,14 @@ export const teamHandlers = [
     return HttpResponse.json(mockEvents)
   }),
 
+  http.get('/mock-api/v1/events/:eventId', ({params}) => {
+    const event = mockEvents.find((item) => item.id === params.eventId)
+    if (!event) {
+      return HttpResponse.json({message: 'Event not found'}, {status: 404})
+    }
+    return HttpResponse.json(event)
+  }),
+
   http.post('/mock-api/v1/events', async ({request}) => {
     const body = (await request.json()) as CreateEventPayload
     const event = createMockEvent(body)

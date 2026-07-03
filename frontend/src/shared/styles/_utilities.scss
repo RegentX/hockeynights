@@ -57,6 +57,14 @@
     align-items: center;
   }
 
+  &--align-center {
+    align-items: center;
+  }
+
+  &--wrap {
+    flex-wrap: wrap;
+  }
+
   &--end {
     align-items: flex-end;
   }

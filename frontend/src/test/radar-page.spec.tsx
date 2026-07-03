@@ -1,30 +1,28 @@
 /**
- * HOCFRONT-9 — «Поиск тренировок» с RSVP на лиговую игру.
+ * HOCFRONT-9 — сценарий RSVP ближайшей игры в разделе "Игры и тренировки".
  */
 
-import {screen, waitFor, within} from '@testing-library/react'
+import {screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {beforeEach, describe, expect, it} from 'vitest'
-import {IceRadarPage} from '@/features/radar/IceRadarPage'
-import {RADAR_LABEL} from '@/shared/config/navigationLabels'
-import {resetMockRadarState} from '@/mocks/data/radar'
+import {EventsPage} from '@/features/events/EventsPage'
+import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
 import {resetMockEventRsvp} from '@/mocks/data/eventRsvp'
 import {renderWithProviders} from '@/test/render'
 
-describe('Ice Radar page', () => {
+describe('Events page RSVP block', () => {
   beforeEach(() => {
-    resetMockRadarState()
     resetMockEventRsvp()
     window.localStorage.clear()
   })
 
   it('shows league game hero and team RSVP list', async () => {
-    renderWithProviders(<IceRadarPage />)
+    renderWithProviders(<EventsPage />)
 
     await waitFor(() => {
-      expect(screen.getByText(RADAR_LABEL)).toBeInTheDocument()
+      expect(screen.getByText(EVENTS_LABEL)).toBeInTheDocument()
       expect(screen.getByText('Ближайшая игра')).toBeInTheDocument()
-      expect(screen.getByText(/Медведи САО vs Вымпел/i)).toBeInTheDocument()
+      expect(screen.getByTestId('radar-league-rsvp-text-matchup-event-league-sat')).toBeInTheDocument()
       expect(screen.getByText('Кто идёт из команды')).toBeInTheDocument()
       expect(screen.getByText('Вратари')).toBeInTheDocument()
       expect(screen.getByText('Нападающие')).toBeInTheDocument()
@@ -33,7 +31,7 @@ describe('Ice Radar page', () => {
 
   it('confirms attendance with Буду CTA', async () => {
     const user = userEvent.setup()
-    renderWithProviders(<IceRadarPage />)
+    renderWithProviders(<EventsPage />)
 
     await screen.findByText('Ближайшая игра')
     await user.click(screen.getByTestId('radar-league-rsvp-btn-confirm-event-league-sat'))
@@ -45,7 +43,7 @@ describe('Ice Radar page', () => {
 
   it('declines with preset reason and updates team list', async () => {
     const user = userEvent.setup()
-    renderWithProviders(<IceRadarPage />)
+    renderWithProviders(<EventsPage />)
 
     await screen.findByText('Ближайшая игра')
     await user.click(screen.getByTestId('radar-league-rsvp-btn-decline-event-league-sat'))
@@ -54,31 +52,44 @@ describe('Ice Radar page', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Вы не сможете')).toBeInTheDocument()
-      expect(screen.getByText(/Работаю/)).toBeInTheDocument()
+      expect(screen.getAllByText(/Работаю/).length).toBeGreaterThan(0)
     })
   })
 
-  it('shows other radar recommendations below league RSVP', async () => {
-    renderWithProviders(<IceRadarPage />)
+  it('shows events list below league RSVP block', async () => {
+    renderWithProviders(<EventsPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Другие ближайшие действия')).toBeInTheDocument()
-      expect(screen.getByText('Свободный слот на Ходынке')).toBeInTheDocument()
+      expect(screen.getByText('Список тренировок')).toBeInTheDocument()
+      expect(screen.getAllByTestId(/events-card-card-/).length).toBeGreaterThan(0)
     })
   })
 
-  it('dismisses recommendation on hide click', async () => {
+  it('keeps trainings visible when nearest game block is collapsed', async () => {
     const user = userEvent.setup()
-    renderWithProviders(<IceRadarPage />)
+    renderWithProviders(<EventsPage />)
 
-    const reason = await screen.findByText('Нужен твой амплуа — вратарь')
-    const card = reason.closest('.radar-card')
-    expect(card).toBeTruthy()
-
-    await user.click(within(card!).getByRole('button', {name: 'Скрыть'}))
+    await screen.findByText('Список тренировок')
+    await user.click(screen.getByTestId('events-page-btn-nearest-game-toggle'))
 
     await waitFor(() => {
-      expect(screen.queryByText('Нужен твой амплуа — вратарь')).not.toBeInTheDocument()
+      expect(screen.getByText('Список тренировок')).toBeInTheDocument()
+      expect(screen.getAllByTestId(/events-card-card-/).length).toBeGreaterThan(0)
+    })
+  })
+
+  it('keeps trainings list when filters block is collapsed', async () => {
+    const user = userEvent.setup()
+    renderWithProviders(<EventsPage />)
+
+    await screen.findByText('Список тренировок')
+    const before = screen.getAllByTestId(/events-card-card-/).length
+
+    await user.click(screen.getByTestId('events-page-btn-filters-toggle'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Список тренировок')).toBeInTheDocument()
+      expect(screen.getAllByTestId(/events-card-card-/).length).toBe(before)
     })
   })
 })

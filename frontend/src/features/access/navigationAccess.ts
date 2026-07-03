@@ -7,7 +7,11 @@ import {
   getPrimaryPartnerPath,
   shouldUsePartnerWorkspace,
 } from '@/features/partners/sessionPersona'
-import {ARENAS_LABEL, RADAR_LABEL} from '@/shared/config/navigationLabels'
+import {
+  ARENAS_LABEL,
+  EVENTS_LABEL,
+  EVENTS_MOBILE_LABEL,
+} from '@/shared/config/navigationLabels'
 
 export interface NavItem {
   to: string
@@ -18,11 +22,10 @@ export const PLAYER_NAV_ITEMS: NavItem[] = [
   {to: '/profile', label: 'Профиль'},
   {to: '/players', label: 'Игроки'},
   {to: '/teams', label: 'Команды'},
-  {to: '/events', label: 'События'},
+  {to: '/events', label: EVENTS_LABEL},
   {to: '/calendar', label: 'Календарь'},
   {to: '/sos', label: 'SOS'},
   {to: '/arenas', label: ARENAS_LABEL},
-  {to: '/radar', label: RADAR_LABEL},
   {to: '/leagues', label: 'Лиги'},
   {to: '/shops', label: 'Маркет'},
   {to: '/iq', label: 'IQ'},
@@ -34,12 +37,11 @@ export const PLAYER_NAV_ITEMS: NavItem[] = [
 ]
 
 export const MOBILE_PLAYER_NAV: Array<NavItem & {icon: string}> = [
-  {to: '/events', label: 'События', icon: '🏒'},
+  {to: '/events', label: EVENTS_MOBILE_LABEL, icon: '🏒'},
   {to: '/players', label: 'Игроки', icon: '👤'},
   {to: '/teams', label: 'Команды', icon: '🛡'},
   {to: '/messenger', label: 'Чат', icon: '💬'},
   {to: '/arenas', label: ARENAS_LABEL, icon: '🧊'},
-  {to: '/radar', label: RADAR_LABEL, icon: '🔍'},
   {to: '/shops', label: 'Маркет', icon: '🛍'},
   {to: '/profile', label: 'Профиль', icon: '⚙'},
 ]
@@ -124,7 +126,6 @@ export function getAllowedPathPrefixes(session: Session): string[] {
       '/leagues',
       '/shops',
       '/iq',
-      '/radar',
       '/highlights',
       '/feedback',
       '/notifications',
@@ -145,7 +146,6 @@ export function getAllowedPathPrefixes(session: Session): string[] {
     '/leagues',
     '/shops',
     '/iq',
-    '/radar',
     '/highlights',
     '/feedback',
     '/notifications',

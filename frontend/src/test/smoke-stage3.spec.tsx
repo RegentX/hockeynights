@@ -20,8 +20,8 @@ import {NotificationsPage} from '@/features/notifications/NotificationsPage'
 import {ShopsPage} from '@/features/shops/ShopsPage'
 import {AdminDashboard} from '@/features/admin/AdminDashboard'
 import {IqTestsPage} from '@/features/iq/IqTestsPage'
-import {IceRadarPage} from '@/features/radar/IceRadarPage'
-import {RADAR_LABEL} from '@/shared/config/navigationLabels'
+import {EventsPage} from '@/features/events/EventsPage'
+import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
 import {HighlightsPage} from '@/features/highlights/HighlightsPage'
 import type {League, LeagueScheduleItem, LeagueStanding} from '@/entities/league/types'
 import type {CreateFeedbackPayload, Feedback, KarmaInfo} from '@/entities/feedback/types'
@@ -319,13 +319,12 @@ describe('TASK-QA-02 UI smoke', () => {
   })
 
   /** @spec SPEC-FR-15.1.1, SPEC-UI-6.5, HOCFRONT-9 */
-  it('IceRadarPage loads league RSVP hero and recommendations', async () => {
-    renderWithProviders(<IceRadarPage />)
+  it('EventsPage loads league RSVP hero inside training section', async () => {
+    renderWithProviders(<EventsPage />)
     await waitFor(() => {
-      expect(screen.getByText(RADAR_LABEL)).toBeInTheDocument()
-      expect(screen.getByText('Ближайшая игра')).toBeInTheDocument()
-      expect(screen.getByText('Кто идёт из команды')).toBeInTheDocument()
-      expect(screen.getByText('Нужен твой амплуа — вратарь')).toBeInTheDocument()
+      expect(screen.getByText(EVENTS_LABEL)).toBeInTheDocument()
+      expect(screen.getByTestId('events-page-panel-league-rsvp')).toBeInTheDocument()
+      expect(screen.getByText('Список тренировок')).toBeInTheDocument()
     })
   })
 

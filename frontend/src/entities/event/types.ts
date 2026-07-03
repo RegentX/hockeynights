@@ -54,6 +54,20 @@ export interface GameEvent {
   requiredSlots: RequiredSlot[]
   /** @spec SPEC-FR-5.1.2 */
   pricePerPlayer?: number
+  /** Формат тренировки (из классификатора продукта) */
+  trainingFormat?: 'two_way' | 'training' | 'training_two_way'
+  /** Округ проведения */
+  district?: string
+  /** Статус набора */
+  registrationStatus?: 'open' | 'full'
+  /** Модель доступа к тренировке */
+  accessScope?: 'club_only' | 'limited' | 'public'
+  /** Список пользователей, допущенных к limited-тренировке */
+  allowedUserIds?: string[]
+  /** Контакт организатора для карточки */
+  organizerDisplayName?: string
+  /** Доп. номер телефона организатора */
+  organizerPhone?: string
   /** @spec SPEC-FR-3.3.2 */
   participation: Attendance[]
 }

@@ -4,15 +4,14 @@
  */
 
 import type {FavoriteAction, ProfileFavorites} from '@/entities/favorites/types'
-import {RADAR_LABEL} from '@/shared/config/navigationLabels'
+import {ARENAS_LABEL, EVENTS_LABEL} from '@/shared/config/navigationLabels'
 
 const FAVORITES_STORAGE_KEY = 'hockey-mock-favorites'
 
 const DEFAULT_FAVORITE_ACTIONS: FavoriteAction[] = [
-  {id: 'events', label: 'События', path: '/events', icon: '🏒'},
+  {id: 'events', label: EVENTS_LABEL, path: '/events', icon: '🏒'},
   {id: 'teams', label: 'Команды', path: '/teams', icon: '🛡'},
-  {id: 'radar', label: RADAR_LABEL, path: '/radar', icon: '🔍'},
-  {id: 'arenas', label: 'Арены', path: '/arenas', icon: '🧊'},
+  {id: 'arenas', label: ARENAS_LABEL, path: '/arenas', icon: '🧊'},
 ]
 
 function loadPersistedFavorites(): ProfileFavorites | null {

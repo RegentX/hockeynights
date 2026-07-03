@@ -28,6 +28,33 @@
   border-color: color-mix(in srgb, var(--hockey-ice-glow) 35%, var(--hockey-card-border));
 }
 
+.league-game-rsvp__actions {
+  padding-top: 12px;
+  border-top: 1px solid var(--hockey-card-border);
+}
+
+.nearest-game-record {
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--hockey-card-bg);
+  box-shadow: var(--hockey-card-shadow);
+
+  .ice-card {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .ice-card::before {
+    display: none;
+  }
+
+  .ice-card + .ice-card {
+    border-top: 1px solid var(--hockey-card-border);
+  }
+}
+
 .league-game-rsvp__meta {
   padding: 10px 12px;
       border-radius: 10px;

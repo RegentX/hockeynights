@@ -105,7 +105,7 @@ export function LeagueGameRsvp({eventId, currentUserId = 'user-001'}: LeagueGame
         </div>
 
         {!showDeclineReason ? (
-          <div className="hockey-row hockey-row--gap-10 hockey-row--wrap" data-testid={testId('radar', 'league-rsvp', 'panel', 'cta', eventId)}>
+          <div className="league-game-rsvp__actions hockey-row hockey-row--gap-10 hockey-row--wrap" data-testid={testId('radar', 'league-rsvp', 'panel', 'cta', eventId)}>
             <HockeyButton
               view="action"
               size="l"
@@ -126,11 +126,13 @@ export function LeagueGameRsvp({eventId, currentUserId = 'user-001'}: LeagueGame
             </HockeyButton>
           </div>
         ) : (
-          <DeclineReasonField
-            onConfirm={submitDecline}
-            onCancel={() => setShowDeclineReason(false)}
-            isPending={mutation.isPending}
-          />
+          <div className="league-game-rsvp__actions">
+            <DeclineReasonField
+              onConfirm={submitDecline}
+              onCancel={() => setShowDeclineReason(false)}
+              isPending={mutation.isPending}
+            />
+          </div>
         )}
       </div>
     </IceCard>
