@@ -1,7 +1,7 @@
-/** Безопасная проверка доступности localStorage (SSR, Node 26+ vitest). */
+/** Безопасная проверка доступности localStorage (SSR, jsdom, Node 26 + vitest). */
 export function canUseLocalStorage(): boolean {
   try {
-    return typeof window !== 'undefined' && window.localStorage != null
+    return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
   } catch {
     return false
   }

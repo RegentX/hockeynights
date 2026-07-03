@@ -109,6 +109,7 @@ export function LoginForm({onSuccess}: LoginFormProps) {
         size="l"
         type="submit"
         loading={loginMutation.isPending}
+        disabled={loginMutation.isPending}
         data-testid={testId('auth', 'login', 'btn', 'submit')}
       >
         Войти

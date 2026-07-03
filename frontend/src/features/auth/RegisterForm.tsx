@@ -140,6 +140,7 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
         size="l"
         type="submit"
         loading={registerMutation.isPending}
+        disabled={registerMutation.isPending}
         data-testid={testId('auth', 'register', 'btn', 'submit')}
       >
         Зарегистрироваться

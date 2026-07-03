@@ -1,15 +1,25 @@
 /**
  * SPEC-FR-2.1.1
- * Мини-страница условий использования (отдельный маршрут /terms).
+ * Standalone-маршрут /terms: полноэкранное чтение условий.
+ * «Свернуть» — history.back(); если истории нет — fallback на /.
  */
 
-import {useNavigate} from 'react-router-dom'
+import {useLocation, useNavigate} from 'react-router-dom'
 import {TermsOfUseDocument} from '@/features/auth/TermsOfUseDocument'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {testId} from '@/shared/testing/testId'
 
 export function TermsOfUsePage() {
   const navigate = useNavigate()
+  const location = useLocation()
+
+  function collapseFullscreen() {
+    if (location.key === 'default') {
+      navigate('/', {replace: true})
+      return
+    }
+    navigate(-1)
+  }
 
   return (
     <div className="terms-page" data-testid={testId('auth', 'terms', 'page')}>
@@ -17,14 +27,14 @@ export function TermsOfUsePage() {
         <HockeyButton
           view="flat"
           size="s"
-          onClick={() => navigate(-1)}
+          onClick={collapseFullscreen}
           data-testid={testId('auth', 'terms', 'btn', 'collapse')}
         >
           ← Свернуть
         </HockeyButton>
       </div>
 
-      <div className="terms-page__card" data-testid={testId('auth', 'terms', 'panel', 'card')}>
+      <div className="terms-page__card terms-surface" data-testid={testId('auth', 'terms', 'panel', 'card')}>
         <TermsOfUseDocument />
       </div>
     </div>

@@ -3,6 +3,7 @@
  * Выбор демо-роли после входа или регистрации.
  */
 
+import {useState} from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
 import {useNavigate} from 'react-router-dom'
@@ -25,6 +26,7 @@ function toPersonaPreset(persona: AvailablePersona): PersonaPreset | undefined {
 export function PersonaSelection({isSwitching = false, onBackToCredentials}: PersonaSelectionProps) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const [error, setError] = useState<string | null>(null)
   const {data: authLogin} = useQuery<{userId: string; availablePersonas: AvailablePersona[]}>({
     queryKey: ['auth-login'],
     enabled: false,
@@ -35,10 +37,14 @@ export function PersonaSelection({isSwitching = false, onBackToCredentials}: Per
   const personaMutation = useMutation({
     mutationFn: (preset: PersonaPreset) => selectPersona({personaId: preset.id}),
     onSuccess: (nextSession) => {
+      setError(null)
       queryClient.setQueryData(['session'], nextSession)
       void queryClient.invalidateQueries({queryKey: ['session']})
       const homePath = nextSession.homePath ?? getPersonaHomePath(nextSession)
       navigate(homePath, {replace: true})
+    },
+    onError: (err: Error) => {
+      setError(err.message || 'Не удалось сохранить выбранную роль')
     },
   })
 
@@ -48,6 +54,7 @@ export function PersonaSelection({isSwitching = false, onBackToCredentials}: Per
       console.warn(`[PersonaSelection] Unknown persona id: ${persona.id}`)
       return
     }
+    setError(null)
     personaMutation.mutate(preset)
   }
 
@@ -68,25 +75,31 @@ export function PersonaSelection({isSwitching = false, onBackToCredentials}: Per
         {personas.map((persona) => {
           const known = Boolean(toPersonaPreset(persona))
           return (
-          <button
-            key={persona.id}
-            type="button"
-            className="persona-card"
-            aria-label={`${persona.title}. ${persona.description}. ${persona.destination}`}
-            disabled={personaMutation.isPending || !known}
-            onClick={() => selectPersonaCard(persona)}
-            data-testid={testId('auth', 'login', 'btn', persona.id)}
-          >
-            <span className="persona-card__icon" aria-hidden>
-              {persona.icon}
-            </span>
-            <span className="persona-card__title">{persona.title}</span>
-            <span className="persona-card__description">{persona.description}</span>
-            <span className="persona-card__destination">→ {persona.destination}</span>
-          </button>
+            <button
+              key={persona.id}
+              type="button"
+              className="persona-card"
+              aria-label={`${persona.title}. ${persona.description}. ${persona.destination}`}
+              disabled={personaMutation.isPending || !known}
+              onClick={() => selectPersonaCard(persona)}
+              data-testid={testId('auth', 'login', 'btn', persona.id)}
+            >
+              <span className="persona-card__icon" aria-hidden>
+                {persona.icon}
+              </span>
+              <span className="persona-card__title">{persona.title}</span>
+              <span className="persona-card__description">{persona.description}</span>
+              <span className="persona-card__destination">→ {persona.destination}</span>
+            </button>
           )
         })}
       </div>
+
+      {error && (
+        <div className="auth-alert auth-alert--error" data-testid={testId('auth', 'login', 'text', 'personas-error')}>
+          {error}
+        </div>
+      )}
 
       {!isSwitching && onBackToCredentials && (
         <HockeyButton

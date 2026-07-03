@@ -119,20 +119,3 @@ export function getPendingRegistration(): {displayName: string; email: string} |
   if (!user) return null
   return {displayName: user.displayName, email: user.email}
 }
-
-/** @deprecated используйте setPendingLocalUser */
-export function setPendingRegistration(data: {displayName: string; email: string} | null): void {
-  if (!data) {
-    clearPendingLocalUser()
-    return
-  }
-  const existing = findLocalUserByEmail(data.email)
-  if (existing) {
-    setPendingLocalUser(existing.id)
-  }
-}
-
-/** @deprecated используйте clearPendingLocalUser */
-export function clearPendingRegistration(): void {
-  clearPendingLocalUser()
-}
