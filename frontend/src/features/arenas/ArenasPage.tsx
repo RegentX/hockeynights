@@ -114,6 +114,7 @@ export function ArenasPage() {
       <div
         className={`arenas-page__progress${showProgress ? ' arenas-page__progress--active' : ''}`}
         aria-hidden
+        data-testid={testId('arenas', 'page', 'progress')}
       />
       <ScrollReveal direction="down">
         <Text variant="header-1" className="variable-font-header" data-testid={testId('arenas', 'page', 'text', 'title')}>

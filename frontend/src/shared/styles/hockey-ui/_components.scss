@@ -214,44 +214,82 @@
 
 .arenas-page {
   display: flex;
-      flex-direction: column;
-      gap: 16px;
-      position: relative;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
 
-}
+  &__progress {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    margin: -16px 0 0;
+    background: transparent;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--hockey-motion-fast) var(--hockey-motion-ease);
+    z-index: 5;
 
-.arenas-page__progress {
-  position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  margin: -16px 0 0;
-  background: transparent;
-  overflow: hidden;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--hockey-motion-fast) var(--hockey-motion-ease);
-  z-index: 5;
-}
+    &--active {
+      opacity: 1;
 
-.arenas-page__progress--active {
-  opacity: 1;
-}
+      &::after {
+        content: '';
+        display: block;
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--hockey-line-red) 30%,
+          var(--hockey-line-blue) 70%,
+          transparent
+        );
+        animation: arenas-progress-slide 1.1s ease-in-out infinite;
 
-.arenas-page__progress--active::after {
-  content: '';
-  display: block;
-  width: 40%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--hockey-line-red) 30%,
-    var(--hockey-line-blue) 70%,
-    transparent
-  );
-  animation: arenas-progress-slide 1.1s ease-in-out infinite;
+        @include reduced-motion {
+          animation: none;
+        }
+      }
+    }
+  }
+
+  &__skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+
+    @include breakpoint($max: 1024px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__map-col,
+  &__detail-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: opacity var(--hockey-motion-fast) var(--hockey-motion-ease);
+
+    &--refreshing {
+      opacity: 0.6;
+    }
+  }
 }
 
 @keyframes arenas-progress-slide {
@@ -261,33 +299,6 @@
   100% {
     transform: translateX(350%);
   }
-}
-
-.arenas-page__list {
-  transition: opacity var(--hockey-motion-fast) var(--hockey-motion-ease);
-}
-
-.arenas-page__list--refreshing {
-  opacity: 0.6;
-}
-
-.arenas-page__layout {
-  display: grid;
-      grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
-      gap: 16px;
-      align-items: start;
-
-  @include breakpoint($max: 1024px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.arenas-page__map-col,
-.arenas-page__list,
-.arenas-page__detail-col {
-  display: flex;
-    flex-direction: column;
-    gap: 12px;
 }
 
 .arena-map__leaflet .leaflet-control-attribution {
@@ -454,24 +465,11 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
 
-.arena-filters__actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.arenas-page__skeleton {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.arena-detail__head .g-button {
-  font-size: 20px;
-  line-height: 1;
-  min-width: 32px;
-  padding: 4px 10px;
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+  }
 }
 
 .rink-card--selected {
@@ -525,6 +523,12 @@
       align-items: flex-start;
       gap: 12px;
 
+  .g-button {
+    font-size: 20px;
+    line-height: 1;
+    min-width: 32px;
+    padding: 4px 10px;
+  }
 }
 
 .arena-detail__mode {
