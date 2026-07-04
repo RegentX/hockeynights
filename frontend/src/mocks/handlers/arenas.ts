@@ -9,6 +9,7 @@ import {arenaHasFreeSlots, mockArenas, mockIceSlots} from '@/mocks/data/arenas'
 export const arenaHandlers = [
   http.get('/mock-api/v1/arenas', ({request}) => {
     const url = new URL(request.url)
+    const query = url.searchParams.get('q')?.trim().toLowerCase()
     const district = url.searchParams.get('district')
     const metro = url.searchParams.get('metro')
     const amenity = url.searchParams.get('amenity')
@@ -17,6 +18,15 @@ export const arenaHandlers = [
 
     let result = mockArenas.filter((a) => a.visible !== false)
 
+    if (query) {
+      result = result.filter((a) => {
+        const haystack = [a.name, a.metro, a.district, a.city, a.address]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase()
+        return haystack.includes(query)
+      })
+    }
     if (district) {
       result = result.filter((a) => a.district === district)
     }
