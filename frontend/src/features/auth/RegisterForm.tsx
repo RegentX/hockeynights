@@ -62,9 +62,10 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
   }
 
   return (
-    <section
+    <form
       className="auth-form"
       aria-label="Регистрация"
+      onSubmit={handleSubmit}
       data-testid={testId('auth', 'register', 'panel', 'form')}
     >
       <header className="auth-form__header" data-testid={testId('auth', 'register', 'panel', 'header')}>
@@ -80,72 +81,70 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
         Данные хранятся в <strong>localStorage</strong> и доступны только на этом устройстве.
       </div>
 
-      <form className="auth-form__submit" onSubmit={handleSubmit} noValidate>
-        <div className="auth-form__fields" data-testid={testId('auth', 'register', 'panel', 'fields')}>
-          <AuthField
-            label="Имя"
-            fieldId="auth-register-display-name"
-            autoComplete="name"
-            value={values.displayName}
-            onUpdate={(value) => updateField('displayName', value)}
-            testIdScope="register"
-            testIdQualifier="display-name"
-          />
-          <AuthField
-            label="Email"
-            fieldId="auth-register-email"
-            type="email"
-            autoComplete="email"
-            value={values.email}
-            onUpdate={(value) => updateField('email', value)}
-            testIdScope="register"
-            testIdQualifier="email"
-          />
-          <AuthField
-            label="Пароль"
-            fieldId="auth-register-password"
-            type="password"
-            autoComplete="new-password"
-            placeholder="Не менее 6 символов"
-            value={values.password}
-            onUpdate={(value) => updateField('password', value)}
-            testIdScope="register"
-            testIdQualifier="password"
-          />
-          <AuthField
-            label="Подтверждение пароля"
-            fieldId="auth-register-password-confirm"
-            type="password"
-            autoComplete="new-password"
-            value={values.passwordConfirm}
-            onUpdate={(value) => updateField('passwordConfirm', value)}
-            testIdScope="register"
-            testIdQualifier="password-confirm"
-          />
+      <div className="auth-form__fields" data-testid={testId('auth', 'register', 'panel', 'fields')}>
+        <AuthField
+          label="Имя"
+          fieldId="auth-register-display-name"
+          autoComplete="name"
+          value={values.displayName}
+          onUpdate={(value) => updateField('displayName', value)}
+          testIdScope="register"
+          testIdQualifier="display-name"
+        />
+        <AuthField
+          label="Email"
+          fieldId="auth-register-email"
+          type="email"
+          autoComplete="email"
+          value={values.email}
+          onUpdate={(value) => updateField('email', value)}
+          testIdScope="register"
+          testIdQualifier="email"
+        />
+        <AuthField
+          label="Пароль"
+          fieldId="auth-register-password"
+          type="password"
+          autoComplete="new-password"
+          placeholder="Не менее 6 символов"
+          value={values.password}
+          onUpdate={(value) => updateField('password', value)}
+          testIdScope="register"
+          testIdQualifier="password"
+        />
+        <AuthField
+          label="Подтверждение пароля"
+          fieldId="auth-register-password-confirm"
+          type="password"
+          autoComplete="new-password"
+          value={values.passwordConfirm}
+          onUpdate={(value) => updateField('passwordConfirm', value)}
+          testIdScope="register"
+          testIdQualifier="password-confirm"
+        />
 
-          <TermsAcceptanceField
-            checked={values.acceptTerms}
-            onUpdate={(checked) => updateField('acceptTerms', checked)}
-          />
+        <TermsAcceptanceField
+          checked={values.acceptTerms}
+          onUpdate={(checked) => updateField('acceptTerms', checked)}
+        />
+      </div>
+
+      {error && (
+        <div className="auth-alert auth-alert--error" data-testid={testId('auth', 'register', 'text', 'error')}>
+          {error}
         </div>
+      )}
 
-        {error && (
-          <div className="auth-alert auth-alert--error" data-testid={testId('auth', 'register', 'text', 'error')}>
-            {error}
-          </div>
-        )}
-
-        <HockeyButton
-          type="submit"
-          view="action"
-          size="l"
-          loading={registerMutation.isPending}
-          disabled={registerMutation.isPending}
-          data-testid={testId('auth', 'register', 'btn', 'submit')}
-        >
-          Зарегистрироваться
-        </HockeyButton>
-      </form>
-    </section>
+      <HockeyButton
+        view="action"
+        size="l"
+        type="submit"
+        loading={registerMutation.isPending}
+        disabled={registerMutation.isPending}
+        data-testid={testId('auth', 'register', 'btn', 'submit')}
+      >
+        Зарегистрироваться
+      </HockeyButton>
+    </form>
   )
 }

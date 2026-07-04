@@ -35,6 +35,12 @@ export interface Session {
   user: User
   /** @spec SPEC-FR-2.1.3 */
   isOnboarded: boolean
+  /** @spec SPEC-FR-25.1.2 - Выбранная демо-роль */
+  personaId?: string
+  /** @spec SPEC-FR-25.1.2 - Домашний экран после выбора роли */
+  homePath?: string
+  /** @spec SPEC-FR-25.1.2 - Разрешённые маршруты текущей роли */
+  allowedPathPrefixes?: string[]
 }
 
 /** @spec SPEC-FR-2.1.2 - Payload onboarding */

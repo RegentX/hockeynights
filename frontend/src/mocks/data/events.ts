@@ -4,9 +4,34 @@
 
 import type {AttendanceStatus} from '@/entities/common/types'
 import type {CreateEventPayload, GameEvent, RosterStatus} from '@/entities/event/types'
+import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
+
+export {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
 
 /** @spec SPEC-FR-4.1.1 - Mock события */
 export let mockEvents: GameEvent[] = [
+  {
+    id: LEAGUE_SATURDAY_EVENT_ID,
+    type: 'game',
+    title: 'Лига — Медведи САО vs Вымпел',
+    startsAt: '2026-06-27T16:00:00+03:00',
+    endsAt: '2026-06-27T17:30:00+03:00',
+    arenaId: 'arena-001',
+    arenaName: 'Ледовый дворец на Ходынке',
+    organizerUserId: 'user-001',
+    teamId: 'team-001',
+    requiredSkillLevel: 'amateur',
+    requiredSlots: [
+      {position: 'goalie', count: 1, filledCount: 1},
+      {position: 'defense', count: 4, filledCount: 2},
+      {position: 'forward', count: 6, filledCount: 3},
+    ],
+    pricePerPlayer: 1600,
+    hasTeamRsvp: true,
+    participation: [
+      {eventId: LEAGUE_SATURDAY_EVENT_ID, userId: 'user-001', displayName: 'Иван Петров', status: 'going', updatedAt: '2026-06-24T10:00:00Z'},
+    ],
+  },
   {
     id: 'event-001',
     type: 'game',

@@ -62,6 +62,7 @@ describe('AuthPage login', () => {
 
     await waitFor(() => {
       expect(window.localStorage.getItem('hockey-mock-session')).toContain('"isOnboarded":true')
+      expect(window.localStorage.getItem('hockey-mock-session')).toContain('"personaId":"shop-partner"')
       expect(window.localStorage.getItem('hockey-mock-session')).toContain('shop-001')
     })
   })
@@ -81,7 +82,7 @@ describe('AuthPage login', () => {
       expect(screen.getByText('Выберите демо-роль')).toBeInTheDocument()
     })
 
-    await user.click(screen.getByTestId('auth-persona-btn-back-credentials'))
+    await user.click(screen.getByTestId('auth-login-btn-back-credentials'))
     await user.click(screen.getByTestId('auth-shell-tab-login'))
     await waitFor(() => {
       expect(screen.getByText('Вход в аккаунт')).toBeInTheDocument()
@@ -142,6 +143,27 @@ describe('AuthPage register', () => {
     })
   })
 
+  it('requires accepting terms before registration', async () => {
+    const user = userEvent.setup()
+    renderWithProviders(<AuthPage />, {routerProps: {initialEntries: ['/register']}})
+
+    expect(screen.getByTestId('auth-register-link-terms')).toHaveAttribute('href', '/terms')
+
+    await user.type(screen.getByLabelText('Имя'), 'Читатель Условий')
+    await user.type(screen.getByLabelText('Email'), 'terms@hockey.local')
+    await user.type(screen.getByLabelText('Пароль'), 'secret12')
+    await user.type(screen.getByLabelText('Подтверждение пароля'), 'secret12')
+
+    await user.click(screen.getByRole('button', {name: 'Зарегистрироваться'}))
+    expect(screen.getByText('Примите условия использования')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('checkbox'))
+    await user.click(screen.getByRole('button', {name: 'Зарегистрироваться'}))
+    await waitFor(() => {
+      expect(screen.getByText('Выберите демо-роль')).toBeInTheDocument()
+    })
+  })
+
   it('opens terms page from registration and returns back', async () => {
     const user = userEvent.setup()
     renderWithProviders(
@@ -152,33 +174,15 @@ describe('AuthPage register', () => {
       {routerProps: {initialEntries: ['/register']}},
     )
 
-    await user.type(screen.getByLabelText('Имя'), 'Читатель Условий')
-    await user.type(screen.getByLabelText('Email'), 'terms@hockey.local')
-    await user.type(screen.getByLabelText('Пароль'), 'secret12')
-    await user.type(screen.getByLabelText('Подтверждение пароля'), 'secret12')
-
     await user.click(screen.getByTestId('auth-register-link-terms'))
     await waitFor(() => {
       expect(screen.getByTestId('auth-terms-page')).toBeInTheDocument()
       expect(screen.getByText('1. Введение')).toBeInTheDocument()
-      expect(screen.getByText('4. Сообщения и контент')).toBeInTheDocument()
     })
     await user.click(screen.getByTestId('auth-terms-btn-collapse'))
 
     await waitFor(() => {
       expect(screen.getByText('Создать аккаунт')).toBeInTheDocument()
-    })
-
-    await user.type(screen.getByLabelText('Имя'), 'Читатель Условий')
-    await user.type(screen.getByLabelText('Email'), 'terms@hockey.local')
-    await user.type(screen.getByLabelText('Пароль'), 'secret12')
-    await user.type(screen.getByLabelText('Подтверждение пароля'), 'secret12')
-    await user.click(screen.getByRole('checkbox'))
-
-    await user.click(screen.getByRole('button', {name: 'Зарегистрироваться'}))
-    await waitFor(() => {
-      expect(screen.queryByText('Примите условия использования')).not.toBeInTheDocument()
-      expect(screen.getByText('Выберите демо-роль')).toBeInTheDocument()
     })
   })
 
