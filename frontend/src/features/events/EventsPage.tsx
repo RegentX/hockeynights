@@ -319,10 +319,11 @@ export function EventsPage() {
           <div className="hockey-grid hockey-grid--cards-280" data-testid={testId('events', 'page', 'grid', 'filters')}>
           <div className="hockey-stack hockey-stack--gap-4">
             <Text variant="body-2" data-testid={testId('events', 'page', 'text', 'filter-label', 'date')}>Дата</Text>
-            <TextInput
+            <input
               type="date"
+              className="g-text-input__control"
               value={selectedDate}
-              onUpdate={setSelectedDate}
+              onChange={(event) => setSelectedDate(event.target.value)}
               data-testid={testId('events', 'page', 'field', 'date')}
             />
           </div>
