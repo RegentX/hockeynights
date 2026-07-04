@@ -2,12 +2,14 @@ FROM node:22-alpine AS build
 
 WORKDIR /app
 
+ENV HUSKY=0
+
 COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
 
-ARG VITE_API_MODE=backend
+ARG VITE_API_MODE=mock
 ARG VITE_BACKEND_URL=/api/v1
 ENV VITE_API_MODE=$VITE_API_MODE \
     VITE_BACKEND_URL=$VITE_BACKEND_URL

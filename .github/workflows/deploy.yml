@@ -54,7 +54,6 @@ jobs:
 
       - name: Dependency audit
         run: npm audit --audit-level=high
-        continue-on-error: true
 
   deploy:
     needs: quality
@@ -66,7 +65,7 @@ jobs:
       packages: write
     env:
       IMAGE_TAG: ${{ github.ref == 'refs/heads/develop' && 'dev-latest' || 'qa-latest' }}
-      VITE_API_MODE: ${{ vars.VITE_API_MODE || 'backend' }}
+      VITE_API_MODE: ${{ vars.VITE_API_MODE || 'mock' }}
       VITE_BACKEND_URL: ${{ vars.VITE_BACKEND_URL || '/api/v1' }}
     steps:
       - uses: actions/checkout@v5
