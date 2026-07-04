@@ -9,6 +9,7 @@ import {Link} from 'react-router-dom'
 
 import type {GameEvent} from '@/entities/event/types'
 import {AttendanceControl} from '@/features/events/AttendanceControl'
+import {EventRsvpBoard} from '@/features/events/EventRsvpBoard'
 import {RosterNeedsWidget} from '@/features/events/RosterNeedsWidget'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
@@ -122,7 +123,13 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
             </div>
           </div>
 
-          <AttendanceControl eventId={event.id} currentStatus={currentStatus} />
+          <AttendanceControl
+            eventId={event.id}
+            currentStatus={currentStatus}
+            currentUserId={currentUserId}
+            useRsvpApi={event.hasTeamRsvp}
+          />
+          {event.hasTeamRsvp && <EventRsvpBoard eventId={event.id} />}
           <RosterNeedsWidget eventId={event.id} />
           {currentStatus === 'going' && isPastEvent && (
             <Link

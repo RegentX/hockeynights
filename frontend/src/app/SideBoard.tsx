@@ -10,6 +10,7 @@ import {Link} from 'react-router-dom'
 import {fetchEvents} from '@/features/events/api/eventsApi'
 import {fetchLeagues, fetchLeagueStandings} from '@/features/leagues/api/leaguesApi'
 import {LeagueStandings} from '@/features/leagues/LeagueStandings'
+import {fetchProfileFavorites} from '@/features/profile/api/favoritesApi'
 import {fetchRadarRecommendations} from '@/features/radar/api/radarApi'
 import {fetchRecruitmentRequests} from '@/features/sos/api/recruitmentApi'
 import {ARENAS_LABEL, RADAR_LABEL} from '@/shared/config/navigationLabels'
@@ -40,6 +41,11 @@ export function SideBoard() {
     queryFn: fetchRadarRecommendations,
   })
 
+  const {data: favorites} = useQuery({
+    queryKey: ['profile-favorites'],
+    queryFn: fetchProfileFavorites,
+  })
+
   const upcoming = events.slice(0, 3)
   const openSos = sosRequests.filter((r) => r.isGoalkeeperSos).length
   const topRadar = radarItems.slice(0, 2)
@@ -66,6 +72,35 @@ export function SideBoard() {
           </Text>
         </div>
       </IceCard>
+
+      {favorites && favorites.actions.length > 0 && (
+        <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'favorites')}>
+          <div
+            className="side-board__title"
+            data-testid={testId('app', 'side-board', 'text', 'favorites-title')}
+          >
+            Избранное
+          </div>
+          <div className="side-board__cta side-board__cta--sm">
+            {favorites.actions.map((action) => (
+              <Link
+                key={action.id}
+                to={action.path}
+                data-testid={testId('app', 'side-board', 'link', 'favorite', action.id)}
+              >
+                <HockeyButton
+                  view="outlined"
+                  size="s"
+                  data-testid={testId('app', 'side-board', 'btn', 'favorite', action.id)}
+                >
+                  {action.icon ? `${action.icon} ` : ''}
+                  {action.label}
+                </HockeyButton>
+              </Link>
+            ))}
+          </div>
+        </IceCard>
+      )}
 
       <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'radar')}>
         <div

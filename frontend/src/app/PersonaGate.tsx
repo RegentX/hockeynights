@@ -29,7 +29,8 @@ export function PersonaGate() {
   }
 
   if (session?.isOnboarded && !isPathAllowed(session, location.pathname)) {
-    return <Navigate to={getPersonaHomePath(session)} replace />
+    const homePath = session.homePath ?? getPersonaHomePath(session)
+    return <Navigate to={homePath} replace />
   }
 
   return <Outlet />

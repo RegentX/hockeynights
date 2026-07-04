@@ -11,7 +11,9 @@ import type {
   VerificationStatus,
 } from '@/entities/profile/types'
 import type {PartnerMembership, Session, User} from '@/entities/user/types'
-import {clearPendingLocalUser} from '@/features/auth/localAuthMemory'
+import {getAllowedPathPrefixes, getPersonaHomePath} from '@/features/access/navigationAccess'
+import {clearPendingLocalUser, getPendingRegistration} from '@/features/auth/localAuthMemory'
+import {getPersonaOnboardingPayload} from '@/mocks/data/personas'
 import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
 
 /** @spec SPEC-FR-2.1.1 - Mock пользователь по умолчанию */
@@ -158,6 +160,31 @@ export function completeOnboarding(
   return mockSession
 }
 
+/**
+ * @spec SPEC-FR-25.1.2 - Выбор демо-роли через mock API
+ */
+export function selectMockPersona(personaId: string): Session {
+  const payload = getPersonaOnboardingPayload(personaId)
+  if (!payload) {
+    throw new Error(`Unknown persona: ${personaId}`)
+  }
+
+  const pending = getPendingRegistration()
+  const displayName =
+    pending?.displayName ??
+    (mockSession.isOnboarded ? mockSession.user.displayName : payload.displayName)
+  const session = completeOnboarding(displayName, payload.roles, payload.partnerMemberships ?? [])
+
+  mockSession = {
+    ...session,
+    personaId,
+    homePath: getPersonaHomePath(session),
+    allowedPathPrefixes: getAllowedPathPrefixes(session),
+  }
+  persistMockSession(mockSession)
+  return mockSession
+}
+
 /** @spec SPEC-FR-2.1.1 - Сброс mock-сессии (выход) */
 export function resetMockSession(): Session {
   mockUser.displayName = 'Иван Петров'
@@ -166,6 +193,9 @@ export function resetMockSession(): Session {
   mockSession = {
     user: {...mockUser, partnerMemberships: undefined},
     isOnboarded: false,
+    personaId: undefined,
+    homePath: undefined,
+    allowedPathPrefixes: undefined,
   }
   clearPersistedSession()
   clearPendingLocalUser()

@@ -2,6 +2,7 @@
  * SPEC-FR-2.1.1, SPEC-FR-2.1.2, SPEC-FR-2.1.3
  */
 
+import type {AuthLoginResponse, SelectPersonaPayload} from '@/entities/auth/types'
 import type {OnboardingPayload, Session} from '@/entities/user/types'
 import {apiRequest} from '@/shared/api/client'
 
@@ -29,7 +30,20 @@ function parseApiErrorMessage(error: unknown, fallback: string): string {
 }
 
 /**
- * @spec SPEC-FR-2.1.1 - Проверка демо-учётных данных
+ * @spec SPEC-FR-25.1.1 - Демо-вход: POST /auth/login → карточки ролей (demo@hockey.local).
+ * Используется при isDemoCredentials() в LoginForm.
+ */
+export async function authLogin(payload: LoginPayload): Promise<AuthLoginResponse> {
+  try {
+    return await apiRequest<AuthLoginResponse>('/auth/login', {method: 'POST', body: payload})
+  } catch (error) {
+    throw new Error(parseApiErrorMessage(error, 'Не удалось войти'), {cause: error})
+  }
+}
+
+/**
+ * @spec SPEC-FR-2.1.1 - Локальный вход: POST /login → PersonaSelection без auth-login cache.
+ * Используется для аккаунтов из localAuthMemory (не demo@hockey.local).
  */
 export async function loginWithCredentials(payload: LoginPayload): Promise<{ok: true}> {
   try {
@@ -58,8 +72,16 @@ export function fetchSession(): Promise<Session> {
 }
 
 /**
- * @spec SPEC-FR-2.1.2 - Сохранить onboarding
+ * @spec SPEC-FR-25.1.2 - Выбор демо-роли
+ */
+export function selectPersona(payload: SelectPersonaPayload): Promise<Session> {
+  return apiRequest<Session>('/session/persona', {method: 'POST', body: payload})
+}
+
+/**
+ * @spec SPEC-FR-2.1.2 - Сохранить onboarding (legacy)
  * @spec SPEC-FR-2.1.3 - Вернуть обновлённую сессию
+ * @deprecated Используйте selectPersona (POST /session/persona). Не выставляет personaId / homePath.
  */
 export function submitOnboarding(payload: OnboardingPayload): Promise<Session> {
   return apiRequest<Session>('/onboarding', {method: 'POST', body: payload})

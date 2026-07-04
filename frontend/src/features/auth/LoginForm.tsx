@@ -3,14 +3,14 @@
  * Форма входа (email + пароль).
  */
 
-import {useMutation} from '@tanstack/react-query'
+import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {type FormEvent, useState} from 'react'
 import {Link} from 'react-router-dom'
 
-import {loginWithCredentials} from '@/features/auth/api/sessionApi'
+import {authLogin, loginWithCredentials} from '@/features/auth/api/sessionApi'
 import {AuthDemoCard} from '@/features/auth/AuthDemoCard'
 import {AuthField} from '@/features/auth/AuthField'
-import {DEMO_EMAIL, DEMO_PASSWORD} from '@/features/auth/demoCredentials'
+import {DEMO_EMAIL, DEMO_PASSWORD, isDemoCredentials} from '@/features/auth/demoCredentials'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 
@@ -19,14 +19,26 @@ export interface LoginFormProps {
 }
 
 export function LoginForm({onSuccess}: LoginFormProps) {
+  const queryClient = useQueryClient()
   const [email, setEmail] = useState(DEMO_EMAIL)
   const [password, setPassword] = useState(DEMO_PASSWORD)
   const [error, setError] = useState<string | null>(null)
 
   const loginMutation = useMutation({
-    mutationFn: loginWithCredentials,
-    onSuccess: () => {
+    mutationFn: async (payload: {email: string; password: string}) => {
+      if (isDemoCredentials(payload.email, payload.password)) {
+        return {kind: 'demo' as const, data: await authLogin(payload)}
+      }
+      await loginWithCredentials(payload)
+      return {kind: 'local' as const}
+    },
+    onSuccess: (result) => {
       setError(null)
+      if (result.kind === 'demo') {
+        queryClient.setQueryData(['auth-login'], result.data)
+      } else {
+        queryClient.removeQueries({queryKey: ['auth-login']})
+      }
       onSuccess()
     },
     onError: (err: Error) => {
@@ -47,9 +59,10 @@ export function LoginForm({onSuccess}: LoginFormProps) {
   }
 
   return (
-    <section
+    <form
       className="auth-form"
       aria-label="Вход"
+      onSubmit={handleSubmit}
       data-testid={testId('auth', 'login', 'panel', 'form')}
     >
       <header
@@ -66,50 +79,48 @@ export function LoginForm({onSuccess}: LoginFormProps) {
 
       <AuthDemoCard onApply={applyDemoCredentials} />
 
-      <form className="auth-form__submit" onSubmit={handleSubmit} noValidate>
-        <div className="auth-form__fields" data-testid={testId('auth', 'login', 'panel', 'fields')}>
-          <AuthField
-            label="Email"
-            fieldId="auth-login-email"
-            type="email"
-            autoComplete="email"
-            value={email}
-            onUpdate={setEmail}
-            testIdScope="login"
-            testIdQualifier="email"
-          />
-          <AuthField
-            label="Пароль"
-            fieldId="auth-login-password"
-            type="password"
-            autoComplete="current-password"
-            value={password}
-            onUpdate={setPassword}
-            testIdScope="login"
-            testIdQualifier="password"
-          />
-        </div>
+      <div className="auth-form__fields" data-testid={testId('auth', 'login', 'panel', 'fields')}>
+        <AuthField
+          label="Email"
+          fieldId="auth-login-email"
+          type="email"
+          autoComplete="email"
+          value={email}
+          onUpdate={setEmail}
+          testIdScope="login"
+          testIdQualifier="email"
+        />
+        <AuthField
+          label="Пароль"
+          fieldId="auth-login-password"
+          type="password"
+          autoComplete="current-password"
+          value={password}
+          onUpdate={setPassword}
+          testIdScope="login"
+          testIdQualifier="password"
+        />
+      </div>
 
-        {error && (
-          <div
-            className="auth-alert auth-alert--error"
-            data-testid={testId('auth', 'login', 'text', 'error')}
-          >
-            {error}
-          </div>
-        )}
-
-        <HockeyButton
-          type="submit"
-          view="action"
-          size="l"
-          loading={loginMutation.isPending}
-          disabled={loginMutation.isPending}
-          data-testid={testId('auth', 'login', 'btn', 'submit')}
+      {error && (
+        <div
+          className="auth-alert auth-alert--error"
+          data-testid={testId('auth', 'login', 'text', 'error')}
         >
-          Войти
-        </HockeyButton>
-      </form>
+          {error}
+        </div>
+      )}
+
+      <HockeyButton
+        view="action"
+        size="l"
+        type="submit"
+        loading={loginMutation.isPending}
+        disabled={loginMutation.isPending}
+        data-testid={testId('auth', 'login', 'btn', 'submit')}
+      >
+        Войти
+      </HockeyButton>
 
       <p className="auth-form__footer" data-testid={testId('auth', 'login', 'panel', 'footer')}>
         <Link
@@ -120,6 +131,6 @@ export function LoginForm({onSuccess}: LoginFormProps) {
           Условия использования
         </Link>
       </p>
-    </section>
+    </form>
   )
 }

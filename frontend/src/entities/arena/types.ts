@@ -69,6 +69,8 @@ export interface IceSlot {
 /** @spec SPEC-FR-6.1.2 - Фильтры арен */
 export interface ArenaFilters {
   /** @spec SPEC-FR-6.1.2 */
+  query?: string
+  /** @spec SPEC-FR-6.1.2 */
   district?: string
   /** @spec SPEC-FR-6.1.2 */
   metro?: string

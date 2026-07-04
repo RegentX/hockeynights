@@ -5,6 +5,7 @@
 
 import {http, HttpResponse} from 'msw'
 
+import type {AuthLoginPayload, SelectPersonaPayload} from '@/entities/auth/types'
 import type {OnboardingPayload} from '@/entities/user/types'
 import {DEMO_EMAIL, isDemoCredentials} from '@/features/auth/demoCredentials'
 import {
@@ -14,12 +15,47 @@ import {
   setPendingLocalUser,
 } from '@/features/auth/localAuthMemory'
 import {validateRegisterPayload} from '@/features/auth/registrationValidation'
-import {completeOnboarding, mockSession, resetMockSession} from '@/mocks/data/session'
+import {DEMO_USER_ID, getAvailablePersonas} from '@/mocks/data/personas'
+import {
+  completeOnboarding,
+  mockSession,
+  resetMockSession,
+  selectMockPersona,
+} from '@/mocks/data/session'
 
-/** @spec SPEC-FR-2.1.1 - Handlers сессии и onboarding */
 export const sessionHandlers = [
   http.get('/mock-api/v1/session', () => {
     return HttpResponse.json(mockSession)
+  }),
+
+  http.post('/mock-api/v1/auth/login', async ({request}) => {
+    const body = (await request.json()) as AuthLoginPayload
+    const email = body.email ?? ''
+    const password = body.password ?? ''
+
+    if (!isDemoCredentials(email, password)) {
+      return HttpResponse.json({message: 'Неверный email или пароль'}, {status: 401})
+    }
+
+    setPendingLocalUser(null)
+    return HttpResponse.json({
+      userId: DEMO_USER_ID,
+      availablePersonas: getAvailablePersonas(),
+    })
+  }),
+
+  http.post('/mock-api/v1/session/persona', async ({request}) => {
+    const body = (await request.json()) as SelectPersonaPayload
+    if (!body.personaId?.trim()) {
+      return HttpResponse.json({message: 'personaId is required'}, {status: 400})
+    }
+
+    try {
+      const session = selectMockPersona(body.personaId)
+      return HttpResponse.json(session)
+    } catch {
+      return HttpResponse.json({message: 'Unknown persona'}, {status: 404})
+    }
   }),
 
   http.post('/mock-api/v1/login', async ({request}) => {
@@ -85,6 +121,7 @@ export const sessionHandlers = [
     return HttpResponse.json({ok: true})
   }),
 
+  /** @deprecated Legacy onboarding — prefer POST /session/persona (selectMockPersona). */
   http.post('/mock-api/v1/onboarding', async ({request}) => {
     const body = (await request.json()) as OnboardingPayload
     const session = completeOnboarding(body.displayName, body.roles, body.partnerMemberships ?? [])

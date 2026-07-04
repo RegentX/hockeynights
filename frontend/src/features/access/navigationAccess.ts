@@ -154,7 +154,6 @@ export function getAllowedPathPrefixes(session: Session): string[] {
 export function isPathAllowed(session: Session | undefined, pathname: string): boolean {
   if (!session?.isOnboarded) return true
   if (pathname === '/') return true
-  return getAllowedPathPrefixes(session).some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  )
+  const prefixes = session.allowedPathPrefixes ?? getAllowedPathPrefixes(session)
+  return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
 }
