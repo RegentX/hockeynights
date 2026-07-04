@@ -11,13 +11,14 @@ import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
 import {resetMockEventRsvp} from '@/mocks/data/eventRsvp'
 import {resetMockFavorites} from '@/mocks/data/favorites'
 import {resetMockSession} from '@/mocks/data/session'
+import {clearTestStorage} from '@/test/clearTestStorage'
 
 describe('HOCFRONT-8 mock API', () => {
   beforeEach(() => {
     resetMockSession()
     resetMockFavorites()
     resetMockEventRsvp()
-    window.localStorage.clear()
+    clearTestStorage()
   })
 
   it('auth/login returns demo user and personas', async () => {

@@ -82,7 +82,7 @@ export function PersonaSelection({isSwitching = false, onBackToCredentials}: Per
               aria-label={`${persona.title}. ${persona.description}. ${persona.destination}`}
               disabled={personaMutation.isPending || !known}
               onClick={() => selectPersonaCard(persona)}
-              data-testid={testId('auth', 'login', 'btn', persona.id)}
+              data-testid={testId('auth', 'persona', 'btn', persona.id)}
             >
               <span className="persona-card__icon" aria-hidden>
                 {persona.icon}

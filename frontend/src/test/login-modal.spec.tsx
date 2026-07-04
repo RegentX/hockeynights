@@ -45,8 +45,8 @@ describe('AuthPage login', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Выберите демо-роль')).toBeInTheDocument()
-      expect(screen.getByTestId('auth-login-btn-player')).toBeInTheDocument()
-      expect(screen.getByTestId('auth-login-btn-admin')).toBeInTheDocument()
+      expect(screen.getByTestId('auth-persona-btn-player')).toBeInTheDocument()
+      expect(screen.getByTestId('auth-persona-btn-admin')).toBeInTheDocument()
     })
   })
 
@@ -58,7 +58,7 @@ describe('AuthPage login', () => {
     await waitFor(() => {
       expect(screen.getByText('Выберите демо-роль')).toBeInTheDocument()
     })
-    await user.click(screen.getByTestId('auth-login-btn-shop-partner'))
+    await user.click(screen.getByTestId('auth-persona-btn-shop-partner'))
 
     await waitFor(() => {
       expect(window.localStorage.getItem('hockey-mock-session')).toContain('"isOnboarded":true')
