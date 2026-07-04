@@ -9,6 +9,8 @@ import {Text} from '@gravity-ui/uikit'
 import type {GameEvent} from '@/entities/event/types'
 import {AttendanceControl} from '@/features/events/AttendanceControl'
 import {ACCESS_LABELS, EVENT_TYPE_LABELS} from '@/features/events/eventLabels'
+import {EventRsvpBoard} from '@/features/events/EventRsvpBoard'
+import {RosterNeedsWidget} from '@/features/events/RosterNeedsWidget'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 import {testId} from '@/shared/testing/testId'
@@ -111,16 +113,28 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
     )
   }
 
-  const attendanceBlock = (
-    <div className="event-card__attendance">
-      <AttendanceControl
-        eventId={event.id}
-        currentStatus={currentStatus}
-        currentUserId={currentUserId}
-        eventTitle={event.title}
-        eventKind={eventKind}
-      />
-    </div>
+  const eventFooter = (
+    <>
+      <div className="event-card__attendance">
+        <AttendanceControl
+          eventId={event.id}
+          currentStatus={currentStatus}
+          currentUserId={currentUserId}
+          eventTitle={event.title}
+          eventKind={eventKind}
+          useRsvpApi={event.hasTeamRsvp}
+        />
+      </div>
+      {event.hasTeamRsvp && <EventRsvpBoard eventId={event.id} />}
+      <RosterNeedsWidget eventId={event.id} />
+      {currentStatus === 'going' && isPastEvent && (
+        <Link to="/feedback" data-testid={testId('events', 'card', 'link', 'feedback', event.id)}>
+          <Text color="link" data-testid={testId('events', 'card', 'text', 'feedback', event.id)}>
+            Оставить отзыв после матча
+          </Text>
+        </Link>
+      )}
+    </>
   )
 
   if (event.type === 'training') {
@@ -134,7 +148,7 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
           >
             <EventCardHeader event={event} timeStr={timeStr} />
           </Link>
-          {attendanceBlock}
+          {eventFooter}
         </IceCard>
       </div>
     )
@@ -145,14 +159,7 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
       <IceCard padding="m" className="event-card__surface">
         <div className="hockey-stack hockey-stack--gap-12">
           <EventCardHeader event={event} timeStr={timeStr} />
-          {attendanceBlock}
-          {currentStatus === 'going' && isPastEvent && (
-            <Link to="/feedback" data-testid={testId('events', 'card', 'link', 'feedback', event.id)}>
-              <Text color="link" data-testid={testId('events', 'card', 'text', 'feedback', event.id)}>
-                Оставить отзыв после матча
-              </Text>
-            </Link>
-          )}
+          {eventFooter}
         </div>
       </IceCard>
     </div>

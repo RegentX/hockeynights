@@ -3,10 +3,8 @@
  * Чекбокс принятия условий — компактная однострочная разметка.
  */
 
-import {useState, type MouseEvent} from 'react'
 import {Checkbox} from '@gravity-ui/uikit'
 import {Link} from 'react-router-dom'
-import {TermsOfUseModal} from '@/features/auth/TermsOfUseModal'
 import {testId} from '@/shared/testing/testId'
 
 export interface TermsAcceptanceFieldProps {
@@ -15,14 +13,6 @@ export interface TermsAcceptanceFieldProps {
 }
 
 export function TermsAcceptanceField({checked, onUpdate}: TermsAcceptanceFieldProps) {
-  const [modalOpen, setModalOpen] = useState(false)
-
-  function openTermsModal(event: MouseEvent<HTMLButtonElement>) {
-    event.preventDefault()
-    event.stopPropagation()
-    setModalOpen(true)
-  }
-
   return (
     <div className="auth-terms-field" data-testid={testId('auth', 'register', 'panel', 'terms')}>
       <Checkbox
@@ -32,33 +22,16 @@ export function TermsAcceptanceField({checked, onUpdate}: TermsAcceptanceFieldPr
         content={
           <span className="auth-terms-field__label">
             Я принимаю{' '}
-            <button
-              type="button"
-              className="auth-terms-field__link"
-              onClick={openTermsModal}
-              data-testid={testId('auth', 'register', 'btn', 'open-terms')}
-            >
-              условия использования
-            </button>
-            <span className="auth-terms-field__sep" aria-hidden>
-              ·
-            </span>
             <Link
               to="/terms"
-              className="auth-terms-field__link auth-terms-field__link--secondary"
-              data-testid={testId('auth', 'register', 'link', 'read-terms-page')}
+              className="auth-terms-field__link"
+              data-testid={testId('auth', 'register', 'link', 'terms')}
             >
-              на странице
+              условия использования
             </Link>
           </span>
         }
         data-testid={testId('auth', 'register', 'checkbox', 'terms')}
-      />
-
-      <TermsOfUseModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onAccept={() => onUpdate(true)}
       />
     </div>
   )

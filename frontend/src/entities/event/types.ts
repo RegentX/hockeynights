@@ -70,6 +70,8 @@ export interface GameEvent {
   organizerPhone?: string
   /** @spec SPEC-FR-3.3.2 */
   participation: Attendance[]
+  /** @spec SPEC-FR-25.6.1 - Командный RSVP board доступен для события */
+  hasTeamRsvp?: boolean
 }
 
 /** @spec SPEC-FR-4.1.1 - Payload создания события */

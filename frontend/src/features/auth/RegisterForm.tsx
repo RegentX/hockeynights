@@ -3,9 +3,8 @@
  * Форма регистрации (mock Phase 1 + localAuthMemory).
  */
 
-import {useState} from 'react'
+import {useState, type FormEvent} from 'react'
 import {useMutation} from '@tanstack/react-query'
-import {Link} from 'react-router-dom'
 import {AuthField} from '@/features/auth/AuthField'
 import {registerAccount} from '@/features/auth/api/sessionApi'
 import {TermsAcceptanceField} from '@/features/auth/TermsAcceptanceField'
@@ -47,7 +46,8 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
     setValues((prev) => ({...prev, [key]: value}))
   }
 
-  function handleSubmit() {
+  function handleSubmit(event?: FormEvent) {
+    event?.preventDefault()
     const validationError = validateRegisterForm(values)
     if (validationError) {
       setError(validationError)
@@ -62,9 +62,10 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
   }
 
   return (
-    <section
+    <form
       className="auth-form"
       aria-label="Регистрация"
+      onSubmit={handleSubmit}
       data-testid={testId('auth', 'register', 'panel', 'form')}
     >
       <header className="auth-form__header" data-testid={testId('auth', 'register', 'panel', 'header')}>
@@ -137,23 +138,13 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
       <HockeyButton
         view="action"
         size="l"
+        type="submit"
         loading={registerMutation.isPending}
-        onClick={handleSubmit}
+        disabled={registerMutation.isPending}
         data-testid={testId('auth', 'register', 'btn', 'submit')}
       >
         Зарегистрироваться
       </HockeyButton>
-
-      <p className="auth-form__footer" data-testid={testId('auth', 'register', 'panel', 'footer')}>
-        <span className="auth-form__subtitle">Уже есть аккаунт? </span>
-        <Link
-          to="/"
-          className="auth-form__switch-link"
-          data-testid={testId('auth', 'register', 'link', 'login')}
-        >
-          Войти
-        </Link>
-      </p>
-    </section>
+    </form>
   )
 }

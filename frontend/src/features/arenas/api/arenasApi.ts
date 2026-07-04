@@ -11,6 +11,7 @@ import type {Arena, ArenaFilters, IceSlot} from '@/entities/arena/types'
  */
 export function fetchArenas(filters: ArenaFilters = {}): Promise<Arena[]> {
   const params = new URLSearchParams()
+  if (filters.query) params.set('q', filters.query)
   if (filters.district) params.set('district', filters.district)
   if (filters.metro) params.set('metro', filters.metro)
   if (filters.amenity) params.set('amenity', filters.amenity)

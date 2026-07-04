@@ -5,10 +5,12 @@
 
 import type {AttendanceStatus} from '@/entities/common/types'
 import type {EventRsvpBoard, EventRsvpPlayer, EventRsvpStatus} from '@/entities/event/rsvpTypes'
-import {LEAGUE_SATURDAY_EVENT_ID, updateMockAttendance} from '@/mocks/data/events'
+import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
+import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
+import {updateMockAttendance} from '@/mocks/data/events'
 import {mockUser} from '@/mocks/data/session'
 
-export {LEAGUE_SATURDAY_EVENT_ID} from '@/mocks/data/events'
+export {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
 
 const RSVP_STORAGE_KEY = 'hockey-mock-event-rsvp'
 
@@ -41,7 +43,7 @@ function createLeagueSaturdayBoard(players: EventRsvpPlayer[]): EventRsvpBoard {
 }
 
 function loadPersistedRsvp(): EventRsvpBoard | null {
-  if (typeof window === 'undefined') return null
+  if (!canUseLocalStorage()) return null
   try {
     const raw = window.localStorage.getItem(RSVP_STORAGE_KEY)
     if (!raw) return null
@@ -52,7 +54,7 @@ function loadPersistedRsvp(): EventRsvpBoard | null {
 }
 
 function persistRsvp(board: EventRsvpBoard): void {
-  if (typeof window === 'undefined') return
+  if (!canUseLocalStorage()) return
   window.localStorage.setItem(RSVP_STORAGE_KEY, JSON.stringify(board))
 }
 
@@ -105,7 +107,7 @@ export function updateMockEventRsvp(
 
 export function resetMockEventRsvp(): EventRsvpBoard {
   mockLeagueSaturdayRsvp = createLeagueSaturdayBoard(createLeagueSaturdayRoster())
-  if (typeof window !== 'undefined') {
+  if (canUseLocalStorage()) {
     window.localStorage.removeItem(RSVP_STORAGE_KEY)
   }
   return mockLeagueSaturdayRsvp

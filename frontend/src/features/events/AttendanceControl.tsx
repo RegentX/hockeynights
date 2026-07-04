@@ -7,8 +7,8 @@ import {Button, Text} from '@gravity-ui/uikit'
 import {updateAttendance, fetchEventRsvp, updateEventRsvp} from '@/features/events/api/eventsApi'
 import type {AttendanceStatus} from '@/entities/common/types'
 import type {EventRsvpStatus} from '@/entities/event/rsvpTypes'
-import {LEAGUE_SATURDAY_EVENT_ID} from '@/mocks/data/eventRsvp'
 import {testId} from '@/shared/testing/testId'
+import {IceSkeleton} from '@/shared/ui/IceSkeleton'
 
 /** @spec SPEC-FR-3.3.1 - Props контрола посещаемости */
 export interface AttendanceControlProps {
@@ -29,7 +29,6 @@ export interface AttendanceControlProps {
 const RSVP_BUTTONS: {status: EventRsvpStatus; label: string}[] = [
   {status: 'confirmed', label: 'Иду'},
   {status: 'declined', label: 'Не иду'},
-  {status: 'pending', label: 'Не ответил'},
 ]
 
 const ATTENDANCE_BUTTONS: {status: AttendanceStatus; label: string}[] = [
@@ -65,9 +64,9 @@ export function AttendanceControl({
   useRsvpApi,
 }: AttendanceControlProps) {
   const queryClient = useQueryClient()
-  const rsvpEnabled = useRsvpApi ?? eventId === LEAGUE_SATURDAY_EVENT_ID
+  const rsvpEnabled = useRsvpApi ?? false
 
-  const {data: rsvpBoard} = useQuery({
+  const {data: rsvpBoard, isLoading: isRsvpLoading} = useQuery({
     queryKey: ['event-rsvp', eventId],
     queryFn: () => fetchEventRsvp(eventId),
     enabled: rsvpEnabled,
@@ -91,6 +90,24 @@ export function AttendanceControl({
       void queryClient.invalidateQueries({queryKey: ['roster-status', eventId]})
     },
   })
+
+  if (rsvpEnabled && isRsvpLoading) {
+    return (
+      <div
+        className="event-attendance event-attendance--loading hockey-stack hockey-stack--gap-6"
+        data-testid={testId('events', 'attendance', 'loader', eventId)}
+        aria-busy="true"
+        aria-label="Загрузка RSVP"
+      >
+        <Text color="secondary" data-testid={testId('events', 'attendance', 'text', 'label', eventId)}>
+          RSVP команды на игру
+        </Text>
+        <div className="hockey-row hockey-row--gap-8">
+          <IceSkeleton height={36} count={2} testIdPrefix="events" />
+        </div>
+      </div>
+    )
+  }
 
   if (rsvpEnabled && rsvpBoard) {
     const currentRsvp =

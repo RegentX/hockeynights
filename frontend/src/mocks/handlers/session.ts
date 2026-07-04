@@ -15,7 +15,7 @@ import {
   registerLocalUser,
   setPendingLocalUser,
 } from '@/features/auth/localAuthMemory'
-import {validateRegisterForm} from '@/features/auth/registrationValidation'
+import {validateRegisterPayload} from '@/features/auth/registrationValidation'
 
 export const sessionHandlers = [
   http.get('/mock-api/v1/session', () => {
@@ -86,12 +86,10 @@ export const sessionHandlers = [
       email?: string
       password?: string
     }
-    const validationError = validateRegisterForm({
-      displayName: body.displayName ?? '',
-      email: body.email ?? '',
-      password: body.password ?? '',
-      passwordConfirm: body.password ?? '',
-      acceptTerms: true,
+    const validationError = validateRegisterPayload({
+      displayName: body.displayName,
+      email: body.email,
+      password: body.password,
     })
     if (validationError) {
       return HttpResponse.json({message: validationError}, {status: 400})
@@ -117,6 +115,7 @@ export const sessionHandlers = [
     return HttpResponse.json({ok: true})
   }),
 
+  /** @deprecated Legacy onboarding — prefer POST /session/persona (selectMockPersona). */
   http.post('/mock-api/v1/onboarding', async ({request}) => {
     const body = (await request.json()) as OnboardingPayload
     const session = completeOnboarding(

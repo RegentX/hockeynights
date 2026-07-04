@@ -3,7 +3,7 @@
  * Форма входа (email + пароль).
  */
 
-import {useState} from 'react'
+import {useState, type FormEvent} from 'react'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {Link} from 'react-router-dom'
 import {AuthDemoCard} from '@/features/auth/AuthDemoCard'
@@ -51,15 +51,17 @@ export function LoginForm({onSuccess}: LoginFormProps) {
     setError(null)
   }
 
-  function handleSubmit() {
+  function handleSubmit(event?: FormEvent) {
+    event?.preventDefault()
     setError(null)
     loginMutation.mutate({email: email.trim(), password})
   }
 
   return (
-    <section
+    <form
       className="auth-form"
       aria-label="Вход"
+      onSubmit={handleSubmit}
       data-testid={testId('auth', 'login', 'panel', 'form')}
     >
       <header className="auth-form__header" data-testid={testId('auth', 'login', 'panel', 'header')}>
@@ -105,23 +107,15 @@ export function LoginForm({onSuccess}: LoginFormProps) {
       <HockeyButton
         view="action"
         size="l"
+        type="submit"
         loading={loginMutation.isPending}
-        onClick={handleSubmit}
+        disabled={loginMutation.isPending}
         data-testid={testId('auth', 'login', 'btn', 'submit')}
       >
         Войти
       </HockeyButton>
 
       <p className="auth-form__footer" data-testid={testId('auth', 'login', 'panel', 'footer')}>
-        <span className="auth-form__subtitle">Нет аккаунта? </span>
-        <Link
-          to="/register"
-          className="auth-form__switch-link"
-          data-testid={testId('auth', 'login', 'link', 'register')}
-        >
-          Зарегистрироваться
-        </Link>
-        <span className="auth-form__footer-sep"> · </span>
         <Link
           to="/terms"
           className="auth-form__switch-link"
@@ -130,6 +124,6 @@ export function LoginForm({onSuccess}: LoginFormProps) {
           Условия использования
         </Link>
       </p>
-    </section>
+    </form>
   )
 }
