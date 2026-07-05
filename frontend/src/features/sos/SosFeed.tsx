@@ -3,20 +3,18 @@
  * SPEC-UI-2.5, SPEC-UI-1.2, SPEC-UI-4.4
  */
 
-import {useState} from 'react'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Checkbox, Text, TextArea} from '@gravity-ui/uikit'
-import {
-  fetchRecruitmentRequests,
-  respondToRecruitment,
-} from '@/features/sos/api/recruitmentApi'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {useState} from 'react'
+import {Link} from 'react-router-dom'
+
+import {fetchRecruitmentRequests, respondToRecruitment} from '@/features/sos/api/recruitmentApi'
 import {SosResponseReview} from '@/features/sos/SosResponseReview'
+import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {MatchCenterFeed, type MatchCenterRowData} from '@/shared/ui/MatchCenterFeed'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-import {EmptyNetState} from '@/shared/ui/EmptyNetState'
-import {Link} from 'react-router-dom'
-import {testId} from '@/shared/testing/testId'
 
 /**
  * @spec SPEC-UI-2.5 - SOS в формате матч-центра
@@ -63,7 +61,10 @@ export function SosFeed() {
             {request.comment}
           </Text>
         )}
-        <Text color="secondary" data-testid={testId('sos', 'feed', 'text', 'response-label', request.id)}>
+        <Text
+          color="secondary"
+          data-testid={testId('sos', 'feed', 'text', 'response-label', request.id)}
+        >
           Сообщение отклика
         </Text>
         <TextArea
@@ -123,7 +124,10 @@ export function SosFeed() {
                   copy="Открытых запросов нет — капитану пора запустить SOS."
                   action={
                     <Link to="/sos" data-testid={testId('sos', 'feed', 'link', 'create-sos')}>
-                      <HockeyButton variant="sos" data-testid={testId('sos', 'feed', 'btn', 'create-sos')}>
+                      <HockeyButton
+                        variant="sos"
+                        data-testid={testId('sos', 'feed', 'btn', 'create-sos')}
+                      >
                         Запусти SOS
                       </HockeyButton>
                     </Link>

@@ -2,8 +2,8 @@
  * SPEC-FR-6.1.1, SPEC-FR-6.1.2, SPEC-FR-6.2.1, SPEC-FR-6.3.1
  */
 
-import {apiRequest} from '@/shared/api/client'
 import type {Arena, ArenaFilters, IceSlot} from '@/entities/arena/types'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-6.1.1 - Список арен

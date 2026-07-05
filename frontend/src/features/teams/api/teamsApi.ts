@@ -3,10 +3,17 @@
  * SPEC-FR-21.1.2
  */
 
-import {apiRequest} from '@/shared/api/client'
-import type {CreateTeamPayload, RosterMember, Team, TeamInvite, TeamRole, TrainingLineupAssignment} from '@/entities/team/types'
-import type {GameEvent} from '@/entities/event/types'
 import type {Club} from '@/entities/club/types'
+import type {GameEvent} from '@/entities/event/types'
+import type {
+  CreateTeamPayload,
+  RosterMember,
+  Team,
+  TeamInvite,
+  TeamRole,
+  TrainingLineupAssignment,
+} from '@/entities/team/types'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-3.1.1 - Список команд
@@ -88,7 +95,10 @@ export function fetchTeamTrainingEvents(teamId: string): Promise<GameEvent[]> {
 }
 
 /** @spec SPEC-FR-21.1.6 - Получить раскладку тренировки */
-export function fetchTrainingLineup(teamId: string, eventId: string): Promise<TrainingLineupAssignment[]> {
+export function fetchTrainingLineup(
+  teamId: string,
+  eventId: string,
+): Promise<TrainingLineupAssignment[]> {
   return apiRequest<TrainingLineupAssignment[]>(`/teams/${teamId}/training-lineup/${eventId}`)
 }
 

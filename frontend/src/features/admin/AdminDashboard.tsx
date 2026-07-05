@@ -2,14 +2,15 @@
  * SPEC-FR-11.1.1, SPEC-FR-11.1.2, SPEC-FR-11.2.1, SPEC-FR-11.2.2
  */
 
-import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
-import {fetchSourceStatuses} from '@/features/admin/api/adminApi'
+import {useQuery} from '@tanstack/react-query'
+
 import {AdminEntityForm} from '@/features/admin/AdminEntityForm'
+import {fetchSourceStatuses} from '@/features/admin/api/adminApi'
 import {PartnerModerationPanel} from '@/features/admin/PartnerModerationPanel'
 import {SourceStatusTable} from '@/features/admin/SourceStatusTable'
-import {IceCard} from '@/shared/ui/IceCard'
 import {testId} from '@/shared/testing/testId'
+import {IceCard} from '@/shared/ui/IceCard'
 
 /**
  * @spec SPEC-FR-11.1.1 - Admin prototype
@@ -22,7 +23,10 @@ export function AdminDashboard() {
   })
 
   return (
-    <div className="hockey-stack hockey-stack--gap-16" data-testid={testId('admin', 'dashboard', 'page')}>
+    <div
+      className="hockey-stack hockey-stack--gap-16"
+      data-testid={testId('admin', 'dashboard', 'page')}
+    >
       <Text variant="header-1" data-testid={testId('admin', 'dashboard', 'text', 'title')}>
         Админка справочников
       </Text>
@@ -34,22 +38,31 @@ export function AdminDashboard() {
 
       <IceCard padding="m">
         <div data-testid={testId('admin', 'dashboard', 'panel', 'moderation')}>
-          <Text variant="subheader-2" data-testid={testId('admin', 'dashboard', 'text', 'moderation-title')}>
+          <Text
+            variant="subheader-2"
+            data-testid={testId('admin', 'dashboard', 'text', 'moderation-title')}
+          >
             Модерация партнёров
           </Text>
-          <Text color="secondary" className="hockey-mb-12" data-testid={testId('admin', 'dashboard', 'text', 'moderation-hint')}>
-            Профили лиг/магазинов и товары со статусом «на проверке». Войдите с ролью «Администратор».
+          <Text
+            color="secondary"
+            className="hockey-mb-12"
+            data-testid={testId('admin', 'dashboard', 'text', 'moderation-hint')}
+          >
+            Профили лиг/магазинов и товары со статусом «на проверке». Войдите с ролью
+            «Администратор».
           </Text>
           <PartnerModerationPanel />
         </div>
       </IceCard>
 
-      <Text variant="subheader-2" data-testid={testId('admin', 'dashboard', 'text', 'sources-title')}>
+      <Text
+        variant="subheader-2"
+        data-testid={testId('admin', 'dashboard', 'text', 'sources-title')}
+      >
         Статусы источников и видимость
       </Text>
-      {isLoading && (
-        <Text data-testid={testId('admin', 'dashboard', 'loader')}>Загрузка...</Text>
-      )}
+      {isLoading && <Text data-testid={testId('admin', 'dashboard', 'loader')}>Загрузка...</Text>}
       <SourceStatusTable items={sources} />
     </div>
   )

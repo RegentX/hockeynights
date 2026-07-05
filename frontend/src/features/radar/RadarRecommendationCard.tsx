@@ -4,11 +4,12 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
+
 import type {RadarRecommendation} from '@/entities/radar/types'
-import {IceCard} from '@/shared/ui/IceCard'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
-import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {IceCard} from '@/shared/ui/IceCard'
+import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 
 const TYPE_LABELS: Record<RadarRecommendation['type'], string> = {
   sos: 'SOS',
@@ -47,11 +48,11 @@ export function RadarRecommendationCard({
 
   return (
     <div data-testid={testId('radar', 'recommendation-card', 'card', recommendation.id)}>
-      <IceCard
-        className={`radar-card radar-card--${recommendation.priority}`}
-        padding="s"
-      >
-        <div className="radar-card__head" data-testid={testId('radar', 'recommendation-card', 'panel', 'head', recommendation.id)}>
+      <IceCard className={`radar-card radar-card--${recommendation.priority}`} padding="s">
+        <div
+          className="radar-card__head"
+          data-testid={testId('radar', 'recommendation-card', 'panel', 'head', recommendation.id)}
+        >
           <span
             className="radar-card__type"
             data-testid={testId('radar', 'recommendation-card', 'badge', 'type', recommendation.id)}
@@ -60,9 +61,19 @@ export function RadarRecommendationCard({
           </span>
           <span
             className={`radar-card__priority radar-card__priority--${recommendation.priority}`}
-            data-testid={testId('radar', 'recommendation-card', 'badge', 'priority', recommendation.id)}
+            data-testid={testId(
+              'radar',
+              'recommendation-card',
+              'badge',
+              'priority',
+              recommendation.id,
+            )}
           >
-            {recommendation.priority === 'high' ? '🔴' : recommendation.priority === 'medium' ? '🟡' : '⚪'}
+            {recommendation.priority === 'high'
+              ? '🔴'
+              : recommendation.priority === 'medium'
+                ? '🟡'
+                : '⚪'}
           </span>
         </div>
 
@@ -73,27 +84,53 @@ export function RadarRecommendationCard({
           {recommendation.title}
         </Text>
 
-        <div className="radar-card__meta" data-testid={testId('radar', 'recommendation-card', 'panel', 'meta', recommendation.id)}>
+        <div
+          className="radar-card__meta"
+          data-testid={testId('radar', 'recommendation-card', 'panel', 'meta', recommendation.id)}
+        >
           {recommendation.district && (
             <Text
               color="secondary"
-              data-testid={testId('radar', 'recommendation-card', 'text', 'district', recommendation.id)}
+              data-testid={testId(
+                'radar',
+                'recommendation-card',
+                'text',
+                'district',
+                recommendation.id,
+              )}
             >
               {recommendation.district}
             </Text>
           )}
           {timeLabel && (
-            <ScoreboardText data-testid={testId('radar', 'recommendation-card', 'text', 'time', recommendation.id)}>
+            <ScoreboardText
+              data-testid={testId(
+                'radar',
+                'recommendation-card',
+                'text',
+                'time',
+                recommendation.id,
+              )}
+            >
               {timeLabel}
             </ScoreboardText>
           )}
         </div>
 
-        <div className="radar-card__cta-row" data-testid={testId('radar', 'recommendation-card', 'panel', 'cta', recommendation.id)}>
+        <div
+          className="radar-card__cta-row"
+          data-testid={testId('radar', 'recommendation-card', 'panel', 'cta', recommendation.id)}
+        >
           <Text
             className="radar-card__reason"
             color="secondary"
-            data-testid={testId('radar', 'recommendation-card', 'text', 'reason', recommendation.id)}
+            data-testid={testId(
+              'radar',
+              'recommendation-card',
+              'text',
+              'reason',
+              recommendation.id,
+            )}
           >
             {recommendation.reasonText}
           </Text>
@@ -103,7 +140,13 @@ export function RadarRecommendationCard({
               view="outlined"
               onClick={() => onDismiss(recommendation)}
               disabled={isPending}
-              data-testid={testId('radar', 'recommendation-card', 'btn', 'dismiss', recommendation.id)}
+              data-testid={testId(
+                'radar',
+                'recommendation-card',
+                'btn',
+                'dismiss',
+                recommendation.id,
+              )}
             >
               Скрыть
             </HockeyButton>
@@ -111,7 +154,13 @@ export function RadarRecommendationCard({
               size="m"
               onClick={() => onNavigate(recommendation)}
               disabled={isPending}
-              data-testid={testId('radar', 'recommendation-card', 'btn', 'navigate', recommendation.id)}
+              data-testid={testId(
+                'radar',
+                'recommendation-card',
+                'btn',
+                'navigate',
+                recommendation.id,
+              )}
             >
               Выйти на лёд
             </HockeyButton>

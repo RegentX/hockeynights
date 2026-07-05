@@ -5,9 +5,10 @@
  */
 
 import {useLocation, useNavigate} from 'react-router-dom'
+
 import {TermsOfUseDocument} from '@/features/auth/TermsOfUseDocument'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 export function TermsOfUsePage() {
   const navigate = useNavigate()
@@ -23,7 +24,10 @@ export function TermsOfUsePage() {
 
   return (
     <div className="terms-page" data-testid={testId('auth', 'terms', 'page')}>
-      <div className="terms-page__toolbar" data-testid={testId('auth', 'terms', 'panel', 'toolbar')}>
+      <div
+        className="terms-page__toolbar"
+        data-testid={testId('auth', 'terms', 'panel', 'toolbar')}
+      >
         <HockeyButton
           view="flat"
           size="s"
@@ -34,7 +38,10 @@ export function TermsOfUsePage() {
         </HockeyButton>
       </div>
 
-      <div className="terms-page__card terms-surface" data-testid={testId('auth', 'terms', 'panel', 'card')}>
+      <div
+        className="terms-page__card terms-surface"
+        data-testid={testId('auth', 'terms', 'panel', 'card')}
+      >
         <TermsOfUseDocument />
       </div>
     </div>

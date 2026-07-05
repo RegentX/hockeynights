@@ -3,11 +3,12 @@
  */
 
 import {Card, Text} from '@gravity-ui/uikit'
+
 import type {Arena} from '@/entities/arena/types'
 import type {IceSlot} from '@/entities/arena/types'
 import {ExternalBookingButton} from '@/features/arenas/ExternalBookingButton'
-import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 import {testId} from '@/shared/testing/testId'
+import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 
 /** @spec SPEC-FR-6.3.1 - Props списка слотов */
 export interface IceSlotsListProps {
@@ -31,15 +32,29 @@ export function IceSlotsList({slots, arena}: IceSlotsListProps) {
   }
 
   return (
-    <div className="hockey-stack hockey-stack--gap-8" data-testid={testId('arenas', 'slots', 'list', arena.id)}>
+    <div
+      className="hockey-stack hockey-stack--gap-8"
+      data-testid={testId('arenas', 'slots', 'list', arena.id)}
+    >
       {slots.map((slot) => (
-        <Card key={slot.id} view="filled" className="hockey-panel hockey-panel--12" data-testid={testId('arenas', 'slots', 'card', slot.id)}>
+        <Card
+          key={slot.id}
+          view="filled"
+          className="hockey-panel hockey-panel--12"
+          data-testid={testId('arenas', 'slots', 'card', slot.id)}
+        >
           <div className="hockey-stack hockey-stack--gap-6">
             <Text data-testid={testId('arenas', 'slots', 'text', 'time', slot.id)}>
               {new Date(slot.startsAt).toLocaleString('ru-RU')} —{' '}
-              {new Date(slot.endsAt).toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}
+              {new Date(slot.endsAt).toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
             </Text>
-            <Text color="secondary" data-testid={testId('arenas', 'slots', 'text', 'status', slot.id)}>
+            <Text
+              color="secondary"
+              data-testid={testId('arenas', 'slots', 'text', 'status', slot.id)}
+            >
               Статус: {slot.status}
               {slot.price ? ` · ${slot.price} RUB` : ''}
             </Text>

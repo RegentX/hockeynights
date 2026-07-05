@@ -3,21 +3,26 @@
  * SPEC-UI-2.7, SPEC-UI-2.8
  */
 
-import {useState} from 'react'
-import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
+import {useQuery} from '@tanstack/react-query'
+import {useState} from 'react'
+
 import {fetchSession} from '@/features/auth/api/sessionApi'
-import {PartnerAccessHint} from '@/features/partners/PartnerAccessHint'
-import {PartnerCabinetBanner} from '@/features/partners/PartnerCabinetBanner'
-import {fetchLeagues, fetchLeagueSchedule, fetchLeagueStandings} from '@/features/leagues/api/leaguesApi'
+import {
+  fetchLeagues,
+  fetchLeagueSchedule,
+  fetchLeagueStandings,
+} from '@/features/leagues/api/leaguesApi'
 import {LeagueCard} from '@/features/leagues/LeagueCard'
 import {LeagueProfilePanel} from '@/features/leagues/LeagueProfilePanel'
 import {LeagueSchedule} from '@/features/leagues/LeagueSchedule'
 import {LeagueStandings} from '@/features/leagues/LeagueStandings'
+import {PartnerAccessHint} from '@/features/partners/PartnerAccessHint'
+import {PartnerCabinetBanner} from '@/features/partners/PartnerCabinetBanner'
+import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
-import {testId} from '@/shared/testing/testId'
 
 /**
  * @spec SPEC-UI-2.7 - Табло турнирной таблицы с автовыбором лиги
@@ -73,7 +78,10 @@ export function LeaguesPage() {
         </div>
       )}
 
-      <div className="hockey-grid hockey-grid--cards-300" data-testid={testId('leagues', 'page', 'list')}>
+      <div
+        className="hockey-grid hockey-grid--cards-300"
+        data-testid={testId('leagues', 'page', 'list')}
+      >
         {leagues.map((league) => (
           <LeagueCard
             key={league.id}
@@ -85,17 +93,32 @@ export function LeaguesPage() {
       </div>
 
       {activeLeagueId && selectedLeague && (
-        <div className="hockey-stack hockey-stack--gap-16" data-testid={testId('leagues', 'page', 'panel', 'detail', activeLeagueId)}>
+        <div
+          className="hockey-stack hockey-stack--gap-16"
+          data-testid={testId('leagues', 'page', 'panel', 'detail', activeLeagueId)}
+        >
           <LeagueProfilePanel league={selectedLeague} />
 
           <div data-testid={testId('leagues', 'page', 'card', 'stats', activeLeagueId)}>
             <IceCard padding="m">
               <div className="hockey-row hockey-row--gap-12 hockey-row--between hockey-mb-16">
                 <div>
-                  <Text variant="subheader-2" data-testid={testId('leagues', 'page', 'text', 'stats-title', activeLeagueId)}>
+                  <Text
+                    variant="subheader-2"
+                    data-testid={testId('leagues', 'page', 'text', 'stats-title', activeLeagueId)}
+                  >
                     Статистика и расписание
                   </Text>
-                  <Text color="secondary" data-testid={testId('leagues', 'page', 'text', 'stats-subtitle', activeLeagueId)}>
+                  <Text
+                    color="secondary"
+                    data-testid={testId(
+                      'leagues',
+                      'page',
+                      'text',
+                      'stats-subtitle',
+                      activeLeagueId,
+                    )}
+                  >
                     {selectedLeague.name} · {selectedLeague.region}
                   </Text>
                 </div>
@@ -106,18 +129,19 @@ export function LeaguesPage() {
 
               <div className="hockey-stack hockey-stack--gap-20">
                 {standingsLoading ? (
-                  <div data-testid={testId('leagues', 'page', 'loader', 'standings', activeLeagueId)}>
+                  <div
+                    data-testid={testId('leagues', 'page', 'loader', 'standings', activeLeagueId)}
+                  >
                     <ScoreboardLoader label="Загрузка таблицы" />
                   </div>
                 ) : (
-                  <LeagueStandings
-                    standings={standings}
-                    leagueName={selectedLeague.name}
-                  />
+                  <LeagueStandings standings={standings} leagueName={selectedLeague.name} />
                 )}
 
                 {scheduleLoading ? (
-                  <div data-testid={testId('leagues', 'page', 'loader', 'schedule', activeLeagueId)}>
+                  <div
+                    data-testid={testId('leagues', 'page', 'loader', 'schedule', activeLeagueId)}
+                  >
                     <ScoreboardLoader label="Загрузка расписания" />
                   </div>
                 ) : (

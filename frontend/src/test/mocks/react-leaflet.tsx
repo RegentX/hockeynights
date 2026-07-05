@@ -13,11 +13,7 @@ export function MapContainer({children}: {children?: ReactNode}) {
 }
 
 export function TileLayer() {
-  return (
-    <span className="arena-map__osm-attribution">
-      © OpenStreetMap contributors
-    </span>
-  )
+  return <span className="arena-map__osm-attribution">© OpenStreetMap contributors</span>
 }
 
 export function Marker({

@@ -3,6 +3,7 @@
  */
 
 import {Label} from '@gravity-ui/uikit'
+
 import type {SourceMeta} from '@/entities/common/types'
 import {testId} from '@/shared/testing/testId'
 
@@ -26,7 +27,11 @@ export function SourceMetaBadge({
   const updated = new Date(sourceMeta.updatedAt).toLocaleString('ru-RU')
 
   return (
-    <Label theme="info" size="s" data-testid={dataTestId ?? testId(testIdPrefix, 'source-meta-badge', 'badge')}>
+    <Label
+      theme="info"
+      size="s"
+      data-testid={dataTestId ?? testId(testIdPrefix, 'source-meta-badge', 'badge')}
+    >
       {sourceMeta.syncStatus} · {sourceMeta.source} · {updated}
     </Label>
   )

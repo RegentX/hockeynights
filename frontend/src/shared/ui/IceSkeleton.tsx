@@ -23,7 +23,10 @@ export function IceSkeleton({height = 120, count = 1, testIdPrefix = 'shared'}: 
         <div
           key={i}
           className="ice-skeleton hockey-ice-shimmer"
-          style={{['--ice-skeleton-height' as string]: typeof height === 'number' ? `${height}px` : height}}
+          style={{
+            ['--ice-skeleton-height' as string]:
+              typeof height === 'number' ? `${height}px` : height,
+          }}
           aria-hidden
           data-testid={testId(testIdPrefix, 'ice-skeleton', 'loader', i + 1)}
         />

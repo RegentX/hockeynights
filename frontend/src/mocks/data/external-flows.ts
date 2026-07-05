@@ -24,9 +24,7 @@ export function createMockIceBooking(payload: CreateIceBookingPayload): IceBooki
   const arena = mockArenas.find((a) => a.id === payload.arenaId)
   if (!arena) throw new Error('Arena not found')
 
-  const slot = payload.slotId
-    ? mockIceSlots.find((s) => s.id === payload.slotId)
-    : undefined
+  const slot = payload.slotId ? mockIceSlots.find((s) => s.id === payload.slotId) : undefined
 
   if (slot && slot.status !== 'free') {
     throw new Error('Слот недоступен для бронирования')
@@ -41,7 +39,8 @@ export function createMockIceBooking(payload: CreateIceBookingPayload): IceBooki
       ? `${new Date(slot.startsAt).toLocaleString('ru-RU')} — ${slot.price ?? '?'} RUB`
       : undefined,
     status: 'mock_submitted',
-    externalUrl: slot?.bookingUrl ?? arena.bookingUrl ?? arena.websiteUrl ?? 'https://example-arena.ru',
+    externalUrl:
+      slot?.bookingUrl ?? arena.bookingUrl ?? arena.websiteUrl ?? 'https://example-arena.ru',
     confirmationCode: `ICE-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
     createdAt: new Date().toISOString(),
   }

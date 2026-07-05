@@ -3,8 +3,9 @@
  */
 
 import {Checkbox, Select, TextInput} from '@gravity-ui/uikit'
-import type {PlayersFilterParams} from '@/features/players/api/playersApi'
+
 import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
+import type {PlayersFilterParams} from '@/features/players/api/playersApi'
 import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-2.3.2 - Props фильтров игроков */
@@ -34,7 +35,10 @@ const SKILL_OPTIONS = [
  */
 export function PlayerFilters({filters, onChange}: PlayerFiltersProps) {
   return (
-    <div className="hockey-grid hockey-grid--filters" data-testid={testId('players', 'player-filters', 'form')}>
+    <div
+      className="hockey-grid hockey-grid--filters"
+      data-testid={testId('players', 'player-filters', 'form')}
+    >
       <Select
         label="Амплуа"
         value={[filters.position ?? '']}

@@ -2,11 +2,6 @@
  * SPEC-FR-2.1.1, SPEC-FR-2.1.2, SPEC-FR-2.1.3
  */
 
-import type {Session, User, PartnerMembership} from '@/entities/user/types'
-import {clearPendingLocalUser, getPendingRegistration} from '@/features/auth/localAuthMemory'
-import {getPersonaOnboardingPayload} from '@/mocks/data/personas'
-import {getPersonaHomePath, getAllowedPathPrefixes} from '@/features/access/navigationAccess'
-import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
 import type {
   HockeyProfile,
   NotificationPreferences,
@@ -15,6 +10,11 @@ import type {
   SubscriptionState,
   VerificationStatus,
 } from '@/entities/profile/types'
+import type {PartnerMembership, Session, User} from '@/entities/user/types'
+import {getAllowedPathPrefixes, getPersonaHomePath} from '@/features/access/navigationAccess'
+import {clearPendingLocalUser, getPendingRegistration} from '@/features/auth/localAuthMemory'
+import {getPersonaOnboardingPayload} from '@/mocks/data/personas'
+import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
 
 /** @spec SPEC-FR-2.1.1 - Mock пользователь по умолчанию */
 export const mockUser: User = {
@@ -173,11 +173,7 @@ export function selectMockPersona(personaId: string): Session {
   const displayName =
     pending?.displayName ??
     (mockSession.isOnboarded ? mockSession.user.displayName : payload.displayName)
-  const session = completeOnboarding(
-    displayName,
-    payload.roles,
-    payload.partnerMemberships ?? [],
-  )
+  const session = completeOnboarding(displayName, payload.roles, payload.partnerMemberships ?? [])
 
   mockSession = {
     ...session,

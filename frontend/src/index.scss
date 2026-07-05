@@ -31,11 +31,7 @@ a {
     text-transform: uppercase;
     line-height: 1;
     margin-bottom: 4px;
-    background: linear-gradient(
-      135deg,
-      var(--g-color-text-primary) 40%,
-      var(--hockey-accent) 100%
-    );
+    background: linear-gradient(135deg, var(--g-color-text-primary) 40%, var(--hockey-accent) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

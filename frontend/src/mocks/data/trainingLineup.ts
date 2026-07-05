@@ -12,10 +12,7 @@ export let mockTrainingLineups: TrainingLineupAssignment[] = [
   {eventId: 'event-002', userId: 'user-005', position: 'defense', side: 'bench', line: 1},
 ]
 
-export function getMockTrainingLineup(
-  teamId: string,
-  eventId: string,
-): TrainingLineupAssignment[] {
+export function getMockTrainingLineup(teamId: string, eventId: string): TrainingLineupAssignment[] {
   void teamId
   return mockTrainingLineups.filter((a) => a.eventId === eventId)
 }

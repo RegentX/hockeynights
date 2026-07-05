@@ -4,13 +4,14 @@
 
 import {screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {beforeEach, describe, expect, it} from 'vitest'
 import {Route, Routes} from 'react-router-dom'
-import {AuthPage} from '@/pages/auth/ui/AuthPage'
+import {beforeEach, describe, expect, it} from 'vitest'
+
 import {DEMO_EMAIL} from '@/features/auth/demoCredentials'
 import {LOCAL_AUTH_MEMORY_KEY} from '@/features/auth/localAuthMemory'
 import {TermsOfUsePage} from '@/features/auth/TermsOfUsePage'
 import {resetMockSession} from '@/mocks/data/session'
+import {AuthPage} from '@/pages/auth/ui/AuthPage'
 import {clearTestStorage} from '@/test/clearTestStorage'
 import {renderWithProviders} from '@/test/render'
 
@@ -62,7 +63,9 @@ describe('AuthPage login', () => {
 
     await waitFor(() => {
       expect(window.localStorage.getItem('hockey-mock-session')).toContain('"isOnboarded":true')
-      expect(window.localStorage.getItem('hockey-mock-session')).toContain('"personaId":"shop-partner"')
+      expect(window.localStorage.getItem('hockey-mock-session')).toContain(
+        '"personaId":"shop-partner"',
+      )
       expect(window.localStorage.getItem('hockey-mock-session')).toContain('shop-001')
     })
   })
@@ -198,7 +201,9 @@ describe('AuthPage register', () => {
     await user.click(screen.getByRole('button', {name: 'Зарегистрироваться'}))
 
     await waitFor(() => {
-      expect(screen.getByText('Этот email уже зарегистрирован. Войдите в аккаунт.')).toBeInTheDocument()
+      expect(
+        screen.getByText('Этот email уже зарегистрирован. Войдите в аккаунт.'),
+      ).toBeInTheDocument()
     })
   })
 })

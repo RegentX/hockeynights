@@ -2,12 +2,17 @@
  * SPEC-FR-24.7.4
  */
 
-import {useState} from 'react'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Checkbox, Select, Text, TextInput} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {useState} from 'react'
+
 import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
 import type {ProductOffer, ShopProductPayload} from '@/entities/shop/types'
-import {createShopProduct, fetchProductOffers, updateShopProduct} from '@/features/shops/api/shopsApi'
+import {
+  createShopProduct,
+  fetchProductOffers,
+  updateShopProduct,
+} from '@/features/shops/api/shopsApi'
 import {testId} from '@/shared/testing/testId'
 
 const AVAILABILITY_OPTIONS = [
@@ -88,17 +93,30 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
   }
 
   return (
-    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12" data-testid={testId('shops', shopId, 'products', 'panel')}>
-      <Text variant="subheader-2" data-testid={testId('shops', shopId, 'products', 'text', 'title')}>
+    <div
+      className="partner-dashboard__section hockey-stack hockey-stack--gap-12"
+      data-testid={testId('shops', shopId, 'products', 'panel')}
+    >
+      <Text
+        variant="subheader-2"
+        data-testid={testId('shops', shopId, 'products', 'text', 'title')}
+      >
         Товары магазина
       </Text>
       <Text color="secondary" data-testid={testId('shops', shopId, 'products', 'text', 'hint')}>
         Добавляй позиции вручную или импортируй каталог на вкладке «Импорт».
       </Text>
 
-      <ul className="partner-dashboard__list" data-testid={testId('shops', shopId, 'products', 'list')}>
+      <ul
+        className="partner-dashboard__list"
+        data-testid={testId('shops', shopId, 'products', 'list')}
+      >
         {products.map((product) => (
-          <li key={product.id} className="partner-dashboard__list-item" data-testid={testId('shops', shopId, 'products', 'item', product.id)}>
+          <li
+            key={product.id}
+            className="partner-dashboard__list-item"
+            data-testid={testId('shops', shopId, 'products', 'item', product.id)}
+          >
             <div className="hockey-row hockey-row--gap-12">
               {product.imageUrl && (
                 <img
@@ -111,11 +129,17 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
                 />
               )}
               <div>
-                <Text data-testid={testId('shops', shopId, 'products', 'text', 'title', product.id)}>
+                <Text
+                  data-testid={testId('shops', shopId, 'products', 'text', 'title', product.id)}
+                >
                   {product.title}
                 </Text>
-                <Text color="secondary" data-testid={testId('shops', shopId, 'products', 'text', 'meta', product.id)}>
-                  {product.category} · {product.price.toLocaleString('ru-RU')} ₽ · {product.availability}
+                <Text
+                  color="secondary"
+                  data-testid={testId('shops', shopId, 'products', 'text', 'meta', product.id)}
+                >
+                  {product.category} · {product.price.toLocaleString('ru-RU')} ₽ ·{' '}
+                  {product.availability}
                   {product.recommendedPositions?.length
                     ? ` · ${product.recommendedPositions.join(', ')}`
                     : ''}
@@ -126,7 +150,14 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
             <Button
               size="s"
               view="outlined"
-              data-testid={testId('shops', shopId, 'products', 'btn', 'toggle-availability', product.id)}
+              data-testid={testId(
+                'shops',
+                shopId,
+                'products',
+                'btn',
+                'toggle-availability',
+                product.id,
+              )}
               onClick={() => toggleAvailability(product)}
             >
               Сменить наличие
@@ -135,8 +166,14 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
         ))}
       </ul>
 
-      <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8" data-testid={testId('shops', shopId, 'products', 'form')}>
-        <Text variant="subheader-2" data-testid={testId('shops', shopId, 'products', 'text', 'form-title')}>
+      <div
+        className="partner-dashboard__form hockey-stack hockey-stack--gap-8"
+        data-testid={testId('shops', shopId, 'products', 'form')}
+      >
+        <Text
+          variant="subheader-2"
+          data-testid={testId('shops', shopId, 'products', 'text', 'form-title')}
+        >
           Добавить товар
         </Text>
         <TextInput
@@ -171,7 +208,11 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
           onUpdate={(value) => setForm((prev) => ({...prev, imageUrl: value}))}
         />
         <div>
-          <Text variant="caption-1" color="secondary" data-testid={testId('shops', shopId, 'products', 'text', 'positions-label')}>
+          <Text
+            variant="caption-1"
+            color="secondary"
+            data-testid={testId('shops', shopId, 'products', 'text', 'positions-label')}
+          >
             Рекомендованные амплуа
           </Text>
           <div className="hockey-mt-8 hockey-row hockey-row--gap-12 hockey-row--wrap">
@@ -204,7 +245,10 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
           options={AVAILABILITY_OPTIONS}
           data-testid={testId('shops', shopId, 'products', 'select', 'availability')}
           onUpdate={(value) =>
-            setForm((prev) => ({...prev, availability: value[0] as ShopProductPayload['availability']}))
+            setForm((prev) => ({
+              ...prev,
+              availability: value[0] as ShopProductPayload['availability'],
+            }))
           }
         />
         <Button
@@ -219,7 +263,10 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
       </div>
 
       {statusMessage && (
-        <Text color="secondary" data-testid={testId('shops', shopId, 'products', 'text', 'status-message')}>
+        <Text
+          color="secondary"
+          data-testid={testId('shops', shopId, 'products', 'text', 'status-message')}
+        >
           {statusMessage}
         </Text>
       )}

@@ -3,11 +3,12 @@
  */
 
 import {beforeEach, describe, expect, it} from 'vitest'
-import {authLogin, selectPersona} from '@/features/auth/api/sessionApi'
-import {fetchProfileFavorites, patchProfileFavorites} from '@/features/profile/api/favoritesApi'
-import {fetchEventRsvp, updateEventRsvp} from '@/features/events/api/eventsApi'
-import {DEMO_EMAIL, DEMO_PASSWORD} from '@/features/auth/demoCredentials'
+
 import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
+import {authLogin, selectPersona} from '@/features/auth/api/sessionApi'
+import {DEMO_EMAIL, DEMO_PASSWORD} from '@/features/auth/demoCredentials'
+import {fetchEventRsvp, updateEventRsvp} from '@/features/events/api/eventsApi'
+import {fetchProfileFavorites, patchProfileFavorites} from '@/features/profile/api/favoritesApi'
 import {resetMockEventRsvp} from '@/mocks/data/eventRsvp'
 import {resetMockFavorites} from '@/mocks/data/favorites'
 import {resetMockSession} from '@/mocks/data/session'
@@ -29,9 +30,7 @@ describe('HOCFRONT-8 mock API', () => {
   })
 
   it('rejects invalid demo login', async () => {
-    await expect(
-      authLogin({email: 'wrong@example.com', password: 'bad'}),
-    ).rejects.toThrow()
+    await expect(authLogin({email: 'wrong@example.com', password: 'bad'})).rejects.toThrow()
   })
 
   it('session/persona updates session with home path and routes', async () => {
@@ -68,7 +67,10 @@ describe('HOCFRONT-8 mock API', () => {
     expect(board.players.some((player) => player.status === 'declined')).toBe(true)
     expect(board.players.some((player) => player.status === 'pending')).toBe(true)
 
-    const updated = await updateEventRsvp(LEAGUE_SATURDAY_EVENT_ID, {status: 'declined', declineReason: 'Тест'})
+    const updated = await updateEventRsvp(LEAGUE_SATURDAY_EVENT_ID, {
+      status: 'declined',
+      declineReason: 'Тест',
+    })
     expect(updated.status).toBe('declined')
     expect(updated.declineReason).toBe('Тест')
 

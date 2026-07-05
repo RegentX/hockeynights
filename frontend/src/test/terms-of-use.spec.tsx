@@ -4,8 +4,9 @@
 
 import {screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {describe, expect, it} from 'vitest'
 import {Route, Routes} from 'react-router-dom'
+import {describe, expect, it} from 'vitest'
+
 import {TermsOfUsePage} from '@/features/auth/TermsOfUsePage'
 import {AuthPage} from '@/pages/auth/ui/AuthPage'
 import {renderWithProviders} from '@/test/render'

@@ -2,8 +2,8 @@
  * SPEC-FR-15.1.1, SPEC-FR-15.1.2, SPEC-FR-15.1.3
  */
 
-import {apiRequest} from '@/shared/api/client'
 import type {PatchRadarRecommendationPayload, RadarRecommendation} from '@/entities/radar/types'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-15.1.1 - Персональные рекомендации Ice Radar

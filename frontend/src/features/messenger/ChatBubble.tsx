@@ -2,11 +2,12 @@
  * SPEC-UI-8.1, SPEC-UI-8.2
  */
 
-import type {ActionableMessageData, ChatAction, Message} from '@/entities/messenger/types'
-import {IceCard} from '@/shared/ui/IceCard'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {Text} from '@gravity-ui/uikit'
+
+import type {ActionableMessageData, ChatAction, Message} from '@/entities/messenger/types'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {IceCard} from '@/shared/ui/IceCard'
 
 interface ChatBubbleProps {
   message: Message
@@ -16,7 +17,7 @@ interface ChatBubbleProps {
 /**
  * @spec SPEC-UI-8.1 - Glassmorphism бабблы сообщений
  */
-export function ChatBubble({ message, isOwn }: ChatBubbleProps) {
+export function ChatBubble({message, isOwn}: ChatBubbleProps) {
   return (
     <div
       className={`chat-bubble-container ${isOwn ? 'chat-bubble-container--own' : ''}`}
@@ -54,7 +55,10 @@ export function ChatBubble({ message, isOwn }: ChatBubbleProps) {
             className="chat-bubble-time"
             data-testid={testId('messenger', 'chat-bubble', 'text', 'time', message.id)}
           >
-            {new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
+            {new Date(message.timestamp).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
           </Text>
           {isOwn && (
             <span
@@ -96,7 +100,13 @@ function ActionableMessage({data, messageId}: {data: ActionableMessageData; mess
         >
           <Text
             variant="body-1"
-            data-testid={testId('messenger', 'chat-bubble', 'text', 'actionable-description', messageId)}
+            data-testid={testId(
+              'messenger',
+              'chat-bubble',
+              'text',
+              'actionable-description',
+              messageId,
+            )}
           >
             {data.description}
           </Text>
@@ -111,7 +121,14 @@ function ActionableMessage({data, messageId}: {data: ActionableMessageData; mess
               size="s"
               view={action.style === 'primary' ? 'action' : 'normal'}
               onClick={() => console.log(`Action: ${action.action}`)}
-              data-testid={testId('messenger', 'chat-bubble', 'btn', 'action', messageId, action.id)}
+              data-testid={testId(
+                'messenger',
+                'chat-bubble',
+                'btn',
+                'action',
+                messageId,
+                action.id,
+              )}
             >
               {action.label}
             </HockeyButton>

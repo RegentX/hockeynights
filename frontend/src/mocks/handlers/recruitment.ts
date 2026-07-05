@@ -3,6 +3,7 @@
  */
 
 import {http, HttpResponse} from 'msw'
+
 import type {CreateRecruitmentPayload} from '@/entities/recruitment/types'
 import {
   createMockRecruitment,

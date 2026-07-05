@@ -3,10 +3,17 @@
  * SPEC-FR-17.1.1, SPEC-FR-18.1.1, SPEC-FR-18.1.3, SPEC-FR-18.1.4, SPEC-FR-19.1.1
  */
 
-import {Navigate} from 'react-router-dom'
-import {useState} from 'react'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Card, Progress, Select, Switch, Text, TextArea, TextInput} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {useState} from 'react'
+import {Navigate} from 'react-router-dom'
+
+import type {PlayerPosition, SkillLevel, UserRole} from '@/entities/common/types'
+import type {HockeyProfile, ProfileSettings, SubscriptionState} from '@/entities/profile/types'
+import {fetchSession} from '@/features/auth/api/sessionApi'
+import {KarmaHint} from '@/features/karma/KarmaHint'
+import {KarmaScore} from '@/features/karma/KarmaScore'
+import {getPrimaryPartnerPath, shouldUsePartnerWorkspace} from '@/features/partners/sessionPersona'
 import {
   fetchMyProfile,
   fetchProfileSettings,
@@ -16,18 +23,9 @@ import {
   updatePrivacySettings,
   updateSubscription,
 } from '@/features/profile/api/profileApi'
-import {fetchSession} from '@/features/auth/api/sessionApi'
-import {
-  getPrimaryPartnerPath,
-  shouldUsePartnerWorkspace,
-} from '@/features/partners/sessionPersona'
-import type {HockeyProfile, ProfileSettings, SubscriptionState} from '@/entities/profile/types'
-import type {PlayerPosition, SkillLevel, UserRole} from '@/entities/common/types'
 import {CoachProfilePanel} from '@/features/profile/CoachProfilePanel'
-import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-import {KarmaHint} from '@/features/karma/KarmaHint'
-import {KarmaScore} from '@/features/karma/KarmaScore'
 import {testId} from '@/shared/testing/testId'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const POSITION_OPTIONS = [
   {value: 'forward', content: 'Нападающий'},
@@ -77,8 +75,15 @@ function ProfileHubTabs({
   onSelect: (value: ProfileHubSection) => void
 }) {
   return (
-    <div className="profile-hub__tabs" data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'list')}>
-      <Button view={section === 'about' ? 'action' : 'outlined'} onClick={() => onSelect('about')} data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'about')}>
+    <div
+      className="profile-hub__tabs"
+      data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'list')}
+    >
+      <Button
+        view={section === 'about' ? 'action' : 'outlined'}
+        onClick={() => onSelect('about')}
+        data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'about')}
+      >
         О человеке
       </Button>
       <Button
@@ -118,7 +123,10 @@ const ROLE_LABELS: Record<UserRole, string> = {
 function ProfileRoleBadges({roles}: {roles: UserRole[]}) {
   if (roles.length === 0) return null
   return (
-    <div className="profile-hub__role-badges" data-testid={testId('profile', 'profile-role-badges', 'list')}>
+    <div
+      className="profile-hub__role-badges"
+      data-testid={testId('profile', 'profile-role-badges', 'list')}
+    >
       {roles.map((role) => (
         <span
           key={role}
@@ -144,7 +152,10 @@ function ParticipationHistorySection({
   const history = profile.participationHistory ?? []
   if (!showHistory) {
     return (
-      <Text color="secondary" data-testid={testId('profile', 'participation-history', 'text', 'hidden')}>
+      <Text
+        color="secondary"
+        data-testid={testId('profile', 'participation-history', 'text', 'hidden')}
+      >
         История участия скрыта настройками приватности.
       </Text>
     )
@@ -158,12 +169,39 @@ function ParticipationHistorySection({
   }
 
   return (
-    <ul className="profile-hub__history" data-testid={testId('profile', 'participation-history', 'list')}>
+    <ul
+      className="profile-hub__history"
+      data-testid={testId('profile', 'participation-history', 'list')}
+    >
       {history.map((record) => (
-        <li key={record.eventId} className="profile-hub__history-item" data-testid={testId('profile', 'participation-history', 'item', record.eventId)}>
+        <li
+          key={record.eventId}
+          className="profile-hub__history-item"
+          data-testid={testId('profile', 'participation-history', 'item', record.eventId)}
+        >
           <div>
-            <Text variant="subheader-2" data-testid={testId('profile', 'participation-history', 'text', 'event', record.eventId)}>{record.eventTitle}</Text>
-            <Text color="secondary" data-testid={testId('profile', 'participation-history', 'text', 'date', record.eventId)}>
+            <Text
+              variant="subheader-2"
+              data-testid={testId(
+                'profile',
+                'participation-history',
+                'text',
+                'event',
+                record.eventId,
+              )}
+            >
+              {record.eventTitle}
+            </Text>
+            <Text
+              color="secondary"
+              data-testid={testId(
+                'profile',
+                'participation-history',
+                'text',
+                'date',
+                record.eventId,
+              )}
+            >
               {new Date(record.eventDate).toLocaleDateString('ru-RU')}
               {record.teamName ? ` · ${record.teamName}` : ''}
             </Text>
@@ -172,7 +210,13 @@ function ParticipationHistorySection({
             className={`profile-hub__history-status ${
               record.confirmed ? 'is-confirmed' : 'is-pending'
             }`}
-            data-testid={testId('profile', 'participation-history', 'badge', 'status', record.eventId)}
+            data-testid={testId(
+              'profile',
+              'participation-history',
+              'badge',
+              'status',
+              record.eventId,
+            )}
           >
             {record.confirmed ? 'Подтверждено' : 'Ожидает'}
           </span>
@@ -212,19 +256,26 @@ function ProfileAboutSection({
   }
 
   const verificationLabel =
-    profile.verificationStatus === 'verified' ? 'Профиль подтвержден' :
-    profile.verificationStatus === 'pending' ? 'Проверка в процессе' :
-    profile.verificationStatus === 'rejected' ? 'Проверка отклонена' :
-    'Профиль не подтвержден'
+    profile.verificationStatus === 'verified'
+      ? 'Профиль подтвержден'
+      : profile.verificationStatus === 'pending'
+        ? 'Проверка в процессе'
+        : profile.verificationStatus === 'rejected'
+          ? 'Проверка отклонена'
+          : 'Профиль не подтвержден'
 
-  const isGoalieProfile =
-    userRoles.includes('goalie') || profile.position === 'goalie'
+  const isGoalieProfile = userRoles.includes('goalie') || profile.position === 'goalie'
 
   return (
     <Card view="filled" data-testid={testId('profile', 'profile-about-section', 'card')}>
       <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
         <div className="profile-hub__title-row">
-          <Text variant="header-1" data-testid={testId('profile', 'profile-about-section', 'text', 'title')}>Hockey ID</Text>
+          <Text
+            variant="header-1"
+            data-testid={testId('profile', 'profile-about-section', 'text', 'title')}
+          >
+            Hockey ID
+          </Text>
           <span
             className={`profile-hub__verified-badge ${
               profile.verificationStatus === 'verified' ? 'is-verified' : ''
@@ -240,14 +291,38 @@ function ProfileAboutSection({
         {userRoles.includes('coach') && <CoachProfilePanel />}
 
         {isGoalieProfile && (
-          <div className="profile-hub__goalie-panel" data-testid={testId('profile', 'profile-about-section', 'panel', 'goalie')}>
-            <Text variant="subheader-2" data-testid={testId('profile', 'profile-about-section', 'text', 'goalie-title')}>Профиль вратаря</Text>
-            <Text color="secondary" data-testid={testId('profile', 'profile-about-section', 'text', 'goalie-hint')}>
+          <div
+            className="profile-hub__goalie-panel"
+            data-testid={testId('profile', 'profile-about-section', 'panel', 'goalie')}
+          >
+            <Text
+              variant="subheader-2"
+              data-testid={testId('profile', 'profile-about-section', 'text', 'goalie-title')}
+            >
+              Профиль вратаря
+            </Text>
+            <Text
+              color="secondary"
+              data-testid={testId('profile', 'profile-about-section', 'text', 'goalie-hint')}
+            >
               Приоритетные SOS-запросы и отдельная метрика надёжности выходов.
             </Text>
             {profile.goalieReliabilityScore != null && (
-              <div className="profile-hub__goalie-score" data-testid={testId('profile', 'profile-about-section', 'panel', 'goalie-score')}>
-                <Text color="secondary" data-testid={testId('profile', 'profile-about-section', 'text', 'goalie-score-label')}>Надёжность выходов</Text>
+              <div
+                className="profile-hub__goalie-score"
+                data-testid={testId('profile', 'profile-about-section', 'panel', 'goalie-score')}
+              >
+                <Text
+                  color="secondary"
+                  data-testid={testId(
+                    'profile',
+                    'profile-about-section',
+                    'text',
+                    'goalie-score-label',
+                  )}
+                >
+                  Надёжность выходов
+                </Text>
                 <Progress
                   value={profile.goalieReliabilityScore}
                   text={`${profile.goalieReliabilityScore}%`}
@@ -259,21 +334,54 @@ function ProfileAboutSection({
         )}
 
         <div data-testid={testId('profile', 'profile-about-section', 'panel', 'completeness')}>
-          <Text color="secondary" data-testid={testId('profile', 'profile-about-section', 'text', 'completeness-label')}>Заполненность профиля</Text>
-          <Progress value={profile.profileCompleteness} text={`${profile.profileCompleteness}%`} data-testid={testId('profile', 'profile-about-section', 'cell', 'completeness')} />
+          <Text
+            color="secondary"
+            data-testid={testId('profile', 'profile-about-section', 'text', 'completeness-label')}
+          >
+            Заполненность профиля
+          </Text>
+          <Progress
+            value={profile.profileCompleteness}
+            text={`${profile.profileCompleteness}%`}
+            data-testid={testId('profile', 'profile-about-section', 'cell', 'completeness')}
+          />
         </div>
 
-        <div className="hockey-stack hockey-stack--gap-4" data-testid={testId('profile', 'profile-about-section', 'panel', 'karma')}>
+        <div
+          className="hockey-stack hockey-stack--gap-4"
+          data-testid={testId('profile', 'profile-about-section', 'panel', 'karma')}
+        >
           <KarmaScore score={profile.karmaScore} size="m" testIdPrefix="profile" />
           <KarmaHint testIdPrefix="profile" />
         </div>
 
         {profile.achievements && profile.achievements.length > 0 && (
-          <div className="hockey-stack hockey-stack--gap-4" data-testid={testId('profile', 'profile-about-section', 'panel', 'achievements')}>
-            <Text color="secondary" data-testid={testId('profile', 'profile-about-section', 'text', 'achievements-label')}>Микро-ачивки</Text>
-            <ul className="hockey-list hockey-list--chips" data-testid={testId('profile', 'profile-about-section', 'list', 'achievements')}>
+          <div
+            className="hockey-stack hockey-stack--gap-4"
+            data-testid={testId('profile', 'profile-about-section', 'panel', 'achievements')}
+          >
+            <Text
+              color="secondary"
+              data-testid={testId('profile', 'profile-about-section', 'text', 'achievements-label')}
+            >
+              Микро-ачивки
+            </Text>
+            <ul
+              className="hockey-list hockey-list--chips"
+              data-testid={testId('profile', 'profile-about-section', 'list', 'achievements')}
+            >
               {profile.achievements.map((ach) => (
-                <li key={ach} className="hockey-chip" data-testid={testId('profile', 'profile-about-section', 'item', 'achievement', ach)}>
+                <li
+                  key={ach}
+                  className="hockey-chip"
+                  data-testid={testId(
+                    'profile',
+                    'profile-about-section',
+                    'item',
+                    'achievement',
+                    ach,
+                  )}
+                >
                   {ach}
                 </li>
               ))}
@@ -323,7 +431,12 @@ function ProfileAboutSection({
         />
 
         <div data-testid={testId('profile', 'profile-about-section', 'field', 'bio')}>
-          <Text color="secondary" data-testid={testId('profile', 'profile-about-section', 'text', 'bio-label')}>О себе</Text>
+          <Text
+            color="secondary"
+            data-testid={testId('profile', 'profile-about-section', 'text', 'bio-label')}
+          >
+            О себе
+          </Text>
           <TextArea
             value={form.bio ?? ''}
             onUpdate={(v) => updateField('bio', v)}
@@ -332,12 +445,23 @@ function ProfileAboutSection({
           />
         </div>
 
-        <Text color="secondary" data-testid={testId('profile', 'profile-about-section', 'text', 'preferred-arenas')}>
+        <Text
+          color="secondary"
+          data-testid={testId('profile', 'profile-about-section', 'text', 'preferred-arenas')}
+        >
           Предпочитаемые арены: {(form.preferredArenaIds ?? []).join(', ') || 'не выбраны'}
         </Text>
 
-        <div className="hockey-stack hockey-stack--gap-8" data-testid={testId('profile', 'profile-about-section', 'panel', 'history')}>
-          <Text variant="subheader-2" data-testid={testId('profile', 'profile-about-section', 'text', 'history-title')}>История участия</Text>
+        <div
+          className="hockey-stack hockey-stack--gap-8"
+          data-testid={testId('profile', 'profile-about-section', 'panel', 'history')}
+        >
+          <Text
+            variant="subheader-2"
+            data-testid={testId('profile', 'profile-about-section', 'text', 'history-title')}
+          >
+            История участия
+          </Text>
           <ParticipationHistorySection
             profile={profile}
             showHistory={settings.privacy.showParticipationHistory}
@@ -345,10 +469,20 @@ function ProfileAboutSection({
         </div>
 
         <div className="profile-hub__actions">
-          <Button view="outlined" loading={isVerifying} onClick={onStartVerification} data-testid={testId('profile', 'profile-about-section', 'btn', 'verify')}>
+          <Button
+            view="outlined"
+            loading={isVerifying}
+            onClick={onStartVerification}
+            data-testid={testId('profile', 'profile-about-section', 'btn', 'verify')}
+          >
             Подтвердить профиль
           </Button>
-          <Button view="action" loading={isSaving} onClick={handleSave} data-testid={testId('profile', 'profile-about-section', 'btn', 'save')}>
+          <Button
+            view="action"
+            loading={isSaving}
+            onClick={handleSave}
+            data-testid={testId('profile', 'profile-about-section', 'btn', 'save')}
+          >
             Сохранить профиль
           </Button>
         </div>
@@ -368,49 +502,167 @@ function ProfileSettingsSection({
 }) {
   const [form, setForm] = useState(settings.notificationPreferences)
 
-  function updateSwitch(
-    key: keyof ProfileSettings['notificationPreferences'],
-    checked: boolean,
-  ) {
+  function updateSwitch(key: keyof ProfileSettings['notificationPreferences'], checked: boolean) {
     setForm((prev) => ({...prev, [key]: checked}))
   }
 
   return (
     <Card view="filled" data-testid={testId('profile', 'profile-settings-section', 'card')}>
       <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
-        <Text variant="header-1" data-testid={testId('profile', 'profile-settings-section', 'text', 'title')}>Настройки уведомлений</Text>
-        <Text color="secondary" data-testid={testId('profile', 'profile-settings-section', 'text', 'hint')}>Push в MAX, email и in-app каналы управляются через свитчи.</Text>
+        <Text
+          variant="header-1"
+          data-testid={testId('profile', 'profile-settings-section', 'text', 'title')}
+        >
+          Настройки уведомлений
+        </Text>
+        <Text
+          color="secondary"
+          data-testid={testId('profile', 'profile-settings-section', 'text', 'hint')}
+        >
+          Push в MAX, email и in-app каналы управляются через свитчи.
+        </Text>
 
-        <label className="profile-hub__switch-row" data-testid={testId('profile', 'profile-settings-section', 'toggle', 'in-app')}>
-          <span data-testid={testId('profile', 'profile-settings-section', 'text', 'in-app-label')}>In-app уведомления</span>
-          <Switch checked={form.inApp} onUpdate={(v) => updateSwitch('inApp', v)} data-testid={testId('profile', 'profile-settings-section', 'toggle', 'in-app-switch')} />
+        <label
+          className="profile-hub__switch-row"
+          data-testid={testId('profile', 'profile-settings-section', 'toggle', 'in-app')}
+        >
+          <span data-testid={testId('profile', 'profile-settings-section', 'text', 'in-app-label')}>
+            In-app уведомления
+          </span>
+          <Switch
+            checked={form.inApp}
+            onUpdate={(v) => updateSwitch('inApp', v)}
+            data-testid={testId('profile', 'profile-settings-section', 'toggle', 'in-app-switch')}
+          />
         </label>
-        <label className="profile-hub__switch-row" data-testid={testId('profile', 'profile-settings-section', 'toggle', 'email')}>
-          <span data-testid={testId('profile', 'profile-settings-section', 'text', 'email-label')}>Email уведомления</span>
-          <Switch checked={form.email} onUpdate={(v) => updateSwitch('email', v)} data-testid={testId('profile', 'profile-settings-section', 'toggle', 'email-switch')} />
+        <label
+          className="profile-hub__switch-row"
+          data-testid={testId('profile', 'profile-settings-section', 'toggle', 'email')}
+        >
+          <span data-testid={testId('profile', 'profile-settings-section', 'text', 'email-label')}>
+            Email уведомления
+          </span>
+          <Switch
+            checked={form.email}
+            onUpdate={(v) => updateSwitch('email', v)}
+            data-testid={testId('profile', 'profile-settings-section', 'toggle', 'email-switch')}
+          />
         </label>
-        <label className="profile-hub__switch-row" data-testid={testId('profile', 'profile-settings-section', 'toggle', 'push')}>
-          <span data-testid={testId('profile', 'profile-settings-section', 'text', 'push-label')}>Push уведомления</span>
-          <Switch checked={form.push} onUpdate={(v) => updateSwitch('push', v)} data-testid={testId('profile', 'profile-settings-section', 'toggle', 'push-switch')} />
+        <label
+          className="profile-hub__switch-row"
+          data-testid={testId('profile', 'profile-settings-section', 'toggle', 'push')}
+        >
+          <span data-testid={testId('profile', 'profile-settings-section', 'text', 'push-label')}>
+            Push уведомления
+          </span>
+          <Switch
+            checked={form.push}
+            onUpdate={(v) => updateSwitch('push', v)}
+            data-testid={testId('profile', 'profile-settings-section', 'toggle', 'push-switch')}
+          />
         </label>
-        <label className="profile-hub__switch-row" data-testid={testId('profile', 'profile-settings-section', 'toggle', 'max-messenger')}>
-          <span data-testid={testId('profile', 'profile-settings-section', 'text', 'max-messenger-label')}>Push в MAX</span>
-          <Switch checked={form.maxMessenger} onUpdate={(v) => updateSwitch('maxMessenger', v)} data-testid={testId('profile', 'profile-settings-section', 'toggle', 'max-messenger-switch')} />
+        <label
+          className="profile-hub__switch-row"
+          data-testid={testId('profile', 'profile-settings-section', 'toggle', 'max-messenger')}
+        >
+          <span
+            data-testid={testId(
+              'profile',
+              'profile-settings-section',
+              'text',
+              'max-messenger-label',
+            )}
+          >
+            Push в MAX
+          </span>
+          <Switch
+            checked={form.maxMessenger}
+            onUpdate={(v) => updateSwitch('maxMessenger', v)}
+            data-testid={testId(
+              'profile',
+              'profile-settings-section',
+              'toggle',
+              'max-messenger-switch',
+            )}
+          />
         </label>
-        <label className="profile-hub__switch-row" data-testid={testId('profile', 'profile-settings-section', 'toggle', 'team-events')}>
-          <span data-testid={testId('profile', 'profile-settings-section', 'text', 'team-events-label')}>События команды</span>
-          <Switch checked={form.teamEvents} onUpdate={(v) => updateSwitch('teamEvents', v)} data-testid={testId('profile', 'profile-settings-section', 'toggle', 'team-events-switch')} />
+        <label
+          className="profile-hub__switch-row"
+          data-testid={testId('profile', 'profile-settings-section', 'toggle', 'team-events')}
+        >
+          <span
+            data-testid={testId('profile', 'profile-settings-section', 'text', 'team-events-label')}
+          >
+            События команды
+          </span>
+          <Switch
+            checked={form.teamEvents}
+            onUpdate={(v) => updateSwitch('teamEvents', v)}
+            data-testid={testId(
+              'profile',
+              'profile-settings-section',
+              'toggle',
+              'team-events-switch',
+            )}
+          />
         </label>
-        <label className="profile-hub__switch-row" data-testid={testId('profile', 'profile-settings-section', 'toggle', 'goalkeeper-sos')}>
-          <span data-testid={testId('profile', 'profile-settings-section', 'text', 'goalkeeper-sos-label')}>Goalkeeper SOS</span>
-          <Switch checked={form.goalkeeperSos} onUpdate={(v) => updateSwitch('goalkeeperSos', v)} data-testid={testId('profile', 'profile-settings-section', 'toggle', 'goalkeeper-sos-switch')} />
+        <label
+          className="profile-hub__switch-row"
+          data-testid={testId('profile', 'profile-settings-section', 'toggle', 'goalkeeper-sos')}
+        >
+          <span
+            data-testid={testId(
+              'profile',
+              'profile-settings-section',
+              'text',
+              'goalkeeper-sos-label',
+            )}
+          >
+            Goalkeeper SOS
+          </span>
+          <Switch
+            checked={form.goalkeeperSos}
+            onUpdate={(v) => updateSwitch('goalkeeperSos', v)}
+            data-testid={testId(
+              'profile',
+              'profile-settings-section',
+              'toggle',
+              'goalkeeper-sos-switch',
+            )}
+          />
         </label>
-        <label className="profile-hub__switch-row" data-testid={testId('profile', 'profile-settings-section', 'toggle', 'event-reminders')}>
-          <span data-testid={testId('profile', 'profile-settings-section', 'text', 'event-reminders-label')}>Напоминания о событиях</span>
-          <Switch checked={form.eventReminders} onUpdate={(v) => updateSwitch('eventReminders', v)} data-testid={testId('profile', 'profile-settings-section', 'toggle', 'event-reminders-switch')} />
+        <label
+          className="profile-hub__switch-row"
+          data-testid={testId('profile', 'profile-settings-section', 'toggle', 'event-reminders')}
+        >
+          <span
+            data-testid={testId(
+              'profile',
+              'profile-settings-section',
+              'text',
+              'event-reminders-label',
+            )}
+          >
+            Напоминания о событиях
+          </span>
+          <Switch
+            checked={form.eventReminders}
+            onUpdate={(v) => updateSwitch('eventReminders', v)}
+            data-testid={testId(
+              'profile',
+              'profile-settings-section',
+              'toggle',
+              'event-reminders-switch',
+            )}
+          />
         </label>
 
-        <Button view="action" loading={isSaving} onClick={() => onSave(form)} data-testid={testId('profile', 'profile-settings-section', 'btn', 'save')}>
+        <Button
+          view="action"
+          loading={isSaving}
+          onClick={() => onSave(form)}
+          data-testid={testId('profile', 'profile-settings-section', 'btn', 'save')}
+        >
           Сохранить настройки
         </Button>
       </div>
@@ -432,8 +684,16 @@ function ProfilePrivacySection({
   return (
     <Card view="filled" data-testid={testId('profile', 'profile-privacy-section', 'card')}>
       <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
-        <Text variant="header-1" data-testid={testId('profile', 'profile-privacy-section', 'text', 'title')}>Приватность</Text>
-        <Text color="secondary" data-testid={testId('profile', 'profile-privacy-section', 'text', 'hint')}>
+        <Text
+          variant="header-1"
+          data-testid={testId('profile', 'profile-privacy-section', 'text', 'title')}
+        >
+          Приватность
+        </Text>
+        <Text
+          color="secondary"
+          data-testid={testId('profile', 'profile-privacy-section', 'text', 'hint')}
+        >
           Управляй тем, кто видит твой профиль, контакты и историю участия.
         </Text>
         <Select
@@ -449,24 +709,58 @@ function ProfilePrivacySection({
           data-testid={testId('profile', 'profile-privacy-section', 'select', 'profile-visibility')}
         />
 
-        <label className="profile-hub__switch-row" data-testid={testId('profile', 'profile-privacy-section', 'toggle', 'show-contacts')}>
-          <span data-testid={testId('profile', 'profile-privacy-section', 'text', 'show-contacts-label')}>Показывать контакты</span>
+        <label
+          className="profile-hub__switch-row"
+          data-testid={testId('profile', 'profile-privacy-section', 'toggle', 'show-contacts')}
+        >
+          <span
+            data-testid={testId(
+              'profile',
+              'profile-privacy-section',
+              'text',
+              'show-contacts-label',
+            )}
+          >
+            Показывать контакты
+          </span>
           <Switch
             checked={form.showContacts}
             onUpdate={(v) => setForm((prev) => ({...prev, showContacts: v}))}
-            data-testid={testId('profile', 'profile-privacy-section', 'toggle', 'show-contacts-switch')}
+            data-testid={testId(
+              'profile',
+              'profile-privacy-section',
+              'toggle',
+              'show-contacts-switch',
+            )}
           />
         </label>
-        <label className="profile-hub__switch-row" data-testid={testId('profile', 'profile-privacy-section', 'toggle', 'show-history')}>
-          <span data-testid={testId('profile', 'profile-privacy-section', 'text', 'show-history-label')}>Показывать историю участия</span>
+        <label
+          className="profile-hub__switch-row"
+          data-testid={testId('profile', 'profile-privacy-section', 'toggle', 'show-history')}
+        >
+          <span
+            data-testid={testId('profile', 'profile-privacy-section', 'text', 'show-history-label')}
+          >
+            Показывать историю участия
+          </span>
           <Switch
             checked={form.showParticipationHistory}
             onUpdate={(v) => setForm((prev) => ({...prev, showParticipationHistory: v}))}
-            data-testid={testId('profile', 'profile-privacy-section', 'toggle', 'show-history-switch')}
+            data-testid={testId(
+              'profile',
+              'profile-privacy-section',
+              'toggle',
+              'show-history-switch',
+            )}
           />
         </label>
 
-        <Button view="action" loading={isSaving} onClick={() => onSave(form)} data-testid={testId('profile', 'profile-privacy-section', 'btn', 'save')}>
+        <Button
+          view="action"
+          loading={isSaving}
+          onClick={() => onSave(form)}
+          data-testid={testId('profile', 'profile-privacy-section', 'btn', 'save')}
+        >
           Сохранить приватность
         </Button>
       </div>
@@ -487,23 +781,69 @@ function ProfileSubscriptionSection({
   return (
     <Card view="filled" data-testid={testId('profile', 'profile-subscription-section', 'card')}>
       <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
-        <Text variant="header-1" data-testid={testId('profile', 'profile-subscription-section', 'text', 'title')}>Модель подписки</Text>
-        <Text color="secondary" data-testid={testId('profile', 'profile-subscription-section', 'text', 'hint')}>Phase 1 mock: тарифы без реальной оплаты.</Text>
-        <div className="profile-hub__plans" data-testid={testId('profile', 'profile-subscription-section', 'list', 'plans')}>
+        <Text
+          variant="header-1"
+          data-testid={testId('profile', 'profile-subscription-section', 'text', 'title')}
+        >
+          Модель подписки
+        </Text>
+        <Text
+          color="secondary"
+          data-testid={testId('profile', 'profile-subscription-section', 'text', 'hint')}
+        >
+          Phase 1 mock: тарифы без реальной оплаты.
+        </Text>
+        <div
+          className="profile-hub__plans"
+          data-testid={testId('profile', 'profile-subscription-section', 'list', 'plans')}
+        >
           {SUBSCRIPTION_PLAN_OPTIONS.map((plan) => (
             <button
               key={plan.id}
               type="button"
               className={`profile-hub__plan ${activePlan === plan.id ? 'is-active' : ''}`}
               onClick={() => onSelectPlan({planId: plan.id})}
-              data-testid={testId('profile', 'profile-subscription-section', 'btn', 'plan', plan.id)}
+              data-testid={testId(
+                'profile',
+                'profile-subscription-section',
+                'btn',
+                'plan',
+                plan.id,
+              )}
             >
-              <Text variant="subheader-2" data-testid={testId('profile', 'profile-subscription-section', 'text', 'plan-name', plan.id)}>{plan.name}</Text>
-              <Text color="secondary" data-testid={testId('profile', 'profile-subscription-section', 'text', 'plan-description', plan.id)}>{plan.description}</Text>
+              <Text
+                variant="subheader-2"
+                data-testid={testId(
+                  'profile',
+                  'profile-subscription-section',
+                  'text',
+                  'plan-name',
+                  plan.id,
+                )}
+              >
+                {plan.name}
+              </Text>
+              <Text
+                color="secondary"
+                data-testid={testId(
+                  'profile',
+                  'profile-subscription-section',
+                  'text',
+                  'plan-description',
+                  plan.id,
+                )}
+              >
+                {plan.description}
+              </Text>
             </button>
           ))}
         </div>
-        <Button view="action" loading={isSaving} onClick={() => onSelectPlan({status: 'mock'})} data-testid={testId('profile', 'profile-subscription-section', 'btn', 'save')}>
+        <Button
+          view="action"
+          loading={isSaving}
+          onClick={() => onSelectPlan({status: 'mock'})}
+          data-testid={testId('profile', 'profile-subscription-section', 'btn', 'save')}
+        >
           Сохранить тариф
         </Button>
       </div>
@@ -596,7 +936,12 @@ function HockeyProfileHub({
   return (
     <div className="profile-hub" data-testid={testId('profile', 'profile-hub', 'page')}>
       <ProfileHubTabs section={activeSection} onSelect={setActiveSection} />
-      <div className="profile-hub__panel" data-testid={testId('profile', 'profile-hub', 'panel', activeSection)}>{sectionContent}</div>
+      <div
+        className="profile-hub__panel"
+        data-testid={testId('profile', 'profile-hub', 'panel', activeSection)}
+      >
+        {sectionContent}
+      </div>
     </div>
   )
 }

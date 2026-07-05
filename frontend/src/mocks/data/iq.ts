@@ -165,8 +165,7 @@ export function evaluateMockIqAttempt(payload: IqAttemptPayload): IqAttemptResul
   let score = 0
 
   const details = questions.map((question) => {
-    const userOptionId =
-      payload.answers.find((a) => a.questionId === question.id)?.optionId ?? ''
+    const userOptionId = payload.answers.find((a) => a.questionId === question.id)?.optionId ?? ''
     const isCorrect = userOptionId === question.correctOptionId
     if (isCorrect) score += 10
     return {

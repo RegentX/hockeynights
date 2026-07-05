@@ -5,6 +5,7 @@
 
 import type {ReactNode} from 'react'
 import {NavLink} from 'react-router-dom'
+
 import {testId} from '@/shared/testing/testId'
 
 export type AuthShellMode = 'login' | 'register' | 'personas'
@@ -16,14 +17,21 @@ export interface AuthShellProps {
   wide?: boolean
 }
 
-const HERO_COPY: Record<Exclude<AuthShellMode, 'personas'>, {tagline: string; bullets: string[]}> = {
+const HERO_COPY: Record<
+  Exclude<AuthShellMode, 'personas'>,
+  {tagline: string; bullets: string[]}
+> = {
   login: {
     tagline: 'Войдите в хоккейное сообщество — команды, лёд и матчи в одном месте.',
     bullets: ['Демо-вход за 10 секунд', 'Локальные аккаунты в браузере', 'Выбор роли после входа'],
   },
   register: {
     tagline: 'Создайте профиль — данные сохранятся локально до подключения backend.',
-    bullets: ['Имя и email для вашего аккаунта', 'Пароль хранится только в браузере', 'После регистрации — выбор демо-роли'],
+    bullets: [
+      'Имя и email для вашего аккаунта',
+      'Пароль хранится только в браузере',
+      'После регистрации — выбор демо-роли',
+    ],
   },
 }
 
@@ -70,10 +78,7 @@ export function AuthShell({
               data-testid={testId('auth', 'shell', 'list', 'hero-features')}
             >
               {hero.bullets.map((item, index) => (
-                <li
-                  key={item}
-                  data-testid={testId('auth', 'shell', 'list-item', 'hero', index)}
-                >
+                <li key={item} data-testid={testId('auth', 'shell', 'list-item', 'hero', index)}>
                   {item}
                 </li>
               ))}
@@ -92,7 +97,10 @@ export function AuthShell({
           )}
 
           {!wide && (
-            <div className="auth-shell__notice" data-testid={testId('auth', 'shell', 'text', 'demo-banner')}>
+            <div
+              className="auth-shell__notice"
+              data-testid={testId('auth', 'shell', 'text', 'demo-banner')}
+            >
               <span
                 className="auth-shell__notice-title"
                 data-testid={testId('auth', 'shell', 'text', 'notice-title')}
@@ -134,7 +142,10 @@ export function AuthShell({
             </nav>
           )}
 
-          <div className="auth-shell__content" data-testid={testId('auth', 'shell', 'panel', 'content')}>
+          <div
+            className="auth-shell__content"
+            data-testid={testId('auth', 'shell', 'panel', 'content')}
+          >
             {children}
           </div>
         </div>

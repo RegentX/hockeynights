@@ -3,9 +3,10 @@
  * SPEC-UI-6.3, SPEC-UI-6.4
  */
 
-import {useState} from 'react'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {useState} from 'react'
+
 import type {Highlight} from '@/entities/highlight/types'
 import {
   addHighlightAnnotation,
@@ -17,10 +18,10 @@ import {
 import {HighlightCard} from '@/features/highlights/HighlightCard'
 import {HighlightUploadForm} from '@/features/highlights/HighlightUploadForm'
 import {HighlightVideoBoard} from '@/features/highlights/HighlightVideoBoard'
+import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-import {EmptyNetState} from '@/shared/ui/EmptyNetState'
-import {testId} from '@/shared/testing/testId'
 
 const MOCK_CURRENT_USER_ID = 'user-001'
 const MOCK_CURRENT_USER_NAME = 'Иван Петров'
@@ -102,8 +103,14 @@ export function HighlightsPage() {
         Разбор коротких моментов с игры — mock-загрузка, разметка и комментарии команды.
       </Text>
 
-      <div className="highlights-page__layout" data-testid={testId('highlights', 'page', 'panel', 'layout')}>
-        <div className="highlights-page__catalog" data-testid={testId('highlights', 'page', 'panel', 'catalog')}>
+      <div
+        className="highlights-page__layout"
+        data-testid={testId('highlights', 'page', 'panel', 'layout')}
+      >
+        <div
+          className="highlights-page__catalog"
+          data-testid={testId('highlights', 'page', 'panel', 'catalog')}
+        >
           <div data-testid={testId('highlights', 'page', 'card', 'upload')}>
             <IceCard padding="m">
               <HighlightUploadForm
@@ -113,7 +120,10 @@ export function HighlightsPage() {
             </IceCard>
           </div>
 
-          <div className="highlights-page__list" data-testid={testId('highlights', 'page', 'list', 'highlights')}>
+          <div
+            className="highlights-page__list"
+            data-testid={testId('highlights', 'page', 'list', 'highlights')}
+          >
             {highlights.length === 0 ? (
               <div data-testid={testId('highlights', 'page', 'empty', 'highlights')}>
                 <EmptyNetState
@@ -134,7 +144,10 @@ export function HighlightsPage() {
           </div>
         </div>
 
-        <div className="highlights-page__board" data-testid={testId('highlights', 'page', 'panel', 'board')}>
+        <div
+          className="highlights-page__board"
+          data-testid={testId('highlights', 'page', 'panel', 'board')}
+        >
           {!activeId ? (
             <div data-testid={testId('highlights', 'page', 'empty', 'board')}>
               <EmptyNetState copy="Выбери момент из каталога слева." />

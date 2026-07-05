@@ -3,13 +3,14 @@
  * SPEC-UI-6.1
  */
 
-import {useMemo, useState} from 'react'
 import {Text} from '@gravity-ui/uikit'
+import {useMemo, useState} from 'react'
+
 import type {IqAttemptResult, IqQuestion, IqTest} from '@/entities/iq/types'
+import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
-import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-13.1.2 - Props прохождения теста */
 export interface IqAttemptFlowProps {
@@ -45,10 +46,7 @@ export function IqAttemptFlow({
   const currentQuestion = questions[cursor]
 
   /** @spec SPEC-FR-13.1.2 - Текущее состояние прогресса попытки */
-  const answeredCount = useMemo(
-    () => Object.values(answers).filter(Boolean).length,
-    [answers],
-  )
+  const answeredCount = useMemo(() => Object.values(answers).filter(Boolean).length, [answers])
 
   /** @spec SPEC-FR-13.1.2 - Выбор ответа для вопроса */
   function selectAnswer(questionId: string, optionId: string) {
@@ -68,7 +66,10 @@ export function IqAttemptFlow({
     return (
       <div data-testid={testId('iq', 'attempt-flow', 'empty', test.id)}>
         <IceCard padding="m">
-          <Text color="secondary" data-testid={testId('iq', 'attempt-flow', 'text', 'no-questions')}>
+          <Text
+            color="secondary"
+            data-testid={testId('iq', 'attempt-flow', 'text', 'no-questions')}
+          >
             Вопросы пока недоступны.
           </Text>
           <div className="hockey-mt-8">
@@ -89,29 +90,52 @@ export function IqAttemptFlow({
     return (
       <div data-testid={testId('iq', 'attempt-flow', 'panel', 'result', test.id)}>
         <IceCard padding="m" className="iq-board">
-          <Text variant="header-1" data-testid={testId('iq', 'attempt-flow', 'text', 'result-title')}>
+          <Text
+            variant="header-1"
+            data-testid={testId('iq', 'attempt-flow', 'text', 'result-title')}
+          >
             Результат теста
           </Text>
           <Text data-testid={testId('iq', 'attempt-flow', 'text', 'result-score')}>
             <ScoreboardText tone="accent">{result.score}</ScoreboardText> /{' '}
             <ScoreboardText>{result.maxScore}</ScoreboardText>
           </Text>
-          <Text color="secondary" data-testid={testId('iq', 'attempt-flow', 'text', 'result-streak')}>
+          <Text
+            color="secondary"
+            data-testid={testId('iq', 'attempt-flow', 'text', 'result-streak')}
+          >
             Серия: <ScoreboardText>{result.streak}</ScoreboardText>
           </Text>
-          <div className="hockey-mt-8 hockey-stack hockey-stack--gap-8" data-testid={testId('iq', 'attempt-flow', 'list', 'result-details')}>
+          <div
+            className="hockey-mt-8 hockey-stack hockey-stack--gap-8"
+            data-testid={testId('iq', 'attempt-flow', 'list', 'result-details')}
+          >
             {result.details.map((detail, index) => (
               <div
                 key={detail.questionId}
                 className="iq-result-row"
                 data-testid={testId('iq', 'attempt-flow', 'row', 'result', detail.questionId)}
               >
-                <Text data-testid={testId('iq', 'attempt-flow', 'text', 'result-verdict', detail.questionId)}>
+                <Text
+                  data-testid={testId(
+                    'iq',
+                    'attempt-flow',
+                    'text',
+                    'result-verdict',
+                    detail.questionId,
+                  )}
+                >
                   {index + 1}. {detail.userOptionId === detail.correctOptionId ? 'Верно' : 'Ошибка'}
                 </Text>
                 <Text
                   color="secondary"
-                  data-testid={testId('iq', 'attempt-flow', 'text', 'result-explanation', detail.questionId)}
+                  data-testid={testId(
+                    'iq',
+                    'attempt-flow',
+                    'text',
+                    'result-explanation',
+                    detail.questionId,
+                  )}
                 >
                   {detail.explanation}
                 </Text>
@@ -135,7 +159,10 @@ export function IqAttemptFlow({
     <div data-testid={testId('iq', 'attempt-flow', 'panel', 'board', test.id)}>
       <IceCard padding="m" className="iq-board">
         <div className="iq-board__head" data-testid={testId('iq', 'attempt-flow', 'panel', 'head')}>
-          <Text variant="subheader-2" data-testid={testId('iq', 'attempt-flow', 'text', 'test-title')}>
+          <Text
+            variant="subheader-2"
+            data-testid={testId('iq', 'attempt-flow', 'text', 'test-title')}
+          >
             {test.title}
           </Text>
           <ScoreboardText data-testid={testId('iq', 'attempt-flow', 'text', 'progress')}>
@@ -143,7 +170,10 @@ export function IqAttemptFlow({
           </ScoreboardText>
         </div>
 
-        <Text color="secondary" data-testid={testId('iq', 'attempt-flow', 'text', 'answered-count')}>
+        <Text
+          color="secondary"
+          data-testid={testId('iq', 'attempt-flow', 'text', 'answered-count')}
+        >
           Отвечено: <ScoreboardText>{answeredCount}</ScoreboardText>
         </Text>
         <Text
@@ -153,7 +183,10 @@ export function IqAttemptFlow({
           {currentQuestion.prompt}
         </Text>
 
-        <div className="iq-board__options" data-testid={testId('iq', 'attempt-flow', 'list', 'options', currentQuestion.id)}>
+        <div
+          className="iq-board__options"
+          data-testid={testId('iq', 'attempt-flow', 'list', 'options', currentQuestion.id)}
+        >
           {currentQuestion.options.map((option) => {
             const selected = answers[currentQuestion.id] === option.id
             return (
@@ -162,7 +195,14 @@ export function IqAttemptFlow({
                 type="button"
                 className={`iq-option${selected ? ' iq-option--selected' : ''}`}
                 onClick={() => selectAnswer(currentQuestion.id, option.id)}
-                data-testid={testId('iq', 'attempt-flow', 'btn', 'option', currentQuestion.id, option.id)}
+                data-testid={testId(
+                  'iq',
+                  'attempt-flow',
+                  'btn',
+                  'option',
+                  currentQuestion.id,
+                  option.id,
+                )}
               >
                 {option.text}
               </button>
@@ -170,7 +210,10 @@ export function IqAttemptFlow({
           })}
         </div>
 
-        <div className="iq-board__actions" data-testid={testId('iq', 'attempt-flow', 'panel', 'actions')}>
+        <div
+          className="iq-board__actions"
+          data-testid={testId('iq', 'attempt-flow', 'panel', 'actions')}
+        >
           <HockeyButton
             view="outlined"
             disabled={cursor === 0}

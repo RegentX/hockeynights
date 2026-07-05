@@ -2,22 +2,23 @@
  * SPEC-FR-24.7.3, SPEC-FR-24.7.4
  */
 
+import {Button, Text, TextInput} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
 import {Link, useParams} from 'react-router-dom'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {Button, Text, TextInput} from '@gravity-ui/uikit'
+
 import type {Shop} from '@/entities/shop/types'
 import {fetchSession} from '@/features/auth/api/sessionApi'
 import {fetchShops, updateShopPartnerProfile} from '@/features/shops/api/shopsApi'
-import {ShopProductManager} from '@/features/shops/ShopProductManager'
-import {ShopCatalogImportPanel} from '@/features/shops/ShopCatalogImportPanel'
-import {ShopPromoManager} from '@/features/shops/ShopPromoManager'
 import {ShopAnalyticsPanel} from '@/features/shops/ShopAnalyticsPanel'
-import {IceCard} from '@/shared/ui/IceCard'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
-import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
+import {ShopCatalogImportPanel} from '@/features/shops/ShopCatalogImportPanel'
+import {ShopProductManager} from '@/features/shops/ShopProductManager'
+import {ShopPromoManager} from '@/features/shops/ShopPromoManager'
 import {testId} from '@/shared/testing/testId'
+import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {IceCard} from '@/shared/ui/IceCard'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 type PartnerTab = 'profile' | 'products' | 'import' | 'promos' | 'analytics'
 
@@ -66,8 +67,16 @@ export function ShopPartnerDashboard() {
           <Text data-testid={testId('shops', shopId, 'dashboard', 'text', 'denied')}>
             Кабинет доступен только представителю магазина. Выберите роль при входе.
           </Text>
-          <Link to="/" className="hockey-mt-12" data-testid={testId('shops', shopId, 'dashboard', 'link', 'login')}>
-            <HockeyButton view="outlined" size="s" data-testid={testId('shops', shopId, 'dashboard', 'btn', 'login')}>
+          <Link
+            to="/"
+            className="hockey-mt-12"
+            data-testid={testId('shops', shopId, 'dashboard', 'link', 'login')}
+          >
+            <HockeyButton
+              view="outlined"
+              size="s"
+              data-testid={testId('shops', shopId, 'dashboard', 'btn', 'login')}
+            >
               Перейти к входу
             </HockeyButton>
           </Link>
@@ -77,13 +86,22 @@ export function ShopPartnerDashboard() {
   }
 
   return (
-    <div className="partner-dashboard hockey-stack hockey-stack--gap-16" data-testid={testId('shops', shopId, 'dashboard', 'page')}>
+    <div
+      className="partner-dashboard hockey-stack hockey-stack--gap-16"
+      data-testid={testId('shops', shopId, 'dashboard', 'page')}
+    >
       <div className="partner-dashboard__header hockey-row hockey-row--between">
         <div>
-          <Text variant="header-1" data-testid={testId('shops', shopId, 'dashboard', 'text', 'title')}>
+          <Text
+            variant="header-1"
+            data-testid={testId('shops', shopId, 'dashboard', 'text', 'title')}
+          >
             Кабинет магазина
           </Text>
-          <Text color="secondary" data-testid={testId('shops', shopId, 'dashboard', 'text', 'name')}>
+          <Text
+            color="secondary"
+            data-testid={testId('shops', shopId, 'dashboard', 'text', 'name')}
+          >
             {shop.name}
           </Text>
         </div>
@@ -92,7 +110,10 @@ export function ShopPartnerDashboard() {
         </span>
       </div>
 
-      <div className="partner-dashboard__tabs" data-testid={testId('shops', shopId, 'dashboard', 'nav')}>
+      <div
+        className="partner-dashboard__tabs"
+        data-testid={testId('shops', shopId, 'dashboard', 'nav')}
+      >
         <Button
           view={tab === 'profile' ? 'action' : 'outlined'}
           size="s"
@@ -137,8 +158,14 @@ export function ShopPartnerDashboard() {
 
       {tab === 'profile' && (
         <IceCard padding="m">
-          <div className="partner-dashboard__form hockey-stack hockey-stack--gap-10" data-testid={testId('shops', shopId, 'dashboard', 'form', 'profile')}>
-            <Text variant="subheader-2" data-testid={testId('shops', shopId, 'dashboard', 'text', 'profile-title')}>
+          <div
+            className="partner-dashboard__form hockey-stack hockey-stack--gap-10"
+            data-testid={testId('shops', shopId, 'dashboard', 'form', 'profile')}
+          >
+            <Text
+              variant="subheader-2"
+              data-testid={testId('shops', shopId, 'dashboard', 'text', 'profile-title')}
+            >
               Публичный профиль
             </Text>
             <TextInput
@@ -171,7 +198,10 @@ export function ShopPartnerDashboard() {
               data-testid={testId('shops', shopId, 'dashboard', 'field', 'pickup')}
               onUpdate={(value) => setDraft((prev) => ({...prev, pickupInfo: value}))}
             />
-            <Text color="secondary" data-testid={testId('shops', shopId, 'dashboard', 'text', 'moderation-status')}>
+            <Text
+              color="secondary"
+              data-testid={testId('shops', shopId, 'dashboard', 'text', 'moderation-status')}
+            >
               Статус модерации: {form.moderationStatus ?? 'draft'}
             </Text>
             <Button
@@ -183,7 +213,10 @@ export function ShopPartnerDashboard() {
               Сохранить профиль
             </Button>
             {statusMessage && (
-              <Text color="secondary" data-testid={testId('shops', shopId, 'dashboard', 'text', 'status-message')}>
+              <Text
+                color="secondary"
+                data-testid={testId('shops', shopId, 'dashboard', 'text', 'status-message')}
+              >
                 {statusMessage}
               </Text>
             )}
@@ -192,7 +225,10 @@ export function ShopPartnerDashboard() {
       )}
 
       {tab === 'products' && (
-        <IceCard padding="m" data-testid={testId('shops', shopId, 'dashboard', 'panel', 'products')}>
+        <IceCard
+          padding="m"
+          data-testid={testId('shops', shopId, 'dashboard', 'panel', 'products')}
+        >
           <ShopProductManager shopId={shopId} />
         </IceCard>
       )}
@@ -210,13 +246,20 @@ export function ShopPartnerDashboard() {
       )}
 
       {tab === 'analytics' && (
-        <IceCard padding="m" data-testid={testId('shops', shopId, 'dashboard', 'panel', 'analytics')}>
+        <IceCard
+          padding="m"
+          data-testid={testId('shops', shopId, 'dashboard', 'panel', 'analytics')}
+        >
           <ShopAnalyticsPanel shopId={shopId} />
         </IceCard>
       )}
 
       <Link to="/shops" data-testid={testId('shops', shopId, 'dashboard', 'link', 'back')}>
-        <HockeyButton view="outlined" size="s" data-testid={testId('shops', shopId, 'dashboard', 'btn', 'back')}>
+        <HockeyButton
+          view="outlined"
+          size="s"
+          data-testid={testId('shops', shopId, 'dashboard', 'btn', 'back')}
+        >
           ← К каталогу магазинов
         </HockeyButton>
       </Link>

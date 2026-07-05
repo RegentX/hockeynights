@@ -3,9 +3,10 @@
  * SPEC-UI-6.1, SPEC-UI-6.2
  */
 
-import {useMemo, useState} from 'react'
-import {useMutation, useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
+import {useMutation, useQuery} from '@tanstack/react-query'
+import {useMemo, useState} from 'react'
+
 import type {IqAttemptResult, IqTest} from '@/entities/iq/types'
 import {
   fetchIqLeaderboard,
@@ -13,12 +14,12 @@ import {
   fetchIqTests,
   submitIqAttempt,
 } from '@/features/iq/api/iqApi'
-import {IqTestCard} from '@/features/iq/IqTestCard'
 import {IqAttemptFlow} from '@/features/iq/IqAttemptFlow'
 import {IqLeaderboard} from '@/features/iq/IqLeaderboard'
-import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {IqTestCard} from '@/features/iq/IqTestCard'
 import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const MOCK_CURRENT_USER_ID = 'user-001'
 
@@ -71,7 +72,13 @@ export function IqTestsPage() {
     }
     return [
       ...leaderboard,
-      {rank: leaderboard.length + 1, userId: MOCK_CURRENT_USER_ID, displayName: 'Ты', score: 0, streak: 0},
+      {
+        rank: leaderboard.length + 1,
+        userId: MOCK_CURRENT_USER_ID,
+        displayName: 'Ты',
+        score: 0,
+        streak: 0,
+      },
     ]
   }, [leaderboard])
 
@@ -95,10 +102,7 @@ export function IqTestsPage() {
               )}
               {!testsLoading && tests.length === 0 && (
                 <div data-testid={testId('iq', 'page', 'empty', 'tests')}>
-                  <EmptyNetState
-                    title="Тесты не найдены"
-                    copy="Каталог Hockey IQ пока пуст."
-                  />
+                  <EmptyNetState title="Тесты не найдены" copy="Каталог Hockey IQ пока пуст." />
                 </div>
               )}
               {!testsLoading && tests.length > 0 && (

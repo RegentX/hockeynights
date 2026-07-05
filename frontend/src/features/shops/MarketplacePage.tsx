@@ -2,16 +2,17 @@
  * SPEC-FR-9.3.1
  */
 
-import {useEffect, useState} from 'react'
-import {useQuery} from '@tanstack/react-query'
 import {Button, Select, Switch, Text, TextInput} from '@gravity-ui/uikit'
-import type {MarketplaceFilters, MarketplaceSort} from '@/entities/shop/types'
+import {useQuery} from '@tanstack/react-query'
+import {useEffect, useState} from 'react'
+
 import type {PlayerPosition} from '@/entities/common/types'
+import type {MarketplaceFilters, MarketplaceSort} from '@/entities/shop/types'
 import {fetchMarketplaceFeed} from '@/features/shops/api/marketplaceApi'
 import {MarketplaceProductCard} from '@/features/shops/MarketplaceProductCard'
 import {MarketplaceShopStrip} from '@/features/shops/MarketplaceShopStrip'
-import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {testId} from '@/shared/testing/testId'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const SORT_OPTIONS = [
   {value: 'recommended', content: 'Рекомендуемые'},
@@ -57,13 +58,17 @@ export function MarketplacePage() {
   }
 
   return (
-    <div className="marketplace hockey-stack hockey-stack--gap-20" data-testid={testId('shops', 'marketplace', 'page')}>
+    <div
+      className="marketplace hockey-stack hockey-stack--gap-20"
+      data-testid={testId('shops', 'marketplace', 'page')}
+    >
       <div className="marketplace__hero">
         <Text variant="header-1" data-testid={testId('shops', 'marketplace', 'text', 'title')}>
           Маркет экипировки
         </Text>
         <Text color="secondary" data-testid={testId('shops', 'marketplace', 'text', 'subtitle')}>
-          Лента товаров от партнёрских магазинов — как маркетплейс, с приоритетом для продвигаемых продавцов.
+          Лента товаров от партнёрских магазинов — как маркетплейс, с приоритетом для продвигаемых
+          продавцов.
         </Text>
       </div>
 
@@ -83,7 +88,10 @@ export function MarketplacePage() {
           data-testid={testId('shops', 'marketplace', 'field', 'search')}
         />
 
-        <div className="marketplace__filters" data-testid={testId('shops', 'marketplace', 'filter')}>
+        <div
+          className="marketplace__filters"
+          data-testid={testId('shops', 'marketplace', 'filter')}
+        >
           <div className="marketplace__chips">
             <Button
               view={!filters.category ? 'action' : 'outlined'}
@@ -132,14 +140,19 @@ export function MarketplacePage() {
                 onUpdate={(checked) => patchFilters({inStockOnly: checked})}
                 data-testid={testId('shops', 'marketplace', 'toggle', 'in-stock')}
               />
-              <Text data-testid={testId('shops', 'marketplace', 'text', 'in-stock-label')}>Только в наличии</Text>
+              <Text data-testid={testId('shops', 'marketplace', 'text', 'in-stock-label')}>
+                Только в наличии
+              </Text>
             </div>
           </div>
         </div>
       </div>
 
       <div className="marketplace__feed-header hockey-row hockey-row--between">
-        <Text variant="subheader-2" data-testid={testId('shops', 'marketplace', 'text', 'feed-count')}>
+        <Text
+          variant="subheader-2"
+          data-testid={testId('shops', 'marketplace', 'text', 'feed-count')}
+        >
           {isFetching ? 'Обновляем ленту…' : `${listings.length} товаров`}
         </Text>
         {filters.shopId && (
@@ -160,10 +173,16 @@ export function MarketplacePage() {
         </div>
       ) : listings.length === 0 ? (
         <div className="marketplace__empty" data-testid={testId('shops', 'marketplace', 'empty')}>
-          <Text variant="subheader-2" data-testid={testId('shops', 'marketplace', 'text', 'empty-title')}>
+          <Text
+            variant="subheader-2"
+            data-testid={testId('shops', 'marketplace', 'text', 'empty-title')}
+          >
             Ничего не нашли
           </Text>
-          <Text color="secondary" data-testid={testId('shops', 'marketplace', 'text', 'empty-hint')}>
+          <Text
+            color="secondary"
+            data-testid={testId('shops', 'marketplace', 'text', 'empty-hint')}
+          >
             Попробуйте другой запрос или снимите фильтры.
           </Text>
         </div>

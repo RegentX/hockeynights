@@ -7,6 +7,7 @@ import {screen, waitFor, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {http, HttpResponse} from 'msw'
 import {describe, expect, it} from 'vitest'
+
 import {ArenasPage} from '@/features/arenas/ArenasPage'
 import {server} from '@/test/msw-server'
 import {renderWithProviders} from '@/test/render'
@@ -17,7 +18,9 @@ describe('Arenas map and booking modes', () => {
     renderWithProviders(<ArenasPage />)
 
     await waitFor(() => {
-      expect(screen.getByRole('application', {name: 'Карта площадок для аренды льда · Москва'})).toBeInTheDocument()
+      expect(
+        screen.getByRole('application', {name: 'Карта площадок для аренды льда · Москва'}),
+      ).toBeInTheDocument()
       expect(screen.getAllByText(/OpenStreetMap/i).length).toBeGreaterThan(0)
       expect(screen.getByText(/Москва и ближнее Подмосковье/i)).toBeInTheDocument()
       expect(screen.getAllByText('Слоты по времени').length).toBeGreaterThan(0)
@@ -151,9 +154,9 @@ describe('Arenas map and booking modes', () => {
     const search = await screen.findByPlaceholderText('Название, метро, район')
     await user.type(search, 'ВДНХ')
 
-    const vdnhCard = (
-      await screen.findAllByRole('button', {name: /Открытый каток ВДНХ/i})
-    ).find((el) => el.classList.contains('rink-card')) as HTMLElement
+    const vdnhCard = (await screen.findAllByRole('button', {name: /Открытый каток ВДНХ/i})).find(
+      (el) => el.classList.contains('rink-card'),
+    ) as HTMLElement
     await user.click(vdnhCard)
 
     const closeButton = await screen.findByRole('button', {name: 'Закрыть детали'})
@@ -168,9 +171,7 @@ describe('Arenas map and booking modes', () => {
   /** @spec SPEC-FR-6.1.2 - Ошибка загрузки → fallback с повтором */
   it('shows error fallback with retry on API failure', async () => {
     server.use(
-      http.get('*/mock-api/v1/arenas', () =>
-        HttpResponse.json({message: 'boom'}, {status: 500}),
-      ),
+      http.get('*/mock-api/v1/arenas', () => HttpResponse.json({message: 'boom'}, {status: 500})),
     )
 
     renderWithProviders(<ArenasPage />)

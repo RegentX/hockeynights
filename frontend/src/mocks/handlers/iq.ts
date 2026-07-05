@@ -3,6 +3,7 @@
  */
 
 import {http, HttpResponse} from 'msw'
+
 import type {IqAttemptPayload} from '@/entities/iq/types'
 import {
   evaluateMockIqAttempt,

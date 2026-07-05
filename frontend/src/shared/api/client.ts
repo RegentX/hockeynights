@@ -2,7 +2,7 @@
  * SPEC-FR-1.2.3, SPEC-FR-12.1.1, SPEC-FR-12.1.2, SPEC-FR-12.1.3
  */
 
-import { getApiBaseUrl } from '@/shared/config/apiMode'
+import {getApiBaseUrl} from '@/shared/config/apiMode'
 
 /** @spec SPEC-FR-12.1.1 - Опции HTTP-запроса */
 export interface RequestOptions {
@@ -19,7 +19,7 @@ export interface RequestOptions {
  * @spec SPEC-FR-12.1.3 - Не меняет контракт при переключении режима
  */
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = 'GET', body, headers = {} } = options
+  const {method = 'GET', body, headers = {}} = options
   const url = `${getApiBaseUrl()}${path}`
 
   const response = await fetch(url, {

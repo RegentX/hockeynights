@@ -2,8 +2,9 @@
  * SPEC-FR-9.2.2, SPEC-FR-9.2.3
  */
 
-import {useState} from 'react'
 import {Button} from '@gravity-ui/uikit'
+import {useState} from 'react'
+
 import type {ProductOffer} from '@/entities/shop/types'
 import {MockShopCheckoutModal} from '@/features/shops/MockShopCheckoutModal'
 import {testId} from '@/shared/testing/testId'

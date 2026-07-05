@@ -2,19 +2,20 @@
  * SPEC-FR-24.5.1
  */
 
+import {Text} from '@gravity-ui/uikit'
+import {useQuery} from '@tanstack/react-query'
 import {useState} from 'react'
 import {Link} from 'react-router-dom'
-import {useQuery} from '@tanstack/react-query'
-import {Text} from '@gravity-ui/uikit'
+
 import type {League} from '@/entities/league/types'
 import {fetchSession} from '@/features/auth/api/sessionApi'
-import {IceCard} from '@/shared/ui/IceCard'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
-import {MockLeaguePortalModal} from '@/features/leagues/MockLeaguePortalModal'
-import {LeagueTeamApplicationForm} from '@/features/leagues/LeagueTeamApplicationForm'
 import {fetchLeaguePosts} from '@/features/leagues/api/leaguesApi'
-import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
+import {LeagueTeamApplicationForm} from '@/features/leagues/LeagueTeamApplicationForm'
+import {MockLeaguePortalModal} from '@/features/leagues/MockLeaguePortalModal'
 import {testId} from '@/shared/testing/testId'
+import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {IceCard} from '@/shared/ui/IceCard'
 
 export interface LeagueProfilePanelProps {
   league: League
@@ -43,10 +44,16 @@ export function LeagueProfilePanel({league}: LeagueProfilePanelProps) {
         <div className="league-profile hockey-stack hockey-stack--gap-12">
           <div className="league-profile__header hockey-row hockey-row--between">
             <div className="hockey-stack hockey-stack--gap-4">
-              <Text variant="subheader-2" data-testid={testId('leagues', 'profile', 'text', 'title', league.id)}>
+              <Text
+                variant="subheader-2"
+                data-testid={testId('leagues', 'profile', 'text', 'title', league.id)}
+              >
                 Профиль лиги
               </Text>
-              <Text color="secondary" data-testid={testId('leagues', 'profile', 'text', 'name', league.id)}>
+              <Text
+                color="secondary"
+                data-testid={testId('leagues', 'profile', 'text', 'name', league.id)}
+              >
                 {league.name}
               </Text>
             </div>
@@ -55,15 +62,28 @@ export function LeagueProfilePanel({league}: LeagueProfilePanelProps) {
             </div>
           </div>
 
-          <div className="league-profile__info hockey-grid hockey-grid--2-cols" data-testid={testId('leagues', 'profile', 'panel', 'info', league.id)}>
+          <div
+            className="league-profile__info hockey-grid hockey-grid--2-cols"
+            data-testid={testId('leagues', 'profile', 'panel', 'info', league.id)}
+          >
             <div className="hockey-stack hockey-stack--gap-4">
-              <Text color="secondary" variant="caption-1" data-testid={testId('leagues', 'profile', 'text', 'region-label', league.id)}>
+              <Text
+                color="secondary"
+                variant="caption-1"
+                data-testid={testId('leagues', 'profile', 'text', 'region-label', league.id)}
+              >
                 Регион
               </Text>
-              <Text data-testid={testId('leagues', 'profile', 'text', 'region', league.id)}>{league.region}</Text>
+              <Text data-testid={testId('leagues', 'profile', 'text', 'region', league.id)}>
+                {league.region}
+              </Text>
             </div>
             <div className="hockey-stack hockey-stack--gap-4">
-              <Text color="secondary" variant="caption-1" data-testid={testId('leagues', 'profile', 'text', 'level-label', league.id)}>
+              <Text
+                color="secondary"
+                variant="caption-1"
+                data-testid={testId('leagues', 'profile', 'text', 'level-label', league.id)}
+              >
                 Уровень
               </Text>
               <Text data-testid={testId('leagues', 'profile', 'text', 'level', league.id)}>
@@ -73,23 +93,35 @@ export function LeagueProfilePanel({league}: LeagueProfilePanelProps) {
           </div>
 
           {league.description && (
-            <Text color="secondary" data-testid={testId('leagues', 'profile', 'text', 'description', league.id)}>
+            <Text
+              color="secondary"
+              data-testid={testId('leagues', 'profile', 'text', 'description', league.id)}
+            >
               {league.description}
             </Text>
           )}
 
           {pinnedPosts.length > 0 && (
-            <div className="league-profile__posts hockey-stack hockey-stack--gap-8" data-testid={testId('leagues', 'profile', 'list', 'posts', league.id)}>
+            <div
+              className="league-profile__posts hockey-stack hockey-stack--gap-8"
+              data-testid={testId('leagues', 'profile', 'list', 'posts', league.id)}
+            >
               {pinnedPosts.map((post) => (
                 <div
                   key={post.id}
                   className="partner-dashboard__list-item partner-dashboard__list-item--stack"
                   data-testid={testId('leagues', 'profile', 'item', post.id)}
                 >
-                  <Text variant="subheader-2" data-testid={testId('leagues', 'profile', 'text', 'post-title', post.id)}>
+                  <Text
+                    variant="subheader-2"
+                    data-testid={testId('leagues', 'profile', 'text', 'post-title', post.id)}
+                  >
                     {post.title}
                   </Text>
-                  <Text color="secondary" data-testid={testId('leagues', 'profile', 'text', 'post-body', post.id)}>
+                  <Text
+                    color="secondary"
+                    data-testid={testId('leagues', 'profile', 'text', 'post-body', post.id)}
+                  >
                     {post.body}
                   </Text>
                 </div>
@@ -100,10 +132,20 @@ export function LeagueProfilePanel({league}: LeagueProfilePanelProps) {
           {(league.recruitingStatus === 'open' || league.recruitingStatus === 'waitlist') &&
             !canManagePartner && <LeagueTeamApplicationForm league={league} />}
 
-          <div className="league-profile__actions hockey-row hockey-row--gap-8" data-testid={testId('leagues', 'profile', 'panel', 'actions', league.id)}>
+          <div
+            className="league-profile__actions hockey-row hockey-row--gap-8"
+            data-testid={testId('leagues', 'profile', 'panel', 'actions', league.id)}
+          >
             {canManagePartner && (
-              <Link to={`/partner/leagues/${league.id}`} data-testid={testId('leagues', 'profile', 'link', 'cabinet', league.id)}>
-                <HockeyButton view="action" size="s" data-testid={testId('leagues', 'profile', 'btn', 'cabinet', league.id)}>
+              <Link
+                to={`/partner/leagues/${league.id}`}
+                data-testid={testId('leagues', 'profile', 'link', 'cabinet', league.id)}
+              >
+                <HockeyButton
+                  view="action"
+                  size="s"
+                  data-testid={testId('leagues', 'profile', 'btn', 'cabinet', league.id)}
+                >
                   Кабинет лиги
                 </HockeyButton>
               </Link>
@@ -117,8 +159,17 @@ export function LeagueProfilePanel({league}: LeagueProfilePanelProps) {
               Открыть портал лиги
             </HockeyButton>
             {league.websiteUrl && (
-              <a href={league.websiteUrl} target="_blank" rel="noreferrer" data-testid={testId('leagues', 'profile', 'link', 'website', league.id)}>
-                <HockeyButton view="outlined" size="s" data-testid={testId('leagues', 'profile', 'btn', 'website', league.id)}>
+              <a
+                href={league.websiteUrl}
+                target="_blank"
+                rel="noreferrer"
+                data-testid={testId('leagues', 'profile', 'link', 'website', league.id)}
+              >
+                <HockeyButton
+                  view="outlined"
+                  size="s"
+                  data-testid={testId('leagues', 'profile', 'btn', 'website', league.id)}
+                >
                   Сайт лиги
                 </HockeyButton>
               </a>

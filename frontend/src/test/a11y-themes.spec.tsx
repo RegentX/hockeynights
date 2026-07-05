@@ -3,15 +3,16 @@
  * TASK-QA-03
  */
 
+import {Button} from '@gravity-ui/uikit'
 import {screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
-import {Button} from '@gravity-ui/uikit'
-import {renderWithProviders} from '@/test/render'
+
+import {useHockeyTheme} from '@/shared/theme/HockeyThemeProvider'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {PositionLabel} from '@/shared/ui/PositionLabel'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-import {useHockeyTheme} from '@/shared/theme/HockeyThemeProvider'
+import {renderWithProviders} from '@/test/render'
 
 function ThemeToggleProbe() {
   const {themeId, toggleTheme} = useHockeyTheme()

@@ -2,7 +2,11 @@
  * SPEC-FR-5.1.1, SPEC-FR-5.1.2, SPEC-FR-5.1.3, SPEC-FR-5.2.1, SPEC-FR-5.2.2, SPEC-FR-5.2.3
  */
 
-import type {CreateRecruitmentPayload, RecruitmentRequest, RecruitmentResponse} from '@/entities/recruitment/types'
+import type {
+  CreateRecruitmentPayload,
+  RecruitmentRequest,
+  RecruitmentResponse,
+} from '@/entities/recruitment/types'
 import {mockEvents} from '@/mocks/data/events'
 
 /** @spec SPEC-FR-5.1.1 - Mock запросы добора */
@@ -84,7 +88,9 @@ export function updateMockResponseStatus(
   if (index === -1) return undefined
   mockRecruitmentResponses[index] = {...mockRecruitmentResponses[index], status}
   if (status === 'accepted') {
-    const req = mockRecruitmentRequests.find((r) => r.id === mockRecruitmentResponses[index].requestId)
+    const req = mockRecruitmentRequests.find(
+      (r) => r.id === mockRecruitmentResponses[index].requestId,
+    )
     if (req) req.status = 'filled'
   }
   return mockRecruitmentResponses[index]

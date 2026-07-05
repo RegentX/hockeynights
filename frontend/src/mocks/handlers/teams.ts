@@ -6,32 +6,30 @@
  */
 
 import {http, HttpResponse} from 'msw'
+
 import type {AttendanceStatus, EventType} from '@/entities/common/types'
-import type {CreateTeamPayload} from '@/entities/team/types'
 import type {CreateEventPayload} from '@/entities/event/types'
+import type {CreateTeamPayload} from '@/entities/team/types'
+import {findMockClubByTeamId} from '@/mocks/data/clubs'
 import {
   createMockEvent,
   getMockRosterStatus,
   mockEvents,
   updateMockAttendance,
 } from '@/mocks/data/events'
+import {mockPlayers} from '@/mocks/data/players'
 import {
   addMockRosterMember,
-  createMockTeamInvite,
   createMockTeam,
+  createMockTeamInvite,
   mockRoster,
   mockTeamInvites,
   mockTeams,
   transferMockTeamOwnership,
-  updateMockTeamRole,
   updateMockRosterStatus,
+  updateMockTeamRole,
 } from '@/mocks/data/teams'
-import {mockPlayers} from '@/mocks/data/players'
-import {
-  getMockTrainingLineup,
-  updateMockTrainingLineup,
-} from '@/mocks/data/trainingLineup'
-import {findMockClubByTeamId} from '@/mocks/data/clubs'
+import {getMockTrainingLineup, updateMockTrainingLineup} from '@/mocks/data/trainingLineup'
 
 /** @spec SPEC-FR-3.1.1 - Handlers команд, событий и календаря */
 export const teamHandlers = [
@@ -66,7 +64,9 @@ export const teamHandlers = [
   }),
 
   http.patch('/mock-api/v1/teams/:teamId/roster/:userId', async ({params, request}) => {
-    const body = (await request.json()) as {rosterStatus: 'active' | 'bench' | 'invited' | 'removed'}
+    const body = (await request.json()) as {
+      rosterStatus: 'active' | 'bench' | 'invited' | 'removed'
+    }
     const updated = updateMockRosterStatus(
       params.teamId as string,
       params.userId as string,
@@ -100,9 +100,14 @@ export const teamHandlers = [
   }),
 
   http.patch('/mock-api/v1/teams/:teamId/roles/:userId', async ({params, request}) => {
-    const body = (await request.json()) as {teamRole: 'owner' | 'captain' | 'coach' | 'team_admin' | 'player'}
+    const body = (await request.json()) as {
+      teamRole: 'owner' | 'captain' | 'coach' | 'team_admin' | 'player'
+    }
     const actor = mockRoster.find((m) => m.teamId === params.teamId && m.userId === 'user-001')
-    const canManageRoles = actor?.teamRole === 'owner' || actor?.teamRole === 'captain' || actor?.teamRole === 'team_admin'
+    const canManageRoles =
+      actor?.teamRole === 'owner' ||
+      actor?.teamRole === 'captain' ||
+      actor?.teamRole === 'team_admin'
     if (!canManageRoles) {
       return HttpResponse.json({message: 'Недостаточно прав для изменения ролей'}, {status: 403})
     }
@@ -120,13 +125,22 @@ export const teamHandlers = [
     const ownerCount = owners.length
 
     if (nextRole === 'owner' && !isActorOwner) {
-      return HttpResponse.json({message: 'Только владелец может передавать ownership'}, {status: 403})
+      return HttpResponse.json(
+        {message: 'Только владелец может передавать ownership'},
+        {status: 403},
+      )
     }
     if (isTargetOwner && nextRole !== 'owner' && !isActorOwner) {
-      return HttpResponse.json({message: 'Только владелец может менять роль владельца'}, {status: 403})
+      return HttpResponse.json(
+        {message: 'Только владелец может менять роль владельца'},
+        {status: 403},
+      )
     }
     if (isTargetOwner && nextRole !== 'owner' && ownerCount <= 1) {
-      return HttpResponse.json({message: 'Нельзя снять последнего владельца команды'}, {status: 400})
+      return HttpResponse.json(
+        {message: 'Нельзя снять последнего владельца команды'},
+        {status: 400},
+      )
     }
 
     const updated =
@@ -155,9 +169,7 @@ export const teamHandlers = [
   }),
 
   http.get('/mock-api/v1/teams/:teamId/training-events', ({params}) => {
-    const events = mockEvents.filter(
-      (e) => e.teamId === params.teamId && e.type === 'training',
-    )
+    const events = mockEvents.filter((e) => e.teamId === params.teamId && e.type === 'training')
     return HttpResponse.json(events)
   }),
 
@@ -186,7 +198,8 @@ export const teamHandlers = [
     if (!canEdit) {
       return HttpResponse.json({message: 'Недостаточно прав для раскладки'}, {status: 403})
     }
-    const body = (await request.json()) as import('@/entities/team/types').TrainingLineupAssignment[]
+    const body =
+      (await request.json()) as import('@/entities/team/types').TrainingLineupAssignment[]
     const updated = updateMockTrainingLineup(params.eventId as string, body)
     return HttpResponse.json(updated)
   }),

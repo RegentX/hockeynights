@@ -77,7 +77,10 @@ export function createMockTeam(team: Team): Team {
  * @spec SPEC-FR-3.1.2 - Добавить игрока в состав
  */
 export function addMockRosterMember(member: RosterMember): RosterMember {
-  mockRoster = [...mockRoster.filter((m) => !(m.teamId === member.teamId && m.userId === member.userId)), member]
+  mockRoster = [
+    ...mockRoster.filter((m) => !(m.teamId === member.teamId && m.userId === member.userId)),
+    member,
+  ]
   const team = mockTeams.find((t) => t.id === member.teamId)
   if (team && !team.memberIds.includes(member.userId)) {
     team.memberIds = [...team.memberIds, member.userId]
@@ -112,7 +115,10 @@ export function updateMockTeamRole(
 }
 
 /** @spec SPEC-FR-21.1.5 - Передать ownership другому участнику команды */
-export function transferMockTeamOwnership(teamId: string, newOwnerUserId: string): RosterMember | undefined {
+export function transferMockTeamOwnership(
+  teamId: string,
+  newOwnerUserId: string,
+): RosterMember | undefined {
   const nextOwner = mockRoster.find((m) => m.teamId === teamId && m.userId === newOwnerUserId)
   if (!nextOwner) return undefined
   mockRoster = mockRoster.map((member) =>
@@ -130,7 +136,11 @@ export function transferMockTeamOwnership(teamId: string, newOwnerUserId: string
 }
 
 /** @spec SPEC-FR-21.1.2 - Создать email-invite для незарегистрированного игрока */
-export function createMockTeamInvite(teamId: string, email: string, invitedByUserId = 'user-001'): TeamInvite {
+export function createMockTeamInvite(
+  teamId: string,
+  email: string,
+  invitedByUserId = 'user-001',
+): TeamInvite {
   const invite: TeamInvite = {
     id: `invite-${Date.now()}`,
     teamId,

@@ -2,19 +2,19 @@
  * SPEC-FR-7.1.1, SPEC-FR-7.1.2, SPEC-FR-7.2.1, SPEC-FR-7.2.2
  */
 
-import {apiRequest} from '@/shared/api/client'
 import type {
   League,
   LeagueAnalytics,
   LeagueApplicationPayload,
   LeagueDivision,
   LeaguePost,
-  LeagueScheduleItem,
   LeagueScheduleImportResult,
+  LeagueScheduleItem,
   LeagueSeason,
   LeagueStanding,
   LeagueTeamApplication,
 } from '@/entities/league/types'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-7.1.1 - Список лиг
@@ -58,7 +58,10 @@ export function fetchLeagueSeasons(leagueId: string): Promise<LeagueSeason[]> {
 }
 
 /** @spec SPEC-FR-24.5.4 - Дивизионы сезона */
-export function fetchLeagueDivisions(leagueId: string, seasonId?: string): Promise<LeagueDivision[]> {
+export function fetchLeagueDivisions(
+  leagueId: string,
+  seasonId?: string,
+): Promise<LeagueDivision[]> {
   const query = seasonId ? `?seasonId=${seasonId}` : ''
   return apiRequest<LeagueDivision[]>(`/leagues/${leagueId}/divisions${query}`)
 }

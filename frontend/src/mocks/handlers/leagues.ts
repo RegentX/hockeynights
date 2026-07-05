@@ -3,10 +3,14 @@
  */
 
 import {http, HttpResponse} from 'msw'
-import {mockLeagues, mockSchedule, mockStandings, updateMockLeagueProfile, addMockScheduleItem, updateMockScheduleItem, updateMockStanding} from '@/mocks/data/leagues'
-import {canManagePartnerEntity} from '@/mocks/data/partners'
-import {mockSession} from '@/mocks/data/session'
-import {canManageTeamAsCaptain} from '@/mocks/data/teams'
+
+import type {
+  LeagueApplicationPayload,
+  LeagueApplicationStatus,
+  LeagueScheduleItem,
+  LeagueStanding,
+  LeagueTeamApplication,
+} from '@/entities/league/types'
 import {
   addMockLeagueApplication,
   addMockLeaguePost,
@@ -19,7 +23,18 @@ import {
   importMockLeagueScheduleCsv,
   updateMockLeagueApplication,
 } from '@/mocks/data/leaguePartner'
-import type {LeagueApplicationPayload, LeagueApplicationStatus, LeagueScheduleItem, LeagueStanding, LeagueTeamApplication} from '@/entities/league/types'
+import {
+  addMockScheduleItem,
+  mockLeagues,
+  mockSchedule,
+  mockStandings,
+  updateMockLeagueProfile,
+  updateMockScheduleItem,
+  updateMockStanding,
+} from '@/mocks/data/leagues'
+import {canManagePartnerEntity} from '@/mocks/data/partners'
+import {mockSession} from '@/mocks/data/session'
+import {canManageTeamAsCaptain} from '@/mocks/data/teams'
 
 /** @spec SPEC-FR-7.1.1 - Handlers лиг */
 export const leagueHandlers = [
@@ -51,7 +66,7 @@ export const leagueHandlers = [
     if (!canManagePartnerEntity('league', leagueId)) {
       return HttpResponse.json({message: 'Недостаточно прав партнёра лиги'}, {status: 403})
     }
-    const body = (await request.json()) as Partial<typeof mockLeagues[number]>
+    const body = (await request.json()) as Partial<(typeof mockLeagues)[number]>
     const updated = updateMockLeagueProfile(leagueId, body)
     if (!updated) {
       return HttpResponse.json({message: 'League not found'}, {status: 404})
@@ -90,7 +105,10 @@ export const leagueHandlers = [
     const leagueId = params.leagueId as string
     const body = (await request.json()) as LeagueApplicationPayload
     if (!body.teamId || !canManageTeamAsCaptain(body.teamId, mockSession.user.id)) {
-      return HttpResponse.json({message: 'Подать заявку может только капитан или владелец команды'}, {status: 403})
+      return HttpResponse.json(
+        {message: 'Подать заявку может только капитан или владелец команды'},
+        {status: 403},
+      )
     }
     const league = mockLeagues.find((l) => l.id === leagueId)
     if (!league || league.recruitingStatus === 'closed') {
@@ -103,22 +121,25 @@ export const leagueHandlers = [
     return HttpResponse.json(result)
   }),
 
-  http.patch('/mock-api/v1/leagues/:leagueId/applications/:applicationId', async ({params, request}) => {
-    const leagueId = params.leagueId as string
-    const applicationId = params.applicationId as string
-    if (!canManagePartnerEntity('league', leagueId)) {
-      return HttpResponse.json({message: 'Недостаточно прав партнёра лиги'}, {status: 403})
-    }
-    const body = (await request.json()) as Pick<LeagueTeamApplication, 'status' | 'reviewComment'>
-    const updated = updateMockLeagueApplication(leagueId, applicationId, {
-      status: body.status as LeagueApplicationStatus,
-      reviewComment: body.reviewComment,
-    })
-    if (!updated) {
-      return HttpResponse.json({message: 'Application not found'}, {status: 404})
-    }
-    return HttpResponse.json(updated)
-  }),
+  http.patch(
+    '/mock-api/v1/leagues/:leagueId/applications/:applicationId',
+    async ({params, request}) => {
+      const leagueId = params.leagueId as string
+      const applicationId = params.applicationId as string
+      if (!canManagePartnerEntity('league', leagueId)) {
+        return HttpResponse.json({message: 'Недостаточно прав партнёра лиги'}, {status: 403})
+      }
+      const body = (await request.json()) as Pick<LeagueTeamApplication, 'status' | 'reviewComment'>
+      const updated = updateMockLeagueApplication(leagueId, applicationId, {
+        status: body.status as LeagueApplicationStatus,
+        reviewComment: body.reviewComment,
+      })
+      if (!updated) {
+        return HttpResponse.json({message: 'Application not found'}, {status: 404})
+      }
+      return HttpResponse.json(updated)
+    },
+  ),
 
   http.get('/mock-api/v1/leagues/:leagueId/posts', ({params}) => {
     const leagueId = params.leagueId as string

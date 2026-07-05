@@ -3,14 +3,15 @@
  * SPEC-UI-2.4
  */
 
-import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
-import {fetchRosterStatus} from '@/features/events/api/eventsApi'
-import {PositionLabel} from '@/shared/ui/PositionLabel'
-import {ScoreboardText} from '@/shared/ui/ScoreboardText'
+import {useQuery} from '@tanstack/react-query'
+
 import type {PlayerPosition} from '@/entities/common/types'
-import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
+import {fetchRosterStatus} from '@/features/events/api/eventsApi'
 import {testId} from '@/shared/testing/testId'
+import {PositionLabel} from '@/shared/ui/PositionLabel'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
+import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 
 /** @spec SPEC-FR-4.3.1 - Props виджета дефицита */
 export interface RosterNeedsWidgetProps {
@@ -44,11 +45,15 @@ export function RosterNeedsWidget({eventId}: RosterNeedsWidgetProps) {
   if (!status) return null
 
   const totalRequired = status.deficits.reduce((s, d) => s + d.count, 0) + status.summary.going
-  const fillPercent = totalRequired > 0 ? Math.round((status.summary.going / totalRequired) * 100) : 100
+  const fillPercent =
+    totalRequired > 0 ? Math.round((status.summary.going / totalRequired) * 100) : 100
 
   return (
     <div className="stick-progress" data-testid={testId('events', 'roster', 'panel', eventId)}>
-      <Text variant="subheader-2" data-testid={testId('events', 'roster', 'text', 'title', eventId)}>
+      <Text
+        variant="subheader-2"
+        data-testid={testId('events', 'roster', 'text', 'title', eventId)}
+      >
         Дефицит состава
       </Text>
       <Text color="secondary" data-testid={testId('events', 'roster', 'text', 'summary', eventId)}>
@@ -72,11 +77,17 @@ export function RosterNeedsWidget({eventId}: RosterNeedsWidgetProps) {
       </div>
 
       {status.deficits.length === 0 ? (
-        <Text color="positive" data-testid={testId('events', 'roster', 'text', 'complete', eventId)}>
+        <Text
+          color="positive"
+          data-testid={testId('events', 'roster', 'text', 'complete', eventId)}
+        >
           Состав укомплектован
         </Text>
       ) : (
-        <div className="hockey-stack hockey-stack--gap-6" data-testid={testId('events', 'roster', 'list', eventId)}>
+        <div
+          className="hockey-stack hockey-stack--gap-6"
+          data-testid={testId('events', 'roster', 'list', eventId)}
+        >
           {status.deficits.map((slot) => (
             <div
               key={slot.position}
@@ -87,7 +98,9 @@ export function RosterNeedsWidget({eventId}: RosterNeedsWidgetProps) {
                 🪝
               </span>
               <PositionLabel position={slot.position as PlayerPosition} />
-              <Text data-testid={testId('events', 'roster', 'text', 'deficit', slot.position, eventId)}>
+              <Text
+                data-testid={testId('events', 'roster', 'text', 'deficit', slot.position, eventId)}
+              >
                 не хватает <ScoreboardText tone="accent">{slot.count}</ScoreboardText>
               </Text>
             </div>

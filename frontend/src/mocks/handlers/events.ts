@@ -4,6 +4,7 @@
  */
 
 import {http, HttpResponse} from 'msw'
+
 import type {EventRsvpStatus, UpdateEventRsvpPayload} from '@/entities/event/rsvpTypes'
 import {getMockEventRsvp, updateMockEventRsvp} from '@/mocks/data/eventRsvp'
 import {mockUser} from '@/mocks/data/session'

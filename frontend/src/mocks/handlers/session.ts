@@ -1,14 +1,13 @@
 /**
  * SPEC-FR-2.1.1, SPEC-FR-2.1.2, SPEC-FR-2.1.3
- * HOCFRONT-5, HOCFRONT-8 — handlers сессии, демо-логина и onboarding.
+ * HOCFRONT-5 — handlers сессии, демо-логина и onboarding.
  */
 
 import {http, HttpResponse} from 'msw'
-import {completeOnboarding, mockSession, resetMockSession, selectMockPersona} from '@/mocks/data/session'
-import type {OnboardingPayload} from '@/entities/user/types'
+
 import type {AuthLoginPayload, SelectPersonaPayload} from '@/entities/auth/types'
-import {isDemoCredentials, DEMO_EMAIL} from '@/features/auth/demoCredentials'
-import {DEMO_USER_ID, getAvailablePersonas} from '@/mocks/data/personas'
+import type {OnboardingPayload} from '@/entities/user/types'
+import {DEMO_EMAIL, isDemoCredentials} from '@/features/auth/demoCredentials'
 import {
   authenticateLocalUser,
   findLocalUserByEmail,
@@ -16,6 +15,13 @@ import {
   setPendingLocalUser,
 } from '@/features/auth/localAuthMemory'
 import {validateRegisterPayload} from '@/features/auth/registrationValidation'
+import {DEMO_USER_ID, getAvailablePersonas} from '@/mocks/data/personas'
+import {
+  completeOnboarding,
+  mockSession,
+  resetMockSession,
+  selectMockPersona,
+} from '@/mocks/data/session'
 
 export const sessionHandlers = [
   http.get('/mock-api/v1/session', () => {
@@ -118,11 +124,7 @@ export const sessionHandlers = [
   /** @deprecated Legacy onboarding — prefer POST /session/persona (selectMockPersona). */
   http.post('/mock-api/v1/onboarding', async ({request}) => {
     const body = (await request.json()) as OnboardingPayload
-    const session = completeOnboarding(
-      body.displayName,
-      body.roles,
-      body.partnerMemberships ?? [],
-    )
+    const session = completeOnboarding(body.displayName, body.roles, body.partnerMemberships ?? [])
     return HttpResponse.json(session)
   }),
 

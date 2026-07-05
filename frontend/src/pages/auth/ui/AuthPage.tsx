@@ -3,18 +3,19 @@
  * Страница входа, регистрации и выбора демо-роли.
  */
 
-import {useState} from 'react'
-import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
+import {useQuery} from '@tanstack/react-query'
+import {useState} from 'react'
 import {Link, useLocation, useNavigate} from 'react-router-dom'
+
 import {fetchSession} from '@/features/auth/api/sessionApi'
 import {AuthShell} from '@/features/auth/AuthShell'
 import {LoginForm} from '@/features/auth/LoginForm'
 import {PersonaSelection} from '@/features/auth/PersonaSelection'
 import {RegisterForm} from '@/features/auth/RegisterForm'
 import {describeSessionPersona} from '@/features/partners/sessionPersona'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 type AuthStep = 'credentials' | 'personas'
 
@@ -63,7 +64,11 @@ export function AuthPage({isSwitching = false}: AuthPageProps) {
             </Text>
             <div className="hockey-row hockey-row--gap-8 hockey-row--wrap">
               <Link to="/profile" data-testid={testId('auth', 'page', 'link', 'continue')}>
-                <HockeyButton view="outlined" size="s" data-testid={testId('auth', 'page', 'btn', 'continue')}>
+                <HockeyButton
+                  view="outlined"
+                  size="s"
+                  data-testid={testId('auth', 'page', 'btn', 'continue')}
+                >
                   Продолжить в приложении
                 </HockeyButton>
               </Link>
@@ -88,10 +93,7 @@ export function AuthPage({isSwitching = false}: AuthPageProps) {
             <LoginForm onSuccess={handleAuthSuccess} />
           )
         ) : (
-          <PersonaSelection
-            isSwitching={isSwitching}
-            onBackToCredentials={goToCredentialsStep}
-          />
+          <PersonaSelection isSwitching={isSwitching} onBackToCredentials={goToCredentialsStep} />
         )}
 
         {step === 'credentials' && isSwitching && (

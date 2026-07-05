@@ -24,20 +24,12 @@ export function HockeyButton({
   children,
   ...props
 }: HockeyButtonProps) {
-  const classes = [
-    'hockey-button',
-    variant === 'sos' ? 'hockey-button--sos' : '',
-    className ?? '',
-  ]
+  const classes = ['hockey-button', variant === 'sos' ? 'hockey-button--sos' : '', className ?? '']
     .filter(Boolean)
     .join(' ')
 
   return (
-    <Button
-      {...props}
-      className={classes}
-      view={variant === 'sos' ? 'flat' : (view ?? 'action')}
-    >
+    <Button {...props} className={classes} view={variant === 'sos' ? 'flat' : (view ?? 'action')}>
       {children}
     </Button>
   )

@@ -2,13 +2,14 @@
  * SPEC-FR-4.1.1, SPEC-FR-4.1.2
  */
 
-import {useState} from 'react'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {useState} from 'react'
+
+import type {EventType, SkillLevel} from '@/entities/common/types'
 import {createEvent} from '@/features/events/api/eventsApi'
 import {fetchTeams} from '@/features/teams/api/teamsApi'
 import {mockArenas} from '@/mocks/data/arenas'
-import type {EventType, SkillLevel} from '@/entities/common/types'
 import {testId} from '@/shared/testing/testId'
 
 const TYPE_OPTIONS = [
@@ -74,7 +75,10 @@ export function EventCreateForm() {
   const teamOptions = teams.map((t) => ({value: t.id, content: t.name}))
 
   return (
-    <div className="hockey-stack hockey-stack--gap-12" data-testid={testId('events', 'create-form', 'panel')}>
+    <div
+      className="hockey-stack hockey-stack--gap-12"
+      data-testid={testId('events', 'create-form', 'panel')}
+    >
       <Text variant="subheader-2" data-testid={testId('events', 'create-form', 'text', 'title')}>
         Создать событие
       </Text>

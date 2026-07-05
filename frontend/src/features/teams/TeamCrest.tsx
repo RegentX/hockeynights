@@ -3,6 +3,7 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
+
 import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-UI-2.3 - Props шеврона команды */
@@ -25,13 +26,25 @@ export function TeamCrest({name, city, skillLevel, teamId}: TeamCrestProps) {
 
   return (
     <div className="team-crest" data-testid={testId('teams', 'team-crest', 'card', crestId)}>
-      <div className="team-crest__chevron" aria-hidden data-testid={testId('teams', 'team-crest', 'icon', crestId)}>
+      <div
+        className="team-crest__chevron"
+        aria-hidden
+        data-testid={testId('teams', 'team-crest', 'icon', crestId)}
+      >
         {initial}
       </div>
       <div>
-        <Text variant="subheader-2" data-testid={testId('teams', 'team-crest', 'text', 'name', crestId)}>{name}</Text>
+        <Text
+          variant="subheader-2"
+          data-testid={testId('teams', 'team-crest', 'text', 'name', crestId)}
+        >
+          {name}
+        </Text>
         {(city || skillLevel) && (
-          <Text color="secondary" data-testid={testId('teams', 'team-crest', 'text', 'meta', crestId)}>
+          <Text
+            color="secondary"
+            data-testid={testId('teams', 'team-crest', 'text', 'meta', crestId)}
+          >
             {[city, skillLevel].filter(Boolean).join(' · ')}
           </Text>
         )}

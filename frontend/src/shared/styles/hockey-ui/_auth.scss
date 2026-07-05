@@ -43,7 +43,11 @@
     position: absolute;
     inset: -40px -20px auto;
     height: 180px;
-    background: radial-gradient(ellipse 80% 100% at 50% 0%, rgba(94, 200, 242, 0.2), transparent 70%);
+    background: radial-gradient(
+      ellipse 80% 100% at 50% 0%,
+      rgba(94, 200, 242, 0.2),
+      transparent 70%
+    );
     pointer-events: none;
     z-index: 0;
   }
@@ -218,7 +222,11 @@
   padding: 4px;
   border-radius: 12px;
   border: 1px solid var(--hockey-card-border);
-  background: color-mix(in srgb, var(--hockey-card-bg-solid, var(--hockey-card-bg)) 70%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--hockey-card-bg-solid, var(--hockey-card-bg)) 70%,
+    transparent
+  );
 }
 
 .auth-tabs--pills .auth-tabs__tab {
@@ -281,7 +289,11 @@
     padding: 16px;
     border-radius: 14px;
     border: 1px solid var(--hockey-card-border);
-    background: color-mix(in srgb, var(--hockey-card-bg-solid, var(--hockey-card-bg)) 55%, transparent);
+    background: color-mix(
+      in srgb,
+      var(--hockey-card-bg-solid, var(--hockey-card-bg)) 55%,
+      transparent
+    );
 
     .g-text-input {
       width: 100%;
@@ -380,7 +392,11 @@
   border-radius: 14px;
   border: 1px solid color-mix(in srgb, var(--hockey-ice-glow) 30%, transparent);
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--hockey-ice-glow) 10%, transparent), transparent 60%),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--hockey-ice-glow) 10%, transparent),
+      transparent 60%
+    ),
     color-mix(in srgb, var(--hockey-card-bg-solid, var(--hockey-card-bg)) 80%, transparent);
 }
 
