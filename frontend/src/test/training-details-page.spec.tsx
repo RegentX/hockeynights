@@ -1,6 +1,7 @@
-import {Route, Routes} from 'react-router-dom'
 import {screen, waitFor} from '@testing-library/react'
+import {Route, Routes} from 'react-router-dom'
 import {describe, expect, it} from 'vitest'
+
 import {TrainingDetailsPage} from '@/features/events/TrainingDetailsPage'
 import {renderWithProviders} from '@/test/render'
 

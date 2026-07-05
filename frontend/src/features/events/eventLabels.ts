@@ -1,5 +1,5 @@
-import type {GameEvent} from '@/entities/event/types'
 import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
+import type {GameEvent} from '@/entities/event/types'
 
 export const ACCESS_LABELS: Record<NonNullable<GameEvent['accessScope']>, string> = {
   club_only: 'Тренировка внутри клуба',
