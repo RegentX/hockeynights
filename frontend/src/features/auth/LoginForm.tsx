@@ -3,15 +3,16 @@
  * Форма входа (email + пароль).
  */
 
-import {useState, type FormEvent} from 'react'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
+import {type FormEvent, useState} from 'react'
 import {Link} from 'react-router-dom'
+
+import {authLogin, loginWithCredentials} from '@/features/auth/api/sessionApi'
 import {AuthDemoCard} from '@/features/auth/AuthDemoCard'
 import {AuthField} from '@/features/auth/AuthField'
-import {authLogin, loginWithCredentials} from '@/features/auth/api/sessionApi'
 import {DEMO_EMAIL, DEMO_PASSWORD, isDemoCredentials} from '@/features/auth/demoCredentials'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 export interface LoginFormProps {
   onSuccess: () => void
@@ -64,7 +65,10 @@ export function LoginForm({onSuccess}: LoginFormProps) {
       onSubmit={handleSubmit}
       data-testid={testId('auth', 'login', 'panel', 'form')}
     >
-      <header className="auth-form__header" data-testid={testId('auth', 'login', 'panel', 'header')}>
+      <header
+        className="auth-form__header"
+        data-testid={testId('auth', 'login', 'panel', 'header')}
+      >
         <h2 className="auth-form__title" data-testid={testId('auth', 'login', 'text', 'title')}>
           Вход в аккаунт
         </h2>
@@ -99,7 +103,10 @@ export function LoginForm({onSuccess}: LoginFormProps) {
       </div>
 
       {error && (
-        <div className="auth-alert auth-alert--error" data-testid={testId('auth', 'login', 'text', 'error')}>
+        <div
+          className="auth-alert auth-alert--error"
+          data-testid={testId('auth', 'login', 'text', 'error')}
+        >
           {error}
         </div>
       )}

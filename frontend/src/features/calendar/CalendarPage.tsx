@@ -3,20 +3,31 @@
  * SPEC-UI-2.6, SPEC-UI-3.1
  */
 
-import {useMemo, useState} from 'react'
-import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
-import {fetchCalendar} from '@/features/events/api/eventsApi'
+import {useQuery} from '@tanstack/react-query'
+import {useMemo, useState} from 'react'
+
 import type {CalendarFilters as CalendarFiltersType} from '@/entities/event/types'
 import {CalendarFilters} from '@/features/calendar/CalendarFilters'
+import {fetchCalendar} from '@/features/events/api/eventsApi'
 import {EventCard} from '@/features/events/EventCard'
-import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const MONTH_SHORT = [
-  'янв', 'фев', 'мар', 'апр', 'май', 'июн',
-  'июл', 'авг', 'сен', 'окт', 'ноя', 'дек',
+  'янв',
+  'фев',
+  'мар',
+  'апр',
+  'май',
+  'июн',
+  'июл',
+  'авг',
+  'сен',
+  'окт',
+  'ноя',
+  'дек',
 ]
 
 /**
@@ -61,16 +72,32 @@ export function CalendarPage() {
             const date = new Date(dayKey)
             const daySlug = testId(dayKey)
             return (
-              <div key={dayKey} className="scoreboard-calendar__day" data-testid={testId('calendar', 'page', 'panel', 'day', daySlug)}>
-                <div className="scoreboard-calendar__date" data-testid={testId('calendar', 'page', 'panel', 'date', daySlug)}>
-                  <div className="scoreboard-calendar__date-day" data-testid={testId('calendar', 'page', 'text', 'day', daySlug)}>
+              <div
+                key={dayKey}
+                className="scoreboard-calendar__day"
+                data-testid={testId('calendar', 'page', 'panel', 'day', daySlug)}
+              >
+                <div
+                  className="scoreboard-calendar__date"
+                  data-testid={testId('calendar', 'page', 'panel', 'date', daySlug)}
+                >
+                  <div
+                    className="scoreboard-calendar__date-day"
+                    data-testid={testId('calendar', 'page', 'text', 'day', daySlug)}
+                  >
                     {date.getDate()}
                   </div>
-                  <div className="scoreboard-calendar__date-month" data-testid={testId('calendar', 'page', 'text', 'month', daySlug)}>
+                  <div
+                    className="scoreboard-calendar__date-month"
+                    data-testid={testId('calendar', 'page', 'text', 'month', daySlug)}
+                  >
                     {MONTH_SHORT[date.getMonth()]}
                   </div>
                 </div>
-                <div className="scoreboard-calendar__events" data-testid={testId('calendar', 'page', 'list', 'events', daySlug)}>
+                <div
+                  className="scoreboard-calendar__events"
+                  data-testid={testId('calendar', 'page', 'list', 'events', daySlug)}
+                >
                   {dayEvents.map((event) => (
                     <EventCard key={event.id} event={event} compact />
                   ))}
@@ -83,10 +110,7 @@ export function CalendarPage() {
 
       {!isLoading && events.length === 0 && (
         <div data-testid={testId('calendar', 'page', 'empty')}>
-          <EmptyNetState
-            title="Пустая сетка"
-            copy="События не найдены по выбранным фильтрам."
-          />
+          <EmptyNetState title="Пустая сетка" copy="События не найдены по выбранным фильтрам." />
         </div>
       )}
     </div>

@@ -2,17 +2,11 @@
 
 /* SPEC-UI-2.3 Locker room */
 
-
 .locker-room {
-  background: linear-gradient(
-        135deg,
-        var(--hockey-locker-warm) 0%,
-        #ebe6dc 100%
-      );
-      border-left: 4px solid var(--hockey-line-red);
-      border-radius: 8px;
-      padding: 16px;
-
+  background: linear-gradient(135deg, var(--hockey-locker-warm) 0%, #ebe6dc 100%);
+  border-left: 4px solid var(--hockey-line-red);
+  border-radius: 8px;
+  padding: 16px;
 }
 
 [data-hockey-theme='ice'] .locker-room {
@@ -25,47 +19,42 @@
 
 .team-crest {
   display: flex;
-      align-items: center;
-      gap: 12px;
-
+  align-items: center;
+  gap: 12px;
 }
 
 .team-crest__chevron {
   width: 48px;
-      height: 48px;
-      background: var(--hockey-line-red);
-      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 800;
-      font-size: 18px;
-
+  height: 48px;
+  background: var(--hockey-line-red);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 18px;
 }
 
 .roster-hook-slot {
   display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 12px;
-      border: 1px dashed var(--hockey-card-border);
-      border-radius: 6px;
-      background: rgba(0, 0, 0, 0.03);
-
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px dashed var(--hockey-card-border);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .roster-hook-slot--deficit {
   border-color: var(--hockey-line-red);
-      border-style: solid;
-      background: rgba(225, 6, 0, 0.08);
-
+  border-style: solid;
+  background: rgba(225, 6, 0, 0.08);
 }
 
 .roster-hook-slot__hook {
   color: var(--hockey-text-muted);
-      font-size: 18px;
-
+  font-size: 18px;
 }
 
 .team-picker-item {
@@ -161,11 +150,10 @@
 
 .stick-progress__bar {
   height: 8px;
-      border-radius: 4px;
-      background: #8b5a2b;
-      position: relative;
-      overflow: hidden;
-
+  border-radius: 4px;
+  background: #8b5a2b;
+  position: relative;
+  overflow: hidden;
 }
 
 .stick-progress__fill {
@@ -177,16 +165,12 @@
 
 .stick-progress__fill--ok {
   background: var(--hockey-slot-green);
-
 }
 
 .stick-progress__fill--warn {
   background: #f39c12;
-
 }
 
 .stick-progress__fill--danger {
   background: var(--hockey-line-red);
-
 }
-

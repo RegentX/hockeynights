@@ -3,15 +3,10 @@
  */
 
 import {http, HttpResponse} from 'msw'
-import {
-  addMockShopProduct,
-  mockProductOffers,
-  mockShops,
-  updateMockShopProduct,
-  updateMockShopProfile,
-} from '@/mocks/data/shops'
-import {canManagePartnerEntity} from '@/mocks/data/partners'
+
+import type {ShopProductPayload, ShopPromo} from '@/entities/shop/types'
 import {buildMarketplaceFeed} from '@/mocks/data/marketplace'
+import {canManagePartnerEntity} from '@/mocks/data/partners'
 import {
   addMockShopPromo,
   getMockShopAnalytics,
@@ -20,7 +15,13 @@ import {
   getMockShopPromos,
   runMockShopCatalogImport,
 } from '@/mocks/data/shopPartner'
-import type {ShopProductPayload, ShopPromo} from '@/entities/shop/types'
+import {
+  addMockShopProduct,
+  mockProductOffers,
+  mockShops,
+  updateMockShopProduct,
+  updateMockShopProfile,
+} from '@/mocks/data/shops'
 
 /** @spec SPEC-FR-9.1.1 - Handlers магазинов и предложений */
 export const shopHandlers = [
@@ -31,8 +32,12 @@ export const shopHandlers = [
       category: url.searchParams.get('category') ?? undefined,
       shopId: url.searchParams.get('shopId') ?? undefined,
       inStockOnly: url.searchParams.get('inStockOnly') === '1',
-      position: (url.searchParams.get('position') as import('@/entities/common/types').PlayerPosition) ?? undefined,
-      sort: (url.searchParams.get('sort') as import('@/entities/shop/types').MarketplaceSort) ?? undefined,
+      position:
+        (url.searchParams.get('position') as import('@/entities/common/types').PlayerPosition) ??
+        undefined,
+      sort:
+        (url.searchParams.get('sort') as import('@/entities/shop/types').MarketplaceSort) ??
+        undefined,
     }
     return HttpResponse.json(buildMarketplaceFeed(filters))
   }),
@@ -49,9 +54,7 @@ export const shopHandlers = [
     if (shopId) {
       offers = offers.filter((o) => o.shopId === shopId)
       if (!canManagePartnerEntity('shop', shopId)) {
-        offers = offers.filter(
-          (o) => o.moderationStatus === 'published' || !o.moderationStatus,
-        )
+        offers = offers.filter((o) => o.moderationStatus === 'published' || !o.moderationStatus)
       }
     } else {
       offers = offers.filter((o) => o.moderationStatus === 'published' || !o.moderationStatus)
@@ -64,7 +67,7 @@ export const shopHandlers = [
     if (!canManagePartnerEntity('shop', shopId)) {
       return HttpResponse.json({message: 'Недостаточно прав партнёра магазина'}, {status: 403})
     }
-    const body = (await request.json()) as Partial<typeof mockShops[number]>
+    const body = (await request.json()) as Partial<(typeof mockShops)[number]>
     const updated = updateMockShopProfile(shopId, body)
     if (!updated) {
       return HttpResponse.json({message: 'Shop not found'}, {status: 404})

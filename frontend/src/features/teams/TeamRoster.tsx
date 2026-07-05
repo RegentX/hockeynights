@@ -3,15 +3,20 @@
  * SPEC-UI-2.3
  */
 
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Select, Text} from '@gravity-ui/uikit'
-import {fetchTeamRoster, updateRosterMemberStatus, updateTeamMemberRole} from '@/features/teams/api/teamsApi'
-import {useSessionAccess} from '@/features/access/useSessionAccess'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+
 import type {RosterMember} from '@/entities/team/types'
 import type {TeamRole} from '@/entities/team/types'
+import {useSessionAccess} from '@/features/access/useSessionAccess'
+import {
+  fetchTeamRoster,
+  updateRosterMemberStatus,
+  updateTeamMemberRole,
+} from '@/features/teams/api/teamsApi'
+import {testId} from '@/shared/testing/testId'
 import {PositionLabel} from '@/shared/ui/PositionLabel'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-import {testId} from '@/shared/testing/testId'
 
 const STATUS_OPTIONS = [
   {value: 'active', content: 'Активен'},
@@ -49,16 +54,26 @@ export function TeamRoster({teamId}: TeamRosterProps) {
   })
 
   const mutation = useMutation({
-    mutationFn: ({memberUserId, rosterStatus}: {memberUserId: string; rosterStatus: RosterMember['rosterStatus']}) =>
-      updateRosterMemberStatus(teamId, memberUserId, rosterStatus),
+    mutationFn: ({
+      memberUserId,
+      rosterStatus,
+    }: {
+      memberUserId: string
+      rosterStatus: RosterMember['rosterStatus']
+    }) => updateRosterMemberStatus(teamId, memberUserId, rosterStatus),
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ['roster', teamId]})
     },
   })
 
   const roleMutation = useMutation({
-    mutationFn: ({memberUserId, teamRole}: {memberUserId: string; teamRole: NonNullable<RosterMember['teamRole']>}) =>
-      updateTeamMemberRole(teamId, memberUserId, teamRole),
+    mutationFn: ({
+      memberUserId,
+      teamRole,
+    }: {
+      memberUserId: string
+      teamRole: NonNullable<RosterMember['teamRole']>
+    }) => updateTeamMemberRole(teamId, memberUserId, teamRole),
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ['roster', teamId]})
     },
@@ -77,7 +92,9 @@ export function TeamRoster({teamId}: TeamRosterProps) {
   const myTeamRole = (roster.find((m) => m.userId === userId)?.teamRole ?? 'player') as TeamRole
   const permissions = teamPermissions(myTeamRole)
   const {canManageRoster, canManageRoles, isReadOnly} = permissions
-  const ownerCount = roster.filter((m) => m.teamRole === 'owner' && m.rosterStatus !== 'removed').length
+  const ownerCount = roster.filter(
+    (m) => m.teamRole === 'owner' && m.rosterStatus !== 'removed',
+  ).length
   const isOwner = myTeamRole === 'owner'
 
   const byPosition = POSITION_ORDER.map((pos) => ({
@@ -86,8 +103,14 @@ export function TeamRoster({teamId}: TeamRosterProps) {
   }))
 
   return (
-    <div className="hockey-stack hockey-stack--gap-16" data-testid={testId('teams', 'team-roster', 'panel', teamId)}>
-      <Text color="secondary" data-testid={testId('teams', 'team-roster', 'text', 'role-hint', teamId)}>
+    <div
+      className="hockey-stack hockey-stack--gap-16"
+      data-testid={testId('teams', 'team-roster', 'panel', teamId)}
+    >
+      <Text
+        color="secondary"
+        data-testid={testId('teams', 'team-roster', 'text', 'role-hint', teamId)}
+      >
         Твоя роль в команде: {myTeamRole}.{' '}
         {isReadOnly
           ? 'Состав доступен только для просмотра — управление открыто капитану и штабу.'
@@ -96,27 +119,69 @@ export function TeamRoster({teamId}: TeamRosterProps) {
             : 'Частичный доступ к управлению командой.'}
       </Text>
       {byPosition.map(({position, members}) => (
-        <div key={position} data-testid={testId('teams', 'team-roster', 'column', position, teamId)}>
-          <PositionLabel position={position} showFull testIdPrefix="teams" data-testid={testId('teams', 'team-roster', 'badge', 'position', position, teamId)} />
+        <div
+          key={position}
+          data-testid={testId('teams', 'team-roster', 'column', position, teamId)}
+        >
+          <PositionLabel
+            position={position}
+            showFull
+            testIdPrefix="teams"
+            data-testid={testId('teams', 'team-roster', 'badge', 'position', position, teamId)}
+          />
           <div className="hockey-mt-8 hockey-stack hockey-stack--gap-6">
             {members.length === 0 ? (
-              <div className="roster-hook-slot roster-hook-slot--deficit" data-testid={testId('teams', 'team-roster', 'empty', position, teamId)}>
+              <div
+                className="roster-hook-slot roster-hook-slot--deficit"
+                data-testid={testId('teams', 'team-roster', 'empty', position, teamId)}
+              >
                 <span className="roster-hook-slot__hook" aria-hidden>
                   🪝
                 </span>
-                <Text color="secondary" data-testid={testId('teams', 'team-roster', 'text', 'empty-slot', position, teamId)}>Слот пуст — нужен игрок</Text>
+                <Text
+                  color="secondary"
+                  data-testid={testId(
+                    'teams',
+                    'team-roster',
+                    'text',
+                    'empty-slot',
+                    position,
+                    teamId,
+                  )}
+                >
+                  Слот пуст — нужен игрок
+                </Text>
               </div>
             ) : (
               members.map((member) => (
-                <div key={member.userId} className="roster-hook-slot" data-testid={testId('teams', 'team-roster', 'row', member.userId)}>
+                <div
+                  key={member.userId}
+                  className="roster-hook-slot"
+                  data-testid={testId('teams', 'team-roster', 'row', member.userId)}
+                >
                   <span className="roster-hook-slot__hook" aria-hidden>
                     🪝
                   </span>
                   <div className="roster-hook-slot__body">
-                    <Text variant="subheader-2" data-testid={testId('teams', 'team-roster', 'text', 'name', member.userId)}>{member.displayName}</Text>
-                    <Text color="secondary" data-testid={testId('teams', 'team-roster', 'text', 'role-status', member.userId)}>
+                    <Text
+                      variant="subheader-2"
+                      data-testid={testId('teams', 'team-roster', 'text', 'name', member.userId)}
+                    >
+                      {member.displayName}
+                    </Text>
+                    <Text
+                      color="secondary"
+                      data-testid={testId(
+                        'teams',
+                        'team-roster',
+                        'text',
+                        'role-status',
+                        member.userId,
+                      )}
+                    >
                       Роль: {member.teamRole ?? 'player'} ·{' '}
-                      {STATUS_OPTIONS.find((o) => o.value === member.rosterStatus)?.content ?? member.rosterStatus}
+                      {STATUS_OPTIONS.find((o) => o.value === member.rosterStatus)?.content ??
+                        member.rosterStatus}
                     </Text>
                   </div>
                   {canManageRoles && (
@@ -132,7 +197,7 @@ export function TeamRoster({teamId}: TeamRosterProps) {
                       options={ROLE_OPTIONS}
                       width={170}
                       disabled={
-                        !isOwner && member.teamRole === 'owner' ||
+                        (!isOwner && member.teamRole === 'owner') ||
                         (isOwner &&
                           member.userId === userId &&
                           member.teamRole === 'owner' &&
@@ -152,7 +217,13 @@ export function TeamRoster({teamId}: TeamRosterProps) {
                       }
                       options={STATUS_OPTIONS}
                       width={160}
-                      data-testid={testId('teams', 'team-roster', 'select', 'status', member.userId)}
+                      data-testid={testId(
+                        'teams',
+                        'team-roster',
+                        'select',
+                        'status',
+                        member.userId,
+                      )}
                     />
                   )}
                 </div>

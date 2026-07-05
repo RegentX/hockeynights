@@ -1,9 +1,9 @@
 /**
  * SPEC-FR-6.1.2
- * SPEC-UI-2.2
  */
 
 import {Checkbox, Select, TextInput} from '@gravity-ui/uikit'
+
 import type {ArenaFilters as ArenaFiltersType} from '@/entities/arena/types'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -40,10 +40,7 @@ const AMENITY_OPTIONS = [
  */
 export function ArenaFilters({filters, onChange, onReset, isFiltered}: ArenaFiltersProps) {
   return (
-    <div
-      className="arena-filters"
-      data-testid={testId('arenas', 'filters', 'filter')}
-    >
+    <div className="arena-filters" data-testid={testId('arenas', 'filters', 'filter')}>
       <div className="hockey-grid hockey-grid--filters">
         <TextInput
           className="arena-filters__search"

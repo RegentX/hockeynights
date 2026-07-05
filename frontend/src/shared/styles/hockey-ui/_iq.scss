@@ -3,15 +3,14 @@
 /* SPEC-UI-6.1, SPEC-UI-6.2 Hockey IQ */
 .iq-page {
   display: flex;
-      flex-direction: column;
-      gap: 16px;
-
+  flex-direction: column;
+  gap: 16px;
 }
 
 .iq-page__layout {
   display: grid;
-      grid-template-columns: minmax(0, 1fr) 320px;
-      gap: 16px;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 16px;
 
   @include breakpoint($max: 1024px) {
     grid-template-columns: 1fr;
@@ -21,121 +20,106 @@
 .iq-page__main,
 .iq-page__side {
   display: flex;
-    flex-direction: column;
-    gap: 12px;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .iq-page__cards {
   display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 12px;
-
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
 }
 
 .iq-test-card {
   display: flex;
-      flex-direction: column;
-      gap: 10px;
-
+  flex-direction: column;
+  gap: 10px;
 }
 
 .iq-test-card__meta {
   display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 
 .iq-board {
   display: flex;
-      flex-direction: column;
-      gap: 12px;
-
+  flex-direction: column;
+  gap: 12px;
 }
 
 .iq-board__head {
   display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 
 .iq-board__options {
   display: flex;
-      flex-direction: column;
-      gap: 8px;
-
+  flex-direction: column;
+  gap: 8px;
 }
 
 .iq-option {
   border: 1px solid var(--hockey-card-border);
-      border-radius: 10px;
-      background: transparent;
-      color: inherit;
-      text-align: left;
-      padding: 10px 12px;
-      cursor: pointer;
-      transition: border-color var(--hockey-motion-fast) var(--hockey-motion-ease);
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: border-color var(--hockey-motion-fast) var(--hockey-motion-ease);
 
   &:hover {
     border-color: var(--hockey-accent);
   }
-
 }
 
 .iq-option--selected {
   border-color: var(--hockey-line-red);
-      background: rgba(225, 6, 0, 0.08);
-
+  background: rgba(225, 6, 0, 0.08);
 }
 
 .iq-board__actions {
   display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      flex-wrap: wrap;
-
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .iq-result-row {
   border-left: 3px solid var(--hockey-card-border);
-      padding-left: 8px;
-
+  padding-left: 8px;
 }
 
 .iq-leaderboard {
   display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 10px;
-
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .iq-leaderboard__row {
   display: grid;
-      grid-template-columns: 28px minmax(0, 1fr) 64px 52px;
-      gap: 8px;
-      align-items: center;
-      border-bottom: 1px solid var(--hockey-card-border);
-      padding-bottom: 8px;
+  grid-template-columns: 28px minmax(0, 1fr) 64px 52px;
+  gap: 8px;
+  align-items: center;
+  border-bottom: 1px solid var(--hockey-card-border);
+  padding-bottom: 8px;
 
   &:last-child {
     border-bottom: none;
   }
-
 }
 
 .iq-leaderboard__rank {
   font-family: var(--hockey-font-scoreboard);
-      font-weight: 700;
-
+  font-weight: 700;
 }
 
 .iq-leaderboard__streak {
   color: var(--hockey-text-muted);
-      text-align: right;
-
+  text-align: right;
 }
-

@@ -3,17 +3,15 @@
  * Форма регистрации (mock Phase 1 + localAuthMemory).
  */
 
-import {useState, type FormEvent} from 'react'
 import {useMutation} from '@tanstack/react-query'
-import {AuthField} from '@/features/auth/AuthField'
+import {type FormEvent, useState} from 'react'
+
 import {registerAccount} from '@/features/auth/api/sessionApi'
+import {AuthField} from '@/features/auth/AuthField'
+import {type RegisterFormValues, validateRegisterForm} from '@/features/auth/registrationValidation'
 import {TermsAcceptanceField} from '@/features/auth/TermsAcceptanceField'
-import {
-  type RegisterFormValues,
-  validateRegisterForm,
-} from '@/features/auth/registrationValidation'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 export interface RegisterFormProps {
   onSuccess: () => void
@@ -68,7 +66,10 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
       onSubmit={handleSubmit}
       data-testid={testId('auth', 'register', 'panel', 'form')}
     >
-      <header className="auth-form__header" data-testid={testId('auth', 'register', 'panel', 'header')}>
+      <header
+        className="auth-form__header"
+        data-testid={testId('auth', 'register', 'panel', 'header')}
+      >
         <h2 className="auth-form__title" data-testid={testId('auth', 'register', 'text', 'title')}>
           Создать аккаунт
         </h2>
@@ -77,11 +78,17 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
         </p>
       </header>
 
-      <div className="auth-alert auth-alert--info" data-testid={testId('auth', 'register', 'text', 'local-memory')}>
+      <div
+        className="auth-alert auth-alert--info"
+        data-testid={testId('auth', 'register', 'text', 'local-memory')}
+      >
         Данные хранятся в <strong>localStorage</strong> и доступны только на этом устройстве.
       </div>
 
-      <div className="auth-form__fields" data-testid={testId('auth', 'register', 'panel', 'fields')}>
+      <div
+        className="auth-form__fields"
+        data-testid={testId('auth', 'register', 'panel', 'fields')}
+      >
         <AuthField
           label="Имя"
           fieldId="auth-register-display-name"
@@ -130,7 +137,10 @@ export function RegisterForm({onSuccess}: RegisterFormProps) {
       </div>
 
       {error && (
-        <div className="auth-alert auth-alert--error" data-testid={testId('auth', 'register', 'text', 'error')}>
+        <div
+          className="auth-alert auth-alert--error"
+          data-testid={testId('auth', 'register', 'text', 'error')}
+        >
           {error}
         </div>
       )}

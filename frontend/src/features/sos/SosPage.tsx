@@ -4,10 +4,11 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
-import {SosRequestForm} from '@/features/sos/SosRequestForm'
+
 import {SosFeed} from '@/features/sos/SosFeed'
-import {IceCard} from '@/shared/ui/IceCard'
+import {SosRequestForm} from '@/features/sos/SosRequestForm'
 import {testId} from '@/shared/testing/testId'
+import {IceCard} from '@/shared/ui/IceCard'
 
 /**
  * @spec SPEC-FR-5.1.1 - Страница Goalkeeper SOS
@@ -19,7 +20,10 @@ export function SosPage() {
         Goalkeeper SOS
       </Text>
 
-      <div className="hockey-grid hockey-grid--cards-280" data-testid={testId('sos', 'page', 'panel', 'grid')}>
+      <div
+        className="hockey-grid hockey-grid--cards-280"
+        data-testid={testId('sos', 'page', 'panel', 'grid')}
+      >
         <div data-testid={testId('sos', 'page', 'card', 'form')}>
           <IceCard padding="m">
             <SosRequestForm />

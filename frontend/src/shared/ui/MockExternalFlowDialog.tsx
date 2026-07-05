@@ -4,6 +4,7 @@
 
 import {Button, Dialog, Text} from '@gravity-ui/uikit'
 import type {ReactNode} from 'react'
+
 import type {MockExternalFlowType} from '@/entities/external-flow/types'
 import {testId} from '@/shared/testing/testId'
 
@@ -48,26 +49,57 @@ export function MockExternalFlowDialog({
   testIdPrefix = 'shared',
 }: MockExternalFlowDialogProps) {
   return (
-    <Dialog open={open} onClose={onClose} size="m" data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'modal')}>
-      <Dialog.Header caption={`Phase 1 mock · ${FLOW_LABELS[flowType]}`} data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'header')} />
+    <Dialog
+      open={open}
+      onClose={onClose}
+      size="m"
+      data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'modal')}
+    >
+      <Dialog.Header
+        caption={`Phase 1 mock · ${FLOW_LABELS[flowType]}`}
+        data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'header')}
+      />
       <Dialog.Body>
         <div className="hockey-stack hockey-stack--gap-12">
-          <Text variant="subheader-2" data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'text', 'partner-name')}>{partnerName}</Text>
-          <Text color="secondary" data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'text', 'description')}>
-            Это демо-интерфейс партнёрского сценария. В Phase 2 кнопка откроет реальный портал
-            или partner API. Сейчас действие симулируется внутри приложения.
+          <Text
+            variant="subheader-2"
+            data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'text', 'partner-name')}
+          >
+            {partnerName}
+          </Text>
+          <Text
+            color="secondary"
+            data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'text', 'description')}
+          >
+            Это демо-интерфейс партнёрского сценария. В Phase 2 кнопка откроет реальный портал или
+            partner API. Сейчас действие симулируется внутри приложения.
           </Text>
           {externalUrl && (
-            <Text color="secondary" variant="caption-2" data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'text', 'external-url')}>
+            <Text
+              color="secondary"
+              variant="caption-2"
+              data-testid={testId(
+                testIdPrefix,
+                'mock-external-flow-dialog',
+                'text',
+                'external-url',
+              )}
+            >
               Целевой URL Phase 2: {externalUrl}
             </Text>
           )}
-          <div data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'panel', 'content')}>{children}</div>
+          <div data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'panel', 'content')}>
+            {children}
+          </div>
         </div>
       </Dialog.Body>
       <Dialog.Footer data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'footer')}>
         {footer ?? (
-          <Button view="flat" onClick={onClose} data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'btn', 'close')}>
+          <Button
+            view="flat"
+            onClick={onClose}
+            data-testid={testId(testIdPrefix, 'mock-external-flow-dialog', 'btn', 'close')}
+          >
             Закрыть
           </Button>
         )}

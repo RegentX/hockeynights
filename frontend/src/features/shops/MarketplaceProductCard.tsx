@@ -2,8 +2,9 @@
  * SPEC-FR-9.3.1
  */
 
-import {useState} from 'react'
 import {Text} from '@gravity-ui/uikit'
+import {useState} from 'react'
+
 import type {MarketplaceProductListing} from '@/entities/shop/types'
 import {ExternalProductLink} from '@/features/shops/ExternalProductLink'
 import {testId} from '@/shared/testing/testId'
@@ -44,23 +45,36 @@ export function MarketplaceProductCard({listing}: MarketplaceProductCardProps) {
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="marketplace-card__placeholder" aria-hidden data-testid={testId('shops', 'marketplace-card', 'cell', 'placeholder', offer.id)}>
+          <div
+            className="marketplace-card__placeholder"
+            aria-hidden
+            data-testid={testId('shops', 'marketplace-card', 'cell', 'placeholder', offer.id)}
+          >
             🏒
           </div>
         )}
         <div className="marketplace-card__badges">
           {tierLabel && (
-            <span className="marketplace-card__badge marketplace-card__badge--tier" data-testid={testId('shops', 'marketplace-card', 'badge', 'tier', offer.id)}>
+            <span
+              className="marketplace-card__badge marketplace-card__badge--tier"
+              data-testid={testId('shops', 'marketplace-card', 'badge', 'tier', offer.id)}
+            >
               {tierLabel}
             </span>
           )}
           {showDiscount && (
-            <span className="marketplace-card__badge marketplace-card__badge--sale" data-testid={testId('shops', 'marketplace-card', 'badge', 'sale', offer.id)}>
+            <span
+              className="marketplace-card__badge marketplace-card__badge--sale"
+              data-testid={testId('shops', 'marketplace-card', 'badge', 'sale', offer.id)}
+            >
               −{promoDiscount}%
             </span>
           )}
           {offer.availability === 'in_stock' && (
-            <span className="marketplace-card__badge marketplace-card__badge--stock" data-testid={testId('shops', 'marketplace-card', 'badge', 'stock', offer.id)}>
+            <span
+              className="marketplace-card__badge marketplace-card__badge--stock"
+              data-testid={testId('shops', 'marketplace-card', 'badge', 'stock', offer.id)}
+            >
               В наличии
             </span>
           )}
@@ -69,19 +83,35 @@ export function MarketplaceProductCard({listing}: MarketplaceProductCardProps) {
 
       <div className="marketplace-card__body">
         <div className="marketplace-card__price-row">
-          <Text variant="subheader-2" className="marketplace-card__price" data-testid={testId('shops', 'marketplace-card', 'text', 'price', offer.id)}>
+          <Text
+            variant="subheader-2"
+            className="marketplace-card__price"
+            data-testid={testId('shops', 'marketplace-card', 'text', 'price', offer.id)}
+          >
             {discountedPrice.toLocaleString('ru-RU')} ₽
           </Text>
           {showDiscount && (
-            <Text color="secondary" className="marketplace-card__price-old" data-testid={testId('shops', 'marketplace-card', 'text', 'price-old', offer.id)}>
+            <Text
+              color="secondary"
+              className="marketplace-card__price-old"
+              data-testid={testId('shops', 'marketplace-card', 'text', 'price-old', offer.id)}
+            >
               {offer.price.toLocaleString('ru-RU')} ₽
             </Text>
           )}
         </div>
-        <Text className="marketplace-card__title" data-testid={testId('shops', 'marketplace-card', 'text', 'title', offer.id)}>
+        <Text
+          className="marketplace-card__title"
+          data-testid={testId('shops', 'marketplace-card', 'text', 'title', offer.id)}
+        >
           {offer.title}
         </Text>
-        <Text color="secondary" variant="caption-1" className="marketplace-card__meta" data-testid={testId('shops', 'marketplace-card', 'text', 'meta', offer.id)}>
+        <Text
+          color="secondary"
+          variant="caption-1"
+          className="marketplace-card__meta"
+          data-testid={testId('shops', 'marketplace-card', 'text', 'meta', offer.id)}
+        >
           {shopName} · {offer.category}
         </Text>
         <div className="marketplace-card__action">

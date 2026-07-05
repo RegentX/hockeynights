@@ -3,6 +3,7 @@
  */
 
 import {Card, Label, Text} from '@gravity-ui/uikit'
+
 import type {ProductOffer} from '@/entities/shop/types'
 import {ExternalProductLink} from '@/features/shops/ExternalProductLink'
 import {testId} from '@/shared/testing/testId'
@@ -35,15 +36,29 @@ export function ProductOffersList({offers, shopName}: ProductOffersListProps) {
   }
 
   return (
-    <div className="hockey-stack hockey-stack--gap-12" data-testid={testId('shops', 'product-offers', 'list')}>
+    <div
+      className="hockey-stack hockey-stack--gap-12"
+      data-testid={testId('shops', 'product-offers', 'list')}
+    >
       {offers.map((offer) => (
-        <Card key={offer.id} view="filled" className="hockey-panel" data-testid={testId('shops', 'product-offers', 'card', offer.id)}>
+        <Card
+          key={offer.id}
+          view="filled"
+          className="hockey-panel"
+          data-testid={testId('shops', 'product-offers', 'card', offer.id)}
+        >
           <div className="hockey-row hockey-row--gap-12 hockey-row--between">
             <div className="hockey-stack hockey-stack--gap-4">
-              <Text variant="subheader-2" data-testid={testId('shops', 'product-offers', 'text', 'title', offer.id)}>
+              <Text
+                variant="subheader-2"
+                data-testid={testId('shops', 'product-offers', 'text', 'title', offer.id)}
+              >
                 {offer.title}
               </Text>
-              <Text color="secondary" data-testid={testId('shops', 'product-offers', 'text', 'category', offer.id)}>
+              <Text
+                color="secondary"
+                data-testid={testId('shops', 'product-offers', 'text', 'category', offer.id)}
+              >
                 {offer.category}
               </Text>
               <Text data-testid={testId('shops', 'product-offers', 'text', 'price', offer.id)}>

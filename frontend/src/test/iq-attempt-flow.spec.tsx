@@ -6,8 +6,9 @@
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
-import {IqAttemptFlow} from '@/features/iq/IqAttemptFlow'
+
 import type {IqQuestion, IqTest} from '@/entities/iq/types'
+import {IqAttemptFlow} from '@/features/iq/IqAttemptFlow'
 
 const TEST: IqTest = {
   id: 'iq-test-001',
@@ -39,12 +40,7 @@ describe('Hockey IQ attempt flow', () => {
     const onSubmit = vi.fn()
 
     render(
-      <IqAttemptFlow
-        test={TEST}
-        questions={QUESTIONS}
-        onSubmit={onSubmit}
-        onExit={() => {}}
-      />,
+      <IqAttemptFlow test={TEST} questions={QUESTIONS} onSubmit={onSubmit} onExit={() => {}} />,
     )
 
     expect(screen.getByText('Тест офсайда')).toBeInTheDocument()

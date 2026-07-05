@@ -6,9 +6,10 @@
 import {screen, waitFor, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {beforeEach, describe, expect, it} from 'vitest'
+
 import {IceRadarPage} from '@/features/radar/IceRadarPage'
-import {RADAR_LABEL} from '@/shared/config/navigationLabels'
 import {resetMockRadarState} from '@/mocks/data/radar'
+import {RADAR_LABEL} from '@/shared/config/navigationLabels'
 import {renderWithProviders} from '@/test/render'
 
 describe('Ice Radar page', () => {
@@ -43,7 +44,7 @@ describe('Ice Radar page', () => {
     renderWithProviders(<IceRadarPage />)
 
     const reason = await screen.findByText('Нужен твой амплуа — вратарь')
-    const card = reason.closest('.radar-card')
+    const card = reason.closest('.radar-card') as HTMLElement | null
     expect(card).toBeTruthy()
 
     await user.click(within(card!).getByRole('button', {name: 'Скрыть'}))

@@ -330,7 +330,9 @@
     background: transparent;
     cursor: pointer;
     opacity: 0.45;
-    transition: opacity 0.2s ease, background 0.2s ease;
+    transition:
+      opacity 0.2s ease,
+      background 0.2s ease;
 
     &:hover,
     &.is-pinned {

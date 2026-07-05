@@ -2,9 +2,9 @@
  * SPEC-FR-2.3.1, SPEC-FR-2.3.2
  */
 
-import {apiRequest} from '@/shared/api/client'
-import type {PlayerListItem, PublicPlayerView} from '@/entities/profile/types'
 import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
+import type {PlayerListItem, PublicPlayerView} from '@/entities/profile/types'
+import {apiRequest} from '@/shared/api/client'
 
 /** @spec SPEC-FR-2.3.2 - Параметры фильтра игроков */
 export interface PlayersFilterParams {

@@ -3,8 +3,9 @@
  */
 
 import {Select} from '@gravity-ui/uikit'
-import type {CalendarFilters as CalendarFiltersType} from '@/entities/event/types'
+
 import type {AttendanceStatus, EventType} from '@/entities/common/types'
+import type {CalendarFilters as CalendarFiltersType} from '@/entities/event/types'
 import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-4.2.2 - Props фильтров календаря */
@@ -34,7 +35,10 @@ const STATUS_OPTIONS = [
  */
 export function CalendarFilters({filters, onChange}: CalendarFiltersProps) {
   return (
-    <div className="hockey-row hockey-row--gap-12" data-testid={testId('calendar', 'filters', 'filter')}>
+    <div
+      className="hockey-row hockey-row--gap-12"
+      data-testid={testId('calendar', 'filters', 'filter')}
+    >
       <Select
         label="Тип события"
         value={[filters.type ?? '']}
@@ -47,7 +51,10 @@ export function CalendarFilters({filters, onChange}: CalendarFiltersProps) {
         label="Статус участия"
         value={[filters.attendanceStatus ?? '']}
         onUpdate={(v) =>
-          onChange({...filters, attendanceStatus: (v[0] || undefined) as AttendanceStatus | undefined})
+          onChange({
+            ...filters,
+            attendanceStatus: (v[0] || undefined) as AttendanceStatus | undefined,
+          })
         }
         options={STATUS_OPTIONS}
         width={200}

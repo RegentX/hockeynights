@@ -56,8 +56,7 @@ export function resolveTeamPermissions(
 
   const canManageRoster = isAdmin || (isCaptain && rank >= TEAM_ROLE_RANK.team_admin)
   const canManageRoles = canManageRoster
-  const canCreateChannel =
-    isAdmin || ((isCaptain || isOrganizer) && rank >= TEAM_ROLE_RANK.captain)
+  const canCreateChannel = isAdmin || ((isCaptain || isOrganizer) && rank >= TEAM_ROLE_RANK.captain)
   const canCreateChat = isAdmin || ((isCoach || isCaptain) && rank >= TEAM_ROLE_RANK.coach)
   const canEditLineup = canCreateChat
   const canCreateTeam = isAdmin || isCaptain || isOrganizer

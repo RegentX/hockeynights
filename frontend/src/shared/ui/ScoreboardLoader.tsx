@@ -38,7 +38,10 @@ export function ScoreboardLoader({
       aria-label={label}
       data-testid={dataTestId ?? testId(testIdPrefix, 'scoreboard-loader', 'loader')}
     >
-      <div className="scoreboard-loader__track hockey-scoreboard-ticker" data-testid={testId(testIdPrefix, 'scoreboard-loader', 'text', 'ticker')}>
+      <div
+        className="scoreboard-loader__track hockey-scoreboard-ticker"
+        data-testid={testId(testIdPrefix, 'scoreboard-loader', 'text', 'ticker')}
+      >
         <span>{duplicated}</span>
       </div>
     </div>

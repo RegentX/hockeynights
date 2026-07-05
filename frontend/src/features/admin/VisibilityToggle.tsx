@@ -2,8 +2,9 @@
  * SPEC-FR-11.1.2
  */
 
-import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {Switch} from '@gravity-ui/uikit'
+import {useMutation, useQueryClient} from '@tanstack/react-query'
+
 import type {AdminEntityType} from '@/entities/admin/types'
 import {updateEntityVisibility} from '@/features/admin/api/adminApi'
 import {testId} from '@/shared/testing/testId'
@@ -25,8 +26,7 @@ export function VisibilityToggle({entityId, entityType, visible}: VisibilityTogg
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: (nextVisible: boolean) =>
-      updateEntityVisibility(entityId, entityType, nextVisible),
+    mutationFn: (nextVisible: boolean) => updateEntityVisibility(entityId, entityType, nextVisible),
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ['admin-sources']})
       void queryClient.invalidateQueries({queryKey: ['arenas']})

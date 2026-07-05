@@ -13,7 +13,12 @@ export function canOrganizeEvents(roles: UserRole[]): boolean {
 
 /** Только игрок/вратарь без командных ролей в сессии */
 export function isPlayerOnlySession(roles: UserRole[]): boolean {
-  if (roles.includes('admin') || roles.includes('captain') || roles.includes('coach') || roles.includes('organizer')) {
+  if (
+    roles.includes('admin') ||
+    roles.includes('captain') ||
+    roles.includes('coach') ||
+    roles.includes('organizer')
+  ) {
     return false
   }
   return roles.some((role) => role === 'player' || role === 'goalie')

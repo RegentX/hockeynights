@@ -8,39 +8,40 @@
 
 import {screen, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it} from 'vitest'
-import {mockApiGet, mockApiPatch, mockApiPost, mockApiPut} from '@/test/api'
-import {renderWithProviders} from '@/test/render'
-import {MockLoginPage} from '@/pages/auth'
-import {resetMockSession} from '@/mocks/data/session'
-import {clearTestStorage} from '@/test/clearTestStorage'
-import {HockeyProfileForm} from '@/features/profile/HockeyProfileForm'
-import {PlayersPage} from '@/features/players/PlayersPage'
-import {TeamsPage} from '@/features/teams/TeamsPage'
-import {EventsPage} from '@/features/events/EventsPage'
-import {CalendarPage} from '@/features/calendar/CalendarPage'
-import {SosPage} from '@/features/sos/SosPage'
-import {ArenasPage} from '@/features/arenas/ArenasPage'
-import {ARENAS_PAGE_TITLE} from '@/shared/config/navigationLabels'
-import type {GameEvent} from '@/entities/event/types'
-import type {HockeyProfile} from '@/entities/profile/types'
-import type {PlayerListItem} from '@/entities/profile/types'
-import type {PublicPlayerView} from '@/entities/profile/types'
-import type {Team} from '@/entities/team/types'
-import type {TeamInvite} from '@/entities/team/types'
-import type {RosterMember} from '@/entities/team/types'
-import type {TrainingLineupAssignment} from '@/entities/team/types'
+
+import type {PartnerModerationItem} from '@/entities/admin/types'
 import type {Arena} from '@/entities/arena/types'
-import type {RecruitmentRequest} from '@/entities/recruitment/types'
-import type {Session} from '@/entities/user/types'
 import type {Club} from '@/entities/club/types'
+import type {GameEvent} from '@/entities/event/types'
 import type {League} from '@/entities/league/types'
 import type {LeagueScheduleImportResult} from '@/entities/league/types'
 import type {LeagueScheduleItem} from '@/entities/league/types'
 import type {LeagueTeamApplication} from '@/entities/league/types'
-import type {PartnerModerationItem} from '@/entities/admin/types'
+import type {HockeyProfile} from '@/entities/profile/types'
+import type {PlayerListItem} from '@/entities/profile/types'
+import type {PublicPlayerView} from '@/entities/profile/types'
+import type {RecruitmentRequest} from '@/entities/recruitment/types'
 import type {Shop} from '@/entities/shop/types'
 import type {ProductOffer} from '@/entities/shop/types'
 import type {ShopCatalogImportJob} from '@/entities/shop/types'
+import type {Team} from '@/entities/team/types'
+import type {TeamInvite} from '@/entities/team/types'
+import type {RosterMember} from '@/entities/team/types'
+import type {TrainingLineupAssignment} from '@/entities/team/types'
+import type {Session} from '@/entities/user/types'
+import {ArenasPage} from '@/features/arenas/ArenasPage'
+import {CalendarPage} from '@/features/calendar/CalendarPage'
+import {EventsPage} from '@/features/events/EventsPage'
+import {PlayersPage} from '@/features/players/PlayersPage'
+import {HockeyProfileForm} from '@/features/profile/HockeyProfileForm'
+import {SosPage} from '@/features/sos/SosPage'
+import {TeamsPage} from '@/features/teams/TeamsPage'
+import {resetMockSession} from '@/mocks/data/session'
+import {MockLoginPage} from '@/pages/auth'
+import {ARENAS_PAGE_TITLE} from '@/shared/config/navigationLabels'
+import {mockApiGet, mockApiPatch, mockApiPost, mockApiPut} from '@/test/api'
+import {clearTestStorage} from '@/test/clearTestStorage'
+import {renderWithProviders} from '@/test/render'
 
 async function mockSelectPersona(personaId: string): Promise<Session> {
   return mockApiPost<Session>('/session/persona', {personaId})
@@ -225,14 +226,17 @@ describe('TASK-QA-01 mock API smoke', () => {
     }
 
     await mockSelectPersona('captain')
-    const application = await mockApiPost<LeagueTeamApplication>('/leagues/league-001/applications', {
-      seasonId: 'season-001',
-      divisionId: 'div-001',
-      teamId: 'team-001',
-      teamName: 'Медведи САО',
-      captainName: 'Иван Петров',
-      contactEmail: 'captain@example.com',
-    })
+    const application = await mockApiPost<LeagueTeamApplication>(
+      '/leagues/league-001/applications',
+      {
+        seasonId: 'season-001',
+        divisionId: 'div-001',
+        teamId: 'team-001',
+        teamName: 'Медведи САО',
+        captainName: 'Иван Петров',
+        contactEmail: 'captain@example.com',
+      },
+    )
     expect(application.status).toBe('pending')
     expect(application.teamId).toBe('team-001')
   })
@@ -240,16 +244,13 @@ describe('TASK-QA-01 mock API smoke', () => {
   /** @spec SPEC-FR-24.5.5 */
   it('POST/PATCH league schedule with partner membership', async () => {
     await mockSelectPersona('league-partner')
-    const item = await mockApiPost<LeagueScheduleItem>(
-      '/leagues/league-001/schedule',
-      {
-        homeTeam: 'ХК Тест',
-        awayTeam: 'ХК Демо',
-        startsAt: '2026-07-01T20:00:00+03:00',
-        arenaName: 'Тестовая арена',
-        status: 'scheduled',
-      },
-    )
+    const item = await mockApiPost<LeagueScheduleItem>('/leagues/league-001/schedule', {
+      homeTeam: 'ХК Тест',
+      awayTeam: 'ХК Демо',
+      startsAt: '2026-07-01T20:00:00+03:00',
+      arenaName: 'Тестовая арена',
+      status: 'scheduled',
+    })
     expect(item.homeTeam).toBe('ХК Тест')
 
     const scored = await mockApiPatch<LeagueScheduleItem>(
@@ -279,9 +280,12 @@ describe('TASK-QA-01 mock API smoke', () => {
     const product = queue.find((item) => item.kind === 'shop_product')
     expect(product).toBeTruthy()
     if (product) {
-      const updated = await mockApiPatch(`/admin/partner-moderation/${product.id}`, {
-        status: 'published',
-      })
+      const updated = await mockApiPatch<PartnerModerationItem>(
+        `/admin/partner-moderation/${product.id}`,
+        {
+          status: 'published',
+        },
+      )
       expect(updated.moderationStatus).toBe('published')
     }
   })
@@ -302,9 +306,7 @@ describe('TASK-QA-01 mock API smoke', () => {
   /** @spec SPEC-FR-4.3.1 */
   it('GET /events/{id}/roster-status returns deficit', async () => {
     const events = await mockApiGet<GameEvent[]>('/events')
-    const status = await mockApiGet<{deficits: unknown[]}>(
-      `/events/${events[0].id}/roster-status`,
-    )
+    const status = await mockApiGet<{deficits: unknown[]}>(`/events/${events[0].id}/roster-status`)
     expect(status.deficits).toBeDefined()
   })
 

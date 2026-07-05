@@ -3,10 +3,11 @@
  * Состав команды с RSVP-статусами на лиговую игру.
  */
 
-import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
-import {fetchEventRsvp} from '@/features/events/api/eventsApi'
+import {useQuery} from '@tanstack/react-query'
+
 import type {EventRsvpStatus} from '@/entities/event/rsvpTypes'
+import {fetchEventRsvp} from '@/features/events/api/eventsApi'
 import {testId} from '@/shared/testing/testId'
 
 export interface EventRsvpBoardProps {
@@ -34,11 +35,17 @@ export function EventRsvpBoard({eventId}: EventRsvpBoardProps) {
   if (!board) return null
 
   return (
-    <div className="hockey-stack hockey-stack--gap-8" data-testid={testId('events', 'rsvp', 'panel', eventId)}>
+    <div
+      className="hockey-stack hockey-stack--gap-8"
+      data-testid={testId('events', 'rsvp', 'panel', eventId)}
+    >
       <Text variant="subheader-2" data-testid={testId('events', 'rsvp', 'text', 'title', eventId)}>
         RSVP команды · {board.teamName} vs {board.opponentName}
       </Text>
-      <div className="hockey-stack hockey-stack--gap-4" data-testid={testId('events', 'rsvp', 'list', eventId)}>
+      <div
+        className="hockey-stack hockey-stack--gap-4"
+        data-testid={testId('events', 'rsvp', 'list', eventId)}
+      >
         {board.players.map((player) => (
           <div
             key={player.userId}

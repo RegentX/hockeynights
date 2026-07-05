@@ -3,18 +3,19 @@
  * SPEC-UI-2.5, SPEC-UI-3.1
  */
 
-import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
-import {fetchEvents} from '@/features/events/api/eventsApi'
+import {useQuery} from '@tanstack/react-query'
+
 import {useSessionAccess} from '@/features/access/useSessionAccess'
+import {fetchEvents} from '@/features/events/api/eventsApi'
 import {EventCard} from '@/features/events/EventCard'
 import {EventCreateForm} from '@/features/events/EventCreateForm'
+import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {IceCard} from '@/shared/ui/IceCard'
 import {MatchCenterFeed} from '@/shared/ui/MatchCenterFeed'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
-import {testId} from '@/shared/testing/testId'
 
 /**
  * @spec SPEC-UI-2.5 - Страница событий как матч-центр
@@ -46,12 +47,19 @@ export function EventsPage() {
   return (
     <div className="hockey-stack hockey-stack--gap-20" data-testid={testId('events', 'page')}>
       <ScrollReveal direction="down">
-        <Text variant="header-1" className="variable-font-header" data-testid={testId('events', 'page', 'text', 'title')}>
+        <Text
+          variant="header-1"
+          className="variable-font-header"
+          data-testid={testId('events', 'page', 'text', 'title')}
+        >
           Игры и тренировки
         </Text>
       </ScrollReveal>
 
-      <div className="hockey-grid hockey-grid--cards-280" data-testid={testId('events', 'page', 'grid')}>
+      <div
+        className="hockey-grid hockey-grid--cards-280"
+        data-testid={testId('events', 'page', 'grid')}
+      >
         {canOrganizeEvents && (
           <ScrollReveal direction="left">
             <div data-testid={testId('events', 'page', 'card', 'create-form')}>
@@ -89,8 +97,14 @@ export function EventsPage() {
       </div>
 
       {!isLoading && events.length > 0 && (
-        <div className="hockey-stack hockey-stack--gap-12" data-testid={testId('events', 'page', 'list', 'details')}>
-          <Text variant="subheader-2" data-testid={testId('events', 'page', 'text', 'details-title')}>
+        <div
+          className="hockey-stack hockey-stack--gap-12"
+          data-testid={testId('events', 'page', 'list', 'details')}
+        >
+          <Text
+            variant="subheader-2"
+            data-testid={testId('events', 'page', 'text', 'details-title')}
+          >
             Детали событий
           </Text>
           {events.map((event, index) => (
@@ -105,7 +119,10 @@ export function EventsPage() {
         <div data-testid={testId('events', 'page', 'card', 'history')}>
           <IceCard padding="m">
             <div className="hockey-stack hockey-stack--gap-10">
-              <Text variant="subheader-2" data-testid={testId('events', 'page', 'text', 'history-title')}>
+              <Text
+                variant="subheader-2"
+                data-testid={testId('events', 'page', 'text', 'history-title')}
+              >
                 Моя история участия (RSVP)
               </Text>
               {participationHistory.map(({event, myStatus}) => (
@@ -115,10 +132,16 @@ export function EventsPage() {
                   data-testid={testId('events', 'page', 'item', 'history', event.id)}
                 >
                   <div className="hockey-stack hockey-stack--gap-4">
-                    <Text variant="body-2" data-testid={testId('events', 'page', 'text', 'history-title', event.id)}>
+                    <Text
+                      variant="body-2"
+                      data-testid={testId('events', 'page', 'text', 'history-title', event.id)}
+                    >
                       {event.title}
                     </Text>
-                    <Text color="secondary" data-testid={testId('events', 'page', 'text', 'history-meta', event.id)}>
+                    <Text
+                      color="secondary"
+                      data-testid={testId('events', 'page', 'text', 'history-meta', event.id)}
+                    >
                       {new Date(event.startsAt).toLocaleString('ru-RU', {
                         day: '2-digit',
                         month: '2-digit',
@@ -129,10 +152,20 @@ export function EventsPage() {
                     </Text>
                   </div>
                   <Text
-                    color={myStatus === 'going' ? 'positive' : myStatus === 'not_going' ? 'danger' : 'warning'}
+                    color={
+                      myStatus === 'going'
+                        ? 'positive'
+                        : myStatus === 'not_going'
+                          ? 'danger'
+                          : 'warning'
+                    }
                     data-testid={testId('events', 'page', 'text', 'history-status', event.id)}
                   >
-                    {myStatus === 'going' ? 'Иду' : myStatus === 'not_going' ? 'Не иду' : 'Под вопросом'}
+                    {myStatus === 'going'
+                      ? 'Иду'
+                      : myStatus === 'not_going'
+                        ? 'Не иду'
+                        : 'Под вопросом'}
                   </Text>
                 </div>
               ))}

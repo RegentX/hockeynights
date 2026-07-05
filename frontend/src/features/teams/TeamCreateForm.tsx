@@ -2,11 +2,12 @@
  * SPEC-FR-3.1.1
  */
 
-import {useState} from 'react'
-import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {Button, Select, Text, TextArea, TextInput} from '@gravity-ui/uikit'
-import {createTeam} from '@/features/teams/api/teamsApi'
+import {useMutation, useQueryClient} from '@tanstack/react-query'
+import {useState} from 'react'
+
 import type {SkillLevel} from '@/entities/common/types'
+import {createTeam} from '@/features/teams/api/teamsApi'
 import {DEFAULT_CITY} from '@/shared/config/geo'
 import {testId} from '@/shared/testing/testId'
 
@@ -42,10 +43,28 @@ export function TeamCreateForm() {
   }
 
   return (
-    <div className="hockey-stack hockey-stack--gap-12" data-testid={testId('teams', 'team-create-form', 'form')}>
-      <Text variant="subheader-2" data-testid={testId('teams', 'team-create-form', 'text', 'title')}>Создать команду</Text>
-      <TextInput label="Название" value={name} onUpdate={setName} data-testid={testId('teams', 'team-create-form', 'field', 'name')} />
-      <TextInput label="Город" value={city} onUpdate={setCity} data-testid={testId('teams', 'team-create-form', 'field', 'city')} />
+    <div
+      className="hockey-stack hockey-stack--gap-12"
+      data-testid={testId('teams', 'team-create-form', 'form')}
+    >
+      <Text
+        variant="subheader-2"
+        data-testid={testId('teams', 'team-create-form', 'text', 'title')}
+      >
+        Создать команду
+      </Text>
+      <TextInput
+        label="Название"
+        value={name}
+        onUpdate={setName}
+        data-testid={testId('teams', 'team-create-form', 'field', 'name')}
+      />
+      <TextInput
+        label="Город"
+        value={city}
+        onUpdate={setCity}
+        data-testid={testId('teams', 'team-create-form', 'field', 'city')}
+      />
       <Select
         label="Уровень"
         value={[skillLevel]}
@@ -54,10 +73,25 @@ export function TeamCreateForm() {
         data-testid={testId('teams', 'team-create-form', 'select', 'skill-level')}
       />
       <div>
-        <Text color="secondary" data-testid={testId('teams', 'team-create-form', 'text', 'description-label')}>Описание</Text>
-        <TextArea value={description} onUpdate={setDescription} minRows={2} data-testid={testId('teams', 'team-create-form', 'field', 'description')} />
+        <Text
+          color="secondary"
+          data-testid={testId('teams', 'team-create-form', 'text', 'description-label')}
+        >
+          Описание
+        </Text>
+        <TextArea
+          value={description}
+          onUpdate={setDescription}
+          minRows={2}
+          data-testid={testId('teams', 'team-create-form', 'field', 'description')}
+        />
       </div>
-      <Button view="action" loading={mutation.isPending} onClick={handleSubmit} data-testid={testId('teams', 'team-create-form', 'btn', 'submit')}>
+      <Button
+        view="action"
+        loading={mutation.isPending}
+        onClick={handleSubmit}
+        data-testid={testId('teams', 'team-create-form', 'btn', 'submit')}
+      >
         Создать команду
       </Button>
     </div>

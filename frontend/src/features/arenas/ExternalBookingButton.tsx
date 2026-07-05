@@ -3,11 +3,12 @@
  */
 
 import {useState} from 'react'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
+
 import type {Arena} from '@/entities/arena/types'
 import type {IceSlot} from '@/entities/arena/types'
 import {MockIceBookingModal} from '@/features/arenas/MockIceBookingModal'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 /** @spec SPEC-FR-6.2.2 - Props кнопки записи */
 export interface ExternalBookingButtonProps {
@@ -45,12 +46,7 @@ export function ExternalBookingButton({
       <HockeyButton size={size} onClick={() => setOpen(true)} data-testid={btnTestId}>
         {label}
       </HockeyButton>
-      <MockIceBookingModal
-        open={open}
-        onClose={() => setOpen(false)}
-        arena={arena}
-        slot={slot}
-      />
+      <MockIceBookingModal open={open} onClose={() => setOpen(false)} arena={arena} slot={slot} />
     </>
   )
 }

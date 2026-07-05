@@ -4,9 +4,9 @@
  */
 
 import type {LeagueScheduleItem} from '@/entities/league/types'
-import {MatchCenterFeed, type MatchCenterRowData} from '@/shared/ui/MatchCenterFeed'
-import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {MatchCenterFeed, type MatchCenterRowData} from '@/shared/ui/MatchCenterFeed'
 
 /** @spec SPEC-FR-7.2.1 - Props расписания */
 export interface LeagueScheduleProps {
@@ -29,10 +29,7 @@ export function LeagueSchedule({schedule}: LeagueScheduleProps) {
       item.status === 'completed' && item.homeScore !== undefined
         ? `${item.homeTeam} ${item.homeScore}:${item.awayScore} ${item.awayTeam}`
         : `${item.homeTeam} — ${item.awayTeam}`,
-    subtitle: [
-      new Date(item.startsAt).toLocaleDateString('ru-RU'),
-      item.arenaName,
-    ]
+    subtitle: [new Date(item.startsAt).toLocaleDateString('ru-RU'), item.arenaName]
       .filter(Boolean)
       .join(' · '),
     type: 'game',
@@ -41,10 +38,7 @@ export function LeagueSchedule({schedule}: LeagueScheduleProps) {
   if (rows.length === 0) {
     return (
       <div data-testid={testId('leagues', 'schedule', 'empty')}>
-        <EmptyNetState
-          title="Нет матчей"
-          copy="Расписание лиги пока недоступно."
-        />
+        <EmptyNetState title="Нет матчей" copy="Расписание лиги пока недоступно." />
       </div>
     )
   }
@@ -54,12 +48,7 @@ export function LeagueSchedule({schedule}: LeagueScheduleProps) {
       <MatchCenterFeed
         title="Расписание лиги"
         rows={rows}
-        empty={
-          <EmptyNetState
-            title="Нет матчей"
-            copy="Расписание лиги пока недоступно."
-          />
-        }
+        empty={<EmptyNetState title="Нет матчей" copy="Расписание лиги пока недоступно." />}
       />
     </div>
   )

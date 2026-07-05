@@ -2,8 +2,8 @@
  * SPEC-UI-7.4 - Smooth Scroll implementation using Lenis
  */
 
-import {useEffect, type ReactNode} from 'react'
 import Lenis from 'lenis'
+import {type ReactNode, useEffect} from 'react'
 
 export function SmoothScrollProvider({children}: {children: ReactNode}) {
   useEffect(() => {

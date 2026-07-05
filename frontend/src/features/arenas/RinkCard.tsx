@@ -3,16 +3,17 @@
  * SPEC-UI-1.3, SPEC-UI-2.2
  */
 
-import {forwardRef} from 'react'
 import {Text} from '@gravity-ui/uikit'
+import {forwardRef} from 'react'
+
 import type {Arena} from '@/entities/arena/types'
 import {ExternalBookingButton} from '@/features/arenas/ExternalBookingButton'
-import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
-import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
-import {IceCard} from '@/shared/ui/IceCard'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
-import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 import {testId} from '@/shared/testing/testId'
+import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {IceCard} from '@/shared/ui/IceCard'
+import {ScoreboardText} from '@/shared/ui/ScoreboardText'
+import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 
 const BOOKING_MODE_LABELS = {
   slot_calendar: 'Слоты',
@@ -82,7 +83,10 @@ export const RinkCard = forwardRef<HTMLDivElement, RinkCardProps>(function RinkC
     >
       <div className="hockey-stack hockey-stack--gap-10">
         <div className="hockey-row hockey-row--gap-8 hockey-row--between">
-          <Text variant="subheader-2" data-testid={testId('arenas', 'rink', 'text', 'name', arena.id)}>
+          <Text
+            variant="subheader-2"
+            data-testid={testId('arenas', 'rink', 'text', 'name', arena.id)}
+          >
             {arena.name}
           </Text>
           <div className="hockey-row hockey-row--gap-8">
@@ -122,11 +126,17 @@ export const RinkCard = forwardRef<HTMLDivElement, RinkCardProps>(function RinkC
           </Text>
         )}
         {arena.priceRange && (
-          <ScoreboardText tone="accent" data-testid={testId('arenas', 'rink', 'text', 'price', arena.id)}>
+          <ScoreboardText
+            tone="accent"
+            data-testid={testId('arenas', 'rink', 'text', 'price', arena.id)}
+          >
             {arena.priceRange}
           </ScoreboardText>
         )}
-        <Text color="secondary" data-testid={testId('arenas', 'rink', 'text', 'amenities', arena.id)}>
+        <Text
+          color="secondary"
+          data-testid={testId('arenas', 'rink', 'text', 'amenities', arena.id)}
+        >
           Удобства: {arena.amenities.join(', ')}
         </Text>
         <div

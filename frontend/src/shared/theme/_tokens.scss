@@ -105,7 +105,9 @@ body {
   background-color: var(--hockey-surface);
   background-image: var(--hockey-spotlight), var(--hockey-body-texture);
   background-repeat: no-repeat, no-repeat;
-  background-size: 100% 480px, 100% 100%;
+  background-size:
+    100% 480px,
+    100% 100%;
   background-attachment: fixed, fixed;
   transition:
     background-color var(--hockey-motion-normal) var(--hockey-motion-ease),

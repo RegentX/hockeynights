@@ -2,31 +2,24 @@
 
 /* SPEC-UI-2.5 Match center */
 
-
 .match-center {
   display: flex;
-      flex-direction: column;
-      gap: 0;
-      border: 1px solid var(--hockey-card-border);
-      border-radius: 8px;
-      overflow: hidden;
-
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .match-center__header {
-  background: linear-gradient(
-        90deg,
-        var(--hockey-ice-deep) 0%,
-        var(--hockey-ice-mid) 100%
-      );
-      color: #fff;
-      padding: 10px 14px;
-      font-family: var(--hockey-font-scoreboard);
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      border-bottom: 2px solid var(--hockey-line-red);
-
+  background: linear-gradient(90deg, var(--hockey-ice-deep) 0%, var(--hockey-ice-mid) 100%);
+  color: #fff;
+  padding: 10px 14px;
+  font-family: var(--hockey-font-scoreboard);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--hockey-line-red);
 }
 
 [data-hockey-theme='ice'] .match-center__header {
@@ -35,127 +28,109 @@
 
 .match-center__row {
   display: grid;
-      grid-template-columns: 72px 1fr auto;
-      gap: 12px;
-      align-items: center;
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--hockey-card-border);
-      background: var(--hockey-card-bg);
+  grid-template-columns: 72px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--hockey-card-border);
+  background: var(--hockey-card-bg);
 
   &:last-child {
     border-bottom: none;
   }
-
 }
 
 .match-center__row--sos {
   border-left: 3px solid var(--hockey-line-red);
-
 }
 
 .match-center__time {
   font-family: var(--hockey-font-scoreboard);
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--hockey-accent);
-
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--hockey-accent);
 }
 
 .match-center__type {
   font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--hockey-text-muted);
-
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--hockey-text-muted);
 }
 
 .match-center__type--game {
   color: var(--hockey-line-red);
-
 }
 
 .match-center__type--training {
   color: var(--hockey-ice-glow);
-
 }
 
 .scoreboard-calendar {
   display: flex;
-      flex-direction: column;
-      gap: 8px;
-
+  flex-direction: column;
+  gap: 8px;
 }
 
 .scoreboard-calendar__day {
   display: grid;
-      grid-template-columns: 100px 1fr;
-      gap: 12px;
-      align-items: stretch;
-
+  grid-template-columns: 100px 1fr;
+  gap: 12px;
+  align-items: stretch;
 }
 
 .scoreboard-calendar__date {
   background: var(--hockey-ice-deep);
-      color: #fff;
-      padding: 12px;
-      border-radius: 8px;
-      text-align: center;
-      font-family: var(--hockey-font-scoreboard);
-
+  color: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  font-family: var(--hockey-font-scoreboard);
 }
 
 .scoreboard-calendar__date-day {
   font-size: 24px;
-      font-weight: 700;
-      line-height: 1;
-
+  font-weight: 700;
+  line-height: 1;
 }
 
 .scoreboard-calendar__date-month {
   font-size: 11px;
-      text-transform: uppercase;
-      opacity: 0.8;
-
+  text-transform: uppercase;
+  opacity: 0.8;
 }
 
 .scoreboard-calendar__events {
   display: flex;
-      flex-direction: column;
-      gap: 6px;
-
+  flex-direction: column;
+  gap: 6px;
 }
 
 .scoreboard-calendar__event {
   display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      border-radius: 8px;
-      border-left: 4px solid var(--hockey-ice-glow);
-      background: var(--hockey-card-bg);
-
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border-left: 4px solid var(--hockey-ice-glow);
+  background: var(--hockey-card-bg);
 }
 
 .scoreboard-calendar__event--game {
   border-left-color: var(--hockey-line-red);
-
 }
 
 .scoreboard-calendar__event--training {
   border-left-color: var(--hockey-ice-glow);
-
 }
 
 .scoreboard-calendar__event--open_ice {
   border-left-color: var(--hockey-board-gold);
-
 }
 
 .scoreboard-calendar__event-time {
   font-family: var(--hockey-font-scoreboard);
-      font-size: 16px;
-      font-weight: 700;
-      min-width: 52px;
-
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 52px;
 }
-

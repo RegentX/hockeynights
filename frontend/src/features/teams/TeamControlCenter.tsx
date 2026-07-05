@@ -3,19 +3,20 @@
  * SPEC-FR-22.1.1, SPEC-FR-22.1.2, SPEC-UI-2.3
  */
 
+import {Button, Text, TextInput} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
 import {Link} from 'react-router-dom'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {Button, Text, TextInput} from '@gravity-ui/uikit'
-import type {Team, TeamRole} from '@/entities/team/types'
+
 import type {ClubSquad} from '@/entities/club/types'
 import type {Chat} from '@/entities/messenger/types'
+import type {Team, TeamRole} from '@/entities/team/types'
 import {useSessionAccess} from '@/features/access/useSessionAccess'
-import {AddTeamMember} from '@/features/teams/AddTeamMember'
-import {TeamRoster} from '@/features/teams/TeamRoster'
-import {fetchTeamRoster} from '@/features/teams/api/teamsApi'
-import {TrainingLineupBoard} from '@/features/teams/TrainingLineupBoard'
 import {createChannelOrChat, fetchTeamChats} from '@/features/messenger/api/messengerApi'
+import {AddTeamMember} from '@/features/teams/AddTeamMember'
+import {fetchTeamRoster} from '@/features/teams/api/teamsApi'
+import {TeamRoster} from '@/features/teams/TeamRoster'
+import {TrainingLineupBoard} from '@/features/teams/TrainingLineupBoard'
 import {testId} from '@/shared/testing/testId'
 
 export interface TeamControlCenterProps {
@@ -43,20 +44,15 @@ export function TeamControlCenter({team, activeSquad}: TeamControlCenterProps) {
   })
 
   const myRole = (roster.find((m) => m.userId === userId)?.teamRole ?? 'player') as TeamRole
-  const {
-    canManageRoster,
-    canCreateChannel,
-    canCreateChat,
-    canEditLineup,
-    isReadOnly,
-  } = teamPermissions(myRole)
+  const {canManageRoster, canCreateChannel, canCreateChat, canEditLineup, isReadOnly} =
+    teamPermissions(myRole)
   const squadTag = activeSquad?.id
 
   const createTeamChannelMutation = useMutation({
     mutationFn: (payload: {type: 'channel' | 'team'; title: string; tag?: string}) =>
       createChannelOrChat({
         ...payload,
-                tag: payload.tag ?? squadTag,
+        tag: payload.tag ?? squadTag,
         relatedEntityId: team.id,
       }),
     onSuccess: (createdChat: Chat) => {
@@ -90,58 +86,152 @@ export function TeamControlCenter({team, activeSquad}: TeamControlCenterProps) {
   }, [activeSquad, sortedChats, squadOnly])
 
   return (
-    <div className="team-control-center hockey-stack hockey-stack--gap-16" data-testid={testId('teams', 'team-control-center', 'panel', team.id)}>
+    <div
+      className="team-control-center hockey-stack hockey-stack--gap-16"
+      data-testid={testId('teams', 'team-control-center', 'panel', team.id)}
+    >
       <div className="team-control-center__header">
-        <Text variant="header-2" data-testid={testId('teams', 'team-control-center', 'text', 'title', team.id)}>Центр управления командой</Text>
-        <Text color="secondary" data-testid={testId('teams', 'team-control-center', 'text', 'role', team.id)}>Роль: {myRole}</Text>
+        <Text
+          variant="header-2"
+          data-testid={testId('teams', 'team-control-center', 'text', 'title', team.id)}
+        >
+          Центр управления командой
+        </Text>
+        <Text
+          color="secondary"
+          data-testid={testId('teams', 'team-control-center', 'text', 'role', team.id)}
+        >
+          Роль: {myRole}
+        </Text>
       </div>
       {activeSquad && (
-        <Text color="secondary" data-testid={testId('teams', 'team-control-center', 'text', 'active-squad', team.id)}>
+        <Text
+          color="secondary"
+          data-testid={testId('teams', 'team-control-center', 'text', 'active-squad', team.id)}
+        >
           Активный состав: {activeSquad.name}
           {activeSquad.season ? ` · ${activeSquad.season}` : ''}
           {activeSquad.teamId && activeSquad.teamId !== team.id ? ' · внешняя команда' : ''}
         </Text>
       )}
       {activeSquad && (
-        <Button view={squadOnly ? 'action' : 'outlined'} size="s" onClick={() => setSquadOnly((v) => !v)} data-testid={testId('teams', 'team-control-center', 'btn', 'squad-filter', team.id)}>
+        <Button
+          view={squadOnly ? 'action' : 'outlined'}
+          size="s"
+          onClick={() => setSquadOnly((v) => !v)}
+          data-testid={testId('teams', 'team-control-center', 'btn', 'squad-filter', team.id)}
+        >
           {squadOnly ? 'Показываю только активный состав' : 'Фильтр: только активный состав'}
         </Button>
       )}
 
-      <div className="team-control-center__permissions" data-testid={testId('teams', 'team-control-center', 'panel', 'permissions', team.id)}>
-        <span className={`team-control-center__badge ${canManageRoster ? 'is-enabled' : ''}`} data-testid={testId('teams', 'team-control-center', 'badge', 'roster', team.id)}>
+      <div
+        className="team-control-center__permissions"
+        data-testid={testId('teams', 'team-control-center', 'panel', 'permissions', team.id)}
+      >
+        <span
+          className={`team-control-center__badge ${canManageRoster ? 'is-enabled' : ''}`}
+          data-testid={testId('teams', 'team-control-center', 'badge', 'roster', team.id)}
+        >
           Состав: {canManageRoster ? 'управление доступно' : 'только просмотр'}
         </span>
-        <span className={`team-control-center__badge ${canCreateChannel ? 'is-enabled' : ''}`} data-testid={testId('teams', 'team-control-center', 'badge', 'channels', team.id)}>
-          Каналы: {canCreateChannel ? 'создание доступно' : isReadOnly ? 'недоступно' : 'нужна роль captain+'}
+        <span
+          className={`team-control-center__badge ${canCreateChannel ? 'is-enabled' : ''}`}
+          data-testid={testId('teams', 'team-control-center', 'badge', 'channels', team.id)}
+        >
+          Каналы:{' '}
+          {canCreateChannel
+            ? 'создание доступно'
+            : isReadOnly
+              ? 'недоступно'
+              : 'нужна роль captain+'}
         </span>
-        <span className={`team-control-center__badge ${canCreateChat ? 'is-enabled' : ''}`} data-testid={testId('teams', 'team-control-center', 'badge', 'chats', team.id)}>
-          Чаты: {canCreateChat ? 'создание доступно' : isReadOnly ? 'недоступно' : 'нужна роль coach+'}
+        <span
+          className={`team-control-center__badge ${canCreateChat ? 'is-enabled' : ''}`}
+          data-testid={testId('teams', 'team-control-center', 'badge', 'chats', team.id)}
+        >
+          Чаты:{' '}
+          {canCreateChat ? 'создание доступно' : isReadOnly ? 'недоступно' : 'нужна роль coach+'}
         </span>
       </div>
       {!isReadOnly && (
-        <Text color="secondary" data-testid={testId('teams', 'team-control-center', 'text', 'permissions-hint', team.id)}>
+        <Text
+          color="secondary"
+          data-testid={testId('teams', 'team-control-center', 'text', 'permissions-hint', team.id)}
+        >
           Права зависят от роли в сессии (капитан/тренер) и роли в составе команды.
         </Text>
       )}
 
-      <div className="team-control-center__comms hockey-grid hockey-grid--cards-280" data-testid={testId('teams', 'team-control-center', 'panel', 'comms', team.id)}>
-        <div className="team-control-center__panel hockey-stack hockey-stack--gap-10" data-testid={testId('teams', 'team-control-center', 'panel', 'chats-list', team.id)}>
-          <Text variant="subheader-2" data-testid={testId('teams', 'team-control-center', 'text', 'chats-title', team.id)}>Каналы и чаты команды</Text>
+      <div
+        className="team-control-center__comms hockey-grid hockey-grid--cards-280"
+        data-testid={testId('teams', 'team-control-center', 'panel', 'comms', team.id)}
+      >
+        <div
+          className="team-control-center__panel hockey-stack hockey-stack--gap-10"
+          data-testid={testId('teams', 'team-control-center', 'panel', 'chats-list', team.id)}
+        >
+          <Text
+            variant="subheader-2"
+            data-testid={testId('teams', 'team-control-center', 'text', 'chats-title', team.id)}
+          >
+            Каналы и чаты команды
+          </Text>
           {visibleChats.length === 0 ? (
-            <Text color="secondary" data-testid={testId('teams', 'team-control-center', 'empty', 'chats', team.id)}>Пока нет чатов, привязанных к этой команде.</Text>
+            <Text
+              color="secondary"
+              data-testid={testId('teams', 'team-control-center', 'empty', 'chats', team.id)}
+            >
+              Пока нет чатов, привязанных к этой команде.
+            </Text>
           ) : (
             visibleChats.map((chat) => (
-              <div key={chat.id} className="team-control-center__chat-row" data-testid={testId('teams', 'team-control-center', 'row', 'chat', chat.id)}>
+              <div
+                key={chat.id}
+                className="team-control-center__chat-row"
+                data-testid={testId('teams', 'team-control-center', 'row', 'chat', chat.id)}
+              >
                 <div>
-                  <Text data-testid={testId('teams', 'team-control-center', 'text', 'chat-title', chat.id)}>{chat.title}</Text>
-                  <Text color="secondary" data-testid={testId('teams', 'team-control-center', 'text', 'chat-meta', chat.id)}>
+                  <Text
+                    data-testid={testId(
+                      'teams',
+                      'team-control-center',
+                      'text',
+                      'chat-title',
+                      chat.id,
+                    )}
+                  >
+                    {chat.title}
+                  </Text>
+                  <Text
+                    color="secondary"
+                    data-testid={testId(
+                      'teams',
+                      'team-control-center',
+                      'text',
+                      'chat-meta',
+                      chat.id,
+                    )}
+                  >
                     {chat.type}
                     {chat.tag ? ` · #${chat.tag}` : ''}
                   </Text>
                 </div>
-                <Link to="/messenger" data-testid={testId('teams', 'team-control-center', 'link', 'chat', chat.id)}>
-                  <Button size="s" view="outlined" data-testid={testId('teams', 'team-control-center', 'btn', 'open-chat', chat.id)}>
+                <Link
+                  to="/messenger"
+                  data-testid={testId('teams', 'team-control-center', 'link', 'chat', chat.id)}
+                >
+                  <Button
+                    size="s"
+                    view="outlined"
+                    data-testid={testId(
+                      'teams',
+                      'team-control-center',
+                      'btn',
+                      'open-chat',
+                      chat.id,
+                    )}
+                  >
                     Открыть
                   </Button>
                 </Link>
@@ -151,89 +241,158 @@ export function TeamControlCenter({team, activeSquad}: TeamControlCenterProps) {
         </div>
 
         {canCreateChannel && (
-        <div className="team-control-center__panel hockey-stack hockey-stack--gap-10" data-testid={testId('teams', 'team-control-center', 'panel', 'create-channel', team.id)}>
-          <Text variant="subheader-2" data-testid={testId('teams', 'team-control-center', 'text', 'create-channel-title', team.id)}>Создать канал</Text>
-          <TextInput
-            value={newChannelTitle}
-            onChange={(e) => setNewChannelTitle(e.target.value)}
-            placeholder="Например: Тактика и разбор"
-            data-testid={testId('teams', 'team-control-center', 'field', 'channel-title', team.id)}
-          />
-          <TextInput
-            value={newChannelTag}
-            onChange={(e) => setNewChannelTag(e.target.value)}
-            placeholder={squadTag ? `Тег канала (по умолчанию ${squadTag})` : 'Тег канала (например tactics)'}
-            data-testid={testId('teams', 'team-control-center', 'field', 'channel-tag', team.id)}
-          />
-          <Button
-            view="action"
-            disabled={!canCreateChannel || !newChannelTitle.trim()}
-            loading={createTeamChannelMutation.isPending}
-            onClick={() =>
-              createTeamChannelMutation.mutate({
-                type: 'channel',
-                title: newChannelTitle.trim(),
-                tag: newChannelTag.trim() || undefined,
-              })
-            }
-            data-testid={testId('teams', 'team-control-center', 'btn', 'create-channel', team.id)}
+          <div
+            className="team-control-center__panel hockey-stack hockey-stack--gap-10"
+            data-testid={testId('teams', 'team-control-center', 'panel', 'create-channel', team.id)}
           >
-            Создать канал
-          </Button>
-          {!canCreateChannel && (
-            <Text color="secondary" data-testid={testId('teams', 'team-control-center', 'text', 'channel-permission', team.id)}>Нужны права капитана или владельца.</Text>
-          )}
-        </div>
-        )}
-
-        {canCreateChat && (
-        <div className="team-control-center__panel hockey-stack hockey-stack--gap-10" data-testid={testId('teams', 'team-control-center', 'panel', 'create-chat', team.id)}>
-          <Text variant="subheader-2" data-testid={testId('teams', 'team-control-center', 'text', 'create-chat-title', team.id)}>Создать командный чат</Text>
-          <TextInput
-            value={newChatTitle}
-            onChange={(e) => setNewChatTitle(e.target.value)}
-            placeholder="Например: Сбор на тренировку"
-            data-testid={testId('teams', 'team-control-center', 'field', 'chat-title', team.id)}
-          />
-          <Button
-            view="outlined"
-            disabled={!canCreateChat || !newChatTitle.trim()}
-            loading={createTeamChannelMutation.isPending}
-            onClick={() =>
-              createTeamChannelMutation.mutate({
-                type: 'team',
-                title: newChatTitle.trim(),
-              })
-            }
-            data-testid={testId('teams', 'team-control-center', 'btn', 'create-chat', team.id)}
-          >
-            Создать чат
-          </Button>
-          {!canCreateChat && (
-            <Text color="secondary" data-testid={testId('teams', 'team-control-center', 'text', 'chat-permission', team.id)}>Нужны права coach/team_admin/captain/owner.</Text>
-          )}
-          {canCreateChat && (
+            <Text
+              variant="subheader-2"
+              data-testid={testId(
+                'teams',
+                'team-control-center',
+                'text',
+                'create-channel-title',
+                team.id,
+              )}
+            >
+              Создать канал
+            </Text>
+            <TextInput
+              value={newChannelTitle}
+              onChange={(e) => setNewChannelTitle(e.target.value)}
+              placeholder="Например: Тактика и разбор"
+              data-testid={testId(
+                'teams',
+                'team-control-center',
+                'field',
+                'channel-title',
+                team.id,
+              )}
+            />
+            <TextInput
+              value={newChannelTag}
+              onChange={(e) => setNewChannelTag(e.target.value)}
+              placeholder={
+                squadTag ? `Тег канала (по умолчанию ${squadTag})` : 'Тег канала (например tactics)'
+              }
+              data-testid={testId('teams', 'team-control-center', 'field', 'channel-tag', team.id)}
+            />
             <Button
-              size="s"
-              view="outlined"
+              view="action"
+              disabled={!canCreateChannel || !newChannelTitle.trim()}
+              loading={createTeamChannelMutation.isPending}
               onClick={() =>
                 createTeamChannelMutation.mutate({
                   type: 'channel',
-                  title: `Тренерский штаб · ${team.name}`,
-                  tag: activeSquad?.id ? `coach-${activeSquad.id}` : 'coach-staff',
+                  title: newChannelTitle.trim(),
+                  tag: newChannelTag.trim() || undefined,
                 })
               }
-              data-testid={testId('teams', 'team-control-center', 'btn', 'create-staff-channel', team.id)}
+              data-testid={testId('teams', 'team-control-center', 'btn', 'create-channel', team.id)}
             >
-              Быстро создать канал штаба
+              Создать канал
             </Button>
-          )}
-        </div>
+            {!canCreateChannel && (
+              <Text
+                color="secondary"
+                data-testid={testId(
+                  'teams',
+                  'team-control-center',
+                  'text',
+                  'channel-permission',
+                  team.id,
+                )}
+              >
+                Нужны права капитана или владельца.
+              </Text>
+            )}
+          </div>
+        )}
+
+        {canCreateChat && (
+          <div
+            className="team-control-center__panel hockey-stack hockey-stack--gap-10"
+            data-testid={testId('teams', 'team-control-center', 'panel', 'create-chat', team.id)}
+          >
+            <Text
+              variant="subheader-2"
+              data-testid={testId(
+                'teams',
+                'team-control-center',
+                'text',
+                'create-chat-title',
+                team.id,
+              )}
+            >
+              Создать командный чат
+            </Text>
+            <TextInput
+              value={newChatTitle}
+              onChange={(e) => setNewChatTitle(e.target.value)}
+              placeholder="Например: Сбор на тренировку"
+              data-testid={testId('teams', 'team-control-center', 'field', 'chat-title', team.id)}
+            />
+            <Button
+              view="outlined"
+              disabled={!canCreateChat || !newChatTitle.trim()}
+              loading={createTeamChannelMutation.isPending}
+              onClick={() =>
+                createTeamChannelMutation.mutate({
+                  type: 'team',
+                  title: newChatTitle.trim(),
+                })
+              }
+              data-testid={testId('teams', 'team-control-center', 'btn', 'create-chat', team.id)}
+            >
+              Создать чат
+            </Button>
+            {!canCreateChat && (
+              <Text
+                color="secondary"
+                data-testid={testId(
+                  'teams',
+                  'team-control-center',
+                  'text',
+                  'chat-permission',
+                  team.id,
+                )}
+              >
+                Нужны права coach/team_admin/captain/owner.
+              </Text>
+            )}
+            {canCreateChat && (
+              <Button
+                size="s"
+                view="outlined"
+                onClick={() =>
+                  createTeamChannelMutation.mutate({
+                    type: 'channel',
+                    title: `Тренерский штаб · ${team.name}`,
+                    tag: activeSquad?.id ? `coach-${activeSquad.id}` : 'coach-staff',
+                  })
+                }
+                data-testid={testId(
+                  'teams',
+                  'team-control-center',
+                  'btn',
+                  'create-staff-channel',
+                  team.id,
+                )}
+              >
+                Быстро создать канал штаба
+              </Button>
+            )}
+          </div>
         )}
       </div>
 
       {statusMessage && (
-        <Text color="secondary" data-testid={testId('teams', 'team-control-center', 'text', 'status', team.id)}>{statusMessage}</Text>
+        <Text
+          color="secondary"
+          data-testid={testId('teams', 'team-control-center', 'text', 'status', team.id)}
+        >
+          {statusMessage}
+        </Text>
       )}
 
       <TrainingLineupBoard teamId={team.id} canEdit={canEditLineup} activeSquad={activeSquad} />

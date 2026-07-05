@@ -3,14 +3,12 @@
  * SPEC-UI-6.3
  */
 
-import {useMemo, useState} from 'react'
 import {Select, Text, TextInput} from '@gravity-ui/uikit'
-import type {
-  AnnotationType,
-  HighlightAnnotation,
-} from '@/entities/highlight/types'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {useMemo, useState} from 'react'
+
+import type {AnnotationType, HighlightAnnotation} from '@/entities/highlight/types'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 const TYPE_OPTIONS = [
   {value: 'arrow', content: 'Стрелка'},
@@ -55,10 +53,7 @@ export function AnnotationLayer({
   const [label, setLabel] = useState('')
 
   const visibleAnnotations = useMemo(
-    () =>
-      annotations.filter(
-        (a) => Math.abs(a.timestampMs - currentTimestampMs) <= 1500,
-      ),
+    () => annotations.filter((a) => Math.abs(a.timestampMs - currentTimestampMs) <= 1500),
     [annotations, currentTimestampMs],
   )
 
@@ -80,7 +75,10 @@ export function AnnotationLayer({
   }
 
   return (
-    <div className="annotation-layer" data-testid={testId('highlights', 'annotation-layer', 'panel', highlightId)}>
+    <div
+      className="annotation-layer"
+      data-testid={testId('highlights', 'annotation-layer', 'panel', highlightId)}
+    >
       <svg
         className="annotation-layer__svg"
         viewBox="0 0 100 100"
@@ -97,14 +95,11 @@ export function AnnotationLayer({
               y2: number
             }
             return (
-              <g key={annotation.id} data-testid={testId('highlights', 'annotation-layer', 'item', annotation.id)}>
-                <line
-                  x1={x1}
-                  y1={y1}
-                  x2={x2}
-                  y2={y2}
-                  className="annotation-layer__arrow"
-                />
+              <g
+                key={annotation.id}
+                data-testid={testId('highlights', 'annotation-layer', 'item', annotation.id)}
+              >
+                <line x1={x1} y1={y1} x2={x2} y2={y2} className="annotation-layer__arrow" />
                 <polygon
                   points={`${x2},${y2} ${x2 - 3},${y2 - 2} ${x2 - 3},${y2 + 2}`}
                   className="annotation-layer__arrow-head"
@@ -146,14 +141,20 @@ export function AnnotationLayer({
         })}
       </svg>
 
-      <div className="annotation-layer__form" data-testid={testId('highlights', 'annotation-layer', 'form', highlightId)}>
+      <div
+        className="annotation-layer__form"
+        data-testid={testId('highlights', 'annotation-layer', 'form', highlightId)}
+      >
         <Text
           variant="subheader-2"
           data-testid={testId('highlights', 'annotation-layer', 'text', 'title', highlightId)}
         >
           Разметка · {formatMs(currentTimestampMs)}
         </Text>
-        <div className="annotation-layer__fields" data-testid={testId('highlights', 'annotation-layer', 'panel', 'fields', highlightId)}>
+        <div
+          className="annotation-layer__fields"
+          data-testid={testId('highlights', 'annotation-layer', 'panel', 'fields', highlightId)}
+        >
           <Select
             value={[annotationType]}
             onUpdate={(vals) => setAnnotationType(vals[0] as AnnotationType)}

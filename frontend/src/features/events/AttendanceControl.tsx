@@ -2,11 +2,12 @@
  * SPEC-FR-3.3.1, SPEC-FR-25.6.2
  */
 
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Text} from '@gravity-ui/uikit'
-import {updateAttendance, fetchEventRsvp, updateEventRsvp} from '@/features/events/api/eventsApi'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+
 import type {AttendanceStatus} from '@/entities/common/types'
 import type {EventRsvpStatus} from '@/entities/event/rsvpTypes'
+import {fetchEventRsvp, updateAttendance, updateEventRsvp} from '@/features/events/api/eventsApi'
 import {testId} from '@/shared/testing/testId'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'
 
@@ -85,7 +86,10 @@ export function AttendanceControl({
         aria-busy="true"
         aria-label="Загрузка RSVP"
       >
-        <Text color="secondary" data-testid={testId('events', 'attendance', 'text', 'label', eventId)}>
+        <Text
+          color="secondary"
+          data-testid={testId('events', 'attendance', 'text', 'label', eventId)}
+        >
           RSVP команды на игру
         </Text>
         <div className="hockey-row hockey-row--gap-8">
@@ -102,11 +106,20 @@ export function AttendanceControl({
       'pending'
 
     return (
-      <div className="hockey-stack hockey-stack--gap-6" data-testid={testId('events', 'attendance', 'panel', eventId)}>
-        <Text color="secondary" data-testid={testId('events', 'attendance', 'text', 'label', eventId)}>
+      <div
+        className="hockey-stack hockey-stack--gap-6"
+        data-testid={testId('events', 'attendance', 'panel', eventId)}
+      >
+        <Text
+          color="secondary"
+          data-testid={testId('events', 'attendance', 'text', 'label', eventId)}
+        >
           RSVP команды на игру
         </Text>
-        <div className="hockey-row hockey-row--gap-8" data-testid={testId('events', 'attendance', 'list', eventId)}>
+        <div
+          className="hockey-row hockey-row--gap-8"
+          data-testid={testId('events', 'attendance', 'list', eventId)}
+        >
           {RSVP_BUTTONS.map((btn) => (
             <Button
               key={btn.status}
@@ -124,11 +137,20 @@ export function AttendanceControl({
   }
 
   return (
-    <div className="hockey-stack hockey-stack--gap-6" data-testid={testId('events', 'attendance', 'panel', eventId)}>
-      <Text color="secondary" data-testid={testId('events', 'attendance', 'text', 'label', eventId)}>
+    <div
+      className="hockey-stack hockey-stack--gap-6"
+      data-testid={testId('events', 'attendance', 'panel', eventId)}
+    >
+      <Text
+        color="secondary"
+        data-testid={testId('events', 'attendance', 'text', 'label', eventId)}
+      >
         RSVP на матч/тренировку
       </Text>
-      <div className="hockey-row hockey-row--gap-8" data-testid={testId('events', 'attendance', 'list', eventId)}>
+      <div
+        className="hockey-row hockey-row--gap-8"
+        data-testid={testId('events', 'attendance', 'list', eventId)}
+      >
         {ATTENDANCE_BUTTONS.map((btn) => (
           <Button
             key={btn.status}

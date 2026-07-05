@@ -6,6 +6,7 @@
 import {screen, waitFor, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {beforeEach, describe, expect, it} from 'vitest'
+
 import {HighlightsPage} from '@/features/highlights/HighlightsPage'
 import {resetMockHighlightsState} from '@/mocks/data/highlights'
 import {renderWithProviders} from '@/test/render'

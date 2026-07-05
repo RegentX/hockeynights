@@ -13,7 +13,10 @@ import {testId} from '@/shared/testing/testId'
 export function TermsOfUseDocument() {
   return (
     <article className="terms-doc" data-testid={testId('auth', 'terms', 'panel', 'document')}>
-      <header className="terms-doc__header" data-testid={testId('auth', 'terms', 'panel', 'header')}>
+      <header
+        className="terms-doc__header"
+        data-testid={testId('auth', 'terms', 'panel', 'header')}
+      >
         <h2 className="terms-doc__title" data-testid={testId('auth', 'terms', 'text', 'title')}>
           {TERMS_OF_USE_TITLE}
         </h2>

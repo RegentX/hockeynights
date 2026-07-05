@@ -2,16 +2,17 @@
  * SPEC-FR-3.1.2, SPEC-FR-21.1.1, SPEC-FR-21.1.2
  */
 
-import {useState} from 'react'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {useState} from 'react'
+
+import {fetchPlayers} from '@/features/players/api/playersApi'
 import {
   addTeamMember,
   fetchTeamInvites,
   fetchTeamRoster,
   inviteTeamMemberByEmail,
 } from '@/features/teams/api/teamsApi'
-import {fetchPlayers} from '@/features/players/api/playersApi'
 import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-3.1.2 - Props добавления игрока */
@@ -69,8 +70,16 @@ export function AddTeamMember({teamId}: AddTeamMemberProps) {
     .map((p) => ({value: p.userId, content: `${p.displayName} (${p.position})`}))
 
   return (
-    <div className="hockey-stack hockey-stack--gap-10" data-testid={testId('teams', 'add-team-member', 'form', teamId)}>
-      <Text color="secondary" data-testid={testId('teams', 'add-team-member', 'text', 'hint', teamId)}>В команду можно добавить только зарегистрированных пользователей.</Text>
+    <div
+      className="hockey-stack hockey-stack--gap-10"
+      data-testid={testId('teams', 'add-team-member', 'form', teamId)}
+    >
+      <Text
+        color="secondary"
+        data-testid={testId('teams', 'add-team-member', 'text', 'hint', teamId)}
+      >
+        В команду можно добавить только зарегистрированных пользователей.
+      </Text>
       <div className="hockey-row hockey-row--gap-8 hockey-row--end">
         <Select
           label="Добавить зарегистрированного игрока"
@@ -94,7 +103,10 @@ export function AddTeamMember({teamId}: AddTeamMemberProps) {
         </Button>
       </div>
 
-      <Text color="secondary" data-testid={testId('teams', 'add-team-member', 'text', 'invite-hint', teamId)}>
+      <Text
+        color="secondary"
+        data-testid={testId('teams', 'add-team-member', 'text', 'invite-hint', teamId)}
+      >
         Если игрок не зарегистрирован, отправь ему приглашение на email.
       </Text>
       <div className="hockey-row hockey-row--gap-8 hockey-row--end">
@@ -116,17 +128,35 @@ export function AddTeamMember({teamId}: AddTeamMemberProps) {
         </Button>
       </div>
       {invites.length > 0 && (
-        <div className="hockey-stack hockey-stack--gap-6" data-testid={testId('teams', 'add-team-member', 'list', 'invites', teamId)}>
-          <Text variant="subheader-2" data-testid={testId('teams', 'add-team-member', 'text', 'invites-title', teamId)}>Последние email-приглашения</Text>
+        <div
+          className="hockey-stack hockey-stack--gap-6"
+          data-testid={testId('teams', 'add-team-member', 'list', 'invites', teamId)}
+        >
+          <Text
+            variant="subheader-2"
+            data-testid={testId('teams', 'add-team-member', 'text', 'invites-title', teamId)}
+          >
+            Последние email-приглашения
+          </Text>
           {invites.slice(0, 3).map((invite) => (
-            <Text key={invite.id} color="secondary" data-testid={testId('teams', 'add-team-member', 'item', 'invite', invite.id)}>
-              {invite.email} · {invite.status} · {new Date(invite.createdAt).toLocaleDateString('ru-RU')}
+            <Text
+              key={invite.id}
+              color="secondary"
+              data-testid={testId('teams', 'add-team-member', 'item', 'invite', invite.id)}
+            >
+              {invite.email} · {invite.status} ·{' '}
+              {new Date(invite.createdAt).toLocaleDateString('ru-RU')}
             </Text>
           ))}
         </div>
       )}
       {statusMessage && (
-        <Text color="secondary" data-testid={testId('teams', 'add-team-member', 'text', 'status', teamId)}>{statusMessage}</Text>
+        <Text
+          color="secondary"
+          data-testid={testId('teams', 'add-team-member', 'text', 'status', teamId)}
+        >
+          {statusMessage}
+        </Text>
       )}
     </div>
   )

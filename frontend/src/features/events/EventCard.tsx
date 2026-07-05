@@ -3,16 +3,17 @@
  * SPEC-UI-2.5, SPEC-UI-1.3
  */
 
+import {Text} from '@gravity-ui/uikit'
 import {useState} from 'react'
 import {Link} from 'react-router-dom'
-import {Text} from '@gravity-ui/uikit'
+
 import type {GameEvent} from '@/entities/event/types'
 import {AttendanceControl} from '@/features/events/AttendanceControl'
 import {EventRsvpBoard} from '@/features/events/EventRsvpBoard'
 import {RosterNeedsWidget} from '@/features/events/RosterNeedsWidget'
+import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
-import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-4.1.1 - Props карточки события */
 export interface EventCardProps {
@@ -35,7 +36,7 @@ const TYPE_LABELS: Record<string, string> = {
  */
 export function EventCard({event, currentUserId = 'user-001', compact = false}: EventCardProps) {
   const myAttendance = event.participation.find((p) => p.userId === currentUserId)
-  const defaultStatus = event.type === 'game' ? 'not_going' as const : undefined
+  const defaultStatus = event.type === 'game' ? ('not_going' as const) : undefined
   const currentStatus = myAttendance?.status ?? defaultStatus
   const [nowMs] = useState(() => Date.now())
   const start = new Date(event.startsAt)
@@ -48,11 +49,17 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
         className={`scoreboard-calendar__event scoreboard-calendar__event--${event.type}`}
         data-testid={testId('events', 'card', 'card', event.id, 'compact')}
       >
-        <div className="scoreboard-calendar__event-time" data-testid={testId('events', 'card', 'text', 'time', event.id)}>
+        <div
+          className="scoreboard-calendar__event-time"
+          data-testid={testId('events', 'card', 'text', 'time', event.id)}
+        >
           {timeStr}
         </div>
         <div>
-          <Text variant="subheader-2" data-testid={testId('events', 'card', 'text', 'title', event.id)}>
+          <Text
+            variant="subheader-2"
+            data-testid={testId('events', 'card', 'text', 'title', event.id)}
+          >
             {event.title}
           </Text>
           <Text color="secondary" data-testid={testId('events', 'card', 'text', 'meta', event.id)}>
@@ -69,7 +76,10 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
         <div className="hockey-stack hockey-stack--gap-12">
           <div className="match-center__row match-center__row--plain">
             <div>
-              <div className="match-center__time" data-testid={testId('events', 'card', 'text', 'time', event.id)}>
+              <div
+                className="match-center__time"
+                data-testid={testId('events', 'card', 'text', 'time', event.id)}
+              >
                 {timeStr}
               </div>
               <div
@@ -80,13 +90,22 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
               </div>
             </div>
             <div>
-              <Text variant="subheader-2" data-testid={testId('events', 'card', 'text', 'title', event.id)}>
+              <Text
+                variant="subheader-2"
+                data-testid={testId('events', 'card', 'text', 'title', event.id)}
+              >
                 {event.title}
               </Text>
-              <Text color="secondary" data-testid={testId('events', 'card', 'text', 'arena', event.id)}>
+              <Text
+                color="secondary"
+                data-testid={testId('events', 'card', 'text', 'arena', event.id)}
+              >
                 {event.arenaName ?? event.arenaId}
               </Text>
-              <Text color="secondary" data-testid={testId('events', 'card', 'text', 'datetime', event.id)}>
+              <Text
+                color="secondary"
+                data-testid={testId('events', 'card', 'text', 'datetime', event.id)}
+              >
                 {start.toLocaleDateString('ru-RU')} —{' '}
                 {new Date(event.endsAt).toLocaleTimeString('ru-RU', {
                   hour: '2-digit',
@@ -94,7 +113,10 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
                 })}
               </Text>
               {event.pricePerPlayer && (
-                <ScoreboardText tone="accent" data-testid={testId('events', 'card', 'text', 'price', event.id)}>
+                <ScoreboardText
+                  tone="accent"
+                  data-testid={testId('events', 'card', 'text', 'price', event.id)}
+                >
                   {event.pricePerPlayer} RUB / игрок
                 </ScoreboardText>
               )}
@@ -110,8 +132,14 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
           {event.hasTeamRsvp && <EventRsvpBoard eventId={event.id} />}
           <RosterNeedsWidget eventId={event.id} />
           {currentStatus === 'going' && isPastEvent && (
-            <Link to="/feedback" data-testid={testId('events', 'card', 'link', 'feedback', event.id)}>
-              <Text color="link" data-testid={testId('events', 'card', 'text', 'feedback', event.id)}>
+            <Link
+              to="/feedback"
+              data-testid={testId('events', 'card', 'link', 'feedback', event.id)}
+            >
+              <Text
+                color="link"
+                data-testid={testId('events', 'card', 'text', 'feedback', event.id)}
+              >
                 Оставить отзыв после матча
               </Text>
             </Link>

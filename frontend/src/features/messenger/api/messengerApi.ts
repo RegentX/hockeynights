@@ -2,17 +2,17 @@
  * SPEC-FR-16.1.1
  */
 
-import {apiRequest} from '@/shared/api/client'
 import type {
-  Chat,
   ChannelSettings,
   ChannelSettingsPatch,
+  Chat,
   ChatTopic,
   ChatUser,
   CreateChatPayload,
   CreateChatTopicPayload,
   Message,
 } from '@/entities/messenger/types'
+import {apiRequest} from '@/shared/api/client'
 
 /** @spec SPEC-FR-16.1.1 - Список чатов пользователя */
 export function fetchChats(): Promise<Chat[]> {
@@ -74,7 +74,10 @@ export function createChannelOrChat(payload: CreateChatPayload): Promise<Chat> {
   })
 }
 
-export function createChatTopic(chatId: string, payload: CreateChatTopicPayload): Promise<ChatTopic> {
+export function createChatTopic(
+  chatId: string,
+  payload: CreateChatTopicPayload,
+): Promise<ChatTopic> {
   return apiRequest<ChatTopic>(`/messenger/chats/${chatId}/topics`, {
     method: 'POST',
     body: payload,

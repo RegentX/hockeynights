@@ -3,7 +3,10 @@
  */
 
 import {http, HttpResponse} from 'msw'
+
 import type {AdminEntityType} from '@/entities/admin/types'
+import type {PartnerModerationKind} from '@/entities/admin/types'
+import type {PartnerModerationStatus} from '@/entities/common/types'
 import {
   createAdminArena,
   createAdminLeague,
@@ -13,8 +16,6 @@ import {
 } from '@/mocks/data/admin'
 import {getPartnerModerationQueue, moderatePartnerContent} from '@/mocks/data/partnerModeration'
 import {mockSession} from '@/mocks/data/session'
-import type {PartnerModerationKind} from '@/entities/admin/types'
-import type {PartnerModerationStatus} from '@/entities/common/types'
 
 /** @spec SPEC-FR-11.1.1 - Handlers админки */
 export const adminHandlers = [

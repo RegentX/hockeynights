@@ -4,11 +4,11 @@
  */
 
 import type {AttendanceStatus} from '@/entities/common/types'
-import type {EventRsvpBoard, EventRsvpPlayer, EventRsvpStatus} from '@/entities/event/rsvpTypes'
 import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
-import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
+import type {EventRsvpBoard, EventRsvpPlayer, EventRsvpStatus} from '@/entities/event/rsvpTypes'
 import {updateMockAttendance} from '@/mocks/data/events'
 import {mockUser} from '@/mocks/data/session'
+import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
 
 export {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
 
@@ -16,16 +16,60 @@ const RSVP_STORAGE_KEY = 'hockey-mock-event-rsvp'
 
 function createLeagueSaturdayRoster(): EventRsvpPlayer[] {
   return [
-    {userId: 'user-001', displayName: 'Иван Петров', position: 'forward', status: 'confirmed', updatedAt: '2026-06-24T10:00:00Z'},
-    {userId: 'user-002', displayName: 'Алексей Смирнов', position: 'goalie', status: 'confirmed', updatedAt: '2026-06-24T11:00:00Z'},
-    {userId: 'user-003', displayName: 'Дмитрий Козлов', position: 'defense', status: 'declined', declineReason: 'Командировка', updatedAt: '2026-06-24T09:30:00Z'},
+    {
+      userId: 'user-001',
+      displayName: 'Иван Петров',
+      position: 'forward',
+      status: 'confirmed',
+      updatedAt: '2026-06-24T10:00:00Z',
+    },
+    {
+      userId: 'user-002',
+      displayName: 'Алексей Смирнов',
+      position: 'goalie',
+      status: 'confirmed',
+      updatedAt: '2026-06-24T11:00:00Z',
+    },
+    {
+      userId: 'user-003',
+      displayName: 'Дмитрий Козлов',
+      position: 'defense',
+      status: 'declined',
+      declineReason: 'Командировка',
+      updatedAt: '2026-06-24T09:30:00Z',
+    },
     {userId: 'user-004', displayName: 'Сергей Волков', position: 'forward', status: 'pending'},
-    {userId: 'user-005', displayName: 'Михаил Орлов', position: 'defense', status: 'confirmed', updatedAt: '2026-06-25T08:00:00Z'},
-    {userId: 'user-006', displayName: 'Андрей Лебедев', position: 'forward', status: 'declined', declineReason: 'Травма', updatedAt: '2026-06-23T18:00:00Z'},
+    {
+      userId: 'user-005',
+      displayName: 'Михаил Орлов',
+      position: 'defense',
+      status: 'confirmed',
+      updatedAt: '2026-06-25T08:00:00Z',
+    },
+    {
+      userId: 'user-006',
+      displayName: 'Андрей Лебедев',
+      position: 'forward',
+      status: 'declined',
+      declineReason: 'Травма',
+      updatedAt: '2026-06-23T18:00:00Z',
+    },
     {userId: 'user-007', displayName: 'Павел Новиков', position: 'goalie', status: 'pending'},
-    {userId: 'user-008', displayName: 'Игорь Соколов', position: 'defense', status: 'confirmed', updatedAt: '2026-06-25T12:00:00Z'},
+    {
+      userId: 'user-008',
+      displayName: 'Игорь Соколов',
+      position: 'defense',
+      status: 'confirmed',
+      updatedAt: '2026-06-25T12:00:00Z',
+    },
     {userId: 'user-009', displayName: 'Никита Морозов', position: 'forward', status: 'pending'},
-    {userId: 'user-010', displayName: 'Владимир Кузнецов', position: 'forward', status: 'confirmed', updatedAt: '2026-06-24T20:00:00Z'},
+    {
+      userId: 'user-010',
+      displayName: 'Владимир Кузнецов',
+      position: 'forward',
+      status: 'confirmed',
+      updatedAt: '2026-06-24T20:00:00Z',
+    },
   ]
 }
 
@@ -94,12 +138,7 @@ export function updateMockEventRsvp(
   persistRsvp(mockLeagueSaturdayRsvp)
 
   if (userId === mockUser.id) {
-    updateMockAttendance(
-      eventId,
-      userId,
-      mockUser.displayName,
-      rsvpToAttendance(status),
-    )
+    updateMockAttendance(eventId, userId, mockUser.displayName, rsvpToAttendance(status))
   }
 
   return mockLeagueSaturdayRsvp

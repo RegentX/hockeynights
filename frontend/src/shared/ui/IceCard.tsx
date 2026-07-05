@@ -2,7 +2,7 @@
  * SPEC-UI-1.3
  */
 
-import {forwardRef, type CSSProperties, type ReactNode} from 'react'
+import {type CSSProperties, forwardRef, type ReactNode} from 'react'
 
 /** @spec SPEC-UI-1.3 */
 export type IceCardPadding = 's' | 'm' | 'l'

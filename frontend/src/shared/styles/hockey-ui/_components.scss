@@ -8,89 +8,80 @@
 /* SPEC-UI-1.1 Hockey puck button */
 .hockey-button {
   border-radius: 999px !important;
-      font-weight: 600 !important;
-      letter-spacing: 0.02em !important;
-      transition:
-        transform var(--hockey-motion-fast) var(--hockey-motion-ease),
-        box-shadow var(--hockey-motion-fast) var(--hockey-motion-ease) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  transition:
+    transform var(--hockey-motion-fast) var(--hockey-motion-ease),
+    box-shadow var(--hockey-motion-fast) var(--hockey-motion-ease) !important;
 
   &:not(:disabled):hover {
     transform: translateX(4px);
-      box-shadow: var(--hockey-puck-shadow);
+    box-shadow: var(--hockey-puck-shadow);
   }
 
   &:not(:disabled):active {
     transform: translateY(2px) scale(0.97);
-      box-shadow: none;
+    box-shadow: none;
   }
-
 }
 
 .hockey-button--sos {
   background: var(--hockey-line-red) !important;
-      color: #fff !important;
-      border: 2px solid #fff !important;
+  color: #fff !important;
+  border: 2px solid #fff !important;
 
   &::before {
     content: '●';
-      margin-right: 6px;
-      font-size: 10px;
+    margin-right: 6px;
+    font-size: 10px;
   }
-
 }
 
 .ice-card {
   background: var(--hockey-card-bg);
-      border: 1px solid var(--hockey-card-border);
-      border-radius: 16px;
-      box-shadow: var(--hockey-card-shadow);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      position: relative;
-      overflow: hidden;
-      transition:
-        border-color var(--hockey-motion-fast) var(--hockey-motion-ease),
-        box-shadow var(--hockey-motion-fast) var(--hockey-motion-ease);
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 16px;
+  box-shadow: var(--hockey-card-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+  transition:
+    border-color var(--hockey-motion-fast) var(--hockey-motion-ease),
+    box-shadow var(--hockey-motion-fast) var(--hockey-motion-ease);
 
   &::before {
     content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(
-        90deg,
-        var(--hockey-line-red) 0%,
-        var(--hockey-line-blue) 50%,
-        var(--hockey-line-red) 100%
-      );
-      opacity: 0.55;
-      pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--hockey-line-red) 0%,
+      var(--hockey-line-blue) 50%,
+      var(--hockey-line-red) 100%
+    );
+    opacity: 0.55;
+    pointer-events: none;
   }
 
   &::after {
     content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        165deg,
-        rgba(255, 255, 255, 0.06) 0%,
-        transparent 45%
-      );
-      pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(165deg, rgba(255, 255, 255, 0.06) 0%, transparent 45%);
+    pointer-events: none;
   }
-
 }
 
 .ice-card--padding-s {
   padding: 12px;
-
 }
 
 .ice-card--padding-m {
   padding: 16px;
-
 }
 
 .ice-card--padding-l {
@@ -104,84 +95,73 @@
 
 .position-label {
   display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      border: 1px solid transparent;
-
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
 }
 
 .position-label--goalie {
   background: #1a1a2e;
-      color: #ffd700;
-      border-color: #ffd700;
-
+  color: #ffd700;
+  border-color: #ffd700;
 }
 
 .position-label--defense {
   background: #1e3a5f;
-      color: #a8d4ff;
-      border-color: #4a90d9;
-
+  color: #a8d4ff;
+  border-color: #4a90d9;
 }
 
 .position-label--forward {
   background: #5c1a1a;
-      color: #ffb3b3;
-      border-color: var(--hockey-line-red);
-
+  color: #ffb3b3;
+  border-color: var(--hockey-line-red);
 }
 
 .position-label--any {
   background: #3d3d3d;
-      color: #e0e0e0;
-      border-color: #888;
-
+  color: #e0e0e0;
+  border-color: #888;
 }
 
 .scoreboard-text {
   font-family: var(--hockey-font-scoreboard);
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0.06em;
-
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
 }
 
 .scoreboard-text--gold {
   color: var(--hockey-board-gold);
-
 }
 
 .scoreboard-text--accent {
   color: var(--hockey-accent);
-
 }
 
 .hockey-player-card {
   display: flex;
-      flex-direction: column;
-      gap: 10px;
-      min-height: 180px;
-
+  flex-direction: column;
+  gap: 10px;
+  min-height: 180px;
 }
 
 .hockey-player-card__header {
   display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 8px;
-
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .hockey-player-card__number {
   font-size: 28px;
-      line-height: 1;
-      opacity: 0.35;
-
+  line-height: 1;
+  opacity: 0.35;
 }
 
 .hockey-player-card__goalie-badge {
@@ -199,10 +179,9 @@
 
 .hockey-player-card__reliability {
   height: 4px;
-      border-radius: 2px;
-      background: var(--hockey-card-border);
-      overflow: hidden;
-
+  border-radius: 2px;
+  background: var(--hockey-card-border);
+  overflow: hidden;
 }
 
 .hockey-player-card__reliability-fill {
@@ -307,12 +286,12 @@
 
 .arena-map__leaflet-pin--slot_calendar .arena-map__leaflet-pin-core {
   background: #3dd68c;
-    box-shadow: 0 0 0 4px rgba(61, 214, 140, 0.28);
+  box-shadow: 0 0 0 4px rgba(61, 214, 140, 0.28);
 }
 
 .arena-map__leaflet-pin--external_portal .arena-map__leaflet-pin-core {
   background: #ffd700;
-    box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.28);
+  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.28);
 }
 
 .arena-map__leaflet-pin--selected .arena-map__leaflet-pin-core {
@@ -326,12 +305,12 @@
 .slot-calendar__chip-status,
 .slot-calendar__chip-price {
   font-size: 11px;
-    color: var(--hockey-text-muted);
+  color: var(--hockey-text-muted);
 }
 
 .rink-slot-lamp--busy .rink-slot-lamp__dot {
   background: #888;
-    box-shadow: none;
+  box-shadow: none;
 }
 
 .arena-map__surface {
@@ -339,7 +318,6 @@
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--hockey-card-border);
-
 }
 
 .arena-map__bottom-cover {
@@ -356,109 +334,97 @@
 
 .arena-map__leaflet {
   height: 380px;
-      width: 100%;
-      z-index: 0;
-
+  width: 100%;
+  z-index: 0;
 }
 
 .arena-map__leaflet-icon {
   background: transparent;
-      border: none;
-
+  border: none;
 }
 
 .arena-map__leaflet-pin {
   display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 30px;
-      height: 30px;
-
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
 }
 
 .arena-map__leaflet-pin-core {
   display: block;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #4da3ff;
-      box-shadow: 0 0 0 4px rgba(77, 163, 255, 0.28);
-      border: 2px solid #fff;
-      transition: transform var(--hockey-motion-fast) var(--hockey-motion-ease);
-
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #4da3ff;
+  box-shadow: 0 0 0 4px rgba(77, 163, 255, 0.28);
+  border: 2px solid #fff;
+  transition: transform var(--hockey-motion-fast) var(--hockey-motion-ease);
 }
 
 .arena-map__popup {
   display: flex;
-      flex-direction: column;
-      gap: 2px;
-      font-size: 13px;
-      line-height: 1.3;
-
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  line-height: 1.3;
 }
 
 .arena-map__a11y-pins {
   position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .arena-map__a11y-pin {
   width: 1px;
-      height: 1px;
-      padding: 0;
-      border: 0;
-
+  height: 1px;
+  padding: 0;
+  border: 0;
 }
 
 .arena-map__legend {
   display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 10px;
-
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
 }
 
 .arena-map__legend-item {
   font-size: 12px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
   &::before {
     content: '';
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
   }
-
 }
 
 .arena-map__legend-item--slot {
   &::before {
     background: #3dd68c;
   }
-
 }
 
 .arena-map__legend-item--portal {
   &::before {
     background: #ffd700;
   }
-
 }
 
 .arena-map__hint {
   font-size: 12px;
-
 }
 
 .arena-filters {
@@ -474,7 +440,9 @@
 
 .rink-card--selected {
   border-color: var(--hockey-line-red);
-  box-shadow: 0 0 0 2px rgba(225, 6, 0, 0.25), var(--hockey-card-shadow);
+  box-shadow:
+    0 0 0 2px rgba(225, 6, 0, 0.25),
+    var(--hockey-card-shadow);
 }
 
 .rink-card--clickable {
@@ -497,31 +465,28 @@
 
 .rink-card__mode {
   font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 2px 8px;
-      border-radius: 999px;
-
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
 }
 
 .rink-card__mode--slot_calendar {
   background: rgba(61, 214, 140, 0.15);
-      color: #3dd68c;
-
+  color: #3dd68c;
 }
 
 .rink-card__mode--external_portal {
   background: rgba(255, 215, 0, 0.15);
-      color: #c9a800;
-
+  color: #c9a800;
 }
 
 .arena-detail__head {
   display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
 
   .g-button {
     font-size: 20px;
@@ -533,123 +498,107 @@
 
 .arena-detail__mode {
   font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 999px;
-      white-space: nowrap;
-
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 .arena-detail__mode--slot_calendar {
   background: rgba(61, 214, 140, 0.15);
-      color: #3dd68c;
-
+  color: #3dd68c;
 }
 
 .arena-detail__mode--external_portal {
   background: rgba(255, 215, 0, 0.15);
-      color: #c9a800;
-
+  color: #c9a800;
 }
 
 .arena-detail__meta {
   display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin: 12px 0 16px;
-
+  flex-direction: column;
+  gap: 6px;
+  margin: 12px 0 16px;
 }
 
 .arena-booking {
   display: flex;
-      flex-direction: column;
-      gap: 12px;
-
+  flex-direction: column;
+  gap: 12px;
 }
 
 .arena-booking__head {
   display: flex;
-      flex-direction: column;
-      gap: 4px;
-
+  flex-direction: column;
+  gap: 4px;
 }
 
 .slot-calendar {
   display: flex;
-      flex-direction: column;
-      gap: 14px;
-
+  flex-direction: column;
+  gap: 14px;
 }
 
 .slot-calendar__day-label {
   font-family: var(--hockey-font-scoreboard);
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 8px;
-
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
 .slot-calendar__grid {
   display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .slot-calendar__chip {
   display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 2px;
-      min-width: 110px;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid var(--hockey-card-border);
-      background: transparent;
-      color: inherit;
-      cursor: pointer;
-      text-align: left;
-
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 110px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--hockey-card-border);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
 }
 
 .slot-calendar__chip--selected {
   border-color: var(--hockey-line-red);
-      background: rgba(225, 6, 0, 0.08);
-
+  background: rgba(225, 6, 0, 0.08);
 }
 
 .slot-calendar__chip--busy {
   opacity: 0.45;
-      cursor: not-allowed;
-
+  cursor: not-allowed;
 }
 
 .slot-calendar__booking {
   display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding-top: 8px;
-      border-top: 1px solid var(--hockey-card-border);
-
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--hockey-card-border);
 }
 
 .rink-slot-lamp {
   display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 600;
-
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .rink-slot-lamp__dot {
   width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--hockey-slot-green);
-      box-shadow: 0 0 6px var(--hockey-slot-green);
-
+  height: 10px;
+  border-radius: 50%;
+  background: var(--hockey-slot-green);
+  box-shadow: 0 0 6px var(--hockey-slot-green);
 }
-

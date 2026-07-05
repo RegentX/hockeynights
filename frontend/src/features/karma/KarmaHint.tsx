@@ -3,6 +3,7 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
+
 import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-8.2.2 - Props подсказки karma */

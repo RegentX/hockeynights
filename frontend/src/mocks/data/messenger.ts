@@ -1,14 +1,15 @@
+import {mockPlayers} from '@/mocks/data/players'
+
 import type {
-  Chat,
   ChannelSettings,
   ChannelSettingsPatch,
+  Chat,
   ChatTopic,
   ChatUser,
   CreateChatPayload,
   CreateChatTopicPayload,
   Message,
 } from '../../entities/messenger/types'
-import {mockPlayers} from '@/mocks/data/players'
 
 /** @spec SPEC-FR-16.1.1, SPEC-FR-16.1.2 */
 export const mockChats: Chat[] = [
@@ -63,8 +64,8 @@ export const mockChats: Chat[] = [
     title: 'Системные уведомления',
     unreadCount: 5,
     isOnline: true,
-  }
-];
+  },
+]
 
 export const mockChatUsers: ChatUser[] = [
   {userId: 'user-001', displayName: 'Иван Петров', position: 'forward', isOnline: true},
@@ -103,11 +104,11 @@ export const mockMessages: Record<string, Message[]> = {
         description: 'Амплуа: Защитник, Уровень: Amateur',
         status: 'pending',
         actions: [
-          { id: 'act-1', label: 'Принять', action: 'approve', style: 'primary' },
-          { id: 'act-2', label: 'Отклонить', action: 'decline', style: 'secondary' }
-        ]
-      }
-    }
+          {id: 'act-1', label: 'Принять', action: 'approve', style: 'primary'},
+          {id: 'act-2', label: 'Отклонить', action: 'decline', style: 'secondary'},
+        ],
+      },
+    },
   ],
   'chat-2': [
     {
@@ -124,11 +125,9 @@ export const mockMessages: Record<string, Message[]> = {
         title: 'Бронирование: Арена Мытищи',
         description: '06.06.2026, 20:00 - 21:30. Цена: 15 000 ₽',
         status: 'pending',
-        actions: [
-          { id: 'act-3', label: 'Оплатить долю', action: 'pay', style: 'primary' }
-        ]
-      }
-    }
+        actions: [{id: 'act-3', label: 'Оплатить долю', action: 'pay', style: 'primary'}],
+      },
+    },
   ],
   'chat-3': [
     {
@@ -140,7 +139,7 @@ export const mockMessages: Record<string, Message[]> = {
       content: 'Ваша карма повышена за хорошую игру!',
       topicId: 'topic-5',
       timestamp: new Date(Date.now() - 86400000).toISOString(),
-    }
+    },
   ],
   'chat-5': [
     {
@@ -154,7 +153,7 @@ export const mockMessages: Record<string, Message[]> = {
       timestamp: new Date(Date.now() - 1400000).toISOString(),
     },
   ],
-};
+}
 
 mockMessages['chat-4'] = [
   {
@@ -215,12 +214,12 @@ export const mockChannelSettings: Record<string, ChannelSettings> = {
 }
 
 // Update last messages in chats
-mockChats.forEach(chat => {
-  const messages = mockMessages[chat.id];
+mockChats.forEach((chat) => {
+  const messages = mockMessages[chat.id]
   if (messages && messages.length > 0) {
-    chat.lastMessage = messages[messages.length - 1];
+    chat.lastMessage = messages[messages.length - 1]
   }
-});
+})
 
 export function toggleMockChatPin(chatId: string, pinned?: boolean): Chat | null {
   const chat = mockChats.find((item) => item.id === chatId)
@@ -246,9 +245,9 @@ export function createMockTopic(
     title: payload.title.trim(),
     tag: payload.tag?.trim() || undefined,
     restrictedUserIds:
-      payload.restrictedUserIds && payload.restrictedUserIds.length > 0 ?
-        Array.from(new Set([userId, ...payload.restrictedUserIds]))
-      : undefined,
+      payload.restrictedUserIds && payload.restrictedUserIds.length > 0
+        ? Array.from(new Set([userId, ...payload.restrictedUserIds]))
+        : undefined,
   }
   mockTopics[chatId] = [topic, ...(mockTopics[chatId] ?? [])]
   return topic
@@ -301,11 +300,13 @@ export function createMockChannelOrChat(payload: CreateChatPayload, userId = 'us
     unreadCount: 0,
     isOnline: true,
     memberIds:
-      payload.restrictedUserIds && payload.restrictedUserIds.length > 0 ?
-        Array.from(new Set([userId, ...payload.restrictedUserIds]))
-      : ['user-001', 'user-003', 'user-004'],
+      payload.restrictedUserIds && payload.restrictedUserIds.length > 0
+        ? Array.from(new Set([userId, ...payload.restrictedUserIds]))
+        : ['user-001', 'user-003', 'user-004'],
     visibility:
-      payload.restrictedUserIds && payload.restrictedUserIds.length > 0 ? 'restricted' : 'team_members',
+      payload.restrictedUserIds && payload.restrictedUserIds.length > 0
+        ? 'restricted'
+        : 'team_members',
     relatedEntityId: payload.relatedEntityId,
   }
   mockChats.unshift(chat)

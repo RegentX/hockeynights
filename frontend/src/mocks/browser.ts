@@ -3,6 +3,7 @@
  */
 
 import {setupWorker} from 'msw/browser'
+
 import {handlers} from '@/mocks/handlers'
 
 /** @spec SPEC-NFR-2 - MSW worker для Phase 1 */

@@ -2,8 +2,9 @@
  * SPEC-FR-10.1.2
  */
 
-import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {Button} from '@gravity-ui/uikit'
+import {useMutation, useQueryClient} from '@tanstack/react-query'
+
 import {markNotificationAsRead} from '@/features/notifications/api/notificationsApi'
 import {testId} from '@/shared/testing/testId'
 

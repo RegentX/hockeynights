@@ -3,9 +3,9 @@
  */
 
 import type {CreateFeedbackPayload, Feedback, KarmaInfo} from '@/entities/feedback/types'
-import {mockProfile, updateMockProfile} from '@/mocks/data/session'
 import {mockEvents} from '@/mocks/data/events'
 import {mockPlayers} from '@/mocks/data/players'
+import {mockProfile, updateMockProfile} from '@/mocks/data/session'
 
 /** @spec SPEC-FR-8.1.1 - Mock feedback */
 export let mockFeedbacks: Feedback[] = []
@@ -54,8 +54,7 @@ export function createMockFeedback(fromUserId: string, payload: CreateFeedbackPa
   const target = karmaStore[payload.toUserId]
   if (target) {
     const delta =
-      payload.attendanceRating === 'confirmed' ? 2 :
-      payload.attendanceRating === 'late' ? -1 : -3
+      payload.attendanceRating === 'confirmed' ? 2 : payload.attendanceRating === 'late' ? -1 : -3
     target.karmaScore = Math.max(0, Math.min(100, target.karmaScore + delta))
     target.feedbackCount += 1
 
@@ -73,10 +72,12 @@ export function createMockFeedback(fromUserId: string, payload: CreateFeedbackPa
  * @spec SPEC-FR-8.2.1 - Получить karma
  */
 export function getMockKarma(userId: string): KarmaInfo {
-  return karmaStore[userId] ?? {
-    userId,
-    karmaScore: 50,
-    feedbackCount: 0,
-    hint: 'Вспомогательный сигнал надёжности, не абсолютная оценка уровня',
-  }
+  return (
+    karmaStore[userId] ?? {
+      userId,
+      karmaScore: 50,
+      feedbackCount: 0,
+      hint: 'Вспомогательный сигнал надёжности, не абсолютная оценка уровня',
+    }
+  )
 }

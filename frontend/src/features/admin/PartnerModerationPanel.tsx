@@ -2,8 +2,9 @@
  * SPEC-FR-24.7.9
  */
 
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Text} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+
 import {fetchPartnerModerationQueue, moderatePartnerItem} from '@/features/admin/api/adminApi'
 import {testId} from '@/shared/testing/testId'
 
@@ -50,7 +51,10 @@ export function PartnerModerationPanel() {
   }
 
   return (
-    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12" data-testid={testId('admin', 'moderation', 'panel')}>
+    <div
+      className="partner-dashboard__section hockey-stack hockey-stack--gap-12"
+      data-testid={testId('admin', 'moderation', 'panel')}
+    >
       <ul className="partner-dashboard__list" data-testid={testId('admin', 'moderation', 'list')}>
         {items.map((item) => (
           <li
@@ -62,11 +66,17 @@ export function PartnerModerationPanel() {
               <Text data-testid={testId('admin', 'moderation', 'text', 'title', item.id)}>
                 {item.title}
               </Text>
-              <Text color="secondary" data-testid={testId('admin', 'moderation', 'text', 'kind', item.id)}>
+              <Text
+                color="secondary"
+                data-testid={testId('admin', 'moderation', 'text', 'kind', item.id)}
+              >
                 {KIND_LABELS[item.kind] ?? item.kind}
                 {item.subtitle ? ` · ${item.subtitle}` : ''}
               </Text>
-              <Text color="secondary" data-testid={testId('admin', 'moderation', 'text', 'status', item.id)}>
+              <Text
+                color="secondary"
+                data-testid={testId('admin', 'moderation', 'text', 'status', item.id)}
+              >
                 Статус: {item.moderationStatus}
               </Text>
             </div>

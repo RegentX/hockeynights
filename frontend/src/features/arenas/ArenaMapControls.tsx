@@ -2,9 +2,10 @@
  * SPEC-FR-6.1.1
  */
 
-import {useEffect, useRef} from 'react'
 import L from 'leaflet'
+import {useEffect, useRef} from 'react'
 import {useMap} from 'react-leaflet'
+
 import type {Arena} from '@/entities/arena/types'
 import {
   MOSCOW_MAP_CENTER,

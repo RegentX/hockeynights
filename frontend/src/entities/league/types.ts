@@ -2,7 +2,12 @@
  * SPEC-FR-7.1.1, SPEC-FR-7.1.2, SPEC-FR-7.2.1, SPEC-FR-7.2.2
  */
 
-import type {PartnerModerationStatus, SkillLevel, SourceMeta, SyncStatus} from '@/entities/common/types'
+import type {
+  PartnerModerationStatus,
+  SkillLevel,
+  SourceMeta,
+  SyncStatus,
+} from '@/entities/common/types'
 
 /** @spec SPEC-FR-7.1.1 - Любительская лига */
 export interface League {

@@ -2,9 +2,10 @@
  * SPEC-FR-24.5.6
  */
 
-import {useState} from 'react'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Switch, Text, TextInput} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {useState} from 'react'
+
 import {createLeaguePost, fetchLeaguePosts} from '@/features/leagues/api/leaguesApi'
 import {testId} from '@/shared/testing/testId'
 
@@ -35,12 +36,21 @@ export function LeaguePostsPanel({leagueId}: LeaguePostsPanelProps) {
   })
 
   return (
-    <div className="partner-dashboard__section hockey-stack hockey-stack--gap-12" data-testid={testId('leagues', 'posts', 'panel', leagueId)}>
-      <Text variant="subheader-2" data-testid={testId('leagues', 'posts', 'text', 'title', leagueId)}>
+    <div
+      className="partner-dashboard__section hockey-stack hockey-stack--gap-12"
+      data-testid={testId('leagues', 'posts', 'panel', leagueId)}
+    >
+      <Text
+        variant="subheader-2"
+        data-testid={testId('leagues', 'posts', 'text', 'title', leagueId)}
+      >
         Публикации
       </Text>
 
-      <ul className="partner-dashboard__list" data-testid={testId('leagues', 'posts', 'list', leagueId)}>
+      <ul
+        className="partner-dashboard__list"
+        data-testid={testId('leagues', 'posts', 'list', leagueId)}
+      >
         {posts.map((post) => (
           <li
             key={post.id}
@@ -52,10 +62,16 @@ export function LeaguePostsPanel({leagueId}: LeaguePostsPanelProps) {
                 {post.pinned ? '📌 ' : ''}
                 {post.title}
               </Text>
-              <Text color="secondary" data-testid={testId('leagues', 'posts', 'text', 'post-body', post.id)}>
+              <Text
+                color="secondary"
+                data-testid={testId('leagues', 'posts', 'text', 'post-body', post.id)}
+              >
                 {post.body}
               </Text>
-              <Text color="secondary" data-testid={testId('leagues', 'posts', 'text', 'post-date', post.id)}>
+              <Text
+                color="secondary"
+                data-testid={testId('leagues', 'posts', 'text', 'post-date', post.id)}
+              >
                 {new Date(post.publishedAt).toLocaleString('ru-RU')}
               </Text>
             </div>
@@ -63,8 +79,14 @@ export function LeaguePostsPanel({leagueId}: LeaguePostsPanelProps) {
         ))}
       </ul>
 
-      <div className="partner-dashboard__form hockey-stack hockey-stack--gap-8" data-testid={testId('leagues', 'posts', 'panel', 'form', leagueId)}>
-        <Text variant="subheader-2" data-testid={testId('leagues', 'posts', 'text', 'form-title', leagueId)}>
+      <div
+        className="partner-dashboard__form hockey-stack hockey-stack--gap-8"
+        data-testid={testId('leagues', 'posts', 'panel', 'form', leagueId)}
+      >
+        <Text
+          variant="subheader-2"
+          data-testid={testId('leagues', 'posts', 'text', 'form-title', leagueId)}
+        >
           Новая публикация
         </Text>
         <TextInput

@@ -3,6 +3,17 @@
  */
 
 import {http, HttpResponse} from 'msw'
+
+import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
+import type {PatchProfileFavoritesPayload} from '@/entities/favorites/types'
+import type {
+  HockeyProfile,
+  NotificationPreferences,
+  PrivacySettings,
+  SubscriptionState,
+} from '@/entities/profile/types'
+import {getMockFavorites, updateMockFavorites} from '@/mocks/data/favorites'
+import {buildPublicPlayerView, mockPlayers} from '@/mocks/data/players'
 import {
   mockProfile,
   mockProfileSettings,
@@ -12,16 +23,6 @@ import {
   updateMockSubscriptionState,
   updateMockVerificationStatus,
 } from '@/mocks/data/session'
-import {getMockFavorites, updateMockFavorites} from '@/mocks/data/favorites'
-import type {PatchProfileFavoritesPayload} from '@/entities/favorites/types'
-import {mockPlayers, buildPublicPlayerView} from '@/mocks/data/players'
-import type {
-  HockeyProfile,
-  NotificationPreferences,
-  PrivacySettings,
-  SubscriptionState,
-} from '@/entities/profile/types'
-import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
 
 /** @spec SPEC-FR-2.3.2 - Query params фильтра игроков */
 interface PlayersQuery {

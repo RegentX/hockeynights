@@ -6,9 +6,9 @@ import type {AdminEntityType, SourceStatusItem} from '@/entities/admin/types'
 import type {Arena} from '@/entities/arena/types'
 import type {League} from '@/entities/league/types'
 import type {Shop} from '@/entities/shop/types'
-import {mockArenas, addMockArena, setArenaVisibility} from '@/mocks/data/arenas'
-import {mockLeagues, addMockLeague, setLeagueVisibility} from '@/mocks/data/leagues'
-import {mockShops, addMockShop, setShopVisibility} from '@/mocks/data/shops'
+import {addMockArena, mockArenas, setArenaVisibility} from '@/mocks/data/arenas'
+import {addMockLeague, mockLeagues, setLeagueVisibility} from '@/mocks/data/leagues'
+import {addMockShop, mockShops, setShopVisibility} from '@/mocks/data/shops'
 
 const mockSource = {
   source: 'manual' as const,
@@ -47,7 +47,11 @@ export function getSourceStatuses(): SourceStatusItem[] {
 /**
  * @spec SPEC-FR-11.1.1 - Создать арену
  */
-export function createAdminArena(payload: {name: string; city?: string; websiteUrl?: string}): Arena {
+export function createAdminArena(payload: {
+  name: string
+  city?: string
+  websiteUrl?: string
+}): Arena {
   const arena = addMockArena({
     id: `arena-${Date.now()}`,
     name: payload.name,
@@ -68,7 +72,11 @@ export function createAdminArena(payload: {name: string; city?: string; websiteU
 /**
  * @spec SPEC-FR-11.1.1 - Создать лигу
  */
-export function createAdminLeague(payload: {name: string; city?: string; websiteUrl?: string}): League {
+export function createAdminLeague(payload: {
+  name: string
+  city?: string
+  websiteUrl?: string
+}): League {
   return addMockLeague({
     id: `league-${Date.now()}`,
     name: payload.name,

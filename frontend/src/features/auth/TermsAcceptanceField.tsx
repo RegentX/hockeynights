@@ -5,6 +5,7 @@
 
 import {Checkbox} from '@gravity-ui/uikit'
 import {Link} from 'react-router-dom'
+
 import {testId} from '@/shared/testing/testId'
 
 export interface TermsAcceptanceFieldProps {

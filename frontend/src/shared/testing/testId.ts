@@ -28,9 +28,5 @@ export function testId(...parts: (string | number | boolean | undefined | null)[
 
 /** Преобразует путь роута в slug для nav-link testid: `/players` → `players` */
 export function routeToTestSlug(path: string): string {
-  return path
-    .replace(/^\//, '')
-    .replace(/\//g, '-')
-    .replace(/:/g, '')
-    || 'root'
+  return path.replace(/^\//, '').replace(/\//g, '-').replace(/:/g, '') || 'root'
 }

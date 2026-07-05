@@ -3,11 +3,12 @@
  * SPEC-UI-6.3
  */
 
-import {useState} from 'react'
 import {Select, Text, TextArea} from '@gravity-ui/uikit'
+import {useState} from 'react'
+
 import type {HighlightComment, HighlightCommentTag} from '@/entities/highlight/types'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 const TAG_OPTIONS = [
   {value: 'tip', content: 'Совет'},
@@ -49,14 +50,26 @@ export function HighlightComments({
   }
 
   return (
-    <div className="highlight-comments" data-testid={testId('highlights', 'comments', 'panel', highlightId)}>
-      <Text variant="subheader-2" data-testid={testId('highlights', 'comments', 'text', 'title', highlightId)}>
+    <div
+      className="highlight-comments"
+      data-testid={testId('highlights', 'comments', 'panel', highlightId)}
+    >
+      <Text
+        variant="subheader-2"
+        data-testid={testId('highlights', 'comments', 'text', 'title', highlightId)}
+      >
         Разбор команды
       </Text>
 
-      <div className="highlight-comments__list" data-testid={testId('highlights', 'comments', 'list', highlightId)}>
+      <div
+        className="highlight-comments__list"
+        data-testid={testId('highlights', 'comments', 'list', highlightId)}
+      >
         {comments.length === 0 ? (
-          <Text color="secondary" data-testid={testId('highlights', 'comments', 'empty', highlightId)}>
+          <Text
+            color="secondary"
+            data-testid={testId('highlights', 'comments', 'empty', highlightId)}
+          >
             Комментариев пока нет
           </Text>
         ) : (
@@ -66,7 +79,10 @@ export function HighlightComments({
               className="highlight-comments__item"
               data-testid={testId('highlights', 'comments', 'comment', comment.id)}
             >
-              <div className="highlight-comments__meta" data-testid={testId('highlights', 'comments', 'panel', 'meta', comment.id)}>
+              <div
+                className="highlight-comments__meta"
+                data-testid={testId('highlights', 'comments', 'panel', 'meta', comment.id)}
+              >
                 <Text data-testid={testId('highlights', 'comments', 'text', 'author', comment.id)}>
                   {comment.authorDisplayName}
                 </Text>
@@ -92,7 +108,10 @@ export function HighlightComments({
         )}
       </div>
 
-      <div className="highlight-comments__form" data-testid={testId('highlights', 'comments', 'form', highlightId)}>
+      <div
+        className="highlight-comments__form"
+        data-testid={testId('highlights', 'comments', 'form', highlightId)}
+      >
         <Select
           value={[tag]}
           onUpdate={(vals) => setTag(vals[0] as HighlightCommentTag)}

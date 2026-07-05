@@ -8,8 +8,8 @@ import type {
   MarketplaceProductListing,
   Shop,
 } from '@/entities/shop/types'
-import {mockProductOffers, mockShops} from '@/mocks/data/shops'
 import {mockShopPromos} from '@/mocks/data/shopPartner'
+import {mockProductOffers, mockShops} from '@/mocks/data/shops'
 
 const TIER_WEIGHT: Record<NonNullable<Shop['adTier']>, number> = {
   premium: 300,
@@ -98,7 +98,9 @@ export function buildMarketplaceFeed(filters: MarketplaceFilters = {}): Marketpl
   if (filters.position) {
     listings = listings.filter((item) => {
       const positions = item.offer.recommendedPositions
-      return !positions?.length || positions.includes(filters.position!) || positions.includes('any')
+      return (
+        !positions?.length || positions.includes(filters.position!) || positions.includes('any')
+      )
     })
   }
 

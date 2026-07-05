@@ -4,14 +4,15 @@
  * SPEC-FR-24.2.1, SPEC-FR-24.2.3
  */
 
-import {Link} from 'react-router-dom'
 import {Text} from '@gravity-ui/uikit'
+import {Link} from 'react-router-dom'
+
 import type {PlayerListItem} from '@/entities/profile/types'
 import {KarmaScore} from '@/features/karma/KarmaScore'
+import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {PositionLabel} from '@/shared/ui/PositionLabel'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
-import {testId} from '@/shared/testing/testId'
 
 const SKILL_LABELS: Record<string, string> = {
   beginner: 'Дебютант',
@@ -40,39 +41,78 @@ export function PlayerCard({player, linkable = true}: PlayerCardProps) {
     isGoalie && player.goalieReliabilityScore != null
       ? player.goalieReliabilityScore
       : Math.min(100, player.karmaScore)
-  const reliabilityLabel = isGoalie && player.goalieReliabilityScore != null
-    ? 'Надёжность выходов'
-    : 'Надёжность'
+  const reliabilityLabel =
+    isGoalie && player.goalieReliabilityScore != null ? 'Надёжность выходов' : 'Надёжность'
 
   const card = (
     <IceCard padding="m" data-testid={testId('players', 'player-card', 'card', player.userId)}>
       <div className="hockey-player-card">
         <div className="hockey-player-card__header">
           <div>
-            <PositionLabel position={player.position} testIdPrefix="players" data-testid={testId('players', 'player-card', 'badge', 'position', player.userId)} />
+            <PositionLabel
+              position={player.position}
+              testIdPrefix="players"
+              data-testid={testId('players', 'player-card', 'badge', 'position', player.userId)}
+            />
             {isGoalie && (
-              <span className="hockey-player-card__goalie-badge" data-testid={testId('players', 'player-card', 'badge', 'sos', player.userId)}>SOS</span>
+              <span
+                className="hockey-player-card__goalie-badge"
+                data-testid={testId('players', 'player-card', 'badge', 'sos', player.userId)}
+              >
+                SOS
+              </span>
             )}
-            <Text variant="subheader-2" className="hockey-text-mt-6" data-testid={testId('players', 'player-card', 'text', 'name', player.userId)}>
+            <Text
+              variant="subheader-2"
+              className="hockey-text-mt-6"
+              data-testid={testId('players', 'player-card', 'text', 'name', player.userId)}
+            >
               {player.displayName}
             </Text>
           </div>
-          <ScoreboardText className="hockey-player-card__number" data-testid={testId('players', 'player-card', 'text', 'number', player.userId)}>{jerseyNumber}</ScoreboardText>
+          <ScoreboardText
+            className="hockey-player-card__number"
+            data-testid={testId('players', 'player-card', 'text', 'number', player.userId)}
+          >
+            {jerseyNumber}
+          </ScoreboardText>
         </div>
 
-        <Text color="secondary" data-testid={testId('players', 'player-card', 'text', 'skill-district', player.userId)}>
+        <Text
+          color="secondary"
+          data-testid={testId('players', 'player-card', 'text', 'skill-district', player.userId)}
+        >
           {SKILL_LABELS[player.skillLevel] ?? player.skillLevel} ·{' '}
           {player.district ?? 'район не указан'}
         </Text>
         {player.metro && (
-          <Text color="secondary" data-testid={testId('players', 'player-card', 'text', 'metro', player.userId)}>м. {player.metro}</Text>
+          <Text
+            color="secondary"
+            data-testid={testId('players', 'player-card', 'text', 'metro', player.userId)}
+          >
+            м. {player.metro}
+          </Text>
         )}
 
         <div>
-          <Text color="secondary" className="hockey-text-caption" data-testid={testId('players', 'player-card', 'text', 'reliability-label', player.userId)}>
+          <Text
+            color="secondary"
+            className="hockey-text-caption"
+            data-testid={testId(
+              'players',
+              'player-card',
+              'text',
+              'reliability-label',
+              player.userId,
+            )}
+          >
             {reliabilityLabel}
           </Text>
-          <div className="hockey-player-card__reliability" aria-hidden data-testid={testId('players', 'player-card', 'cell', 'reliability', player.userId)}>
+          <div
+            className="hockey-player-card__reliability"
+            aria-hidden
+            data-testid={testId('players', 'player-card', 'cell', 'reliability', player.userId)}
+          >
             <div
               className="hockey-player-card__reliability-fill hockey-fill"
               style={{['--hockey-fill-width' as string]: `${reliability}%`}}
@@ -80,7 +120,11 @@ export function PlayerCard({player, linkable = true}: PlayerCardProps) {
           </div>
         </div>
 
-        <KarmaScore score={player.karmaScore} testIdPrefix="players" data-testid={testId('players', 'player-card', 'badge', 'karma', player.userId)} />
+        <KarmaScore
+          score={player.karmaScore}
+          testIdPrefix="players"
+          data-testid={testId('players', 'player-card', 'badge', 'karma', player.userId)}
+        />
       </div>
     </IceCard>
   )
@@ -88,7 +132,11 @@ export function PlayerCard({player, linkable = true}: PlayerCardProps) {
   if (!linkable) return card
 
   return (
-    <Link to={`/players/${player.userId}`} className="hockey-player-card-link" data-testid={testId('players', 'player-card', 'link', player.userId)}>
+    <Link
+      to={`/players/${player.userId}`}
+      className="hockey-player-card-link"
+      data-testid={testId('players', 'player-card', 'link', player.userId)}
+    >
       {card}
     </Link>
   )
