@@ -2,16 +2,17 @@
  * HOCFRONT-9 — hero «Ближайшая игра» с RSVP игрока.
  */
 
-import {useState} from 'react'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {useState} from 'react'
+
 import type {EventRsvpStatus} from '@/entities/event/rsvpTypes'
 import {fetchEventRsvp, updateEventRsvp} from '@/features/events/api/eventsApi'
 import {DeclineReasonField} from '@/features/radar/DeclineReasonField'
-import {IceCard} from '@/shared/ui/IceCard'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
-import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {IceCard} from '@/shared/ui/IceCard'
+import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 
 export interface LeagueGameRsvpProps {
   eventId: string
@@ -52,7 +53,8 @@ export function LeagueGameRsvp({eventId, currentUserId = 'user-001'}: LeagueGame
 
   if (isLoading || !board) return null
 
-  const myStatus = board.players.find((player) => player.userId === currentUserId)?.status ?? 'pending'
+  const myStatus =
+    board.players.find((player) => player.userId === currentUserId)?.status ?? 'pending'
   const start = new Date(board.startsAt)
   const dateTimeLabel = start.toLocaleString('ru-RU', {
     weekday: 'long',
@@ -71,7 +73,11 @@ export function LeagueGameRsvp({eventId, currentUserId = 'user-001'}: LeagueGame
   }
 
   return (
-    <IceCard padding="m" className="league-game-rsvp" data-testid={testId('radar', 'league-rsvp', 'card', eventId)}>
+    <IceCard
+      padding="m"
+      className="league-game-rsvp"
+      data-testid={testId('radar', 'league-rsvp', 'card', eventId)}
+    >
       <div className="hockey-stack hockey-stack--gap-14">
         <div className="league-game-rsvp__hero hockey-stack hockey-stack--gap-8">
           <Text
@@ -80,17 +86,26 @@ export function LeagueGameRsvp({eventId, currentUserId = 'user-001'}: LeagueGame
           >
             Ближайшая игра
           </Text>
-          <ScoreboardText tone="accent" data-testid={testId('radar', 'league-rsvp', 'text', 'league', eventId)}>
+          <ScoreboardText
+            tone="accent"
+            data-testid={testId('radar', 'league-rsvp', 'text', 'league', eventId)}
+          >
             {board.leagueName}
           </ScoreboardText>
-          <Text variant="subheader-2" data-testid={testId('radar', 'league-rsvp', 'text', 'matchup', eventId)}>
+          <Text
+            variant="subheader-2"
+            data-testid={testId('radar', 'league-rsvp', 'text', 'matchup', eventId)}
+          >
             {board.teamName} vs {board.opponentName}
           </Text>
           <div className="league-game-rsvp__meta hockey-stack hockey-stack--gap-4">
             <Text data-testid={testId('radar', 'league-rsvp', 'text', 'datetime', eventId)}>
               {dateTimeLabel}
             </Text>
-            <Text color="secondary" data-testid={testId('radar', 'league-rsvp', 'text', 'arena', eventId)}>
+            <Text
+              color="secondary"
+              data-testid={testId('radar', 'league-rsvp', 'text', 'arena', eventId)}
+            >
               {board.arenaName}
             </Text>
           </div>
@@ -98,14 +113,20 @@ export function LeagueGameRsvp({eventId, currentUserId = 'user-001'}: LeagueGame
             <Text data-testid={testId('radar', 'league-rsvp', 'text', 'player-status', eventId)}>
               Ваш статус:
             </Text>
-            <Text color={PLAYER_STATUS_COLORS[myStatus]} data-testid={testId('radar', 'league-rsvp', 'text', 'player-status-value', eventId)}>
+            <Text
+              color={PLAYER_STATUS_COLORS[myStatus]}
+              data-testid={testId('radar', 'league-rsvp', 'text', 'player-status-value', eventId)}
+            >
               {PLAYER_STATUS_LABELS[myStatus]}
             </Text>
           </div>
         </div>
 
         {!showDeclineReason ? (
-          <div className="league-game-rsvp__actions hockey-row hockey-row--gap-10 hockey-row--wrap" data-testid={testId('radar', 'league-rsvp', 'panel', 'cta', eventId)}>
+          <div
+            className="league-game-rsvp__actions hockey-row hockey-row--gap-10 hockey-row--wrap"
+            data-testid={testId('radar', 'league-rsvp', 'panel', 'cta', eventId)}
+          >
             <HockeyButton
               view="action"
               size="l"

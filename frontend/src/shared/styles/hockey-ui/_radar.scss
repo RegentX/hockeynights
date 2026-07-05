@@ -15,9 +15,8 @@
 
 .radar-page {
   display: flex;
-      flex-direction: column;
-      gap: 20px;
-
+  flex-direction: column;
+  gap: 20px;
 }
 
 .radar-page__training-layout {
@@ -57,15 +56,18 @@
 
 .league-game-rsvp__meta {
   padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--hockey-card-border);
-      background: color-mix(in srgb, var(--hockey-card-bg-solid, var(--hockey-card-bg)) 60%, transparent);
-
+  border-radius: 10px;
+  border: 1px solid var(--hockey-card-border);
+  background: color-mix(
+    in srgb,
+    var(--hockey-card-bg-solid, var(--hockey-card-bg)) 60%,
+    transparent
+  );
 }
 
 .team-rsvp-list__row {
   padding: 6px 0;
-      border-bottom: 1px solid color-mix(in srgb, var(--hockey-card-border) 70%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--hockey-card-border) 70%, transparent);
 
   &:last-child {
     border-bottom: none;
@@ -78,16 +80,15 @@
 
 .radar-page__actions-grid {
   display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 12px;
-
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
 }
 
 .radar-page__layout {
   display: grid;
-      grid-template-columns: 200px minmax(0, 1fr);
-      gap: 20px;
-      align-items: start;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
 
   @include breakpoint($max: 900px) {
     grid-template-columns: 1fr;
@@ -96,9 +97,9 @@
 
 .radar-page__zones {
   position: relative;
-      width: 180px;
-      height: 180px;
-      margin: 0 auto;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
 
   @include breakpoint($max: 900px) {
     display: none;
@@ -107,34 +108,31 @@
 
 .radar-page__ring {
   position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 1px solid var(--hockey-card-border);
-      opacity: 0.55;
-
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--hockey-card-border);
+  opacity: 0.55;
 }
 
 .radar-page__ring--mid {
   inset: 22px;
-
 }
 
 .radar-page__ring--inner {
   inset: 44px;
-
 }
 
 .radar-page__blip {
   position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 10px;
-      height: 10px;
-      margin: -5px 0 0 -5px;
-      border-radius: 50%;
-      background: var(--hockey-line-red);
-      box-shadow: 0 0 12px rgba(225, 6, 0, 0.6);
-      animation: radar-blip 2.4s ease-in-out infinite;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--hockey-line-red);
+  box-shadow: 0 0 12px rgba(225, 6, 0, 0.6);
+  animation: radar-blip 2.4s ease-in-out infinite;
 
   @include reduced-motion {
     animation: none;
@@ -143,26 +141,23 @@
 
 .radar-page__zones-list {
   display: flex;
-      flex-direction: column;
-      gap: 16px;
-
+  flex-direction: column;
+  gap: 16px;
 }
 
 .radar-zone {
   display: flex;
-      flex-direction: column;
-      gap: 10px;
-
+  flex-direction: column;
+  gap: 10px;
 }
 
 .radar-zone__label {
   font-family: var(--hockey-font-scoreboard);
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--hockey-text-muted);
-
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--hockey-text-muted);
 }
 
 .radar-zone--high .radar-zone__label {
@@ -171,68 +166,58 @@
 
 .radar-zone__cards {
   display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 12px;
-
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
 }
 
 .radar-card {
   display: flex;
-      flex-direction: column;
-      gap: 8px;
-
+  flex-direction: column;
+  gap: 8px;
 }
 
 .radar-card--high {
   border-color: rgba(225, 6, 0, 0.35);
-
 }
 
 .radar-card__head {
   display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 
 .radar-card__type {
   font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--hockey-text-muted);
-
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hockey-text-muted);
 }
 
 .radar-card__meta {
   display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .radar-card__cta-row {
   display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 4px;
-
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
 }
 
 .radar-card__reason {
   font-size: 13px;
-      font-style: italic;
-
+  font-style: italic;
 }
 
 .radar-card__actions {
   display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      flex-wrap: wrap;
-
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
 }
-

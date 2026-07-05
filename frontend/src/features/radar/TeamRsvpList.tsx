@@ -2,15 +2,16 @@
  * HOCFRONT-9 — состав команды с RSVP по амплуа.
  */
 
-import {useMemo} from 'react'
-import {useQuery} from '@tanstack/react-query'
 import {Text} from '@gravity-ui/uikit'
+import {useQuery} from '@tanstack/react-query'
+import {useMemo} from 'react'
+
 import type {PlayerPosition} from '@/entities/common/types'
 import type {EventRsvpPlayer, EventRsvpStatus} from '@/entities/event/rsvpTypes'
 import {fetchEventRsvp} from '@/features/events/api/eventsApi'
-import {PositionLabel} from '@/shared/ui/PositionLabel'
-import {IceCard} from '@/shared/ui/IceCard'
 import {testId} from '@/shared/testing/testId'
+import {IceCard} from '@/shared/ui/IceCard'
+import {PositionLabel} from '@/shared/ui/PositionLabel'
 
 export interface TeamRsvpListProps {
   eventId: string
@@ -69,7 +70,10 @@ export function TeamRsvpList({eventId, canSeeDeclineDetails = false}: TeamRsvpLi
   return (
     <IceCard padding="m" data-testid={testId('radar', 'team-rsvp', 'card', eventId)}>
       <div className="hockey-stack hockey-stack--gap-12">
-        <Text variant="subheader-2" data-testid={testId('radar', 'team-rsvp', 'text', 'title', eventId)}>
+        <Text
+          variant="subheader-2"
+          data-testid={testId('radar', 'team-rsvp', 'text', 'title', eventId)}
+        >
           Кто идёт из команды
         </Text>
 
@@ -86,7 +90,10 @@ export function TeamRsvpList({eventId, canSeeDeclineDetails = false}: TeamRsvpLi
             >
               {group.label}
             </Text>
-            <div className="hockey-stack hockey-stack--gap-6" data-testid={testId('radar', 'team-rsvp', 'list', group.position, eventId)}>
+            <div
+              className="hockey-stack hockey-stack--gap-6"
+              data-testid={testId('radar', 'team-rsvp', 'list', group.position, eventId)}
+            >
               {group.players.map((player) => (
                 <div
                   key={player.userId}

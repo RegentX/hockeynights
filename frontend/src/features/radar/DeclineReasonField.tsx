@@ -2,11 +2,15 @@
  * HOCFRONT-9 — причины отказа от игры.
  */
 
+import {Text, TextInput} from '@gravity-ui/uikit'
 import {useState} from 'react'
-import {TextInput, Text} from '@gravity-ui/uikit'
-import {DECLINE_REASON_PRESETS, type DeclineReasonPresetId} from '@/features/radar/declineReasonPresets'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
+
+import {
+  DECLINE_REASON_PRESETS,
+  type DeclineReasonPresetId,
+} from '@/features/radar/declineReasonPresets'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 export interface DeclineReasonFieldProps {
   onConfirm: (reason: string) => void
@@ -14,14 +18,18 @@ export interface DeclineReasonFieldProps {
   isPending?: boolean
 }
 
-export function DeclineReasonField({onConfirm, onCancel, isPending = false}: DeclineReasonFieldProps) {
+export function DeclineReasonField({
+  onConfirm,
+  onCancel,
+  isPending = false,
+}: DeclineReasonFieldProps) {
   const [selected, setSelected] = useState<DeclineReasonPresetId | null>(null)
   const [customReason, setCustomReason] = useState('')
 
   function handleConfirm() {
     if (!selected) return
     const preset = DECLINE_REASON_PRESETS.find((item) => item.id === selected)
-    const reason = selected === 'other' ? customReason.trim() : preset?.label ?? ''
+    const reason = selected === 'other' ? customReason.trim() : (preset?.label ?? '')
     if (!reason) return
     onConfirm(reason)
   }
@@ -29,11 +37,17 @@ export function DeclineReasonField({onConfirm, onCancel, isPending = false}: Dec
   const canConfirm = selected && (selected !== 'other' || customReason.trim().length > 0)
 
   return (
-    <div className="decline-reason-field hockey-stack hockey-stack--gap-10" data-testid={testId('radar', 'decline-reason', 'panel')}>
+    <div
+      className="decline-reason-field hockey-stack hockey-stack--gap-10"
+      data-testid={testId('radar', 'decline-reason', 'panel')}
+    >
       <Text color="secondary" data-testid={testId('radar', 'decline-reason', 'text', 'hint')}>
         Укажите причину — капитан увидит её в составе.
       </Text>
-      <div className="decline-reason-field__options hockey-row hockey-row--gap-8 hockey-row--wrap" data-testid={testId('radar', 'decline-reason', 'list', 'options')}>
+      <div
+        className="decline-reason-field__options hockey-row hockey-row--gap-8 hockey-row--wrap"
+        data-testid={testId('radar', 'decline-reason', 'list', 'options')}
+      >
         {DECLINE_REASON_PRESETS.map((reason) => (
           <HockeyButton
             key={reason.id}

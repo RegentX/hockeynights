@@ -3,15 +3,8 @@
  */
 
 import type {Session} from '@/entities/user/types'
-import {
-  getPrimaryPartnerPath,
-  shouldUsePartnerWorkspace,
-} from '@/features/partners/sessionPersona'
-import {
-  ARENAS_LABEL,
-  EVENTS_LABEL,
-  EVENTS_MOBILE_LABEL,
-} from '@/shared/config/navigationLabels'
+import {getPrimaryPartnerPath, shouldUsePartnerWorkspace} from '@/features/partners/sessionPersona'
+import {ARENAS_LABEL, EVENTS_LABEL, EVENTS_MOBILE_LABEL} from '@/shared/config/navigationLabels'
 
 export interface NavItem {
   to: string
@@ -158,7 +151,5 @@ export function isPathAllowed(session: Session | undefined, pathname: string): b
   if (!session?.isOnboarded) return true
   if (pathname === '/') return true
   const prefixes = session.allowedPathPrefixes ?? getAllowedPathPrefixes(session)
-  return prefixes.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  )
+  return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
 }

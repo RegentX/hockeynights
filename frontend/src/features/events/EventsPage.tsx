@@ -3,30 +3,31 @@
  * SPEC-UI-2.5, SPEC-UI-3.1
  */
 
-import {useEffect, useMemo, useRef, useState} from 'react'
-import {useQuery} from '@tanstack/react-query'
 import {Select, Text, TextInput} from '@gravity-ui/uikit'
+import {useQuery} from '@tanstack/react-query'
+import {useEffect, useMemo, useRef, useState} from 'react'
+
 import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
-import {fetchEvents} from '@/features/events/api/eventsApi'
 import {useSessionAccess} from '@/features/access/useSessionAccess'
+import {fetchEvents} from '@/features/events/api/eventsApi'
 import {EventCard} from '@/features/events/EventCard'
 import {EventCreateForm} from '@/features/events/EventCreateForm'
-import {LeagueGameRsvp} from '@/features/radar/LeagueGameRsvp'
-import {TeamRsvpList} from '@/features/radar/TeamRsvpList'
 import {
   SKILL_LEVEL_FILTER_OPTIONS,
   TRAINING_FORMAT_FILTER_OPTIONS,
 } from '@/features/events/eventLabels'
 import {canViewTraining, getUserTeamIds} from '@/features/events/trainingAccess'
+import {LeagueGameRsvp} from '@/features/radar/LeagueGameRsvp'
+import {TeamRsvpList} from '@/features/radar/TeamRsvpList'
 import {fetchTeams} from '@/features/teams/api/teamsApi'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
-import {IceCard} from '@/shared/ui/IceCard'
-import {EmptyNetState} from '@/shared/ui/EmptyNetState'
-import {HockeyRinkLoader} from '@/shared/ui/HockeyRinkLoader'
-import {ScrollReveal} from '@/shared/ui/ScrollStory'
-import {testId} from '@/shared/testing/testId'
 import {getApiMode} from '@/shared/config/apiMode'
 import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
+import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {HockeyRinkLoader} from '@/shared/ui/HockeyRinkLoader'
+import {IceCard} from '@/shared/ui/IceCard'
+import {ScrollReveal} from '@/shared/ui/ScrollStory'
 
 const MOCK_RESULTS_LOADER_MS = 3000
 const RESULTS_LOADER_MS =
@@ -116,8 +117,7 @@ export function EventsPage() {
     {value: 'all', content: 'Любая арена'},
     ...Array.from(new Set(trainings.map((training) => training.arenaId))).map((arenaId) => ({
       value: arenaId,
-      content:
-        trainings.find((training) => training.arenaId === arenaId)?.arenaName ?? arenaId,
+      content: trainings.find((training) => training.arenaId === arenaId)?.arenaName ?? arenaId,
     })),
   ]
 
@@ -247,7 +247,11 @@ export function EventsPage() {
   return (
     <div className="hockey-stack hockey-stack--gap-20" data-testid={testId('events', 'page')}>
       <ScrollReveal direction="down">
-        <Text variant="header-1" className="variable-font-header" data-testid={testId('events', 'page', 'text', 'title')}>
+        <Text
+          variant="header-1"
+          className="variable-font-header"
+          data-testid={testId('events', 'page', 'text', 'title')}
+        >
           {EVENTS_LABEL}
         </Text>
         <Text color="secondary" data-testid={testId('events', 'page', 'text', 'subtitle')}>
@@ -265,7 +269,10 @@ export function EventsPage() {
         />
       </IceCard>
 
-      <div className="hockey-grid hockey-grid--cards-280" data-testid={testId('events', 'page', 'grid')}>
+      <div
+        className="hockey-grid hockey-grid--cards-280"
+        data-testid={testId('events', 'page', 'grid')}
+      >
         {canOrganizeEvents && (
           <ScrollReveal direction="left">
             <div data-testid={testId('events', 'page', 'card', 'create-form')}>
@@ -276,9 +283,15 @@ export function EventsPage() {
           </ScrollReveal>
         )}
 
-        <div className="hockey-stack hockey-stack--gap-12" data-testid={testId('events', 'page', 'panel', 'nearest-game')}>
+        <div
+          className="hockey-stack hockey-stack--gap-12"
+          data-testid={testId('events', 'page', 'panel', 'nearest-game')}
+        >
           <div className="hockey-row hockey-row--between hockey-row--align-center">
-            <Text variant="subheader-2" data-testid={testId('events', 'page', 'text', 'nearest-game-title')}>
+            <Text
+              variant="subheader-2"
+              data-testid={testId('events', 'page', 'text', 'nearest-game-title')}
+            >
               🏒 Ближайшая игра и мои игры
             </Text>
             <HockeyButton
@@ -291,7 +304,10 @@ export function EventsPage() {
             </HockeyButton>
           </div>
           {isNearestGameVisible && (
-            <div className="nearest-game-record" data-testid={testId('events', 'page', 'panel', 'league-rsvp')}>
+            <div
+              className="nearest-game-record"
+              data-testid={testId('events', 'page', 'panel', 'league-rsvp')}
+            >
               <LeagueGameRsvp eventId={LEAGUE_SATURDAY_EVENT_ID} currentUserId={userId} />
               <TeamRsvpList
                 eventId={LEAGUE_SATURDAY_EVENT_ID}
@@ -302,9 +318,15 @@ export function EventsPage() {
         </div>
       </div>
 
-      <div className="hockey-stack hockey-stack--gap-10" data-testid={testId('events', 'page', 'panel', 'filters')}>
+      <div
+        className="hockey-stack hockey-stack--gap-10"
+        data-testid={testId('events', 'page', 'panel', 'filters')}
+      >
         <div className="hockey-row hockey-row--between hockey-row--align-center">
-          <Text variant="subheader-2" data-testid={testId('events', 'page', 'text', 'filters-title')}>
+          <Text
+            variant="subheader-2"
+            data-testid={testId('events', 'page', 'text', 'filters-title')}
+          >
             🔎 Фильтры тренировок
           </Text>
           <HockeyButton
@@ -317,105 +339,163 @@ export function EventsPage() {
           </HockeyButton>
         </div>
         {isFiltersVisible && (
-          <div className="hockey-grid hockey-grid--cards-280" data-testid={testId('events', 'page', 'grid', 'filters')}>
-          <div className="hockey-stack hockey-stack--gap-4">
-            <Text variant="body-2" data-testid={testId('events', 'page', 'text', 'filter-label', 'date')}>Дата</Text>
-            <input
-              type="date"
-              className="g-text-input__control"
-              value={selectedDate}
-              onChange={(event) => setSelectedDate(event.target.value)}
-              data-testid={testId('events', 'page', 'field', 'date')}
-            />
-          </div>
-          <div className="hockey-stack hockey-stack--gap-4">
-            <Text variant="body-2" data-testid={testId('events', 'page', 'text', 'filter-label', 'format')}>Формат</Text>
-            <Select
-              value={[selectedFormat]}
-              onUpdate={(value) => setSelectedFormat(value[0] ?? 'all')}
-              options={formatOptions}
-              data-testid={testId('events', 'page', 'select', 'format')}
-            />
-          </div>
-          <div className="hockey-stack hockey-stack--gap-4">
-            <Text variant="body-2" data-testid={testId('events', 'page', 'text', 'filter-label', 'time')}>Время</Text>
-            <Select
-              value={[selectedTimeSlot]}
-              onUpdate={(value) => setSelectedTimeSlot(value[0] ?? 'all')}
-              options={timeOptions}
-              data-testid={testId('events', 'page', 'select', 'time')}
-            />
-          </div>
-          <div className="hockey-stack hockey-stack--gap-4">
-            <Text variant="body-2" data-testid={testId('events', 'page', 'text', 'filter-label', 'level')}>Уровень игрока</Text>
-            <Select
-              value={[selectedLevel]}
-              onUpdate={(value) => setSelectedLevel(value[0] ?? 'all')}
-              options={levelOptions}
-              data-testid={testId('events', 'page', 'select', 'level')}
-            />
-          </div>
-          <div className="hockey-stack hockey-stack--gap-4">
-            <Text variant="body-2" data-testid={testId('events', 'page', 'text', 'filter-label', 'arena')}>Арена</Text>
-            <Select
-              value={[selectedArena]}
-              onUpdate={(value) => setSelectedArena(value[0] ?? 'all')}
-              options={arenaOptions}
-              data-testid={testId('events', 'page', 'select', 'arena')}
-            />
-          </div>
-          <div className="hockey-stack hockey-stack--gap-4">
-            <Text variant="body-2" data-testid={testId('events', 'page', 'text', 'filter-label', 'status')}>Статус</Text>
-            <Select
-              value={[selectedStatus]}
-              onUpdate={(value) => setSelectedStatus(value[0] ?? 'all')}
-              options={statusOptions}
-              data-testid={testId('events', 'page', 'select', 'status')}
-            />
-          </div>
-          <div className="hockey-stack hockey-stack--gap-4">
-            <Text variant="body-2" data-testid={testId('events', 'page', 'text', 'filter-label', 'district')}>Округ</Text>
-            <Select
-              value={[selectedDistrict]}
-              onUpdate={(value) => setSelectedDistrict(value[0] ?? 'all')}
-              options={districtOptions}
-              data-testid={testId('events', 'page', 'select', 'district')}
-            />
-          </div>
-          <div className="hockey-stack hockey-stack--gap-4">
-            <Text variant="body-2" data-testid={testId('events', 'page', 'text', 'filter-label', 'access')}>Доступ</Text>
-            <Select
-              value={[selectedAccessScope]}
-              onUpdate={(value) => setSelectedAccessScope(value[0] ?? 'all')}
-              options={accessOptions}
-              data-testid={testId('events', 'page', 'select', 'access')}
-            />
-          </div>
-          <div className="hockey-stack hockey-stack--gap-4">
-            <Text variant="body-2" data-testid={testId('events', 'page', 'text', 'filter-label', 'fill-state')}>Заполненность</Text>
-            <Select
-              value={[selectedFillState]}
-              onUpdate={(value) => setSelectedFillState(value[0] ?? 'all')}
-              options={fillStateOptions}
-              data-testid={testId('events', 'page', 'select', 'fill-state')}
-            />
-          </div>
-          <div className="hockey-stack hockey-stack--gap-4">
-            <Text variant="body-2" data-testid={testId('events', 'page', 'text', 'filter-label', 'price-min')}>Цена от</Text>
-            <TextInput
-              value={minPrice}
-              onUpdate={setMinPrice}
-              data-testid={testId('events', 'page', 'field', 'price-min')}
-            />
-          </div>
-          <div className="hockey-stack hockey-stack--gap-4">
-            <Text variant="body-2" data-testid={testId('events', 'page', 'text', 'filter-label', 'price-max')}>Цена до</Text>
-            <TextInput
-              value={maxPrice}
-              onUpdate={setMaxPrice}
-              data-testid={testId('events', 'page', 'field', 'price-max')}
-            />
-          </div>
+          <div
+            className="hockey-grid hockey-grid--cards-280"
+            data-testid={testId('events', 'page', 'grid', 'filters')}
+          >
+            <div className="hockey-stack hockey-stack--gap-4">
+              <Text
+                variant="body-2"
+                data-testid={testId('events', 'page', 'text', 'filter-label', 'date')}
+              >
+                Дата
+              </Text>
+              <input
+                type="date"
+                className="g-text-input__control"
+                value={selectedDate}
+                onChange={(event) => setSelectedDate(event.target.value)}
+                data-testid={testId('events', 'page', 'field', 'date')}
+              />
+            </div>
+            <div className="hockey-stack hockey-stack--gap-4">
+              <Text
+                variant="body-2"
+                data-testid={testId('events', 'page', 'text', 'filter-label', 'format')}
+              >
+                Формат
+              </Text>
+              <Select
+                value={[selectedFormat]}
+                onUpdate={(value) => setSelectedFormat(value[0] ?? 'all')}
+                options={formatOptions}
+                data-testid={testId('events', 'page', 'select', 'format')}
+              />
+            </div>
+            <div className="hockey-stack hockey-stack--gap-4">
+              <Text
+                variant="body-2"
+                data-testid={testId('events', 'page', 'text', 'filter-label', 'time')}
+              >
+                Время
+              </Text>
+              <Select
+                value={[selectedTimeSlot]}
+                onUpdate={(value) => setSelectedTimeSlot(value[0] ?? 'all')}
+                options={timeOptions}
+                data-testid={testId('events', 'page', 'select', 'time')}
+              />
+            </div>
+            <div className="hockey-stack hockey-stack--gap-4">
+              <Text
+                variant="body-2"
+                data-testid={testId('events', 'page', 'text', 'filter-label', 'level')}
+              >
+                Уровень игрока
+              </Text>
+              <Select
+                value={[selectedLevel]}
+                onUpdate={(value) => setSelectedLevel(value[0] ?? 'all')}
+                options={levelOptions}
+                data-testid={testId('events', 'page', 'select', 'level')}
+              />
+            </div>
+            <div className="hockey-stack hockey-stack--gap-4">
+              <Text
+                variant="body-2"
+                data-testid={testId('events', 'page', 'text', 'filter-label', 'arena')}
+              >
+                Арена
+              </Text>
+              <Select
+                value={[selectedArena]}
+                onUpdate={(value) => setSelectedArena(value[0] ?? 'all')}
+                options={arenaOptions}
+                data-testid={testId('events', 'page', 'select', 'arena')}
+              />
+            </div>
+            <div className="hockey-stack hockey-stack--gap-4">
+              <Text
+                variant="body-2"
+                data-testid={testId('events', 'page', 'text', 'filter-label', 'status')}
+              >
+                Статус
+              </Text>
+              <Select
+                value={[selectedStatus]}
+                onUpdate={(value) => setSelectedStatus(value[0] ?? 'all')}
+                options={statusOptions}
+                data-testid={testId('events', 'page', 'select', 'status')}
+              />
+            </div>
+            <div className="hockey-stack hockey-stack--gap-4">
+              <Text
+                variant="body-2"
+                data-testid={testId('events', 'page', 'text', 'filter-label', 'district')}
+              >
+                Округ
+              </Text>
+              <Select
+                value={[selectedDistrict]}
+                onUpdate={(value) => setSelectedDistrict(value[0] ?? 'all')}
+                options={districtOptions}
+                data-testid={testId('events', 'page', 'select', 'district')}
+              />
+            </div>
+            <div className="hockey-stack hockey-stack--gap-4">
+              <Text
+                variant="body-2"
+                data-testid={testId('events', 'page', 'text', 'filter-label', 'access')}
+              >
+                Доступ
+              </Text>
+              <Select
+                value={[selectedAccessScope]}
+                onUpdate={(value) => setSelectedAccessScope(value[0] ?? 'all')}
+                options={accessOptions}
+                data-testid={testId('events', 'page', 'select', 'access')}
+              />
+            </div>
+            <div className="hockey-stack hockey-stack--gap-4">
+              <Text
+                variant="body-2"
+                data-testid={testId('events', 'page', 'text', 'filter-label', 'fill-state')}
+              >
+                Заполненность
+              </Text>
+              <Select
+                value={[selectedFillState]}
+                onUpdate={(value) => setSelectedFillState(value[0] ?? 'all')}
+                options={fillStateOptions}
+                data-testid={testId('events', 'page', 'select', 'fill-state')}
+              />
+            </div>
+            <div className="hockey-stack hockey-stack--gap-4">
+              <Text
+                variant="body-2"
+                data-testid={testId('events', 'page', 'text', 'filter-label', 'price-min')}
+              >
+                Цена от
+              </Text>
+              <TextInput
+                value={minPrice}
+                onUpdate={setMinPrice}
+                data-testid={testId('events', 'page', 'field', 'price-min')}
+              />
+            </div>
+            <div className="hockey-stack hockey-stack--gap-4">
+              <Text
+                variant="body-2"
+                data-testid={testId('events', 'page', 'text', 'filter-label', 'price-max')}
+              >
+                Цена до
+              </Text>
+              <TextInput
+                value={maxPrice}
+                onUpdate={setMaxPrice}
+                data-testid={testId('events', 'page', 'field', 'price-max')}
+              />
+            </div>
           </div>
         )}
       </div>
@@ -443,8 +523,14 @@ export function EventsPage() {
       )}
 
       {!isLoading && !isResultsLoading && !isDemoLoaderVisible && filteredTrainings.length > 0 && (
-        <div className="hockey-stack hockey-stack--gap-12" data-testid={testId('events', 'page', 'list', 'details')}>
-          <Text variant="subheader-2" data-testid={testId('events', 'page', 'text', 'details-title')}>
+        <div
+          className="hockey-stack hockey-stack--gap-12"
+          data-testid={testId('events', 'page', 'list', 'details')}
+        >
+          <Text
+            variant="subheader-2"
+            data-testid={testId('events', 'page', 'text', 'details-title')}
+          >
             Список тренировок
           </Text>
           {filteredTrainings.map((event, index) => (
@@ -455,14 +541,17 @@ export function EventsPage() {
         </div>
       )}
 
-      {!isLoading && !isResultsLoading && !isDemoLoaderVisible && filteredTrainings.length === 0 && (
-        <div data-testid={testId('events', 'page', 'empty', 'trainings')}>
-          <EmptyNetState
-            title="Тренировки не найдены"
-            copy="Измените фильтры или поисковый запрос."
-          />
-        </div>
-      )}
+      {!isLoading &&
+        !isResultsLoading &&
+        !isDemoLoaderVisible &&
+        filteredTrainings.length === 0 && (
+          <div data-testid={testId('events', 'page', 'empty', 'trainings')}>
+            <EmptyNetState
+              title="Тренировки не найдены"
+              copy="Измените фильтры или поисковый запрос."
+            />
+          </div>
+        )}
     </div>
   )
 }

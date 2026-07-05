@@ -2,11 +2,12 @@
  * SPEC-FR-3.3.1, SPEC-FR-25.6.2
  */
 
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {Button, Text} from '@gravity-ui/uikit'
-import {updateAttendance, fetchEventRsvp, updateEventRsvp} from '@/features/events/api/eventsApi'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+
 import type {AttendanceStatus} from '@/entities/common/types'
 import type {EventRsvpStatus} from '@/entities/event/rsvpTypes'
+import {fetchEventRsvp, updateAttendance, updateEventRsvp} from '@/features/events/api/eventsApi'
 import {testId} from '@/shared/testing/testId'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'
 
@@ -44,7 +45,10 @@ function attendanceToRsvp(status?: AttendanceStatus): EventRsvpStatus | undefine
   return undefined
 }
 
-function buildAttendanceLabel(eventKind: 'game' | 'training' | undefined, eventTitle?: string): string {
+function buildAttendanceLabel(
+  eventKind: 'game' | 'training' | undefined,
+  eventTitle?: string,
+): string {
   const kindLabel = eventKind === 'training' ? 'тренировке' : 'игре'
   if (eventTitle) {
     return `Участие в ${kindLabel} «${eventTitle}»`
@@ -99,7 +103,10 @@ export function AttendanceControl({
         aria-busy="true"
         aria-label="Загрузка RSVP"
       >
-        <Text color="secondary" data-testid={testId('events', 'attendance', 'text', 'label', eventId)}>
+        <Text
+          color="secondary"
+          data-testid={testId('events', 'attendance', 'text', 'label', eventId)}
+        >
           RSVP команды на игру
         </Text>
         <div className="hockey-row hockey-row--gap-8">
@@ -116,11 +123,20 @@ export function AttendanceControl({
       'pending'
 
     return (
-      <div className="event-attendance hockey-stack hockey-stack--gap-6" data-testid={testId('events', 'attendance', 'panel', eventId)}>
-        <Text color="secondary" data-testid={testId('events', 'attendance', 'text', 'label', eventId)}>
+      <div
+        className="event-attendance hockey-stack hockey-stack--gap-6"
+        data-testid={testId('events', 'attendance', 'panel', eventId)}
+      >
+        <Text
+          color="secondary"
+          data-testid={testId('events', 'attendance', 'text', 'label', eventId)}
+        >
           {buildAttendanceLabel(eventKind ?? 'game', eventTitle ?? rsvpBoard.teamName)}
         </Text>
-        <div className="hockey-row hockey-row--gap-8" data-testid={testId('events', 'attendance', 'list', eventId)}>
+        <div
+          className="hockey-row hockey-row--gap-8"
+          data-testid={testId('events', 'attendance', 'list', eventId)}
+        >
           {RSVP_BUTTONS.map((btn) => (
             <Button
               key={btn.status}
@@ -138,11 +154,20 @@ export function AttendanceControl({
   }
 
   return (
-    <div className="event-attendance hockey-stack hockey-stack--gap-6" data-testid={testId('events', 'attendance', 'panel', eventId)}>
-      <Text color="secondary" data-testid={testId('events', 'attendance', 'text', 'label', eventId)}>
+    <div
+      className="event-attendance hockey-stack hockey-stack--gap-6"
+      data-testid={testId('events', 'attendance', 'panel', eventId)}
+    >
+      <Text
+        color="secondary"
+        data-testid={testId('events', 'attendance', 'text', 'label', eventId)}
+      >
         {buildAttendanceLabel(eventKind, eventTitle)}
       </Text>
-      <div className="hockey-row hockey-row--gap-8" data-testid={testId('events', 'attendance', 'list', eventId)}>
+      <div
+        className="hockey-row hockey-row--gap-8"
+        data-testid={testId('events', 'attendance', 'list', eventId)}
+      >
         {ATTENDANCE_BUTTONS.map((btn) => (
           <Button
             key={btn.status}

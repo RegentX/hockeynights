@@ -1,9 +1,11 @@
+import {Text} from '@gravity-ui/uikit'
+import {useQuery} from '@tanstack/react-query'
 import {useMemo} from 'react'
 import {Link, useParams} from 'react-router-dom'
-import {useQuery} from '@tanstack/react-query'
-import {Text} from '@gravity-ui/uikit'
-import {AttendanceControl} from '@/features/events/AttendanceControl'
+
+import {useSessionAccess} from '@/features/access/useSessionAccess'
 import {fetchEventById} from '@/features/events/api/eventsApi'
+import {AttendanceControl} from '@/features/events/AttendanceControl'
 import {
   ACCESS_LABELS,
   POSITION_LABELS,
@@ -15,19 +17,22 @@ import {
   getUserTeamIds,
   resolveTrainingUserName,
 } from '@/features/events/trainingAccess'
-import {useSessionAccess} from '@/features/access/useSessionAccess'
 import {fetchPlayers} from '@/features/players/api/playersApi'
 import {fetchTeams} from '@/features/teams/api/teamsApi'
+import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-import {EmptyNetState} from '@/shared/ui/EmptyNetState'
-import {testId} from '@/shared/testing/testId'
 
 export function TrainingDetailsPage() {
   const {eventId = ''} = useParams()
   const {userId, roles} = useSessionAccess()
-  const {data: event, isLoading, isError} = useQuery({
+  const {
+    data: event,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ['event', eventId],
     queryFn: () => fetchEventById(eventId),
     enabled: Boolean(eventId),
@@ -70,8 +75,15 @@ export function TrainingDetailsPage() {
           title="Нет доступа к тренировке"
           copy="Эта тренировка доступна только участникам клуба или приглашённым игрокам."
         />
-        <Link to="/events" data-testid={testId('events', 'training-page', 'link', 'back-denied', event.id)}>
-          <HockeyButton view="flat" size="m" data-testid={testId('events', 'training-page', 'btn', 'back-denied', event.id)}>
+        <Link
+          to="/events"
+          data-testid={testId('events', 'training-page', 'link', 'back-denied', event.id)}
+        >
+          <HockeyButton
+            view="flat"
+            size="m"
+            data-testid={testId('events', 'training-page', 'btn', 'back-denied', event.id)}
+          >
             К списку тренировок
           </HockeyButton>
         </Link>
@@ -93,31 +105,51 @@ export function TrainingDetailsPage() {
   )
 
   return (
-    <div className="hockey-stack hockey-stack--gap-16" data-testid={testId('events', 'training-page', 'page', event.id)}>
+    <div
+      className="hockey-stack hockey-stack--gap-16"
+      data-testid={testId('events', 'training-page', 'page', event.id)}
+    >
       <div className="hockey-row hockey-row--between hockey-row--align-center hockey-row--wrap">
-        <Text variant="header-1" data-testid={testId('events', 'training-page', 'text', 'title', event.id)}>
+        <Text
+          variant="header-1"
+          data-testid={testId('events', 'training-page', 'text', 'title', event.id)}
+        >
           {event.title}
         </Text>
-        <Link to="/events" data-testid={testId('events', 'training-page', 'link', 'back', event.id)}>
-          <HockeyButton view="flat" size="m" data-testid={testId('events', 'training-page', 'btn', 'back', event.id)}>
+        <Link
+          to="/events"
+          data-testid={testId('events', 'training-page', 'link', 'back', event.id)}
+        >
+          <HockeyButton
+            view="flat"
+            size="m"
+            data-testid={testId('events', 'training-page', 'btn', 'back', event.id)}
+          >
             К списку тренировок
           </HockeyButton>
         </Link>
       </div>
 
       <IceCard padding="m">
-        <div className="hockey-stack hockey-stack--gap-10" data-testid={testId('events', 'training-page', 'panel', 'meta', event.id)}>
+        <div
+          className="hockey-stack hockey-stack--gap-10"
+          data-testid={testId('events', 'training-page', 'panel', 'meta', event.id)}
+        >
           <Text data-testid={testId('events', 'training-page', 'text', 'access', event.id)}>
             {accessLabel}
           </Text>
           <Text data-testid={testId('events', 'training-page', 'text', 'schedule', event.id)}>
-            {start.toLocaleDateString('ru-RU')} · {start.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}
+            {start.toLocaleDateString('ru-RU')} ·{' '}
+            {start.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}
             {' - '}
             {end.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}
           </Text>
           <Text data-testid={testId('events', 'training-page', 'text', 'arena', event.id)}>
             Арена:{' '}
-            <Link to={`/arenas?arenaId=${event.arenaId}`} data-testid={testId('events', 'training-page', 'link', 'arena', event.id)}>
+            <Link
+              to={`/arenas?arenaId=${event.arenaId}`}
+              data-testid={testId('events', 'training-page', 'link', 'arena', event.id)}
+            >
               {event.arenaName ?? event.arenaId}
             </Link>
           </Text>
@@ -127,27 +159,45 @@ export function TrainingDetailsPage() {
           <Text data-testid={testId('events', 'training-page', 'text', 'fill', event.id)}>
             Заполненность: {filledTotal}/{requiredTotal} ({fillPercent}%)
           </Text>
-          <Text data-testid={testId('events', 'training-page', 'text', 'registration-status', event.id)}>
-            Статус набора: {event.registrationStatus === 'full' ? 'Состав укомплектован' : 'Открыт для записи'}
+          <Text
+            data-testid={testId('events', 'training-page', 'text', 'registration-status', event.id)}
+          >
+            Статус набора:{' '}
+            {event.registrationStatus === 'full' ? 'Состав укомплектован' : 'Открыт для записи'}
           </Text>
           {event.district && (
-            <Text color="secondary" data-testid={testId('events', 'training-page', 'text', 'district', event.id)}>
+            <Text
+              color="secondary"
+              data-testid={testId('events', 'training-page', 'text', 'district', event.id)}
+            >
               Округ: {event.district}
             </Text>
           )}
           {event.trainingFormat && (
-            <Text color="secondary" data-testid={testId('events', 'training-page', 'text', 'format', event.id)}>
+            <Text
+              color="secondary"
+              data-testid={testId('events', 'training-page', 'text', 'format', event.id)}
+            >
               Формат: {TRAINING_FORMAT_LABELS[event.trainingFormat]}
             </Text>
           )}
-          <Text color="secondary" data-testid={testId('events', 'training-page', 'text', 'level', event.id)}>
+          <Text
+            color="secondary"
+            data-testid={testId('events', 'training-page', 'text', 'level', event.id)}
+          >
             Рекомендованный уровень: {SKILL_LEVEL_LABELS[event.requiredSkillLevel]}
           </Text>
-          <Text color="secondary" data-testid={testId('events', 'training-page', 'text', 'organizer', event.id)}>
+          <Text
+            color="secondary"
+            data-testid={testId('events', 'training-page', 'text', 'organizer', event.id)}
+          >
             Организатор: {organizerName}
           </Text>
           {allowedUsers?.length ? (
-            <Text color="secondary" data-testid={testId('events', 'training-page', 'text', 'allowed-users', event.id)}>
+            <Text
+              color="secondary"
+              data-testid={testId('events', 'training-page', 'text', 'allowed-users', event.id)}
+            >
               Доступ ограничен списком: {allowedUsers.join(', ')}
             </Text>
           ) : null}
@@ -155,12 +205,28 @@ export function TrainingDetailsPage() {
       </IceCard>
 
       <IceCard padding="m">
-        <div className="hockey-stack hockey-stack--gap-8" data-testid={testId('events', 'training-page', 'panel', 'slots', event.id)}>
-          <Text variant="subheader-2" data-testid={testId('events', 'training-page', 'text', 'slots-title', event.id)}>
+        <div
+          className="hockey-stack hockey-stack--gap-8"
+          data-testid={testId('events', 'training-page', 'panel', 'slots', event.id)}
+        >
+          <Text
+            variant="subheader-2"
+            data-testid={testId('events', 'training-page', 'text', 'slots-title', event.id)}
+          >
             Слоты и укомплектованность
           </Text>
           {event.requiredSlots.map((slot) => (
-            <Text key={slot.position} data-testid={testId('events', 'training-page', 'text', 'slot', event.id, slot.position)}>
+            <Text
+              key={slot.position}
+              data-testid={testId(
+                'events',
+                'training-page',
+                'text',
+                'slot',
+                event.id,
+                slot.position,
+              )}
+            >
               {POSITION_LABELS[slot.position]}: {slot.filledCount}/{slot.count}
             </Text>
           ))}
@@ -168,8 +234,14 @@ export function TrainingDetailsPage() {
       </IceCard>
 
       <IceCard padding="m">
-        <div className="hockey-stack hockey-stack--gap-10" data-testid={testId('events', 'training-page', 'panel', 'contacts', event.id)}>
-          <Text variant="subheader-2" data-testid={testId('events', 'training-page', 'text', 'contacts-title', event.id)}>
+        <div
+          className="hockey-stack hockey-stack--gap-10"
+          data-testid={testId('events', 'training-page', 'panel', 'contacts', event.id)}
+        >
+          <Text
+            variant="subheader-2"
+            data-testid={testId('events', 'training-page', 'text', 'contacts-title', event.id)}
+          >
             Контакты организатора
           </Text>
           <Text data-testid={testId('events', 'training-page', 'text', 'owner', event.id)}>
@@ -181,7 +253,11 @@ export function TrainingDetailsPage() {
               className="training-details__contact-action"
               data-testid={testId('events', 'training-page', 'link', 'messenger', event.id)}
             >
-              <HockeyButton view="outlined" size="m" data-testid={testId('events', 'training-page', 'btn', 'messenger', event.id)}>
+              <HockeyButton
+                view="outlined"
+                size="m"
+                data-testid={testId('events', 'training-page', 'btn', 'messenger', event.id)}
+              >
                 Связаться в мессенджере
               </HockeyButton>
             </Link>
@@ -190,7 +266,11 @@ export function TrainingDetailsPage() {
               className="training-details__contact-action"
               data-testid={testId('events', 'training-page', 'link', 'phone', event.id)}
             >
-              <HockeyButton view="outlined" size="m" data-testid={testId('events', 'training-page', 'btn', 'phone', event.id)}>
+              <HockeyButton
+                view="outlined"
+                size="m"
+                data-testid={testId('events', 'training-page', 'btn', 'phone', event.id)}
+              >
                 {contactPhone}
               </HockeyButton>
             </a>
@@ -207,11 +287,23 @@ export function TrainingDetailsPage() {
       </IceCard>
 
       <IceCard padding="m">
-        <div className="hockey-stack hockey-stack--gap-8" data-testid={testId('events', 'training-page', 'panel', 'attendance', event.id)}>
-          <Text variant="subheader-2" data-testid={testId('events', 'training-page', 'text', 'attendance-title', event.id)}>
+        <div
+          className="hockey-stack hockey-stack--gap-8"
+          data-testid={testId('events', 'training-page', 'panel', 'attendance', event.id)}
+        >
+          <Text
+            variant="subheader-2"
+            data-testid={testId('events', 'training-page', 'text', 'attendance-title', event.id)}
+          >
             Мое участие
           </Text>
-          <AttendanceControl eventId={event.id} currentStatus={currentStatus} currentUserId={userId} eventTitle={event.title} eventKind="training" />
+          <AttendanceControl
+            eventId={event.id}
+            currentStatus={currentStatus}
+            currentUserId={userId}
+            eventTitle={event.title}
+            eventKind="training"
+          />
         </div>
       </IceCard>
     </div>

@@ -5,9 +5,10 @@
 import {screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {beforeEach, describe, expect, it} from 'vitest'
+
 import {EventsPage} from '@/features/events/EventsPage'
-import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
 import {resetMockEventRsvp} from '@/mocks/data/eventRsvp'
+import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
 import {clearTestStorage} from '@/test/clearTestStorage'
 import {renderWithProviders} from '@/test/render'
 
@@ -23,7 +24,9 @@ describe('Events page RSVP block', () => {
     await waitFor(() => {
       expect(screen.getByText(EVENTS_LABEL)).toBeInTheDocument()
       expect(screen.getByText('Ближайшая игра')).toBeInTheDocument()
-      expect(screen.getByTestId('radar-league-rsvp-text-matchup-event-league-sat')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('radar-league-rsvp-text-matchup-event-league-sat'),
+      ).toBeInTheDocument()
       expect(screen.getByText('Кто идёт из команды')).toBeInTheDocument()
       expect(screen.getByText('Вратари')).toBeInTheDocument()
       expect(screen.getByText('Нападающие')).toBeInTheDocument()

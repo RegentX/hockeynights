@@ -3,17 +3,18 @@
  * SPEC-UI-2.5, SPEC-UI-1.3
  */
 
+import {Text} from '@gravity-ui/uikit'
 import {useState} from 'react'
 import {Link} from 'react-router-dom'
-import {Text} from '@gravity-ui/uikit'
+
 import type {GameEvent} from '@/entities/event/types'
 import {AttendanceControl} from '@/features/events/AttendanceControl'
 import {ACCESS_LABELS, EVENT_TYPE_LABELS} from '@/features/events/eventLabels'
 import {EventRsvpBoard} from '@/features/events/EventRsvpBoard'
 import {RosterNeedsWidget} from '@/features/events/RosterNeedsWidget'
+import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
-import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-4.1.1 - Props карточки события */
 export interface EventCardProps {
@@ -32,7 +33,10 @@ function EventCardHeader({event, timeStr}: {event: GameEvent; timeStr: string}) 
   return (
     <div className="match-center__row match-center__row--plain event-card__header">
       <div className="event-card__left">
-        <div className="match-center__time event-card__time" data-testid={testId('events', 'card', 'text', 'time', event.id)}>
+        <div
+          className="match-center__time event-card__time"
+          data-testid={testId('events', 'card', 'text', 'time', event.id)}
+        >
           {timeStr}
         </div>
         <div className="event-card__badges">
@@ -43,26 +47,45 @@ function EventCardHeader({event, timeStr}: {event: GameEvent; timeStr: string}) 
             {EVENT_TYPE_LABELS[event.type] ?? event.type}
           </div>
           {accessLabel && (
-            <Text color="info" className="event-card__badge event-card__badge--access" data-testid={testId('events', 'card', 'badge', 'access', event.id)}>
+            <Text
+              color="info"
+              className="event-card__badge event-card__badge--access"
+              data-testid={testId('events', 'card', 'badge', 'access', event.id)}
+            >
               {accessLabel}
             </Text>
           )}
         </div>
       </div>
       <div className="event-card__main">
-        <Text variant="subheader-2" className="event-card__title" data-testid={testId('events', 'card', 'text', 'title', event.id)}>
+        <Text
+          variant="subheader-2"
+          className="event-card__title"
+          data-testid={testId('events', 'card', 'text', 'title', event.id)}
+        >
           {event.title}
         </Text>
-        <Text color="secondary" className="event-card__arena" data-testid={testId('events', 'card', 'text', 'arena', event.id)}>
+        <Text
+          color="secondary"
+          className="event-card__arena"
+          data-testid={testId('events', 'card', 'text', 'arena', event.id)}
+        >
           {event.type === 'training' ? (
-            event.arenaName ?? event.arenaId
+            (event.arenaName ?? event.arenaId)
           ) : (
-            <Link to={`/arenas?arenaId=${event.arenaId}`} data-testid={testId('events', 'card', 'link', 'arena', event.id)}>
+            <Link
+              to={`/arenas?arenaId=${event.arenaId}`}
+              data-testid={testId('events', 'card', 'link', 'arena', event.id)}
+            >
               {event.arenaName ?? event.arenaId}
             </Link>
           )}
         </Text>
-        <Text color="secondary" className="event-card__datetime" data-testid={testId('events', 'card', 'text', 'datetime', event.id)}>
+        <Text
+          color="secondary"
+          className="event-card__datetime"
+          data-testid={testId('events', 'card', 'text', 'datetime', event.id)}
+        >
           {start.toLocaleDateString('ru-RU')} —{' '}
           {new Date(event.endsAt).toLocaleTimeString('ru-RU', {
             hour: '2-digit',
@@ -70,7 +93,11 @@ function EventCardHeader({event, timeStr}: {event: GameEvent; timeStr: string}) 
           })}
         </Text>
         {event.pricePerPlayer && (
-          <ScoreboardText tone="accent" className="event-card__price" data-testid={testId('events', 'card', 'text', 'price', event.id)}>
+          <ScoreboardText
+            tone="accent"
+            className="event-card__price"
+            data-testid={testId('events', 'card', 'text', 'price', event.id)}
+          >
             {event.pricePerPlayer} RUB / игрок
           </ScoreboardText>
         )}
@@ -84,7 +111,7 @@ function EventCardHeader({event, timeStr}: {event: GameEvent; timeStr: string}) 
  */
 export function EventCard({event, currentUserId = 'user-001', compact = false}: EventCardProps) {
   const myAttendance = event.participation.find((p) => p.userId === currentUserId)
-  const defaultStatus = event.type === 'game' ? 'not_going' as const : undefined
+  const defaultStatus = event.type === 'game' ? ('not_going' as const) : undefined
   const currentStatus = myAttendance?.status ?? defaultStatus
   const [nowMs] = useState(() => Date.now())
   const start = new Date(event.startsAt)
@@ -98,11 +125,17 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
         className={`scoreboard-calendar__event scoreboard-calendar__event--${event.type}`}
         data-testid={testId('events', 'card', 'card', event.id, 'compact')}
       >
-        <div className="scoreboard-calendar__event-time" data-testid={testId('events', 'card', 'text', 'time', event.id)}>
+        <div
+          className="scoreboard-calendar__event-time"
+          data-testid={testId('events', 'card', 'text', 'time', event.id)}
+        >
           {timeStr}
         </div>
         <div>
-          <Text variant="subheader-2" data-testid={testId('events', 'card', 'text', 'title', event.id)}>
+          <Text
+            variant="subheader-2"
+            data-testid={testId('events', 'card', 'text', 'title', event.id)}
+          >
             {event.title}
           </Text>
           <Text color="secondary" data-testid={testId('events', 'card', 'text', 'meta', event.id)}>
@@ -155,7 +188,10 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
   }
 
   return (
-    <div className={`event-card event-card--${event.type}`} data-testid={testId('events', 'card', 'card', event.id)}>
+    <div
+      className={`event-card event-card--${event.type}`}
+      data-testid={testId('events', 'card', 'card', event.id)}
+    >
       <IceCard padding="m" className="event-card__surface">
         <div className="hockey-stack hockey-stack--gap-12">
           <EventCardHeader event={event} timeStr={timeStr} />

@@ -10,33 +10,34 @@
 
 import {screen, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it} from 'vitest'
-import {resetMockHighlightsState} from '@/mocks/data/highlights'
-import {resetMockRadarState} from '@/mocks/data/radar'
-import {mockApiGet, mockApiPatch, mockApiPost} from '@/test/api'
-import {renderWithProviders} from '@/test/render'
-import {LeaguesPage} from '@/features/leagues/LeaguesPage'
-import {FeedbackPage} from '@/features/feedback/FeedbackPage'
-import {NotificationsPage} from '@/features/notifications/NotificationsPage'
-import {ShopsPage} from '@/features/shops/ShopsPage'
-import {AdminDashboard} from '@/features/admin/AdminDashboard'
-import {IqTestsPage} from '@/features/iq/IqTestsPage'
-import {EventsPage} from '@/features/events/EventsPage'
-import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
-import {HighlightsPage} from '@/features/highlights/HighlightsPage'
-import type {League, LeagueScheduleItem, LeagueStanding} from '@/entities/league/types'
-import type {CreateFeedbackPayload, Feedback, KarmaInfo} from '@/entities/feedback/types'
-import type {Notification} from '@/entities/notification/types'
-import type {ProductOffer, Shop} from '@/entities/shop/types'
+
 import type {SourceStatusItem} from '@/entities/admin/types'
 import type {CheckoutIntent, IceBookingRequest} from '@/entities/external-flow/types'
-import type {IqAttemptResult, IqLeaderboardRow, IqTest} from '@/entities/iq/types'
+import type {CreateFeedbackPayload, Feedback, KarmaInfo} from '@/entities/feedback/types'
 import type {
   Highlight,
   HighlightAnnotation,
   HighlightComment,
   HighlightDetail,
 } from '@/entities/highlight/types'
+import type {IqAttemptResult, IqLeaderboardRow, IqTest} from '@/entities/iq/types'
+import type {League, LeagueScheduleItem, LeagueStanding} from '@/entities/league/types'
+import type {Notification} from '@/entities/notification/types'
 import type {RadarRecommendation} from '@/entities/radar/types'
+import type {ProductOffer, Shop} from '@/entities/shop/types'
+import {AdminDashboard} from '@/features/admin/AdminDashboard'
+import {EventsPage} from '@/features/events/EventsPage'
+import {FeedbackPage} from '@/features/feedback/FeedbackPage'
+import {HighlightsPage} from '@/features/highlights/HighlightsPage'
+import {IqTestsPage} from '@/features/iq/IqTestsPage'
+import {LeaguesPage} from '@/features/leagues/LeaguesPage'
+import {NotificationsPage} from '@/features/notifications/NotificationsPage'
+import {ShopsPage} from '@/features/shops/ShopsPage'
+import {resetMockHighlightsState} from '@/mocks/data/highlights'
+import {resetMockRadarState} from '@/mocks/data/radar'
+import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
+import {mockApiGet, mockApiPatch, mockApiPost} from '@/test/api'
+import {renderWithProviders} from '@/test/render'
 
 describe('TASK-QA-02 mock API smoke', () => {
   beforeEach(() => {
@@ -54,12 +55,8 @@ describe('TASK-QA-02 mock API smoke', () => {
   /** @spec SPEC-FR-7.2.1 */
   it('GET /leagues/{id}/standings and /schedule return data', async () => {
     const leagues = await mockApiGet<League[]>('/leagues')
-    const standings = await mockApiGet<LeagueStanding[]>(
-      `/leagues/${leagues[0].id}/standings`,
-    )
-    const schedule = await mockApiGet<LeagueScheduleItem[]>(
-      `/leagues/${leagues[0].id}/schedule`,
-    )
+    const standings = await mockApiGet<LeagueStanding[]>(`/leagues/${leagues[0].id}/standings`)
+    const schedule = await mockApiGet<LeagueScheduleItem[]>(`/leagues/${leagues[0].id}/schedule`)
     expect(standings.length).toBeGreaterThan(0)
     expect(schedule.length).toBeGreaterThan(0)
   })
@@ -204,10 +201,9 @@ describe('TASK-QA-02 mock API smoke', () => {
   it('PATCH /radar/recommendations/{id} dismisses recommendation', async () => {
     const items = await mockApiGet<RadarRecommendation[]>('/radar/recommendations')
     const target = items.find((r) => r.priority === 'low') ?? items[items.length - 1]
-    const updated = await mockApiPatch<RadarRecommendation>(
-      `/radar/recommendations/${target.id}`,
-      {action: 'dismiss'},
-    )
+    const updated = await mockApiPatch<RadarRecommendation>(`/radar/recommendations/${target.id}`, {
+      action: 'dismiss',
+    })
     expect(updated.dismissedAt).toBeTruthy()
     const remaining = await mockApiGet<RadarRecommendation[]>('/radar/recommendations')
     expect(remaining.find((r) => r.id === target.id)).toBeUndefined()
