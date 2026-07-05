@@ -1,5 +1,9 @@
 version: 2
 
+# Политика: npm CI должен оставаться зелёным. Серьёзные недостатки, нарушающие deppeer, игнорируются,
+# пока весь инструментарий (ESLint + плагины) не будет обновлён вручную.
+# См. frontend/README.md → «Ограничения зависимостей».
+
 updates:
   - package-ecosystem: npm
     directory: /frontend
@@ -7,14 +11,50 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    ignore:
+      # eslint-plugin-jsx-a11y@6 Поддерживает Eslint только <= 9
+      - dependency-name: eslint
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@eslint/js"
+        update-types: ["version-update:semver-major"]
+      # Мажорные версии проверяются вручную — влияют на поведение Husky до коммита
+      - dependency-name: lint-staged
+        update-types: ["version-update:semver-major"]
+      # v13+ меняет порядок сортировки импорта (большая разница)
+      - dependency-name: eslint-plugin-simple-import-sort
+        update-types: ["version-update:semver-major"]
     groups:
-      dev-dependencies:
+      # Runtime deps - один группированный PR в неделю (патч/минор)
+      production-dependencies:
+        dependency-type: production
+        patterns:
+          - "*"
+      # Инструменты для разработки, кроме ESLint стека - vite, vitest, prettier, types и т.д.
+      dev-dependencies-safe:
         dependency-type: development
         patterns:
           - "*"
+        exclude-patterns:
+          - "eslint"
+          - "@eslint/*"
+          - "eslint-*"
+          - "typescript-eslint"
+          - "globals"
+          - "lint-staged"
+          - "eslint-plugin-simple-import-sort"
+      # Экосистема ESLint - только минор/патчи (основные заблокированы игнорирующим правилом выше)
+      eslint-ecosystem:
+        dependency-type: development
+        patterns:
+          - "eslint"
+          - "@eslint/*"
+          - "eslint-*"
+          - "typescript-eslint"
+          - "globals"
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
       day: monday
+    open-pull-requests-limit: 3
