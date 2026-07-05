@@ -8,12 +8,13 @@ import {beforeEach, describe, expect, it} from 'vitest'
 import {EventsPage} from '@/features/events/EventsPage'
 import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
 import {resetMockEventRsvp} from '@/mocks/data/eventRsvp'
+import {clearTestStorage} from '@/test/clearTestStorage'
 import {renderWithProviders} from '@/test/render'
 
 describe('Events page RSVP block', () => {
   beforeEach(() => {
     resetMockEventRsvp()
-    window.localStorage.clear()
+    clearTestStorage()
   })
 
   it('shows league game hero and team RSVP list', async () => {

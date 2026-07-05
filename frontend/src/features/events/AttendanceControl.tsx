@@ -118,7 +118,7 @@ export function AttendanceControl({
     return (
       <div className="event-attendance hockey-stack hockey-stack--gap-6" data-testid={testId('events', 'attendance', 'panel', eventId)}>
         <Text color="secondary" data-testid={testId('events', 'attendance', 'text', 'label', eventId)}>
-          {buildAttendanceLabel('game', eventTitle ?? rsvpBoard.teamName)}
+          {buildAttendanceLabel(eventKind ?? 'game', eventTitle ?? rsvpBoard.teamName)}
         </Text>
         <div className="hockey-row hockey-row--gap-8" data-testid={testId('events', 'attendance', 'list', eventId)}>
           {RSVP_BUTTONS.map((btn) => (

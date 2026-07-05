@@ -6,6 +6,7 @@
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {useQuery} from '@tanstack/react-query'
 import {Select, Text, TextInput} from '@gravity-ui/uikit'
+import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
 import {fetchEvents} from '@/features/events/api/eventsApi'
 import {useSessionAccess} from '@/features/access/useSessionAccess'
 import {EventCard} from '@/features/events/EventCard'
@@ -291,9 +292,9 @@ export function EventsPage() {
           </div>
           {isNearestGameVisible && (
             <div className="nearest-game-record" data-testid={testId('events', 'page', 'panel', 'league-rsvp')}>
-              <LeagueGameRsvp eventId="event-league-sat" currentUserId={userId} />
+              <LeagueGameRsvp eventId={LEAGUE_SATURDAY_EVENT_ID} currentUserId={userId} />
               <TeamRsvpList
-                eventId="event-league-sat"
+                eventId={LEAGUE_SATURDAY_EVENT_ID}
                 canSeeDeclineDetails={canSeeDeclineDetails}
               />
             </div>
