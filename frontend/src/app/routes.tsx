@@ -13,6 +13,7 @@ import {ArenasPage} from '@/features/arenas/ArenasPage'
 import {TermsOfUsePage} from '@/features/auth/TermsOfUsePage'
 import {CalendarPage} from '@/features/calendar/CalendarPage'
 import {EventsPage} from '@/features/events/EventsPage'
+import {TrainingDetailsPage} from '@/features/events/TrainingDetailsPage'
 import {FeedbackPage} from '@/features/feedback/FeedbackPage'
 import {HighlightsPage} from '@/features/highlights/HighlightsPage'
 import {IqTestsPage} from '@/features/iq/IqTestsPage'
@@ -24,7 +25,6 @@ import {PartnerHubPage} from '@/features/partners/PartnerHubPage'
 import {PlayersPage} from '@/features/players/PlayersPage'
 import {PublicPlayerProfilePage} from '@/features/players/PublicPlayerProfilePage'
 import {HockeyProfileForm} from '@/features/profile/HockeyProfileForm'
-import {IceRadarPage} from '@/features/radar/IceRadarPage'
 import {ShopPartnerDashboard} from '@/features/shops/ShopPartnerDashboard'
 import {ShopsPage} from '@/features/shops/ShopsPage'
 import {SosPage} from '@/features/sos/SosPage'
@@ -70,6 +70,7 @@ export function AppRoutes() {
             <Route path="/players/:userId" element={<PublicPlayerProfilePage />} />
             <Route path="/teams" element={<TeamsPage />} />
             <Route path="/events" element={<EventsPage />} />
+            <Route path="/events/trainings/:eventId" element={<TrainingDetailsPage />} />
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/sos" element={<SosPage />} />
             <Route path="/arenas" element={<ArenasPage />} />
@@ -82,7 +83,7 @@ export function AppRoutes() {
             <Route path="/partner/shops/:shopId" element={<ShopPartnerDashboard />} />
             <Route path="/partner/leagues/:leagueId" element={<LeaguePartnerDashboard />} />
             <Route path="/iq" element={<IqTestsPage />} />
-            <Route path="/radar" element={<IceRadarPage />} />
+            <Route path="/radar" element={<Navigate to="/events" replace />} />
             <Route path="/highlights" element={<HighlightsPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
           </Route>

@@ -16,7 +16,72 @@
 .radar-page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
+}
+
+.radar-page__training-layout {
+  width: 100%;
+}
+
+.league-game-rsvp {
+  border-color: color-mix(in srgb, var(--hockey-ice-glow) 35%, var(--hockey-card-border));
+}
+
+.league-game-rsvp__actions {
+  padding-top: 12px;
+  border-top: 1px solid var(--hockey-card-border);
+}
+
+.nearest-game-record {
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--hockey-card-bg);
+  box-shadow: var(--hockey-card-shadow);
+
+  .ice-card {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .ice-card::before {
+    display: none;
+  }
+
+  .ice-card + .ice-card {
+    border-top: 1px solid var(--hockey-card-border);
+  }
+}
+
+.league-game-rsvp__meta {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--hockey-card-border);
+  background: color-mix(
+    in srgb,
+    var(--hockey-card-bg-solid, var(--hockey-card-bg)) 60%,
+    transparent
+  );
+}
+
+.team-rsvp-list__row {
+  padding: 6px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--hockey-card-border) 70%, transparent);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.decline-reason-field__options {
+  width: 100%;
+}
+
+.radar-page__actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
 }
 
 .radar-page__layout {

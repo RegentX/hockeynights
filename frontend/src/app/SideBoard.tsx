@@ -11,9 +11,8 @@ import {fetchEvents} from '@/features/events/api/eventsApi'
 import {fetchLeagues, fetchLeagueStandings} from '@/features/leagues/api/leaguesApi'
 import {LeagueStandings} from '@/features/leagues/LeagueStandings'
 import {fetchProfileFavorites} from '@/features/profile/api/favoritesApi'
-import {fetchRadarRecommendations} from '@/features/radar/api/radarApi'
 import {fetchRecruitmentRequests} from '@/features/sos/api/recruitmentApi'
-import {ARENAS_LABEL, RADAR_LABEL} from '@/shared/config/navigationLabels'
+import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
@@ -36,11 +35,6 @@ export function SideBoard() {
     enabled: Boolean(featuredLeague?.id),
   })
 
-  const {data: radarItems = []} = useQuery({
-    queryKey: ['radar-recommendations'],
-    queryFn: fetchRadarRecommendations,
-  })
-
   const {data: favorites} = useQuery({
     queryKey: ['profile-favorites'],
     queryFn: fetchProfileFavorites,
@@ -48,7 +42,6 @@ export function SideBoard() {
 
   const upcoming = events.slice(0, 3)
   const openSos = sosRequests.filter((r) => r.isGoalkeeperSos).length
-  const topRadar = radarItems.slice(0, 2)
 
   return (
     <aside
@@ -101,49 +94,6 @@ export function SideBoard() {
           </div>
         </IceCard>
       )}
-
-      <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'radar')}>
-        <div
-          className="side-board__title"
-          data-testid={testId('app', 'side-board', 'text', 'radar-title')}
-        >
-          {RADAR_LABEL}
-        </div>
-        {topRadar.length === 0 ? (
-          <Text color="secondary" data-testid={testId('app', 'side-board', 'empty', 'radar')}>
-            Нет активных подсказок
-          </Text>
-        ) : (
-          topRadar.map((item) => (
-            <div
-              key={item.id}
-              className="side-board__item"
-              data-testid={testId('app', 'side-board', 'item', 'radar', item.id)}
-            >
-              <ScoreboardText
-                tone="accent"
-                data-testid={testId('app', 'side-board', 'text', 'radar-reason', item.id)}
-              >
-                {item.reasonText}
-              </ScoreboardText>
-              <Text data-testid={testId('app', 'side-board', 'text', 'radar-title-item', item.id)}>
-                {item.title}
-              </Text>
-            </div>
-          ))
-        )}
-        <div className="side-board__cta">
-          <Link to="/radar" data-testid={testId('app', 'side-board', 'link', 'radar')}>
-            <HockeyButton
-              view="outlined"
-              size="s"
-              data-testid={testId('app', 'side-board', 'btn', 'open-radar')}
-            >
-              {RADAR_LABEL}
-            </HockeyButton>
-          </Link>
-        </div>
-      </IceCard>
 
       <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'sos')}>
         <div
@@ -236,13 +186,13 @@ export function SideBoard() {
           ))
         )}
         <div className="side-board__cta side-board__cta--sm">
-          <Link to="/arenas" data-testid={testId('app', 'side-board', 'link', 'arenas')}>
+          <Link to="/events" data-testid={testId('app', 'side-board', 'link', 'events')}>
             <HockeyButton
               view="outlined"
               size="s"
-              data-testid={testId('app', 'side-board', 'btn', 'arenas')}
+              data-testid={testId('app', 'side-board', 'btn', 'events')}
             >
-              {ARENAS_LABEL}
+              {EVENTS_LABEL}
             </HockeyButton>
           </Link>
         </div>

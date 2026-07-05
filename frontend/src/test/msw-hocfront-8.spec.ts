@@ -43,7 +43,7 @@ describe('HOCFRONT-8 mock API', () => {
 
   it('profile/favorites returns preset and accepts patch', async () => {
     const initial = await fetchProfileFavorites()
-    expect(initial.actions).toHaveLength(4)
+    expect(initial.actions).toHaveLength(3)
     expect(initial.actions[0]?.path).toBe('/events')
 
     const updated = await patchProfileFavorites({

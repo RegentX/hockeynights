@@ -23,6 +23,11 @@ export function fetchEvents(): Promise<GameEvent[]> {
   return apiRequest<GameEvent[]>('/events')
 }
 
+/** Получить одно событие по id. */
+export function fetchEventById(eventId: string): Promise<GameEvent> {
+  return apiRequest<GameEvent>(`/events/${eventId}`)
+}
+
 /**
  * @spec SPEC-FR-4.1.1 - Создать событие
  */

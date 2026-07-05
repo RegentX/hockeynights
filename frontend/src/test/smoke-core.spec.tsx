@@ -385,7 +385,7 @@ describe('TASK-QA-01 UI smoke', () => {
     renderWithProviders(<EventsPage />)
     await waitFor(() => {
       expect(screen.getByText('Игры и тренировки')).toBeInTheDocument()
-      expect(screen.getAllByText(/Товарищеская игра/i).length).toBeGreaterThan(0)
+      expect(screen.getAllByText(/Публичная тренировка/i).length).toBeGreaterThan(0)
     })
   })
 

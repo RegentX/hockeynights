@@ -26,16 +26,16 @@ import type {Notification} from '@/entities/notification/types'
 import type {RadarRecommendation} from '@/entities/radar/types'
 import type {ProductOffer, Shop} from '@/entities/shop/types'
 import {AdminDashboard} from '@/features/admin/AdminDashboard'
+import {EventsPage} from '@/features/events/EventsPage'
 import {FeedbackPage} from '@/features/feedback/FeedbackPage'
 import {HighlightsPage} from '@/features/highlights/HighlightsPage'
 import {IqTestsPage} from '@/features/iq/IqTestsPage'
 import {LeaguesPage} from '@/features/leagues/LeaguesPage'
 import {NotificationsPage} from '@/features/notifications/NotificationsPage'
-import {IceRadarPage} from '@/features/radar/IceRadarPage'
 import {ShopsPage} from '@/features/shops/ShopsPage'
 import {resetMockHighlightsState} from '@/mocks/data/highlights'
 import {resetMockRadarState} from '@/mocks/data/radar'
-import {RADAR_LABEL} from '@/shared/config/navigationLabels'
+import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
 import {mockApiGet, mockApiPatch, mockApiPost} from '@/test/api'
 import {renderWithProviders} from '@/test/render'
 
@@ -314,13 +314,13 @@ describe('TASK-QA-02 UI smoke', () => {
     })
   })
 
-  /** @spec SPEC-FR-15.1.1, SPEC-UI-6.5 */
-  it('IceRadarPage loads radar zones and recommendations', async () => {
-    renderWithProviders(<IceRadarPage />)
+  /** @spec SPEC-FR-15.1.1, SPEC-UI-6.5, HOCFRONT-9 */
+  it('EventsPage loads league RSVP hero inside training section', async () => {
+    renderWithProviders(<EventsPage />)
     await waitFor(() => {
-      expect(screen.getByText(RADAR_LABEL)).toBeInTheDocument()
-      expect(screen.getByText('Ближняя зона')).toBeInTheDocument()
-      expect(screen.getByText('Нужен твой амплуа — вратарь')).toBeInTheDocument()
+      expect(screen.getByText(EVENTS_LABEL)).toBeInTheDocument()
+      expect(screen.getByTestId('events-page-panel-league-rsvp')).toBeInTheDocument()
+      expect(screen.getByText('Список тренировок')).toBeInTheDocument()
     })
   })
 
