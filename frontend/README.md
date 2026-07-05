@@ -83,7 +83,38 @@ npm run format && npm run lint:fix && npm run typecheck && npm test && npm run b
 ### Зависимости
 
 - После изменения `package.json`: `npm install` → **закоммитить** обновлённый `package-lock.json`
-- В CI всегда `npm ci` - если lockfile не синхронизирован, пайплайн упадёт
+- В CI всегда `npm ci` — если lockfile не синхронизирован, пайплайн упадёт
+- `frontend/.npmrc` запрещает `legacy-peer-deps` — несовместимые peer deps должны решаться явно, а не игнорироваться
+
+### Ограничения зависимостей (peer compatibility)
+
+Некоторые пакеты **нельзя обновлять по отдельности** — у них жёсткие `peerDependencies`:
+
+| Пакет                              | Сейчас | Ограничение                                               |
+| ---------------------------------- | ------ | --------------------------------------------------------- |
+| `eslint` + `@eslint/js`            | v9     | `eslint-plugin-jsx-a11y@6` поддерживает только eslint ≤ 9 |
+| `lint-staged`                      | v15    | major обновлять вручную — влияет на husky pre-commit      |
+| `eslint-plugin-simple-import-sort` | v12    | v13+ меняет порядок импортов (большой diff)               |
+
+**Dependabot** (`.github/dependabot.yml`):
+
+- major для этих пакетов **игнорируется**
+- остальные dev-deps — отдельная группа
+- ESLint-стек — отдельная группа (только minor/patch)
+
+**Как обновить несовместимый стек вручную** (пример: переход на ESLint 10):
+
+1. Проверить, что все eslint-плагины поддерживают новую major (`npm info <pkg> peerDependencies`)
+2. Обновить пакеты **одним коммитом**: `eslint`, `@eslint/js`, плагины
+3. `npm install` → `npm run lint && npm test && npm run build`
+4. Убрать соответствующий `ignore` из `dependabot.yml`
+
+**Проверка совместимости локально:**
+
+```bash
+npm ci          # упадёт на peer conflict — это ожидаемое поведение
+npm ls eslint   # кто тянет eslint и какая версия
+```
 
 ## Настройка IDE (IntelliJ IDEA / Cursor)
 
