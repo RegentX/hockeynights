@@ -4,7 +4,7 @@
 
 import {Label} from '@gravity-ui/uikit'
 
-import type {SourceMeta} from '@/entities/common/types'
+import type {SourceMeta} from '@/entities/common'
 import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-6.3.2 - Props бейджа источника данных */
