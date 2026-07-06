@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import {Route, Routes} from 'react-router-dom'
 import {describe, expect, it} from 'vitest'
 
-import {EventCard} from '@/features/events/EventCard'
+import {EventCard} from '@/features/events/ui/EventCard'
 import {mockEvents} from '@/mocks/data/events'
 import {renderWithProviders} from '@/test/render'
 
