@@ -10,7 +10,7 @@ import type {
   HighlightAnnotation,
   HighlightComment,
   HighlightDetail,
-} from '@/entities/highlight/types'
+} from '@/entities/highlight'
 
 const mockSource = {
   source: 'mock' as const,

@@ -2,7 +2,7 @@
  * SPEC-FR-10.1.1, SPEC-FR-10.1.2
  */
 
-import type {Notification} from '@/entities/notification/types'
+import type {Notification} from '@/entities/notification'
 
 /** @spec SPEC-FR-10.1.1 - Mock уведомления */
 export const mockNotifications: Notification[] = [

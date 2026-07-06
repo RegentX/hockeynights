@@ -2,7 +2,7 @@
  * SPEC-FR-24.4.3
  */
 
-import type {Club} from '@/entities/club/types'
+import type {Club} from '@/entities/club'
 
 /** @spec SPEC-FR-24.4.3 - Mock клубы с несколькими составами и штабом */
 export const mockClubs: Club[] = [

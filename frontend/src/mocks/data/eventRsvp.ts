@@ -3,14 +3,14 @@
  * RSVP состава на лиговую игру в субботу 16:00.
  */
 
-import type {AttendanceStatus} from '@/entities/common/types'
-import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
-import type {EventRsvpBoard, EventRsvpPlayer, EventRsvpStatus} from '@/entities/event/rsvpTypes'
+import type {AttendanceStatus} from '@/entities/common'
+import type {EventRsvpBoard, EventRsvpPlayer, EventRsvpStatus} from '@/entities/event'
+import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event'
 import {updateMockAttendance} from '@/mocks/data/events'
 import {mockUser} from '@/mocks/data/session'
 import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
 
-export {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
+export {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event'
 
 const RSVP_STORAGE_KEY = 'hockey-mock-event-rsvp'
 

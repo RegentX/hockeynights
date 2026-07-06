@@ -4,9 +4,9 @@
 
 import {http, HttpResponse} from 'msw'
 
-import type {AdminEntityType} from '@/entities/admin/types'
-import type {PartnerModerationKind} from '@/entities/admin/types'
-import type {PartnerModerationStatus} from '@/entities/common/types'
+import type {AdminEntityType} from '@/entities/admin'
+import type {PartnerModerationKind} from '@/entities/admin'
+import type {PartnerModerationStatus} from '@/entities/common'
 import {
   createAdminArena,
   createAdminLeague,

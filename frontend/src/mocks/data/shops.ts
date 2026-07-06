@@ -2,7 +2,7 @@
  * SPEC-FR-9.1.1, SPEC-FR-9.1.2, SPEC-FR-9.2.1, SPEC-FR-9.2.2
  */
 
-import type {ProductOffer, Shop, ShopProductPayload} from '@/entities/shop/types'
+import type {ProductOffer, Shop, ShopProductPayload} from '@/entities/shop'
 
 const mockSource = {
   source: 'mock' as const,

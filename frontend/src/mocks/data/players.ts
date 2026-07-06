@@ -8,7 +8,7 @@ import type {
   PlayerListItem,
   PrivacySettings,
   PublicPlayerView,
-} from '@/entities/profile/types'
+} from '@/entities/profile'
 
 /** @spec SPEC-FR-24.1.3 - Mock приватность публичных профилей */
 export const mockPlayerPrivacy: Record<

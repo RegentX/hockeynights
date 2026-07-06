@@ -1,5 +1,3 @@
-import {mockPlayers} from '@/mocks/data/players'
-
 import type {
   ChannelSettings,
   ChannelSettingsPatch,
@@ -9,7 +7,8 @@ import type {
   CreateChatPayload,
   CreateChatTopicPayload,
   Message,
-} from '../../entities/messenger/types'
+} from '@/entities/messenger'
+import {mockPlayers} from '@/mocks/data/players'
 
 /** @spec SPEC-FR-16.1.1, SPEC-FR-16.1.2 */
 export const mockChats: Chat[] = [

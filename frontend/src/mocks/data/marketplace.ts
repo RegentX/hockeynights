@@ -7,7 +7,7 @@ import type {
   MarketplaceFilters,
   MarketplaceProductListing,
   Shop,
-} from '@/entities/shop/types'
+} from '@/entities/shop'
 import {mockShopPromos} from '@/mocks/data/shopPartner'
 import {mockProductOffers, mockShops} from '@/mocks/data/shops'
 

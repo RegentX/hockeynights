@@ -4,10 +4,7 @@
 
 import {http, HttpResponse} from 'msw'
 
-import type {
-  CreateCheckoutIntentPayload,
-  CreateIceBookingPayload,
-} from '@/entities/external-flow/types'
+import type {CreateCheckoutIntentPayload, CreateIceBookingPayload} from '@/entities/external-flow'
 import {createMockCheckoutIntent, createMockIceBooking} from '@/mocks/data/external-flows'
 
 /** @spec SPEC-FR-6.4.2 - Handlers mock внешних сценариев */

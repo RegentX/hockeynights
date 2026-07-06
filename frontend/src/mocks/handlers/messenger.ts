@@ -4,7 +4,7 @@ import type {
   ChannelSettingsPatch,
   CreateChatPayload,
   CreateChatTopicPayload,
-} from '@/entities/messenger/types'
+} from '@/entities/messenger'
 import {
   createDirectMockChat,
   createMockChannelOrChat,

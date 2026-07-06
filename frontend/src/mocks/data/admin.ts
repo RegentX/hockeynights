@@ -2,10 +2,10 @@
  * SPEC-FR-11.1.1, SPEC-FR-11.1.2, SPEC-FR-11.2.1, SPEC-FR-11.2.2
  */
 
-import type {AdminEntityType, SourceStatusItem} from '@/entities/admin/types'
-import type {Arena} from '@/entities/arena/types'
-import type {League} from '@/entities/league/types'
-import type {Shop} from '@/entities/shop/types'
+import type {AdminEntityType, SourceStatusItem} from '@/entities/admin'
+import type {Arena} from '@/entities/arena'
+import type {League} from '@/entities/league'
+import type {Shop} from '@/entities/shop'
 import {addMockArena, mockArenas, setArenaVisibility} from '@/mocks/data/arenas'
 import {addMockLeague, mockLeagues, setLeagueVisibility} from '@/mocks/data/leagues'
 import {addMockShop, mockShops, setShopVisibility} from '@/mocks/data/shops'

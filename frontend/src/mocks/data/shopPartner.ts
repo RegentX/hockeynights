@@ -9,7 +9,7 @@ import type {
   ShopLead,
   ShopProductPayload,
   ShopPromo,
-} from '@/entities/shop/types'
+} from '@/entities/shop'
 import {addMockShopProduct, mockProductOffers} from '@/mocks/data/shops'
 
 export const mockShopCatalogState: Record<string, ShopCatalogSyncState> = {

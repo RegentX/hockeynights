@@ -4,7 +4,7 @@
  * SPEC-FR-21.1.5
  */
 
-import type {RosterMember, Team, TeamInvite, TeamRole} from '@/entities/team/types'
+import type {RosterMember, Team, TeamInvite, TeamRole} from '@/entities/team'
 
 /** @spec SPEC-FR-3.1.1 - Mock команды */
 export let mockTeams: Team[] = [

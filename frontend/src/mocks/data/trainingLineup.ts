@@ -2,7 +2,7 @@
  * SPEC-FR-21.1.6, SPEC-FR-21.1.7
  */
 
-import type {TrainingLineupAssignment} from '@/entities/team/types'
+import type {TrainingLineupAssignment} from '@/entities/team'
 
 /** @spec SPEC-FR-21.1.6 - Mock раскладки тренировок */
 export let mockTrainingLineups: TrainingLineupAssignment[] = [
