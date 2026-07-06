@@ -1,0 +1,123 @@
+/**
+ * SPEC-FR-2.1.2, SPEC-FR-25.1.2
+ * Выбор демо-роли после входа или регистрации.
+ */
+
+import {Text} from '@gravity-ui/uikit'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {useState} from 'react'
+import {useNavigate} from 'react-router-dom'
+
+import type {AvailablePersona} from '@/entities/auth'
+import {selectPersona} from '@/entities/auth'
+import {PERSONA_PRESETS, type PersonaPreset} from '@/features/auth/lib/personaPresets'
+import {getPersonaHomePath} from '@/shared/lib/navigationAccess'
+import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+
+export interface PersonaSelectionProps {
+  isSwitching?: boolean
+  onBackToCredentials?: () => void
+}
+
+function toPersonaPreset(persona: AvailablePersona): PersonaPreset | undefined {
+  return PERSONA_PRESETS.find((preset) => preset.id === persona.id)
+}
+
+export function PersonaSelection({
+  isSwitching = false,
+  onBackToCredentials,
+}: PersonaSelectionProps) {
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const [error, setError] = useState<string | null>(null)
+  const {data: authLogin} = useQuery<{userId: string; availablePersonas: AvailablePersona[]}>({
+    queryKey: ['auth-login'],
+    enabled: false,
+  })
+
+  const personas = authLogin?.availablePersonas ?? PERSONA_PRESETS
+
+  const personaMutation = useMutation({
+    mutationFn: (preset: PersonaPreset) => selectPersona({personaId: preset.id}),
+    onSuccess: (nextSession) => {
+      setError(null)
+      queryClient.setQueryData(['session'], nextSession)
+      void queryClient.invalidateQueries({queryKey: ['session']})
+      const homePath = nextSession.homePath ?? getPersonaHomePath(nextSession)
+      navigate(homePath, {replace: true})
+    },
+    onError: (err: Error) => {
+      setError(err.message || 'Не удалось сохранить выбранную роль')
+    },
+  })
+
+  function selectPersonaCard(persona: AvailablePersona) {
+    const preset = toPersonaPreset(persona)
+    if (!preset) {
+      console.warn(`[PersonaSelection] Unknown persona id: ${persona.id}`)
+      return
+    }
+    setError(null)
+    personaMutation.mutate(preset)
+  }
+
+  return (
+    <section
+      className="auth-form auth-form--personas"
+      aria-label="Выбор роли"
+      data-testid={testId('auth', 'login', 'panel', 'personas')}
+    >
+      <Text variant="subheader-2" data-testid={testId('auth', 'login', 'text', 'personas-title')}>
+        Выберите демо-роль
+      </Text>
+      <Text color="secondary" data-testid={testId('auth', 'login', 'text', 'personas-hint')}>
+        Каждая карточка открывает свой режим интерфейса. Выбор сохранится после обновления страницы.
+      </Text>
+
+      <div className="persona-card-grid" data-testid={testId('auth', 'login', 'grid', 'personas')}>
+        {personas.map((persona) => {
+          const known = Boolean(toPersonaPreset(persona))
+          return (
+            <button
+              key={persona.id}
+              type="button"
+              className="persona-card"
+              aria-label={`${persona.title}. ${persona.description}. ${persona.destination}`}
+              disabled={personaMutation.isPending || !known}
+              onClick={() => selectPersonaCard(persona)}
+              data-testid={testId('auth', 'persona', 'btn', persona.id)}
+            >
+              <span className="persona-card__icon" aria-hidden>
+                {persona.icon}
+              </span>
+              <span className="persona-card__title">{persona.title}</span>
+              <span className="persona-card__description">{persona.description}</span>
+              <span className="persona-card__destination">→ {persona.destination}</span>
+            </button>
+          )
+        })}
+      </div>
+
+      {error && (
+        <div
+          className="auth-alert auth-alert--error"
+          data-testid={testId('auth', 'login', 'text', 'personas-error')}
+        >
+          {error}
+        </div>
+      )}
+
+      {!isSwitching && onBackToCredentials && (
+        <HockeyButton
+          view="flat"
+          size="s"
+          onClick={onBackToCredentials}
+          data-testid={testId('auth', 'login', 'btn', 'back-credentials')}
+        >
+          Назад
+        </HockeyButton>
+      )}
+    </section>
+  )
+}
