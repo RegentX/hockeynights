@@ -5,7 +5,7 @@
 import {useQuery} from '@tanstack/react-query'
 import {Navigate, Outlet} from 'react-router-dom'
 
-import {fetchSession} from '@/features/auth/api/sessionApi'
+import {fetchSession} from '@/entities/auth'
 import {testId} from '@/shared/testing/testId'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 

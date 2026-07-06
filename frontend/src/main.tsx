@@ -9,10 +9,9 @@ import './index.scss'
 import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 
+import {App} from '@/app/App'
 import {startMockApi} from '@/mocks/browser'
 import {getApiMode} from '@/shared/config/apiMode'
-
-import App from './App.tsx'
 
 /**
  * @spec SPEC-NFR-2 - Bootstrap с MSW в mock-режиме
