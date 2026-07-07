@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event'
 import {Route, Routes} from 'react-router-dom'
 import {describe, expect, it} from 'vitest'
 
-import {AuthPage} from '@/pages/auth/ui/AuthPage'
+import {AuthPage} from '@/pages/auth'
 import {TermsOfUsePage} from '@/pages/TermsOfUsePage'
 import {renderWithProviders} from '@/test/render'
 

@@ -2,15 +2,14 @@
  * SPEC-FR-13.1.1, SPEC-FR-13.1.2, SPEC-FR-13.1.3
  */
 
-import {apiRequest} from '@/shared/api/client'
-
 import type {
   IqAttemptPayload,
   IqAttemptResult,
   IqLeaderboardRow,
   IqQuestion,
   IqTest,
-} from '../model'
+} from '@/entities/iq/model'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-13.1.1 - Каталог тестов Hockey IQ

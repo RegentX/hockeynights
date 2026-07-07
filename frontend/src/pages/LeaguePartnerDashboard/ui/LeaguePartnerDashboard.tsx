@@ -10,10 +10,12 @@ import {Link, useParams} from 'react-router-dom'
 import {fetchSession} from '@/entities/auth'
 import type {League} from '@/entities/league'
 import {fetchLeagues, updateLeaguePartnerProfile} from '@/entities/league'
-import {LeagueAnalyticsPanel} from '@/features/leagues/ui/LeagueAnalyticsPanel'
-import {LeagueApplicationsPanel} from '@/features/leagues/ui/LeagueApplicationsPanel'
-import {LeaguePostsPanel} from '@/features/leagues/ui/LeaguePostsPanel'
-import {LeagueScheduleManager} from '@/features/leagues/ui/LeagueScheduleManager'
+import {
+  LeagueAnalyticsPanel,
+  LeagueApplicationsPanel,
+  LeaguePostsPanel,
+  LeagueScheduleManager,
+} from '@/features/leagues'
 import {testId} from '@/shared/testing/testId'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {HockeyButton} from '@/shared/ui/HockeyButton'

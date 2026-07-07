@@ -5,7 +5,7 @@
 import {Card, Label, Text} from '@gravity-ui/uikit'
 
 import type {Notification} from '@/entities/notification'
-import {MarkNotificationReadButton} from '@/features/notifications/ui/MarkNotificationReadButton'
+import {MarkNotificationReadButton} from '@/features/notifications'
 import {testId} from '@/shared/testing/testId'
 
 /** @spec SPEC-FR-10.1.1 - Props центра уведомлений */

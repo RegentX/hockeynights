@@ -15,9 +15,7 @@ import {
   fetchHighlight,
   fetchHighlights,
 } from '@/entities/highlight'
-import {HighlightCard} from '@/features/highlights/ui/HighlightCard'
-import {HighlightUploadForm} from '@/features/highlights/ui/HighlightUploadForm'
-import {HighlightVideoBoard} from '@/features/highlights/ui/HighlightVideoBoard'
+import {HighlightCard, HighlightUploadForm, HighlightVideoBoard} from '@/features/highlights'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {IceCard} from '@/shared/ui/IceCard'

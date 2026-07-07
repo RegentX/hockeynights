@@ -2,8 +2,6 @@
  * SPEC-FR-16.1.1
  */
 
-import {apiRequest} from '@/shared/api/client'
-
 import type {
   ChannelSettings,
   ChannelSettingsPatch,
@@ -13,7 +11,8 @@ import type {
   CreateChatPayload,
   CreateChatTopicPayload,
   Message,
-} from '../model'
+} from '@/entities/messenger/model'
+import {apiRequest} from '@/shared/api/client'
 
 /** @spec SPEC-FR-16.1.1 - Список чатов пользователя */
 export function fetchChats(): Promise<Chat[]> {

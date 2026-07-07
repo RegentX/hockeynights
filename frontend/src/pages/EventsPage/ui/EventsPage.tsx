@@ -10,16 +10,16 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event'
 import {fetchEvents} from '@/entities/event'
 import {fetchTeams} from '@/entities/team'
-import {useSessionAccess} from '@/features/access/lib/useSessionAccess'
+import {useSessionAccess} from '@/features/access'
 import {
+  canViewTraining,
+  EventCard,
+  EventCreateForm,
+  getUserTeamIds,
   SKILL_LEVEL_FILTER_OPTIONS,
   TRAINING_FORMAT_FILTER_OPTIONS,
-} from '@/features/events/lib/eventLabels'
-import {canViewTraining, getUserTeamIds} from '@/features/events/lib/trainingAccess'
-import {EventCard} from '@/features/events/ui/EventCard'
-import {EventCreateForm} from '@/features/events/ui/EventCreateForm'
-import {LeagueGameRsvp} from '@/features/radar/ui/LeagueGameRsvp'
-import {TeamRsvpList} from '@/features/radar/ui/TeamRsvpList'
+} from '@/features/events'
+import {LeagueGameRsvp, TeamRsvpList} from '@/features/radar'
 import {getApiMode} from '@/shared/config/apiMode'
 import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
 import {testId} from '@/shared/testing/testId'
@@ -214,8 +214,7 @@ export function EventsPage() {
       if (!filtersEnabled) return true
       const price = training.pricePerPlayer ?? 0
       if (minPrice && price < Number(minPrice)) return false
-      if (maxPrice && price > Number(maxPrice)) return false
-      return true
+      return !(maxPrice && price > Number(maxPrice))
     })
 
   useEffect(() => {

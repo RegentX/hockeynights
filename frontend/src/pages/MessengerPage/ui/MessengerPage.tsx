@@ -28,7 +28,7 @@ import {
   toggleChatPin,
   updateChannelSettings,
 } from '@/entities/messenger'
-import {ChatBubble} from '@/features/messenger/ui/ChatBubble'
+import {ChatBubble} from '@/features/messenger'
 import {testId} from '@/shared/testing/testId'
 
 const MOBILE_BREAKPOINT = '(max-width: 768px)'

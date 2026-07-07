@@ -6,7 +6,7 @@
 
 import {useLocation, useNavigate} from 'react-router-dom'
 
-import {TermsOfUseDocument} from '@/features/auth/ui/TermsOfUseDocument'
+import {TermsOfUseDocument} from '@/features/auth'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 

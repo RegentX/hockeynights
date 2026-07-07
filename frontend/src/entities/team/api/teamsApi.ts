@@ -5,8 +5,6 @@
 
 import type {Club} from '@/entities/club'
 import type {GameEvent} from '@/entities/event'
-import {apiRequest} from '@/shared/api/client'
-
 import type {
   CreateTeamPayload,
   RosterMember,
@@ -14,7 +12,8 @@ import type {
   TeamInvite,
   TeamRole,
   TrainingLineupAssignment,
-} from '../model'
+} from '@/entities/team/model'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-3.1.1 - Список команд

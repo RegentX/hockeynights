@@ -3,9 +3,8 @@
  */
 
 import type {PlayerPosition, SkillLevel} from '@/entities/common'
+import type {PlayerListItem, PublicPlayerView} from '@/entities/profile/model'
 import {apiRequest} from '@/shared/api/client'
-
-import type {PlayerListItem, PublicPlayerView} from '../model'
 
 /** @spec SPEC-FR-2.3.2 - Параметры фильтра игроков */
 export interface PlayersFilterParams {

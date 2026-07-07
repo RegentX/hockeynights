@@ -6,7 +6,7 @@ import {useQuery} from '@tanstack/react-query'
 import {Navigate, Outlet, useLocation} from 'react-router-dom'
 
 import {fetchSession} from '@/entities/auth'
-import {getPersonaHomePath, isPathAllowed} from '@/shared/lib/navigationAccess'
+import {getPersonaHomePath, isPathAllowed} from '@/features/access'
 import {testId} from '@/shared/testing/testId'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 

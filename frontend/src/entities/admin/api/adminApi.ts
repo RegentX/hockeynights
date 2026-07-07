@@ -2,18 +2,17 @@
  * SPEC-FR-11.1.1, SPEC-FR-11.1.2, SPEC-FR-11.2.1, SPEC-FR-11.2.2
  */
 
-import type {Arena} from '@/entities/arena'
-import type {PartnerModerationStatus} from '@/entities/common'
-import type {League} from '@/entities/league'
-import type {Shop} from '@/entities/shop'
-import {apiRequest} from '@/shared/api/client'
-
 import type {
   AdminEntityType,
   CreateAdminEntityPayload,
   PartnerModerationItem,
   SourceStatusItem,
-} from '../model'
+} from '@/entities/admin/model'
+import type {Arena} from '@/entities/arena'
+import type {PartnerModerationStatus} from '@/entities/common'
+import type {League} from '@/entities/league'
+import type {Shop} from '@/entities/shop'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-11.1.1 - Создать сущность

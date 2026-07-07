@@ -2,8 +2,6 @@
  * SPEC-FR-2.2.1, SPEC-FR-2.2.2, SPEC-FR-2.2.3, SPEC-FR-2.2.4
  */
 
-import {apiRequest} from '@/shared/api/client'
-
 import type {
   HockeyProfile,
   NotificationPreferences,
@@ -11,7 +9,8 @@ import type {
   ProfileSettings,
   SubscriptionState,
   VerificationStatus,
-} from '../model'
+} from '@/entities/profile/model'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-2.2.1 - Получить Hockey ID

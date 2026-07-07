@@ -2,9 +2,8 @@
  * SPEC-FR-10.1.1, SPEC-FR-10.1.2
  */
 
+import type {Notification} from '@/entities/notification/model'
 import {apiRequest} from '@/shared/api/client'
-
-import type {Notification} from '../model'
 
 /**
  * @spec SPEC-FR-10.1.1 - Список уведомлений

@@ -8,7 +8,7 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
 import type {RosterMember, TeamRole} from '@/entities/team'
 import {fetchTeamRoster, updateRosterMemberStatus, updateTeamMemberRole} from '@/entities/team'
-import type {TeamPermissions} from '@/shared/lib/teamAccess'
+import type {TeamPermissions} from '@/features/access'
 import {testId} from '@/shared/testing/testId'
 import {PositionLabel} from '@/shared/ui/PositionLabel'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'

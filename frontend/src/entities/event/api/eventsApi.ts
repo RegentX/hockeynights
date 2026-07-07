@@ -3,10 +3,14 @@
  */
 
 import type {AttendanceStatus} from '@/entities/common'
+import type {EventRsvpBoard, EventRsvpStatus, UpdateEventRsvpPayload} from '@/entities/event/model'
+import type {
+  CalendarFilters,
+  CreateEventPayload,
+  GameEvent,
+  RosterStatus,
+} from '@/entities/event/model'
 import {apiRequest} from '@/shared/api/client'
-
-import type {EventRsvpBoard, EventRsvpStatus, UpdateEventRsvpPayload} from '../model'
-import type {CalendarFilters, CreateEventPayload, GameEvent, RosterStatus} from '../model'
 
 /**
  * @spec SPEC-FR-4.1.1 - Список событий

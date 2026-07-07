@@ -2,8 +2,6 @@
  * SPEC-FR-7.1.1, SPEC-FR-7.1.2, SPEC-FR-7.2.1, SPEC-FR-7.2.2
  */
 
-import {apiRequest} from '@/shared/api/client'
-
 import type {
   League,
   LeagueAnalytics,
@@ -15,7 +13,8 @@ import type {
   LeagueSeason,
   LeagueStanding,
   LeagueTeamApplication,
-} from '../model'
+} from '@/entities/league/model'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-7.1.1 - Список лиг
