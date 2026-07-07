@@ -5,8 +5,7 @@
 
 import {Text} from '@gravity-ui/uikit'
 
-import {SosFeed} from '@/features/sos/ui/SosFeed'
-import {SosRequestForm} from '@/features/sos/ui/SosRequestForm'
+import {SosFeed, SosRequestForm} from '@/features/sos'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 

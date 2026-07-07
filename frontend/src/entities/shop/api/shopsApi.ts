@@ -2,8 +2,6 @@
  * SPEC-FR-9.1.1, SPEC-FR-9.1.2, SPEC-FR-9.2.1, SPEC-FR-9.2.2
  */
 
-import {apiRequest} from '@/shared/api/client'
-
 import type {
   ProductOffer,
   Shop,
@@ -13,7 +11,8 @@ import type {
   ShopLead,
   ShopProductPayload,
   ShopPromo,
-} from '../model'
+} from '@/entities/shop/model'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-9.1.1 - Список магазинов

@@ -5,7 +5,7 @@
 import {useQuery} from '@tanstack/react-query'
 
 import {fetchSession} from '@/entities/auth'
-import {PartnerCabinetBanner} from '@/features/partners/ui/PartnerCabinetBanner'
+import {PartnerCabinetBanner} from '@/features/partners'
 import {MarketplacePage} from '@/pages/MarketplacePage'
 import {testId} from '@/shared/testing/testId'
 

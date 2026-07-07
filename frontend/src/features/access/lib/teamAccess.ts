@@ -2,9 +2,9 @@
  * SPEC-FR-3.2.2, SPEC-FR-21.1.5
  */
 
-import type {UserRole} from '@/entities/common'
-import type {TeamRole} from '@/entities/team'
-import {isPlayerOnlySession} from '@/shared/lib/sessionAccess'
+import {isPlayerOnlySession} from '@/features/access/lib/sessionAccess'
+import type {UserRole} from '@/shared/types/common'
+import type {TeamRole} from '@/shared/types/team'
 
 const TEAM_ROLE_RANK: Record<TeamRole, number> = {
   owner: 5,

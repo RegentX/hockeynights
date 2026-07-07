@@ -8,7 +8,7 @@ import {useQuery} from '@tanstack/react-query'
 import {useState} from 'react'
 
 import {fetchPlayers, type PlayersFilterParams} from '@/entities/profile'
-import {PlayerFilters} from '@/features/players/ui/PlayerFilters'
+import {PlayerFilters} from '@/features/players'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'

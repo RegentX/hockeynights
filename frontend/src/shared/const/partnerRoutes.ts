@@ -2,7 +2,7 @@
  * SPEC-FR-24.5.3, SPEC-FR-24.7.3
  */
 
-import type {PartnerMembership} from '@/entities/user'
+import type {PartnerMembership} from '@/shared/types/user'
 
 /** @spec SPEC-FR-1.3.7 - Demo partner entities */
 export const DEMO_PARTNER_MEMBERSHIPS: PartnerMembership[] = [

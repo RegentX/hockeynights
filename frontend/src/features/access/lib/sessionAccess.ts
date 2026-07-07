@@ -2,7 +2,7 @@
  * SPEC-FR-1.3.1 - SPEC-FR-1.3.6
  */
 
-import type {UserRole} from '@/entities/common'
+import type {UserRole} from '@/shared/types/common'
 
 const ORGANIZER_ROLES: UserRole[] = ['captain', 'coach', 'organizer', 'admin']
 

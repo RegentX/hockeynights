@@ -3,6 +3,7 @@
  */
 
 import type {Arena, IceSlot} from '@/entities/arena'
+import {arenaHasFreeSlots as hasFreeSlotsForArena} from '@/entities/arena/lib/arenaSlots'
 
 const mockSource = {
   source: 'mock' as const,
@@ -181,5 +182,5 @@ export const mockIceSlots: IceSlot[] = [
 
 /** @spec SPEC-FR-6.3.1 - Есть ли свободные слоты у арены */
 export function arenaHasFreeSlots(arenaId: string): boolean {
-  return mockIceSlots.some((s) => s.arenaId === arenaId && s.status === 'free')
+  return hasFreeSlotsForArena(arenaId, mockIceSlots)
 }

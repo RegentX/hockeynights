@@ -8,7 +8,7 @@ import {Text} from '@gravity-ui/uikit'
 import {Link} from 'react-router-dom'
 
 import type {PlayerListItem} from '@/entities/profile'
-import {KarmaScore} from '@/features/karma/ui/KarmaScore'
+import {KarmaScore} from '@/features/karma'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {PositionLabel} from '@/shared/ui/PositionLabel'

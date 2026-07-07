@@ -4,10 +4,10 @@
  * SPEC-FR-24.4.1, SPEC-FR-24.4.2
  */
 
-import type {PlayerPosition, SkillLevel} from '@/entities/common'
+import type {PlayerPosition, SkillLevel} from '@/shared/types/common'
+import type {TeamRole} from '@/shared/types/team'
 
-/** @spec SPEC-FR-21.1.5 - Роли участника команды */
-export type TeamRole = 'owner' | 'captain' | 'coach' | 'team_admin' | 'player'
+export type {TeamRole} from '@/shared/types/team'
 
 /** @spec SPEC-FR-3.1.1 - Команда */
 export interface Team {

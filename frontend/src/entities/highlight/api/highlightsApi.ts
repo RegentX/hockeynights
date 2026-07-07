@@ -2,8 +2,6 @@
  * SPEC-FR-14.1.1, SPEC-FR-14.1.2, SPEC-FR-14.1.3, SPEC-FR-14.1.4
  */
 
-import {apiRequest} from '@/shared/api/client'
-
 import type {
   CreateAnnotationPayload,
   CreateCommentPayload,
@@ -12,7 +10,8 @@ import type {
   HighlightAnnotation,
   HighlightComment,
   HighlightDetail,
-} from '../model'
+} from '@/entities/highlight/model'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-14.1.1 - Каталог mock-моментов

@@ -2,9 +2,8 @@
  * SPEC-FR-8.1.1, SPEC-FR-8.1.2, SPEC-FR-8.2.1, SPEC-FR-8.2.2
  */
 
+import type {CreateFeedbackPayload, Feedback, KarmaInfo} from '@/entities/feedback/model'
 import {apiRequest} from '@/shared/api/client'
-
-import type {CreateFeedbackPayload, Feedback, KarmaInfo} from '../model'
 
 /**
  * @spec SPEC-FR-8.1.1 - Отправить feedback

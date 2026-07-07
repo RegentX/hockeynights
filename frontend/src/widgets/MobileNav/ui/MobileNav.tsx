@@ -7,8 +7,7 @@ import {Link, useLocation} from 'react-router-dom'
 
 import {fetchSession} from '@/entities/auth'
 import {fetchChats, getTotalUnreadCount} from '@/entities/messenger'
-import {resolveMobileNavItems} from '@/shared/lib/navigationAccess'
-import {shouldUsePartnerWorkspace} from '@/shared/lib/sessionPersona'
+import {resolveMobileNavItems, shouldUsePartnerWorkspace} from '@/features/access'
 import {routeToTestSlug, testId} from '@/shared/testing/testId'
 
 function formatUnreadBadge(count: number): string {

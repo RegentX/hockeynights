@@ -4,8 +4,8 @@
 
 import {Text} from '@gravity-ui/uikit'
 
-import {PostGameFeedbackForm} from '@/features/feedback/ui/PostGameFeedbackForm'
-import {KarmaHint} from '@/features/karma/ui/KarmaHint'
+import {PostGameFeedbackForm} from '@/features/feedback'
+import {KarmaHint} from '@/features/karma'
 import {testId} from '@/shared/testing/testId'
 
 /**

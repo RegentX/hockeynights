@@ -2,14 +2,13 @@
  * SPEC-FR-6.4.2, SPEC-FR-9.2.3
  */
 
-import {apiRequest} from '@/shared/api/client'
-
 import type {
   CheckoutIntent,
   CreateCheckoutIntentPayload,
   CreateIceBookingPayload,
   IceBookingRequest,
-} from '../model'
+} from '@/entities/external-flow/model'
+import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-6.4.2 - Отправить mock-заявку на лёд

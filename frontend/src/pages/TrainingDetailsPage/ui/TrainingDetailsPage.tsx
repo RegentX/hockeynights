@@ -6,19 +6,17 @@ import {Link, useParams} from 'react-router-dom'
 import {fetchEventById} from '@/entities/event'
 import {fetchPlayers} from '@/entities/profile'
 import {fetchTeams} from '@/entities/team'
-import {useSessionAccess} from '@/features/access/lib/useSessionAccess'
+import {useSessionAccess} from '@/features/access'
 import {
   ACCESS_LABELS,
-  POSITION_LABELS,
-  SKILL_LEVEL_LABELS,
-  TRAINING_FORMAT_LABELS,
-} from '@/features/events/lib/eventLabels'
-import {
+  AttendanceControl,
   canViewTraining,
   getUserTeamIds,
+  POSITION_LABELS,
   resolveTrainingUserName,
-} from '@/features/events/lib/trainingAccess'
-import {AttendanceControl} from '@/features/events/ui/AttendanceControl'
+  SKILL_LEVEL_LABELS,
+  TRAINING_FORMAT_LABELS,
+} from '@/features/events'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'

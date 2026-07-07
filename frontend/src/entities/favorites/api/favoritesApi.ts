@@ -2,9 +2,8 @@
  * SPEC-FR-25.4.2
  */
 
+import type {PatchProfileFavoritesPayload, ProfileFavorites} from '@/entities/favorites/model'
 import {apiRequest} from '@/shared/api/client'
-
-import type {PatchProfileFavoritesPayload, ProfileFavorites} from '../model'
 
 export function fetchProfileFavorites(): Promise<ProfileFavorites> {
   return apiRequest<ProfileFavorites>('/profile/favorites')

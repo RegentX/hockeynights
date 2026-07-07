@@ -2,9 +2,12 @@
  * SPEC-FR-5.1.1, SPEC-FR-5.1.2, SPEC-FR-5.1.3, SPEC-FR-5.2.1, SPEC-FR-5.2.2, SPEC-FR-5.2.3
  */
 
+import type {
+  CreateRecruitmentPayload,
+  RecruitmentRequest,
+  RecruitmentResponse,
+} from '@/entities/recruitment/model'
 import {apiRequest} from '@/shared/api/client'
-
-import type {CreateRecruitmentPayload, RecruitmentRequest, RecruitmentResponse} from '../model'
 
 /** @spec SPEC-FR-5.2.1 - Фильтр запросов */
 export interface RecruitmentFilters {

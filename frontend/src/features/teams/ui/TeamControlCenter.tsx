@@ -13,10 +13,10 @@ import type {Chat} from '@/entities/messenger'
 import {createChannelOrChat, fetchTeamChats} from '@/entities/messenger'
 import type {Team, TeamRole} from '@/entities/team'
 import {fetchTeamRoster} from '@/entities/team'
+import type {TeamPermissions} from '@/features/access'
 import {AddTeamMember} from '@/features/teams/ui/AddTeamMember'
 import {TeamRoster} from '@/features/teams/ui/TeamRoster'
 import {TrainingLineupBoard} from '@/features/teams/ui/TrainingLineupBoard'
-import type {TeamPermissions} from '@/shared/lib/teamAccess'
 import {testId} from '@/shared/testing/testId'
 
 export interface TeamControlCenterProps {

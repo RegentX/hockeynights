@@ -25,6 +25,12 @@ export default defineConfig([
       'simple-import-sort': simpleImportSort,
     },
     settings: {
+      'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true,
+          project: './tsconfig.app.json',
+        },
+      },
       'boundaries/elements': [
         {type: 'app', pattern: 'src/app'},
         {type: 'pages', pattern: 'src/pages/*', capture: ['pageName']},
@@ -64,7 +70,9 @@ export default defineConfig([
             },
             {
               from: {element: {type: 'app'}},
-              allow: {element: {types: ['pages', 'widgets', 'entities', 'shared', 'app']}},
+              allow: {
+                element: {types: ['pages', 'widgets', 'features', 'entities', 'shared', 'app']},
+              },
             },
             {
               from: {element: {type: 'pages'}},
@@ -89,6 +97,29 @@ export default defineConfig([
             {
               from: {element: {type: 'shared'}},
               allow: {element: {type: 'shared'}},
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['src/pages/**/*', 'src/widgets/**/*'],
+    ignores: ['src/**/index.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/features/*/*', '@/features/*/*/*'],
+              message:
+                'Import from the feature public API (@/features/<name>) instead of deep paths.',
+            },
+            {
+              group: ['@/pages/*/ui/*', '@/pages/*/ui/*/*'],
+              message:
+                'Import from the page slice public API (@/pages/<name>) instead of deep paths.',
             },
           ],
         },

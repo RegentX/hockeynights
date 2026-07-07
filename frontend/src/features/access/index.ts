@@ -1,5 +1,4 @@
-export {useSessionAccess} from './lib/useSessionAccess'
-export type {NavItem} from '@/shared/lib/navigationAccess'
+export type {NavItem} from './lib/navigationAccess'
 export {
   getAllowedPathPrefixes,
   getPersonaHomePath,
@@ -10,7 +9,14 @@ export {
   resolveNavItems,
   resolvePartnerNavItems,
   resolvePlayerNavItems,
-} from '@/shared/lib/navigationAccess'
-export {canOrganizeEvents, isPlayerOnlySession} from '@/shared/lib/sessionAccess'
-export type {TeamPermissions} from '@/shared/lib/teamAccess'
-export {resolveTeamPermissions} from '@/shared/lib/teamAccess'
+} from './lib/navigationAccess'
+export {canOrganizeEvents, isPlayerOnlySession} from './lib/sessionAccess'
+export {
+  describeSessionPersona,
+  getPrimaryPartnerPath,
+  hasPlayerPersona,
+  shouldUsePartnerWorkspace,
+} from './lib/sessionPersona'
+export type {TeamPermissions} from './lib/teamAccess'
+export {resolveTeamPermissions} from './lib/teamAccess'
+export {useSessionAccess} from './lib/useSessionAccess'

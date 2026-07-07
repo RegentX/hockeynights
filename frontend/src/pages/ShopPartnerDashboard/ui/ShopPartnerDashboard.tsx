@@ -10,10 +10,12 @@ import {Link, useParams} from 'react-router-dom'
 import {fetchSession} from '@/entities/auth'
 import type {Shop} from '@/entities/shop'
 import {fetchShops, updateShopPartnerProfile} from '@/entities/shop'
-import {ShopAnalyticsPanel} from '@/features/shops/ui/ShopAnalyticsPanel'
-import {ShopCatalogImportPanel} from '@/features/shops/ui/ShopCatalogImportPanel'
-import {ShopProductManager} from '@/features/shops/ui/ShopProductManager'
-import {ShopPromoManager} from '@/features/shops/ui/ShopPromoManager'
+import {
+  ShopAnalyticsPanel,
+  ShopCatalogImportPanel,
+  ShopProductManager,
+  ShopPromoManager,
+} from '@/features/shops'
 import {testId} from '@/shared/testing/testId'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {HockeyButton} from '@/shared/ui/HockeyButton'

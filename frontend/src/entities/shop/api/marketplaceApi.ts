@@ -2,9 +2,8 @@
  * SPEC-FR-9.3.1
  */
 
+import type {MarketplaceFeedResponse, MarketplaceFilters} from '@/entities/shop/model'
 import {apiRequest} from '@/shared/api/client'
-
-import type {MarketplaceFeedResponse, MarketplaceFilters} from '../model'
 
 function toQuery(filters: MarketplaceFilters): string {
   const params = new URLSearchParams()

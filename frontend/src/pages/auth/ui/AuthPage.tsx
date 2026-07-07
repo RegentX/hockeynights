@@ -9,11 +9,8 @@ import {useState} from 'react'
 import {Link, useLocation, useNavigate} from 'react-router-dom'
 
 import {fetchSession} from '@/entities/auth'
-import {AuthShell} from '@/features/auth/ui/AuthShell'
-import {LoginForm} from '@/features/auth/ui/LoginForm'
-import {PersonaSelection} from '@/features/auth/ui/PersonaSelection'
-import {RegisterForm} from '@/features/auth/ui/RegisterForm'
-import {describeSessionPersona} from '@/shared/lib/sessionPersona'
+import {describeSessionPersona} from '@/features/access'
+import {AuthShell, LoginForm, PersonaSelection, RegisterForm} from '@/features/auth'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 

@@ -6,10 +6,10 @@ import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
 
+import {fetchArenas} from '@/entities/arena'
 import type {EventType, SkillLevel} from '@/entities/common'
 import {createEvent} from '@/entities/event'
 import {fetchTeams} from '@/entities/team'
-import {mockArenas} from '@/mocks/data/arenas'
 import {testId} from '@/shared/testing/testId'
 
 const TYPE_OPTIONS = [
@@ -31,10 +31,12 @@ const SKILL_OPTIONS = [
 export function EventCreateForm() {
   const queryClient = useQueryClient()
   const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: fetchTeams})
+  const {data: arenas = []} = useQuery({queryKey: ['arenas'], queryFn: () => fetchArenas()})
 
   const [type, setType] = useState<EventType>('game')
   const [title, setTitle] = useState('')
-  const [arenaId, setArenaId] = useState(mockArenas[0]?.id ?? '')
+  const [arenaIdOverride, setArenaIdOverride] = useState<string | null>(null)
+  const resolvedArenaId = arenaIdOverride ?? arenas[0]?.id ?? ''
   const [teamId, setTeamId] = useState<string | undefined>(teams[0]?.id)
   const [skillLevel, setSkillLevel] = useState<SkillLevel>('amateur')
   const [pricePerPlayer, setPricePerPlayer] = useState('1500')
@@ -50,7 +52,7 @@ export function EventCreateForm() {
 
   /** @spec SPEC-FR-4.1.1 - Создание события */
   function handleSubmit() {
-    if (!title.trim() || !arenaId) return
+    if (!title.trim() || !resolvedArenaId) return
     const startsAt = new Date(Date.now() + 86400000).toISOString()
     const endsAt = new Date(Date.now() + 86400000 + 5400000).toISOString()
 
@@ -59,7 +61,7 @@ export function EventCreateForm() {
       title: title.trim(),
       startsAt,
       endsAt,
-      arenaId,
+      arenaId: resolvedArenaId,
       teamId,
       requiredSkillLevel: skillLevel,
       requiredSlots: [
@@ -71,7 +73,7 @@ export function EventCreateForm() {
     })
   }
 
-  const arenaOptions = mockArenas.map((a) => ({value: a.id, content: a.name}))
+  const arenaOptions = arenas.map((a) => ({value: a.id, content: a.name}))
   const teamOptions = teams.map((t) => ({value: t.id, content: t.name}))
 
   return (
@@ -97,8 +99,8 @@ export function EventCreateForm() {
       />
       <Select
         label="Арена"
-        value={[arenaId]}
-        onUpdate={(v) => setArenaId(v[0])}
+        value={resolvedArenaId ? [resolvedArenaId] : []}
+        onUpdate={(v) => setArenaIdOverride(v[0])}
         options={arenaOptions}
         data-testid={testId('events', 'create-form', 'select', 'arena')}
       />

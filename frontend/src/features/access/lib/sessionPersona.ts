@@ -2,9 +2,10 @@
  * SPEC-FR-1.3.7, SPEC-FR-24.5.3, SPEC-FR-24.7.3
  */
 
-import type {UserRole} from '@/entities/common'
-import type {Session} from '@/entities/user'
+import {routes} from '@/shared/const/appRoutes'
 import {partnerCabinetPath} from '@/shared/const/partnerRoutes'
+import type {UserRole} from '@/shared/types/common'
+import type {Session} from '@/shared/types/user'
 
 const PLAYER_PERSONA_ROLES: UserRole[] = ['player', 'goalie', 'captain', 'coach']
 
@@ -24,7 +25,7 @@ export function shouldUsePartnerWorkspace(session: Session | undefined): boolean
 
 export function getPrimaryPartnerPath(session: Session): string {
   const membership = session.user.partnerMemberships?.[0]
-  return membership ? partnerCabinetPath(membership) : '/partner'
+  return membership ? partnerCabinetPath(membership) : routes.partner
 }
 
 /** Человекочитаемая подпись текущей демо-персоны */

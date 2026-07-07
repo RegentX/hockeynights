@@ -10,8 +10,8 @@ import {useNavigate} from 'react-router-dom'
 
 import type {AvailablePersona} from '@/entities/auth'
 import {selectPersona} from '@/entities/auth'
+import {getPersonaHomePath} from '@/features/access'
 import {PERSONA_PRESETS, type PersonaPreset} from '@/features/auth/lib/personaPresets'
-import {getPersonaHomePath} from '@/shared/lib/navigationAccess'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 

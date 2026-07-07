@@ -8,12 +8,8 @@ import {useQuery} from '@tanstack/react-query'
 import {useEffect, useMemo, useRef, useState} from 'react'
 
 import type {ArenaFilters as ArenaFiltersType} from '@/entities/arena'
-import {fetchArenas, fetchArenaSlots} from '@/entities/arena'
-import {ArenaDetailPanel} from '@/features/arenas/ui/ArenaDetailPanel'
-import {ArenaFilters} from '@/features/arenas/ui/ArenaFilters'
-import {ArenaMap} from '@/features/arenas/ui/ArenaMap'
-import {RinkCard} from '@/features/arenas/ui/RinkCard'
-import {arenaHasFreeSlots} from '@/mocks/data/arenas'
+import {arenaHasFreeSlots, fetchArenas, fetchArenaSlots} from '@/entities/arena'
+import {ArenaDetailPanel, ArenaFilters, ArenaMap, RinkCard} from '@/features/arenas'
 import {ARENAS_PAGE_TITLE} from '@/shared/config/navigationLabels'
 import {useDocumentTitle} from '@/shared/hooks/useDocumentTitle'
 import {testId} from '@/shared/testing/testId'
@@ -74,6 +70,15 @@ export function ArenasPage() {
     }
   }, [activeArena])
 
+  const {data: allSlots = []} = useQuery({
+    queryKey: ['arena-slots-all', arenas.map((arena) => arena.id).join(',')],
+    queryFn: async () => {
+      const slotGroups = await Promise.all(arenas.map((arena) => fetchArenaSlots(arena.id)))
+      return slotGroups.flat()
+    },
+    enabled: arenas.length > 0,
+  })
+
   const {data: slots = []} = useQuery({
     queryKey: ['arena-slots', activeArena?.id],
     queryFn: () => fetchArenaSlots(activeArena!.id),
@@ -81,8 +86,8 @@ export function ArenasPage() {
   })
 
   const freeSlotArenaIds = useMemo(
-    () => new Set(arenas.filter((a) => arenaHasFreeSlots(a.id)).map((a) => a.id)),
-    [arenas],
+    () => new Set(arenas.filter((a) => arenaHasFreeSlots(a.id, allSlots)).map((a) => a.id)),
+    [allSlots, arenas],
   )
 
   const handleSelectArena = (id: string) => {
@@ -216,7 +221,7 @@ export function ArenasPage() {
                     onOpenDetails={handleSelectArena}
                     hasFreeSlot={
                       arena.bookingMode === 'slot_calendar'
-                        ? arenaHasFreeSlots(arena.id)
+                        ? arenaHasFreeSlots(arena.id, allSlots)
                         : undefined
                     }
                   />
@@ -233,7 +238,7 @@ export function ArenasPage() {
               <ArenaDetailPanel
                 arena={activeArena}
                 slots={slots}
-                hasFreeSlot={arenaHasFreeSlots(activeArena.id)}
+                hasFreeSlot={arenaHasFreeSlots(activeArena.id, slots.length > 0 ? slots : allSlots)}
                 onClose={handleCloseDetail}
               />
             ) : (

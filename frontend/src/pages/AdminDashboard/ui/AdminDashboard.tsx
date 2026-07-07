@@ -6,9 +6,7 @@ import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 
 import {fetchSourceStatuses} from '@/entities/admin'
-import {AdminEntityForm} from '@/features/admin/ui/AdminEntityForm'
-import {PartnerModerationPanel} from '@/features/admin/ui/PartnerModerationPanel'
-import {SourceStatusTable} from '@/features/admin/ui/SourceStatusTable'
+import {AdminEntityForm, PartnerModerationPanel, SourceStatusTable} from '@/features/admin'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 

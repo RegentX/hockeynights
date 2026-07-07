@@ -20,10 +20,9 @@ import {
   updatePrivacySettings,
   updateSubscription,
 } from '@/entities/profile'
-import {KarmaHint} from '@/features/karma/ui/KarmaHint'
-import {KarmaScore} from '@/features/karma/ui/KarmaScore'
-import {CoachProfilePanel} from '@/features/profile/ui/CoachProfilePanel'
-import {getPrimaryPartnerPath, shouldUsePartnerWorkspace} from '@/shared/lib/sessionPersona'
+import {getPrimaryPartnerPath, shouldUsePartnerWorkspace} from '@/features/access'
+import {KarmaHint, KarmaScore} from '@/features/karma'
+import {CoachProfilePanel} from '@/features/profile'
 import {testId} from '@/shared/testing/testId'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 

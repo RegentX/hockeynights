@@ -11,10 +11,10 @@ import type {
   VerificationStatus,
 } from '@/entities/profile'
 import type {PartnerMembership, Session, User} from '@/entities/user'
+import {getAllowedPathPrefixes, getPersonaHomePath} from '@/features/access'
 import {clearPendingLocalUser, getPendingRegistration} from '@/features/auth/lib/localAuthMemory'
 import {getPersonaOnboardingPayload} from '@/mocks/data/personas'
 import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
-import {getAllowedPathPrefixes, getPersonaHomePath} from '@/shared/lib/navigationAccess'
 
 /** @spec SPEC-FR-2.1.1 - Mock пользователь по умолчанию */
 export const mockUser: User = {
