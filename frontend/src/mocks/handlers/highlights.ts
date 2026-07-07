@@ -8,7 +8,7 @@ import type {
   CreateAnnotationPayload,
   CreateCommentPayload,
   CreateHighlightPayload,
-} from '@/entities/highlight/types'
+} from '@/entities/highlight'
 import {
   createMockAnnotation,
   createMockComment,

@@ -2,7 +2,7 @@
  * SPEC-FR-8.1.1, SPEC-FR-8.1.2, SPEC-FR-8.2.1
  */
 
-import type {CreateFeedbackPayload, Feedback, KarmaInfo} from '@/entities/feedback/types'
+import type {CreateFeedbackPayload, Feedback, KarmaInfo} from '@/entities/feedback'
 import {mockEvents} from '@/mocks/data/events'
 import {mockPlayers} from '@/mocks/data/players'
 import {mockProfile, updateMockProfile} from '@/mocks/data/session'

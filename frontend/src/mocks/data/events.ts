@@ -2,11 +2,11 @@
  * SPEC-FR-3.3.1, SPEC-FR-3.3.2, SPEC-FR-4.1.1, SPEC-FR-4.1.2, SPEC-FR-4.2.1, SPEC-FR-4.3.1
  */
 
-import type {AttendanceStatus} from '@/entities/common/types'
-import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
-import type {CreateEventPayload, GameEvent, RosterStatus} from '@/entities/event/types'
+import type {AttendanceStatus} from '@/entities/common'
+import type {CreateEventPayload, GameEvent, RosterStatus} from '@/entities/event'
+import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event'
 
-export {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
+export {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event'
 
 /** @spec SPEC-FR-4.1.1 - Mock события */
 export let mockEvents: GameEvent[] = [

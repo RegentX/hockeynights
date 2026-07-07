@@ -5,16 +5,16 @@
 
 import {http, HttpResponse} from 'msw'
 
-import type {AuthLoginPayload, SelectPersonaPayload} from '@/entities/auth/types'
-import type {OnboardingPayload} from '@/entities/user/types'
-import {DEMO_EMAIL, isDemoCredentials} from '@/features/auth/demoCredentials'
+import type {AuthLoginPayload, SelectPersonaPayload} from '@/entities/auth'
+import type {OnboardingPayload} from '@/entities/user'
+import {DEMO_EMAIL, isDemoCredentials} from '@/features/auth/lib/demoCredentials'
 import {
   authenticateLocalUser,
   findLocalUserByEmail,
   registerLocalUser,
   setPendingLocalUser,
-} from '@/features/auth/localAuthMemory'
-import {validateRegisterPayload} from '@/features/auth/registrationValidation'
+} from '@/features/auth/lib/localAuthMemory'
+import {validateRegisterPayload} from '@/features/auth/lib/registrationValidation'
 import {DEMO_USER_ID, getAvailablePersonas} from '@/mocks/data/personas'
 import {
   completeOnboarding,

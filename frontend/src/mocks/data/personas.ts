@@ -3,9 +3,9 @@
  * Демо-пользователь и карточки ролей для mock-авторизации.
  */
 
-import type {AvailablePersona} from '@/entities/auth/types'
-import type {OnboardingPayload} from '@/entities/user/types'
-import {PERSONA_PRESETS} from '@/features/auth/personaPresets'
+import type {AvailablePersona} from '@/entities/auth'
+import type {OnboardingPayload} from '@/entities/user'
+import {PERSONA_PRESETS} from '@/features/auth/lib/personaPresets'
 
 export const DEMO_USER_ID = 'user-001'
 

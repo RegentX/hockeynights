@@ -5,8 +5,8 @@
 
 import {useQuery} from '@tanstack/react-query'
 
-import {fetchSession} from '@/features/auth/api/sessionApi'
-import {AuthPage} from '@/pages/auth/ui/AuthPage'
+import {fetchSession} from '@/entities/auth'
+import {AuthPage} from '@/pages/auth'
 import {testId} from '@/shared/testing/testId'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 

@@ -4,8 +4,8 @@
 
 import {Label} from '@gravity-ui/uikit'
 
-import type {SourceMeta} from '@/entities/common/types'
 import {testId} from '@/shared/testing/testId'
+import type {SourceMeta} from '@/shared/types/common'
 
 /** @spec SPEC-FR-6.3.2 - Props бейджа источника данных */
 export interface SourceMetaBadgeProps {

@@ -4,11 +4,11 @@
 
 import {beforeEach, describe, expect, it} from 'vitest'
 
-import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event/constants'
-import {authLogin, selectPersona} from '@/features/auth/api/sessionApi'
-import {DEMO_EMAIL, DEMO_PASSWORD} from '@/features/auth/demoCredentials'
-import {fetchEventRsvp, updateEventRsvp} from '@/features/events/api/eventsApi'
-import {fetchProfileFavorites, patchProfileFavorites} from '@/features/profile/api/favoritesApi'
+import {authLogin, selectPersona} from '@/entities/auth'
+import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event'
+import {fetchEventRsvp, updateEventRsvp} from '@/entities/event'
+import {fetchProfileFavorites, patchProfileFavorites} from '@/entities/favorites'
+import {DEMO_EMAIL, DEMO_PASSWORD} from '@/features/auth/lib/demoCredentials'
 import {resetMockEventRsvp} from '@/mocks/data/eventRsvp'
 import {resetMockFavorites} from '@/mocks/data/favorites'
 import {resetMockSession} from '@/mocks/data/session'

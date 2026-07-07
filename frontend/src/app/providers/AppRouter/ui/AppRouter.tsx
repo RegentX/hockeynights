@@ -1,0 +1,99 @@
+/**
+ * SPEC-FR-1.2.1, SPEC-FR-2.1.1
+ */
+
+import {Navigate, Route, Routes} from 'react-router-dom'
+import {BrowserRouter} from 'react-router-dom'
+
+import {LoginLayout} from '@/app/LoginLayout'
+import {PersonaGate} from '@/app/PersonaGate'
+import {RequireAuth} from '@/app/RequireAuth'
+import {AdminDashboard} from '@/pages/AdminDashboard'
+import {ArenasPage} from '@/pages/ArenasPage'
+import {MockLoginPage} from '@/pages/auth'
+import {CalendarPage} from '@/pages/CalendarPage'
+import {EventsPage} from '@/pages/EventsPage'
+import {FeedbackPage} from '@/pages/FeedbackPage'
+import {HighlightsPage} from '@/pages/HighlightsPage'
+import {IqTestsPage} from '@/pages/IqTestsPage'
+import {LeaguePartnerDashboard} from '@/pages/LeaguePartnerDashboard'
+import {LeaguesPage} from '@/pages/LeaguesPage'
+import {MessengerPage} from '@/pages/MessengerPage'
+import {NotificationsPage} from '@/pages/NotificationsPage'
+import {PartnerHubPage} from '@/pages/PartnerHubPage'
+import {PlayersPage} from '@/pages/PlayersPage'
+import {HockeyProfileForm} from '@/pages/ProfilePage'
+import {PublicPlayerProfilePage} from '@/pages/PublicPlayerProfilePage'
+import {ShopPartnerDashboard} from '@/pages/ShopPartnerDashboard'
+import {ShopsPage} from '@/pages/ShopsPage'
+import {SosPage} from '@/pages/SosPage'
+import {TeamsPage} from '@/pages/TeamsPage'
+import {TermsOfUsePage} from '@/pages/TermsOfUsePage'
+import {TrainingDetailsPage} from '@/pages/TrainingDetailsPage'
+import {routes} from '@/shared/const/appRoutes'
+import {AppShell} from '@/widgets/AppShell'
+
+/**
+ * @spec SPEC-FR-1.2.1 - Маршрутизация MVP
+ */
+export function AppRouter() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path={routes.home}
+          element={
+            <LoginLayout>
+              <MockLoginPage />
+            </LoginLayout>
+          }
+        />
+        <Route path={routes.login} element={<Navigate to={routes.home} replace />} />
+        <Route
+          path={routes.register}
+          element={
+            <LoginLayout>
+              <MockLoginPage />
+            </LoginLayout>
+          }
+        />
+        <Route
+          path={routes.terms}
+          element={
+            <LoginLayout>
+              <TermsOfUsePage />
+            </LoginLayout>
+          }
+        />
+        <Route element={<RequireAuth />}>
+          <Route element={<PersonaGate />}>
+            <Route element={<AppShell />}>
+              <Route path={routes.profile} element={<HockeyProfileForm />} />
+              <Route path={routes.players} element={<PlayersPage />} />
+              <Route path={routes.playerProfile} element={<PublicPlayerProfilePage />} />
+              <Route path={routes.teams} element={<TeamsPage />} />
+              <Route path={routes.events} element={<EventsPage />} />
+              <Route path={routes.trainingDetails} element={<TrainingDetailsPage />} />
+              <Route path={routes.calendar} element={<CalendarPage />} />
+              <Route path={routes.sos} element={<SosPage />} />
+              <Route path={routes.arenas} element={<ArenasPage />} />
+              <Route path={routes.leagues} element={<LeaguesPage />} />
+              <Route path={routes.feedback} element={<FeedbackPage />} />
+              <Route path={routes.notifications} element={<NotificationsPage />} />
+              <Route path={routes.messenger} element={<MessengerPage />} />
+              <Route path={routes.shops} element={<ShopsPage />} />
+              <Route path={routes.partner} element={<PartnerHubPage />} />
+              <Route path={routes.partnerShop} element={<ShopPartnerDashboard />} />
+              <Route path={routes.partnerLeague} element={<LeaguePartnerDashboard />} />
+              <Route path={routes.iq} element={<IqTestsPage />} />
+              <Route path={routes.radar} element={<Navigate to={routes.events} replace />} />
+              <Route path={routes.highlights} element={<HighlightsPage />} />
+              <Route path={routes.admin} element={<AdminDashboard />} />
+            </Route>
+          </Route>
+        </Route>
+        <Route path="*" element={<Navigate to={routes.home} replace />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}

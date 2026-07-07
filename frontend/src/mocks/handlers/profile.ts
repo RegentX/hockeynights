@@ -4,14 +4,14 @@
 
 import {http, HttpResponse} from 'msw'
 
-import type {PlayerPosition, SkillLevel} from '@/entities/common/types'
-import type {PatchProfileFavoritesPayload} from '@/entities/favorites/types'
+import type {PlayerPosition, SkillLevel} from '@/entities/common'
+import type {PatchProfileFavoritesPayload} from '@/entities/favorites'
 import type {
   HockeyProfile,
   NotificationPreferences,
   PrivacySettings,
   SubscriptionState,
-} from '@/entities/profile/types'
+} from '@/entities/profile'
 import {getMockFavorites, updateMockFavorites} from '@/mocks/data/favorites'
 import {buildPublicPlayerView, mockPlayers} from '@/mocks/data/players'
 import {

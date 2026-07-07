@@ -2,8 +2,8 @@
  * SPEC-FR-24.7.9
  */
 
-import type {PartnerModerationItem, PartnerModerationKind} from '@/entities/admin/types'
-import type {PartnerModerationStatus} from '@/entities/common/types'
+import type {PartnerModerationItem, PartnerModerationKind} from '@/entities/admin'
+import type {PartnerModerationStatus} from '@/entities/common'
 import {mockLeagues} from '@/mocks/data/leagues'
 import {mockProductOffers, mockShops} from '@/mocks/data/shops'
 

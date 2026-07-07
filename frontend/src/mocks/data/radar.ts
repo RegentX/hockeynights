@@ -6,7 +6,7 @@ import type {
   PatchRadarRecommendationPayload,
   RadarAction,
   RadarRecommendation,
-} from '@/entities/radar/types'
+} from '@/entities/radar'
 import {mockArenas, mockIceSlots} from '@/mocks/data/arenas'
 import {mockEvents} from '@/mocks/data/events'
 import {mockLeagues} from '@/mocks/data/leagues'

@@ -7,8 +7,8 @@ import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
-import type {IqQuestion, IqTest} from '@/entities/iq/types'
-import {IqAttemptFlow} from '@/features/iq/IqAttemptFlow'
+import type {IqQuestion, IqTest} from '@/entities/iq'
+import {IqAttemptFlow} from '@/features/iq/ui/IqAttemptFlow'
 
 const TEST: IqTest = {
   id: 'iq-test-001',

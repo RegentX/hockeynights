@@ -4,7 +4,7 @@
 
 import {http, HttpResponse} from 'msw'
 
-import type {PatchRadarRecommendationPayload} from '@/entities/radar/types'
+import type {PatchRadarRecommendationPayload} from '@/entities/radar'
 import {getActiveRadarRecommendations, patchMockRadarRecommendation} from '@/mocks/data/radar'
 
 /** @spec SPEC-FR-15.1.1 - Handlers Ice Radar */

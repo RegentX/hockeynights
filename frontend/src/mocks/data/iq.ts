@@ -8,7 +8,7 @@ import type {
   IqLeaderboardRow,
   IqQuestion,
   IqTest,
-} from '@/entities/iq/types'
+} from '@/entities/iq'
 
 /** @spec SPEC-FR-13.1.1 - Каталог mock-тестов */
 export const mockIqTests: IqTest[] = [

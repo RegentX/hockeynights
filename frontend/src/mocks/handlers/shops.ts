@@ -4,7 +4,7 @@
 
 import {http, HttpResponse} from 'msw'
 
-import type {ShopProductPayload, ShopPromo} from '@/entities/shop/types'
+import type {ShopProductPayload, ShopPromo} from '@/entities/shop'
 import {buildMarketplaceFeed} from '@/mocks/data/marketplace'
 import {canManagePartnerEntity} from '@/mocks/data/partners'
 import {
@@ -33,11 +33,10 @@ export const shopHandlers = [
       shopId: url.searchParams.get('shopId') ?? undefined,
       inStockOnly: url.searchParams.get('inStockOnly') === '1',
       position:
-        (url.searchParams.get('position') as import('@/entities/common/types').PlayerPosition) ??
+        (url.searchParams.get('position') as import('@/entities/common').PlayerPosition) ??
         undefined,
       sort:
-        (url.searchParams.get('sort') as import('@/entities/shop/types').MarketplaceSort) ??
-        undefined,
+        (url.searchParams.get('sort') as import('@/entities/shop').MarketplaceSort) ?? undefined,
     }
     return HttpResponse.json(buildMarketplaceFeed(filters))
   }),

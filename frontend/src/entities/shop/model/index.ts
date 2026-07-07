@@ -1,0 +1,16 @@
+export type {
+  CatalogSyncStatus,
+  MarketplaceFeedResponse,
+  MarketplaceFilters,
+  MarketplaceProductListing,
+  MarketplaceShopSpotlight,
+  MarketplaceSort,
+  ProductOffer,
+  Shop,
+  ShopAnalytics,
+  ShopCatalogImportJob,
+  ShopCatalogSyncState,
+  ShopLead,
+  ShopProductPayload,
+  ShopPromo,
+} from './types/shopTypes'

@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {canViewTraining, getUserTeamIds} from '@/features/events/trainingAccess'
+import {canViewTraining, getUserTeamIds} from '@/features/events/lib/trainingAccess'
 import {mockEvents} from '@/mocks/data/events'
 import {mockTeams} from '@/mocks/data/teams'
 

@@ -8,7 +8,7 @@ import userEvent from '@testing-library/user-event'
 import {http, HttpResponse} from 'msw'
 import {describe, expect, it} from 'vitest'
 
-import {ArenasPage} from '@/features/arenas/ArenasPage'
+import {ArenasPage} from '@/pages/ArenasPage'
 import {server} from '@/test/msw-server'
 import {renderWithProviders} from '@/test/render'
 

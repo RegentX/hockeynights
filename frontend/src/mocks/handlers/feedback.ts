@@ -4,7 +4,7 @@
 
 import {http, HttpResponse} from 'msw'
 
-import type {CreateFeedbackPayload} from '@/entities/feedback/types'
+import type {CreateFeedbackPayload} from '@/entities/feedback'
 import {createMockFeedback, getMockKarma} from '@/mocks/data/feedback'
 import {mockUser} from '@/mocks/data/session'
 

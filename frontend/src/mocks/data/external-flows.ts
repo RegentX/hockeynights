@@ -7,7 +7,7 @@ import type {
   CreateCheckoutIntentPayload,
   CreateIceBookingPayload,
   IceBookingRequest,
-} from '@/entities/external-flow/types'
+} from '@/entities/external-flow'
 import {mockArenas, mockIceSlots} from '@/mocks/data/arenas'
 import {mockProductOffers, mockShops} from '@/mocks/data/shops'
 

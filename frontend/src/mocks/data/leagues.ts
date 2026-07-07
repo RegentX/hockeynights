@@ -2,7 +2,7 @@
  * SPEC-FR-7.1.1, SPEC-FR-7.1.2, SPEC-FR-7.2.1, SPEC-FR-7.2.2
  */
 
-import type {League, LeagueScheduleItem, LeagueStanding} from '@/entities/league/types'
+import type {League, LeagueScheduleItem, LeagueStanding} from '@/entities/league'
 
 const mockSource = {
   source: 'mock' as const,

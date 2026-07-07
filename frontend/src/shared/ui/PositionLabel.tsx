@@ -2,8 +2,8 @@
  * SPEC-UI-1.4
  */
 
-import type {PlayerPosition} from '@/entities/common/types'
 import {testId} from '@/shared/testing/testId'
+import type {PlayerPosition} from '@/shared/types/common'
 
 const POSITION_SHORT: Record<PlayerPosition, string> = {
   goalie: 'ВР',

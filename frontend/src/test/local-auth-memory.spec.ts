@@ -12,7 +12,7 @@ import {
   loadLocalAuthMemory,
   LOCAL_AUTH_MEMORY_KEY,
   registerLocalUser,
-} from '@/features/auth/localAuthMemory'
+} from '@/features/auth/lib/localAuthMemory'
 
 describe('localAuthMemory', () => {
   beforeEach(() => {

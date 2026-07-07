@@ -3,7 +3,7 @@
  * Пресет избранных быстрых действий профиля.
  */
 
-import type {FavoriteAction, ProfileFavorites} from '@/entities/favorites/types'
+import type {FavoriteAction, ProfileFavorites} from '@/entities/favorites'
 import {ARENAS_LABEL, EVENTS_LABEL} from '@/shared/config/navigationLabels'
 import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
 

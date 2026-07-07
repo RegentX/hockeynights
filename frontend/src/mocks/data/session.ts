@@ -9,10 +9,10 @@ import type {
   ProfileSettings,
   SubscriptionState,
   VerificationStatus,
-} from '@/entities/profile/types'
-import type {PartnerMembership, Session, User} from '@/entities/user/types'
-import {getAllowedPathPrefixes, getPersonaHomePath} from '@/features/access/navigationAccess'
-import {clearPendingLocalUser, getPendingRegistration} from '@/features/auth/localAuthMemory'
+} from '@/entities/profile'
+import type {PartnerMembership, Session, User} from '@/entities/user'
+import {getAllowedPathPrefixes, getPersonaHomePath} from '@/features/access'
+import {clearPendingLocalUser, getPendingRegistration} from '@/features/auth/lib/localAuthMemory'
 import {getPersonaOnboardingPayload} from '@/mocks/data/personas'
 import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
 

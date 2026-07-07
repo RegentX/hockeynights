@@ -9,7 +9,7 @@ import type {
   LeagueScheduleImportResult,
   LeagueSeason,
   LeagueTeamApplication,
-} from '@/entities/league/types'
+} from '@/entities/league'
 import {addMockScheduleItem} from '@/mocks/data/leagues'
 
 export const mockLeagueSeasons: LeagueSeason[] = [

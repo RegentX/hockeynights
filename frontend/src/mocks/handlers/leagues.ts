@@ -10,7 +10,7 @@ import type {
   LeagueScheduleItem,
   LeagueStanding,
   LeagueTeamApplication,
-} from '@/entities/league/types'
+} from '@/entities/league'
 import {
   addMockLeagueApplication,
   addMockLeaguePost,

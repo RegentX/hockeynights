@@ -6,7 +6,7 @@ import type {
   CreateRecruitmentPayload,
   RecruitmentRequest,
   RecruitmentResponse,
-} from '@/entities/recruitment/types'
+} from '@/entities/recruitment'
 import {mockEvents} from '@/mocks/data/events'
 
 /** @spec SPEC-FR-5.1.1 - Mock запросы добора */

@@ -7,9 +7,9 @@
 
 import {http, HttpResponse} from 'msw'
 
-import type {AttendanceStatus, EventType} from '@/entities/common/types'
-import type {CreateEventPayload} from '@/entities/event/types'
-import type {CreateTeamPayload} from '@/entities/team/types'
+import type {AttendanceStatus, EventType} from '@/entities/common'
+import type {CreateEventPayload} from '@/entities/event'
+import type {CreateTeamPayload} from '@/entities/team'
 import {findMockClubByTeamId} from '@/mocks/data/clubs'
 import {
   createMockEvent,
@@ -198,8 +198,7 @@ export const teamHandlers = [
     if (!canEdit) {
       return HttpResponse.json({message: 'Недостаточно прав для раскладки'}, {status: 403})
     }
-    const body =
-      (await request.json()) as import('@/entities/team/types').TrainingLineupAssignment[]
+    const body = (await request.json()) as import('@/entities/team').TrainingLineupAssignment[]
     const updated = updateMockTrainingLineup(params.eventId as string, body)
     return HttpResponse.json(updated)
   }),

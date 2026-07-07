@@ -4,7 +4,7 @@
 
 import {http, HttpResponse} from 'msw'
 
-import type {IqAttemptPayload} from '@/entities/iq/types'
+import type {IqAttemptPayload} from '@/entities/iq'
 import {
   evaluateMockIqAttempt,
   mockIqLeaderboard,

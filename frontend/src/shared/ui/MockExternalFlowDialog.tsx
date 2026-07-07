@@ -5,8 +5,8 @@
 import {Button, Dialog, Text} from '@gravity-ui/uikit'
 import type {ReactNode} from 'react'
 
-import type {MockExternalFlowType} from '@/entities/external-flow/types'
 import {testId} from '@/shared/testing/testId'
+import type {MockExternalFlowType} from '@/shared/types/externalFlow'
 
 const FLOW_LABELS: Record<MockExternalFlowType, string> = {
   ice_booking: 'Запись на лёд',
