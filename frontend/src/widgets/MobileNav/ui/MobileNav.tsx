@@ -3,6 +3,18 @@
  */
 
 import {useQuery} from '@tanstack/react-query'
+import {
+  Bell,
+  ClipboardList,
+  MessageCircle,
+  Settings,
+  Shield,
+  ShoppingBag,
+  Snowflake,
+  Store,
+  Trophy,
+  UserRound,
+} from 'lucide-react'
 import {Link, useLocation} from 'react-router-dom'
 
 import {fetchSession} from '@/entities/auth'
@@ -12,6 +24,34 @@ import {routeToTestSlug, testId} from '@/shared/testing/testId'
 
 function formatUnreadBadge(count: number): string {
   return count > 99 ? '99+' : String(count)
+}
+
+function renderMobileNavIcon(icon: string) {
+  switch (icon) {
+    case '🏒':
+    case '🏆':
+      return <Trophy size={18} aria-hidden />
+    case '👤':
+      return <UserRound size={18} aria-hidden />
+    case '🛡':
+      return <Shield size={18} aria-hidden />
+    case '💬':
+      return <MessageCircle size={18} aria-hidden />
+    case '🧊':
+      return <Snowflake size={18} aria-hidden />
+    case '🛍':
+      return <ShoppingBag size={18} aria-hidden />
+    case '⚙':
+      return <Settings size={18} aria-hidden />
+    case '🏪':
+      return <Store size={18} aria-hidden />
+    case '📋':
+      return <ClipboardList size={18} aria-hidden />
+    case '🔔':
+      return <Bell size={18} aria-hidden />
+    default:
+      return null
+  }
 }
 
 /**
@@ -50,7 +90,7 @@ export function MobileNav() {
             aria-hidden
             data-testid={testId('app', 'mobile-nav', 'icon', 'partner')}
           >
-            🏪
+            {renderMobileNavIcon('🏪')}
           </span>
           <span
             className="mobile-nav__label"
@@ -77,7 +117,7 @@ export function MobileNav() {
                 aria-hidden
                 data-testid={testId('app', 'mobile-nav', 'icon', routeToTestSlug(item.to))}
               >
-                {item.icon}
+                {renderMobileNavIcon(item.icon)}
               </span>
               {showUnreadBadge && (
                 <span

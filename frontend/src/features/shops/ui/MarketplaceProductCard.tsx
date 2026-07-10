@@ -3,6 +3,7 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
+import {Trophy} from 'lucide-react'
 import {useState} from 'react'
 
 import type {MarketplaceProductListing} from '@/entities/shop'
@@ -50,7 +51,7 @@ export function MarketplaceProductCard({listing}: MarketplaceProductCardProps) {
             aria-hidden
             data-testid={testId('shops', 'marketplace-card', 'cell', 'placeholder', offer.id)}
           >
-            🏒
+            <Trophy size={18} aria-hidden />
           </div>
         )}
         <div className="marketplace-card__badges">

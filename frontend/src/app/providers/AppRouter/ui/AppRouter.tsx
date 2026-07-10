@@ -12,6 +12,7 @@ import {AdminDashboard} from '@/pages/AdminDashboard'
 import {ArenasPage} from '@/pages/ArenasPage'
 import {MockLoginPage} from '@/pages/auth'
 import {CalendarPage} from '@/pages/CalendarPage'
+import {EventsPageMagic, NearestGamesPageMagic, TrainingDetailsPageMagic} from '@/features/events'
 import {EventsPage} from '@/pages/EventsPage'
 import {FeedbackPage} from '@/pages/FeedbackPage'
 import {HighlightsPage} from '@/pages/HighlightsPage'
@@ -73,6 +74,9 @@ export function AppRouter() {
               <Route path={routes.playerProfile} element={<PublicPlayerProfilePage />} />
               <Route path={routes.teams} element={<TeamsPage />} />
               <Route path={routes.events} element={<EventsPage />} />
+              <Route path={routes.eventsMagic} element={<EventsPageMagic />} />
+              <Route path={routes.eventsMagicGames} element={<NearestGamesPageMagic />} />
+              <Route path={routes.eventsMagicTraining} element={<TrainingDetailsPageMagic />} />
               <Route path={routes.trainingDetails} element={<TrainingDetailsPage />} />
               <Route path={routes.calendar} element={<CalendarPage />} />
               <Route path={routes.sos} element={<SosPage />} />

@@ -5,6 +5,7 @@
 
 import {Select, Text} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {FishingRod} from 'lucide-react'
 
 import type {RosterMember, TeamRole} from '@/entities/team'
 import {fetchTeamRoster, updateRosterMemberStatus, updateTeamMemberRole} from '@/entities/team'
@@ -132,7 +133,7 @@ export function TeamRoster({teamId, userId, teamPermissions}: TeamRosterProps) {
                 data-testid={testId('teams', 'team-roster', 'empty', position, teamId)}
               >
                 <span className="roster-hook-slot__hook" aria-hidden>
-                  🪝
+                  <FishingRod size={18} aria-hidden />
                 </span>
                 <Text
                   color="secondary"
@@ -156,7 +157,7 @@ export function TeamRoster({teamId, userId, teamPermissions}: TeamRosterProps) {
                   data-testid={testId('teams', 'team-roster', 'row', member.userId)}
                 >
                   <span className="roster-hook-slot__hook" aria-hidden>
-                    🪝
+                    <FishingRod size={18} aria-hidden />
                   </span>
                   <div className="roster-hook-slot__body">
                     <Text

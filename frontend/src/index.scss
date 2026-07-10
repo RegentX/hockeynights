@@ -4,6 +4,8 @@
 @use './shared/styles/utilities';
 @use './shared/styles/hockey-ui';
 
+@import './shared/magic-ui/magic-ui.css';
+
 body {
   margin: 0;
   font-family: var(--hockey-font-sans);
@@ -49,5 +51,17 @@ a {
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--hockey-text-muted);
+  }
+}
+
+.hockey-ui-preview-link {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hockey-accent, #38bdf8);
+  white-space: nowrap;
+
+  &:hover {
+    opacity: 0.85;
   }
 }

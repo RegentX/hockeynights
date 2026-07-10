@@ -5,6 +5,7 @@
 
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
+import {FishingRod} from 'lucide-react'
 
 import type {PlayerPosition} from '@/entities/common'
 import {fetchRosterStatus} from '@/entities/event'
@@ -95,7 +96,7 @@ export function RosterNeedsWidget({eventId}: RosterNeedsWidgetProps) {
               data-testid={testId('events', 'roster', 'slot', slot.position, eventId)}
             >
               <span className="roster-hook-slot__hook" aria-hidden>
-                🪝
+                <FishingRod size={18} aria-hidden />
               </span>
               <PositionLabel position={slot.position as PlayerPosition} />
               <Text

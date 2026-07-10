@@ -9,6 +9,7 @@ import {useState} from 'react'
 import type {EventRsvpStatus} from '@/entities/event'
 import {fetchEventRsvp, updateEventRsvp} from '@/entities/event'
 import {DeclineReasonField} from '@/features/radar/ui/DeclineReasonField'
+import {cn} from '@/shared/lib/cn'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
@@ -17,6 +18,7 @@ import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 export interface LeagueGameRsvpProps {
   eventId: string
   currentUserId?: string
+  variant?: 'default' | 'magic'
 }
 
 const PLAYER_STATUS_LABELS: Record<EventRsvpStatus, string> = {
@@ -31,7 +33,11 @@ const PLAYER_STATUS_COLORS: Record<EventRsvpStatus, 'positive' | 'danger' | 'war
   pending: 'warning',
 }
 
-export function LeagueGameRsvp({eventId, currentUserId = 'user-001'}: LeagueGameRsvpProps) {
+export function LeagueGameRsvp({
+  eventId,
+  currentUserId = 'user-001',
+  variant = 'default',
+}: LeagueGameRsvpProps) {
   const queryClient = useQueryClient()
   const [showDeclineReason, setShowDeclineReason] = useState(false)
 
@@ -72,6 +78,145 @@ export function LeagueGameRsvp({eventId, currentUserId = 'user-001'}: LeagueGame
     mutation.mutate({status: 'declined', declineReason: reason})
   }
 
+  const isMagic = variant === 'magic'
+  const statusColor = PLAYER_STATUS_COLORS[myStatus]
+
+  const heroContent = (
+    <div className="league-game-rsvp__hero hockey-stack hockey-stack--gap-8">
+      <Text
+        variant="subheader-1"
+        data-testid={testId('radar', 'league-rsvp', 'text', 'title', eventId)}
+      >
+        Ближайшая игра
+      </Text>
+      <ScoreboardText
+        tone="accent"
+        data-testid={testId('radar', 'league-rsvp', 'text', 'league', eventId)}
+      >
+        {board.leagueName}
+      </ScoreboardText>
+      <Text
+        variant="subheader-2"
+        data-testid={testId('radar', 'league-rsvp', 'text', 'matchup', eventId)}
+      >
+        {board.teamName} vs {board.opponentName}
+      </Text>
+      <div className="league-game-rsvp__meta hockey-stack hockey-stack--gap-4">
+        <Text data-testid={testId('radar', 'league-rsvp', 'text', 'datetime', eventId)}>
+          {dateTimeLabel}
+        </Text>
+        <Text
+          color="secondary"
+          data-testid={testId('radar', 'league-rsvp', 'text', 'arena', eventId)}
+        >
+          {board.arenaName}
+        </Text>
+      </div>
+      <div className="hockey-row hockey-row--gap-6">
+        <Text data-testid={testId('radar', 'league-rsvp', 'text', 'player-status', eventId)}>
+          Ваш статус:
+        </Text>
+        <Text
+          color={statusColor}
+          data-testid={testId('radar', 'league-rsvp', 'text', 'player-status-value', eventId)}
+        >
+          {PLAYER_STATUS_LABELS[myStatus]}
+        </Text>
+      </div>
+    </div>
+  )
+
+  const actionButtons = !showDeclineReason ? (
+    <div
+      className={cn(
+        'league-game-rsvp__actions',
+        isMagic && 'league-game-rsvp__actions--magic',
+        'hockey-row hockey-row--gap-10 hockey-row--wrap',
+      )}
+      data-testid={testId('radar', 'league-rsvp', 'panel', 'cta', eventId)}
+    >
+      {isMagic ? (
+        <>
+          <button
+            type="button"
+            className={cn(
+              'magic-attendance-btn',
+              myStatus === 'confirmed' && 'magic-attendance-btn--active',
+            )}
+            disabled={mutation.isPending}
+            onClick={confirmAttendance}
+            data-testid={testId('radar', 'league-rsvp', 'btn', 'confirm', eventId)}
+          >
+            Буду
+          </button>
+          <button
+            type="button"
+            className={cn(
+              'magic-attendance-btn',
+              myStatus === 'declined' && 'magic-attendance-btn--active',
+            )}
+            disabled={mutation.isPending}
+            onClick={() => setShowDeclineReason(true)}
+            data-testid={testId('radar', 'league-rsvp', 'btn', 'decline', eventId)}
+          >
+            Не смогу
+          </button>
+        </>
+      ) : (
+        <>
+          <HockeyButton
+            view="action"
+            size="l"
+            loading={mutation.isPending}
+            onClick={confirmAttendance}
+            data-testid={testId('radar', 'league-rsvp', 'btn', 'confirm', eventId)}
+          >
+            Буду
+          </HockeyButton>
+          <HockeyButton
+            view="outlined"
+            size="l"
+            loading={mutation.isPending}
+            onClick={() => setShowDeclineReason(true)}
+            data-testid={testId('radar', 'league-rsvp', 'btn', 'decline', eventId)}
+          >
+            Не смогу
+          </HockeyButton>
+        </>
+      )}
+    </div>
+  ) : (
+    <div className="league-game-rsvp__actions">
+      <DeclineReasonField
+        onConfirm={submitDecline}
+        onCancel={() => setShowDeclineReason(false)}
+        isPending={mutation.isPending}
+      />
+    </div>
+  )
+
+  if (isMagic) {
+    return (
+      <div
+        className="league-game-rsvp league-game-rsvp--magic"
+        data-testid={testId('radar', 'league-rsvp', 'card', eventId)}
+      >
+        <div className="hockey-stack hockey-stack--gap-14">
+          {heroContent}
+          <div className="magic-league-rsvp-attendance">
+            <p
+              className="magic-attendance-label"
+              data-testid={testId('radar', 'league-rsvp', 'text', 'attendance-label', eventId)}
+            >
+              Моё участие в игре «{board.teamName} vs {board.opponentName}»
+            </p>
+            {actionButtons}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <IceCard
       padding="m"
@@ -79,82 +224,8 @@ export function LeagueGameRsvp({eventId, currentUserId = 'user-001'}: LeagueGame
       data-testid={testId('radar', 'league-rsvp', 'card', eventId)}
     >
       <div className="hockey-stack hockey-stack--gap-14">
-        <div className="league-game-rsvp__hero hockey-stack hockey-stack--gap-8">
-          <Text
-            variant="subheader-1"
-            data-testid={testId('radar', 'league-rsvp', 'text', 'title', eventId)}
-          >
-            Ближайшая игра
-          </Text>
-          <ScoreboardText
-            tone="accent"
-            data-testid={testId('radar', 'league-rsvp', 'text', 'league', eventId)}
-          >
-            {board.leagueName}
-          </ScoreboardText>
-          <Text
-            variant="subheader-2"
-            data-testid={testId('radar', 'league-rsvp', 'text', 'matchup', eventId)}
-          >
-            {board.teamName} vs {board.opponentName}
-          </Text>
-          <div className="league-game-rsvp__meta hockey-stack hockey-stack--gap-4">
-            <Text data-testid={testId('radar', 'league-rsvp', 'text', 'datetime', eventId)}>
-              {dateTimeLabel}
-            </Text>
-            <Text
-              color="secondary"
-              data-testid={testId('radar', 'league-rsvp', 'text', 'arena', eventId)}
-            >
-              {board.arenaName}
-            </Text>
-          </div>
-          <div className="hockey-row hockey-row--gap-6">
-            <Text data-testid={testId('radar', 'league-rsvp', 'text', 'player-status', eventId)}>
-              Ваш статус:
-            </Text>
-            <Text
-              color={PLAYER_STATUS_COLORS[myStatus]}
-              data-testid={testId('radar', 'league-rsvp', 'text', 'player-status-value', eventId)}
-            >
-              {PLAYER_STATUS_LABELS[myStatus]}
-            </Text>
-          </div>
-        </div>
-
-        {!showDeclineReason ? (
-          <div
-            className="league-game-rsvp__actions hockey-row hockey-row--gap-10 hockey-row--wrap"
-            data-testid={testId('radar', 'league-rsvp', 'panel', 'cta', eventId)}
-          >
-            <HockeyButton
-              view="action"
-              size="l"
-              loading={mutation.isPending}
-              onClick={confirmAttendance}
-              data-testid={testId('radar', 'league-rsvp', 'btn', 'confirm', eventId)}
-            >
-              Буду
-            </HockeyButton>
-            <HockeyButton
-              view="outlined"
-              size="l"
-              loading={mutation.isPending}
-              onClick={() => setShowDeclineReason(true)}
-              data-testid={testId('radar', 'league-rsvp', 'btn', 'decline', eventId)}
-            >
-              Не смогу
-            </HockeyButton>
-          </div>
-        ) : (
-          <div className="league-game-rsvp__actions">
-            <DeclineReasonField
-              onConfirm={submitDecline}
-              onCancel={() => setShowDeclineReason(false)}
-              isPending={mutation.isPending}
-            />
-          </div>
-        )}
+        {heroContent}
+        {actionButtons}
       </div>
     </IceCard>
   )

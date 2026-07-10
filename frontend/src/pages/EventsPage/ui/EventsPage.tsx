@@ -5,7 +5,9 @@
 
 import {Select, Text, TextInput} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
+import {Search, Trophy} from 'lucide-react'
 import {useEffect, useMemo, useRef, useState} from 'react'
+import {Link} from 'react-router-dom'
 
 import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event'
 import {fetchEvents} from '@/entities/event'
@@ -246,16 +248,27 @@ export function EventsPage() {
   return (
     <div className="hockey-stack hockey-stack--gap-20" data-testid={testId('events', 'page')}>
       <ScrollReveal direction="down">
-        <Text
-          variant="header-1"
-          className="variable-font-header"
-          data-testid={testId('events', 'page', 'text', 'title')}
-        >
-          {EVENTS_LABEL}
-        </Text>
-        <Text color="secondary" data-testid={testId('events', 'page', 'text', 'subtitle')}>
-          Все записи и ближайшие активности теперь собраны в одном разделе.
-        </Text>
+        <div className="hockey-row hockey-row--between hockey-row--align-center">
+          <div className="hockey-stack hockey-stack--gap-4">
+            <Text
+              variant="header-1"
+              className="variable-font-header"
+              data-testid={testId('events', 'page', 'text', 'title')}
+            >
+              {EVENTS_LABEL}
+            </Text>
+            <Text color="secondary" data-testid={testId('events', 'page', 'text', 'subtitle')}>
+              Все записи и ближайшие активности теперь собраны в одном разделе.
+            </Text>
+          </div>
+          <Link
+            to="/events/magic"
+            className="hockey-ui-preview-link"
+            data-testid={testId('events', 'page', 'link', 'magic-preview')}
+          >
+            Magic UI preview →
+          </Link>
+        </div>
       </ScrollReveal>
 
       <IceCard padding="m" data-testid={testId('events', 'page', 'card', 'search')}>
@@ -291,7 +304,7 @@ export function EventsPage() {
               variant="subheader-2"
               data-testid={testId('events', 'page', 'text', 'nearest-game-title')}
             >
-              🏒 Ближайшая игра и мои игры
+              <Trophy size={18} color="#38bdf8" aria-hidden /> Ближайшая игра и мои игры
             </Text>
             <HockeyButton
               view="outlined"
@@ -326,7 +339,7 @@ export function EventsPage() {
             variant="subheader-2"
             data-testid={testId('events', 'page', 'text', 'filters-title')}
           >
-            🔎 Фильтры тренировок
+            <Search size={18} color="#38bdf8" aria-hidden /> Фильтры тренировок
           </Text>
           <HockeyButton
             view="outlined"

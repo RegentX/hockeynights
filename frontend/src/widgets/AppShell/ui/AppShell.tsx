@@ -4,6 +4,7 @@
  */
 
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {BriefcaseBusiness, Snowflake, Trophy} from 'lucide-react'
 import {useEffect, useRef, useState} from 'react'
 import {Link, Outlet, useLocation, useNavigate} from 'react-router-dom'
 
@@ -109,7 +110,9 @@ export function AppShell() {
             aria-hidden
             data-testid={testId('app', 'shell', 'icon', 'crest')}
           >
-            <span className="app-shell__crest-icon">🏒</span>
+            <span className="app-shell__crest-icon" aria-hidden>
+              <Trophy size={20} />
+            </span>
           </div>
           <div className="app-shell__brand-text">
             <span
@@ -145,7 +148,15 @@ export function AppShell() {
             aria-label="Переключить тему"
             data-testid={testId('app', 'shell', 'btn', 'toggle-theme')}
           >
-            {themeId === 'locker' ? '🧊 Лёд' : '🏒 Раздевалка'}
+            {themeId === 'locker' ? (
+              <>
+                <Snowflake size={18} aria-hidden /> Лёд
+              </>
+            ) : (
+              <>
+                <BriefcaseBusiness size={18} aria-hidden /> Раздевалка
+              </>
+            )}
           </HockeyButton>
           <HockeyButton
             view="outlined"

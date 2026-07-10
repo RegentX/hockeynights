@@ -1,0 +1,1802 @@
+:root {
+  --magic-ice-glow: #38bdf8;
+  --magic-rink-deep: #0c1929;
+  --magic-rink-mid: #0e3a5f;
+  --magic-puck-red: #ef4444;
+  --magic-frost: #e0f2fe;
+  --magic-font-display: 'Oswald', 'Arial Narrow', system-ui, sans-serif;
+}
+
+@keyframes magic-spin-around {
+  0% {
+    transform: translateZ(0) rotate(0);
+  }
+  15%,
+  35% {
+    transform: translateZ(0) rotate(90deg);
+  }
+  65%,
+  85% {
+    transform: translateZ(0) rotate(270deg);
+  }
+  100% {
+    transform: translateZ(0) rotate(360deg);
+  }
+}
+
+@keyframes magic-border-beam {
+  to {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes magic-gradient {
+  to {
+    background-position: var(--bg-size, 300%) 0;
+  }
+}
+
+/* Page shell */
+.magic-page {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: clip;
+  overflow-y: visible;
+  border-radius: 16px;
+  background: linear-gradient(to bottom, #020617, #0a1628, #020617);
+  padding: 4px;
+}
+
+.magic-page__bg1 {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse_at_top, rgba(56, 189, 248, 0.12), transparent 50%);
+}
+
+.magic-page__bg2 {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 256px;
+  height: 256px;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.08), transparent 70%);
+}
+
+.magic-layout {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 20px 16px 16px;
+}
+
+@media (min-width: 768px) {
+  .magic-layout {
+    padding: 28px 24px 24px;
+  }
+}
+
+.magic-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: rgba(56, 189, 248, 0.7);
+  margin: 0;
+}
+
+.magic-title-row .g-text_variant_header-1 {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-bottom: 0;
+  line-height: 1.15;
+  padding: 0.08em 0 0.12em;
+  background: linear-gradient(135deg, #f1f5f9 40%, var(--hockey-accent, #38bdf8) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.magic-subtitle {
+  margin: 12px 0 0;
+  max-width: 48rem;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #94a3b8;
+}
+
+.magic-classic-link {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.magic-classic-link:hover {
+  color: #38bdf8;
+}
+
+.magic-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.magic-nearest-game__toggle-top {
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+.magic-page header {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.magic-header-intro {
+  width: 100%;
+  min-width: 0;
+  overflow: visible;
+}
+
+.magic-title-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.magic-classic-link--inline {
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .magic-title-row {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .magic-classic-link--inline {
+    margin-top: 0.45em;
+  }
+}
+
+.magic-filter-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #64748b;
+  margin: 0;
+  padding-left: 2px;
+}
+
+.magic-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.magic-card--search {
+  overflow: visible;
+  border: 1px solid rgba(148, 163, 184, 0.42);
+  box-shadow:
+    0 25px 50px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(56, 189, 248, 0.1);
+}
+
+.magic-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px 10px 16px;
+}
+
+.magic-search-bar__icon {
+  flex: 0 0 auto;
+  color: #38bdf8;
+}
+
+.magic-search-input {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.magic-search-bar__actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 1.8rem;
+  padding-left: 4px;
+}
+
+.magic-search-filter-icon-btn {
+  flex: 0 0 auto;
+  margin-left: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  background: rgba(56, 189, 248, 0.08);
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.magic-search-filter-icon-btn:hover {
+  background: rgba(56, 189, 248, 0.16);
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.magic-search-filter-icon-btn:active {
+  transform: scale(0.98);
+}
+
+.magic-search-filter-icon-btn--active {
+  border-color: rgba(56, 189, 248, 0.55);
+  background: rgba(56, 189, 248, 0.22);
+  color: #e0f2fe;
+}
+
+.magic-nearest-brief__inner {
+  padding: 14px 16px;
+}
+
+.magic-nearest-brief {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.magic-nearest-brief__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.magic-nearest-brief__label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.magic-nearest-brief__text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.magic-search-input::placeholder {
+  color: #64748b;
+}
+
+.magic-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: rgba(2, 6, 23, 0.62);
+  box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.05);
+}
+
+.magic-filters__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding-left: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #94a3b8;
+}
+
+.magic-filters-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.magic-filters-grid > * {
+  min-width: 0;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .magic-filters-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    row-gap: 18px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .magic-filters-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+}
+
+.magic-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+.magic-filter-control {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.38);
+  background: rgba(2, 6, 23, 0.88);
+  color: #e2e8f0;
+  font-size: 14px;
+  line-height: 1.4;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+.magic-filter-control:hover {
+  border-color: rgba(148, 163, 184, 0.48);
+}
+
+.magic-filter-control:focus-visible {
+  border-color: rgba(56, 189, 248, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.35);
+}
+
+.magic-select-wrap {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.magic-select-wrap__control {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.magic-select-wrap__chevron {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #94a3b8;
+  opacity: 0.9;
+}
+
+.magic-date-picker {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.magic-date-picker__trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.magic-date-picker__open {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.magic-date-picker__trigger--empty .magic-date-picker__trigger-text {
+  color: #64748b;
+}
+
+.magic-date-picker__trigger-icon {
+  flex: 0 0 auto;
+  color: #38bdf8;
+}
+
+.magic-date-picker__trigger-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.magic-date-picker__clear {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.magic-date-picker__clear:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+}
+
+.magic-date-picker__popover {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 8px);
+  left: 0;
+  width: min(100%, 280px);
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(8, 15, 30, 0.98);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(56, 189, 248, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+.magic-date-picker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.magic-date-picker__month {
+  flex: 1 1 auto;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: #e2e8f0;
+}
+
+.magic-date-picker__nav {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #94a3b8;
+  cursor: pointer;
+  transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+}
+
+.magic-date-picker__nav:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #e0f2fe;
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.magic-date-picker__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.magic-date-picker__weekday {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.magic-date-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.magic-date-picker__day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #e2e8f0;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.magic-date-picker__day:hover {
+  background: rgba(56, 189, 248, 0.14);
+  color: #f8fafc;
+}
+
+.magic-date-picker__day--muted {
+  color: #475569;
+}
+
+.magic-date-picker__day--selected {
+  background: rgba(56, 189, 248, 0.28);
+  color: #f0f9ff;
+  box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.55);
+}
+
+.magic-filter-control::placeholder {
+  color: #64748b;
+}
+
+.magic-filter-control option {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.magic-chip {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease;
+}
+
+.magic-chip:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+}
+
+.magic-chip--active {
+  border-color: rgba(56, 189, 248, 0.5);
+  background: rgba(56, 189, 248, 0.2);
+  color: #e0f2fe;
+}
+
+.magic-section-title {
+  margin: 0;
+  font-size: clamp(16px, 2.2vw, 20px);
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.2;
+  white-space: normal;
+  overflow: visible;
+  display: block;
+  z-index: 1;
+}
+
+.magic-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.magic-trainings-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.magic-trainings-header__title {
+  margin: 0;
+}
+
+.magic-trainings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.magic-infinite-more {
+  margin-top: 8px;
+}
+
+.magic-loader--small {
+  padding: 12px 0;
+  font-size: 13px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.magic-infinite-sentinel {
+  height: 1px;
+}
+
+.magic-section-toggle {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0;
+  margin: 0 0 16px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  flex-wrap: wrap;
+}
+
+.magic-section-toggle__chevron {
+  color: #94a3b8;
+  transition: transform 180ms ease, color 180ms ease;
+  flex: 0 0 auto;
+}
+
+.magic-section-toggle__chevron.is-open {
+  transform: rotate(180deg);
+  color: #e2e8f0;
+}
+
+.magic-nearest-game__body {
+  width: 100%;
+  padding: 20px;
+}
+
+.magic-nearest-game__body .league-game-rsvp {
+  width: 100%;
+  max-width: none;
+}
+
+.magic-nearest-game__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 1.2;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.magic-nearest-game__summary span {
+  display: block;
+}
+
+.magic-nearest-game__list {
+  margin-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 16px;
+  width: 100%;
+}
+
+/* Make entire training card tappable */
+.magic-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.magic-card-link:focus-visible {
+  outline: 2px solid rgba(56, 189, 248, 0.55);
+  outline-offset: 4px;
+  border-radius: 16px;
+}
+
+@media (min-width: 768px) {
+  .magic-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .magic-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Magic components */
+.magic-card {
+  position: relative;
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(2, 6, 23, 0.78);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+}
+
+.magic-card__bg {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(56, 189, 248, 0.08), transparent 55%);
+}
+
+.magic-card__glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 1px;
+  border-radius: 15px;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.magic-card:hover .magic-card__glow {
+  opacity: var(--magic-glow-opacity, 0.12);
+}
+
+.magic-card__content {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+}
+
+.magic-border-beam {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: calc(var(--border-width, 1.5) * 1px) solid transparent;
+  background:
+    linear-gradient(transparent, transparent) padding-box,
+    linear-gradient(var(--color-from, #38bdf8), var(--color-to, #ef4444)) border-box;
+}
+
+.magic-border-beam::after {
+  content: '';
+  position: absolute;
+  width: calc(var(--size, 200) * 1px);
+  height: calc(var(--size, 200) * 1px);
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  background: linear-gradient(
+    to left,
+    var(--color-from, #38bdf8),
+    var(--color-to, #ef4444),
+    transparent
+  );
+  offset-anchor: calc(var(--anchor, 90) * 1%) 50%;
+  offset-path: rect(0 auto auto 0 round calc(var(--size, 200) * 1px));
+  animation: magic-border-beam calc(var(--duration, 4) * 1s) linear infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+.magic-animated-gradient-text {
+  display: inline-block;
+  max-width: 100%;
+  line-height: 1.15;
+  padding-block: 0.06em;
+  background-image: linear-gradient(to right, #bae6fd, #fff, #fda4af);
+  background-size: var(--bg-size, 200%) 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  animation: magic-gradient 8s linear infinite;
+}
+
+.magic-shimmer-button {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+  border-radius: var(--radius, 12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--bg, rgba(14, 58, 95, 0.9));
+  cursor: pointer;
+  transition: transform 150ms ease;
+}
+
+.magic-shimmer-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.magic-shimmer-button:hover:not(:disabled) {
+  transform: scale(1.02);
+}
+
+.magic-shimmer-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.magic-shimmer-button__shine {
+  position: absolute;
+  inset: -100%;
+  background: conic-gradient(
+    from calc(270deg - (var(--spread, 90deg) * 0.5)),
+    transparent 0,
+    var(--shimmer-color, #ffffff) var(--spread, 90deg),
+    transparent var(--spread, 90deg)
+  );
+  animation: magic-spin-around calc(var(--speed, 3s)) linear infinite;
+}
+
+.magic-shimmer-button__border {
+  position: absolute;
+  inset: 1px;
+  border-radius: calc(var(--radius, 12px) - 1px);
+  background: var(--bg, rgba(14, 58, 95, 0.9));
+}
+
+.magic-shimmer-button__label {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Event card internals */
+.magic-event-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.magic-event-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.magic-event-time {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.magic-event-time-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(56, 189, 248, 0.7);
+}
+
+.magic-event-date {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.magic-event-badge {
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: rgba(56, 189, 248, 0.1);
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #bae6fd;
+}
+
+.magic-event-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.magic-event-arena {
+  margin: 4px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.magic-event-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.magic-event-chip {
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.magic-event-chip--access {
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.1);
+  color: #fecaca;
+}
+
+.magic-event-fill {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.magic-event-fill-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: #1e293b;
+  overflow: hidden;
+}
+
+.magic-event-fill-bar-inner {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 500ms ease;
+}
+
+.magic-event-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.magic-event-price {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.magic-details-link {
+  margin-left: auto;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #bae6fd;
+  transition: background 150ms ease;
+}
+
+.magic-details-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Nearest game teaser */
+.magic-nearest-game-teaser-link {
+  display: block;
+}
+
+.magic-nearest-game-teaser {
+  border-color: rgba(251, 191, 36, 0.28);
+  background:
+    linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(2, 6, 23, 0.88) 42%),
+    rgba(2, 6, 23, 0.88);
+  transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.magic-nearest-game-teaser-link:hover .magic-nearest-game-teaser {
+  border-color: rgba(251, 191, 36, 0.45);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  transform: translateY(-1px);
+}
+
+.magic-nearest-game-teaser__inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+}
+
+.magic-nearest-game-teaser__inner--loading {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.magic-nearest-game-teaser__icon {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.magic-nearest-game-teaser__content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.magic-nearest-game-teaser__eyebrow {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(251, 191, 36, 0.95);
+}
+
+.magic-nearest-game-teaser__league {
+  margin: 0 0 2px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.magic-nearest-game-teaser__matchup {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.magic-nearest-game-teaser__meta {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.magic-nearest-game-teaser__arena {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.magic-nearest-game-teaser__chevron {
+  flex: 0 0 auto;
+  color: #64748b;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.magic-nearest-game-teaser-link:hover .magic-nearest-game-teaser__chevron {
+  color: #38bdf8;
+  transform: translateX(2px);
+}
+
+/* Nearest games detail page */
+.magic-games-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.magic-games-header__title.g-text_variant_header-1 {
+  margin-bottom: 0;
+  line-height: 1.15;
+  padding: 0.08em 0 0.12em;
+  background: linear-gradient(135deg, #f1f5f9 40%, var(--hockey-accent, #38bdf8) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.magic-games-header__subtitle {
+  margin: 0;
+  max-width: 40rem;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #94a3b8;
+}
+
+.magic-games-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.magic-games-section-title h2 {
+  margin: 0;
+  font-size: clamp(16px, 2.2vw, 20px);
+  font-weight: 600;
+  color: #fff;
+}
+
+.magic-games-featured {
+  display: flex;
+  flex-direction: column;
+}
+
+.magic-games-empty {
+  padding: 28px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.magic-upcoming-games-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.magic-upcoming-game {
+  border-color: rgba(148, 163, 184, 0.22);
+}
+
+.magic-upcoming-game--featured {
+  border-color: rgba(251, 191, 36, 0.35);
+  background:
+    linear-gradient(135deg, rgba(251, 191, 36, 0.06) 0%, rgba(2, 6, 23, 0.88) 50%),
+    rgba(2, 6, 23, 0.88);
+}
+
+.magic-upcoming-game__inner {
+  padding: 14px 16px;
+}
+
+.magic-upcoming-game__time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.magic-upcoming-game__title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.magic-upcoming-game__arena {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.magic-upcoming-game__price {
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #bae6fd;
+}
+
+.magic-games-footnote {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.magic-page .magic-nearest-game__body .league-game-rsvp,
+.magic-page .magic-nearest-game__body .ice-card,
+.magic-page .magic-nearest-game__list .ice-card {
+  background: rgba(2, 6, 23, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 16px;
+}
+
+/* Training details page */
+.magic-training-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.magic-training-hero {
+  border-color: rgba(56, 189, 248, 0.28);
+}
+
+.magic-training-hero__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 20px;
+}
+
+.magic-training-hero__time {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.magic-training-hero__datetime {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #f8fafc;
+  line-height: 1.4;
+}
+
+.magic-training-hero__arena {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.magic-training-hero__arena a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+.magic-training-hero__arena a:hover {
+  text-decoration: underline;
+}
+
+.magic-training-fill-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.magic-training-fill-row span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.magic-training-section {
+  padding: 18px 20px;
+}
+
+.magic-training-section__title {
+  margin: 0 0 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.magic-training-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.magic-training-meta__row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+@media (min-width: 640px) {
+  .magic-training-meta__row {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+  }
+}
+
+.magic-training-meta__label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+}
+
+.magic-training-meta__value {
+  font-size: 14px;
+  color: #e2e8f0;
+  text-align: left;
+}
+
+.magic-training-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.magic-training-slot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 14px;
+  color: #e2e8f0;
+}
+
+.magic-training-contacts__name {
+  margin: 0 0 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.magic-training-contacts__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.magic-training-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.magic-training-btn--outline {
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.08);
+  color: #bae6fd;
+}
+
+.magic-training-btn--outline:hover {
+  background: rgba(56, 189, 248, 0.16);
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+.magic-training-contacts__prepay {
+  margin-top: 14px;
+}
+
+.magic-training-prepay-btn {
+  width: 100%;
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.magic-training-attendance .event-attendance--magic {
+  gap: 12px;
+}
+
+/* ── Attendance panel (Magic UI) ── */
+.magic-page .event-attendance--magic {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  gap: 10px;
+}
+
+.magic-page .event-attendance--magic.event-attendance--compact {
+  gap: 8px;
+}
+
+.magic-attendance-label {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #94a3b8;
+}
+
+.magic-attendance-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.magic-attendance-btn {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  background: rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.magic-attendance-btn:hover:not(:disabled) {
+  border-color: rgba(56, 189, 248, 0.45);
+  background: rgba(56, 189, 248, 0.1);
+  color: #e0f2fe;
+}
+
+.magic-attendance-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.magic-attendance-btn--active {
+  border-color: rgba(56, 189, 248, 0.55);
+  background: rgba(56, 189, 248, 0.22);
+  color: #f0f9ff;
+  box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.35);
+}
+
+.magic-event-attendance {
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.magic-event-attendance__title {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.magic-league-rsvp-attendance {
+  padding-top: 14px;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.league-game-rsvp--magic {
+  width: 100%;
+  padding: 18px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(2, 6, 23, 0.55);
+}
+
+.league-game-rsvp--magic .league-game-rsvp__meta {
+  border-color: rgba(148, 163, 184, 0.22);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.league-game-rsvp__actions--magic {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.magic-page .magic-nearest-game__body .league-game-rsvp--magic {
+  background: rgba(2, 6, 23, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.magic-training-empty {
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.magic-training-empty__title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.magic-training-empty__copy {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+/* ── Locker Room (light theme) for Magic pages ── */
+[data-hockey-theme='locker'] .magic-page {
+  background: linear-gradient(to bottom, #f5f0e8, #ebe4d8, #f5f0e8);
+}
+
+[data-hockey-theme='locker'] .magic-page__bg1 {
+  background: radial-gradient(ellipse at top, rgba(225, 6, 0, 0.06), transparent 55%);
+}
+
+[data-hockey-theme='locker'] .magic-page__bg2 {
+  background: radial-gradient(circle, rgba(0, 51, 160, 0.05), transparent 70%);
+}
+
+[data-hockey-theme='locker'] .magic-eyebrow {
+  color: rgba(225, 6, 0, 0.75);
+}
+
+[data-hockey-theme='locker'] .magic-title-row .g-text_variant_header-1,
+[data-hockey-theme='locker'] .magic-games-header__title.g-text_variant_header-1 {
+  background: linear-gradient(135deg, #1a1a1a 40%, var(--hockey-accent, #e10600) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-hockey-theme='locker'] .magic-subtitle,
+[data-hockey-theme='locker'] .magic-games-header__subtitle {
+  color: #6b6560;
+}
+
+[data-hockey-theme='locker'] .magic-classic-link {
+  color: #8a847c;
+}
+
+[data-hockey-theme='locker'] .magic-classic-link:hover {
+  color: var(--hockey-accent, #e10600);
+}
+
+[data-hockey-theme='locker'] .magic-card {
+  border-color: var(--hockey-locker-concrete, #c8c2b8);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 28px rgba(26, 26, 26, 0.08);
+}
+
+[data-hockey-theme='locker'] .magic-card__bg {
+  background: radial-gradient(circle at top, rgba(225, 6, 0, 0.04), transparent 55%);
+}
+
+[data-hockey-theme='locker'] .magic-card--search {
+  border-color: var(--hockey-locker-concrete, #c8c2b8);
+  box-shadow:
+    0 12px 32px rgba(26, 26, 26, 0.06),
+    inset 0 0 0 1px rgba(225, 6, 0, 0.06);
+}
+
+[data-hockey-theme='locker'] .magic-search-bar__icon {
+  color: var(--hockey-accent, #e10600);
+}
+
+[data-hockey-theme='locker'] .magic-search-input {
+  color: #1a1a1a;
+}
+
+[data-hockey-theme='locker'] .magic-search-input::placeholder {
+  color: #9a948c;
+}
+
+[data-hockey-theme='locker'] .magic-search-filter-icon-btn {
+  border-color: rgba(225, 6, 0, 0.2);
+  background: rgba(225, 6, 0, 0.06);
+  color: var(--hockey-accent, #e10600);
+}
+
+[data-hockey-theme='locker'] .magic-search-filter-icon-btn:hover {
+  background: rgba(225, 6, 0, 0.12);
+  border-color: rgba(225, 6, 0, 0.35);
+}
+
+[data-hockey-theme='locker'] .magic-search-filter-icon-btn--active {
+  border-color: rgba(225, 6, 0, 0.45);
+  background: rgba(225, 6, 0, 0.14);
+  color: #8b0000;
+}
+
+[data-hockey-theme='locker'] .magic-filters {
+  border-color: var(--hockey-locker-concrete, #c8c2b8);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: inset 0 0 0 1px rgba(225, 6, 0, 0.04);
+}
+
+[data-hockey-theme='locker'] .magic-filters__title,
+[data-hockey-theme='locker'] .magic-filter-label {
+  color: #6b6560;
+}
+
+[data-hockey-theme='locker'] .magic-filter-control {
+  border-color: var(--hockey-locker-concrete, #c8c2b8);
+  background: #fff;
+  color: #1a1a1a;
+}
+
+[data-hockey-theme='locker'] .magic-filter-control option {
+  background: #fff;
+  color: #1a1a1a;
+}
+
+[data-hockey-theme='locker'] .magic-section-title,
+[data-hockey-theme='locker'] .magic-games-section-title h2 {
+  color: #1a1a1a;
+}
+
+[data-hockey-theme='locker'] .magic-event-title,
+[data-hockey-theme='locker'] .magic-upcoming-game__title,
+[data-hockey-theme='locker'] .magic-training-empty__title {
+  color: #1a1a1a;
+}
+
+[data-hockey-theme='locker'] .magic-event-time-text {
+  color: rgba(225, 6, 0, 0.8);
+}
+
+[data-hockey-theme='locker'] .magic-event-date,
+[data-hockey-theme='locker'] .magic-event-arena,
+[data-hockey-theme='locker'] .magic-event-chip,
+[data-hockey-theme='locker'] .magic-upcoming-game__time,
+[data-hockey-theme='locker'] .magic-upcoming-game__arena {
+  color: #6b6560;
+}
+
+[data-hockey-theme='locker'] .magic-event-badge {
+  border-color: rgba(225, 6, 0, 0.25);
+  background: rgba(225, 6, 0, 0.08);
+  color: #8b0000;
+}
+
+[data-hockey-theme='locker'] .magic-event-price,
+[data-hockey-theme='locker'] .magic-upcoming-game__price {
+  color: #1a1a1a;
+}
+
+[data-hockey-theme='locker'] .magic-details-link {
+  border-color: var(--hockey-locker-concrete, #c8c2b8);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--hockey-accent, #e10600);
+}
+
+[data-hockey-theme='locker'] .magic-details-link:hover {
+  background: rgba(225, 6, 0, 0.06);
+}
+
+[data-hockey-theme='locker'] .magic-event-fill-bar {
+  background: #e8e2d8;
+}
+
+[data-hockey-theme='locker'] .magic-attendance-label {
+  color: #6b6560;
+}
+
+[data-hockey-theme='locker'] .magic-event-attendance,
+[data-hockey-theme='locker'] .magic-league-rsvp-attendance {
+  border-top-color: var(--hockey-locker-concrete, #c8c2b8);
+}
+
+[data-hockey-theme='locker'] .magic-event-attendance__title {
+  color: #8a847c;
+}
+
+[data-hockey-theme='locker'] .magic-attendance-btn {
+  border-color: var(--hockey-locker-concrete, #c8c2b8);
+  background: rgba(255, 255, 255, 0.85);
+  color: #3d3832;
+}
+
+[data-hockey-theme='locker'] .magic-attendance-btn:hover:not(:disabled) {
+  border-color: rgba(225, 6, 0, 0.4);
+  background: rgba(225, 6, 0, 0.06);
+  color: #8b0000;
+}
+
+[data-hockey-theme='locker'] .magic-attendance-btn--active {
+  border-color: rgba(225, 6, 0, 0.5);
+  background: rgba(225, 6, 0, 0.12);
+  color: #8b0000;
+  box-shadow: inset 0 0 0 1px rgba(225, 6, 0, 0.2);
+}
+
+[data-hockey-theme='locker'] .league-game-rsvp--magic {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: var(--hockey-locker-concrete, #c8c2b8);
+}
+
+[data-hockey-theme='locker'] .league-game-rsvp--magic .league-game-rsvp__meta {
+  border-color: var(--hockey-locker-concrete, #c8c2b8);
+  background: rgba(240, 235, 227, 0.65);
+}
+
+[data-hockey-theme='locker'] .magic-training-section__title {
+  color: #6b6560;
+}
+
+[data-hockey-theme='locker'] .magic-training-meta__label {
+  color: #8a847c;
+}
+
+[data-hockey-theme='locker'] .magic-training-meta__value,
+[data-hockey-theme='locker'] .magic-training-hero__datetime,
+[data-hockey-theme='locker'] .magic-training-contacts__name {
+  color: #1a1a1a;
+}
+
+[data-hockey-theme='locker'] .magic-training-hero__arena,
+[data-hockey-theme='locker'] .magic-training-fill-row {
+  color: #6b6560;
+}
+
+[data-hockey-theme='locker'] .magic-training-slot {
+  border-color: var(--hockey-locker-concrete, #c8c2b8);
+  background: rgba(255, 255, 255, 0.7);
+  color: #1a1a1a;
+}
+
+[data-hockey-theme='locker'] .magic-training-btn--outline {
+  border-color: rgba(225, 6, 0, 0.3);
+  background: rgba(225, 6, 0, 0.06);
+  color: #8b0000;
+}
+
+[data-hockey-theme='locker'] .magic-loader,
+[data-hockey-theme='locker'] .magic-games-empty,
+[data-hockey-theme='locker'] .magic-training-empty__copy {
+  color: #6b6560;
+}
+
+[data-hockey-theme='locker'] .magic-nearest-game-teaser {
+  border-color: rgba(255, 199, 44, 0.45);
+  background:
+    linear-gradient(135deg, rgba(255, 199, 44, 0.12) 0%, rgba(255, 255, 255, 0.95) 42%),
+    rgba(255, 255, 255, 0.95);
+}
+
+[data-hockey-theme='locker'] .magic-nearest-game-teaser__matchup {
+  color: #1a1a1a;
+}
+
+[data-hockey-theme='locker'] .magic-upcoming-game--featured {
+  border-color: rgba(255, 199, 44, 0.5);
+  background:
+    linear-gradient(135deg, rgba(255, 199, 44, 0.1) 0%, rgba(255, 255, 255, 0.95) 50%),
+    rgba(255, 255, 255, 0.95);
+}

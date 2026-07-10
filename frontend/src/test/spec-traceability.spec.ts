@@ -27,6 +27,7 @@ const TRACEABLE_FILES = [
   'pages/TeamsPage/ui/TeamsPage.tsx',
   'features/events/ui/EventCard.tsx',
   'pages/EventsPage/ui/EventsPage.tsx',
+  'features/events/EventsPageMagic.tsx',
   'pages/SosPage/ui/SosPage.tsx',
   'pages/ArenasPage/ui/ArenasPage.tsx',
   'features/arenas/ui/ArenaMap.tsx',
