@@ -10,7 +10,7 @@ import {useState} from 'react'
 import type {ClubSquad} from '@/entities/club'
 import {fetchTeams} from '@/entities/team'
 import {useSessionAccess} from '@/features/access'
-import {ClubProfilePanel, TeamControlCenter, TeamCreateForm, TeamCrest} from '@/features/teams'
+import {TeamCreateForm, TeamCrest, TeamPage} from '@/features/teams'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
@@ -103,12 +103,12 @@ export function TeamsPage() {
             teamId={activeTeam.id}
           />
           <div className="hockey-mt-16 hockey-mb-12 hockey-stack hockey-stack--gap-16">
-            <ClubProfilePanel team={activeTeam} onActiveSquadChange={setActiveSquad} />
-            <TeamControlCenter
+            <TeamPage
               team={activeTeam}
               activeSquad={activeSquad}
               userId={userId}
               teamPermissions={teamPermissions}
+              onActiveSquadChange={setActiveSquad}
             />
           </div>
         </div>
