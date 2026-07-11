@@ -1,6 +1,6 @@
 import {Button, Select, Text} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {type DragEvent, useEffect, useRef, useState} from 'react'
+import {type DragEvent, useRef, useState} from 'react'
 
 import type {ClubSquad} from '@/entities/club'
 import type {PlayerPosition} from '@/entities/common'
@@ -15,7 +15,7 @@ import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
-const TEAM_SIDES = ['red', 'white'] as const
+type TeamSide = 'red' | 'white'
 
 type FormationTemplateId = 'balanced' | 'red_pressing' | 'white_counter'
 
@@ -42,7 +42,7 @@ function createSavedLineupPreset(
 
 type RinkSlot = {
   id: string
-  side: (typeof TEAM_SIDES)[number]
+  side: TeamSide
   position: PlayerPosition
   line: number
   x: number
@@ -172,11 +172,6 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
     },
   })
 
-  useEffect(() => {
-    if (!eventId) return
-    void saveMutation.mutateAsync
-  }, [eventId])
-
   if (eventsLoading || lineupLoading) {
     return (
       <ScoreboardLoader
@@ -242,7 +237,7 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
     saveAssignments(next)
   }
 
-  function assignToTeam(userId: string, side: (typeof TEAM_SIDES)[number]) {
+  function assignToTeam(userId: string, side: TeamSide) {
     const current = getAssignment(userId)
     updateAssignment(userId, {side, line: current.line ?? 1})
   }
@@ -515,10 +510,18 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
                 >
                   {slotPlayer ? (
                     <div
+                      role="button"
+                      tabIndex={0}
                       draggable={canEdit && lineupEditableForSquad}
                       onDragStart={(event) => onDragStart(slotPlayer.member.userId, event)}
                       onDragEnd={onDragEnd}
                       onClick={() => setSelectedPlayerId(slotPlayer.member.userId)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault()
+                          setSelectedPlayerId(slotPlayer.member.userId)
+                        }
+                      }}
                       className={`lineup-board__player-card lineup-board__player-card--${slot.side} ${isSelected ? 'is-selected' : ''} ${isDragged ? 'is-dragged' : ''}`}
                       data-testid={testId(
                         'teams',
