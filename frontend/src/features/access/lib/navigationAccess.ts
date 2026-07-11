@@ -79,9 +79,7 @@ export function resolveNavItems(session: Session | undefined): NavItem[] {
   return resolvePlayerNavItems(session)
 }
 
-export function splitNavItemsByTier(
-  items: NavItem[],
-): {active: NavItem[]; incubating: NavItem[]} {
+export function splitNavItemsByTier(items: NavItem[]): {active: NavItem[]; incubating: NavItem[]} {
   return {
     active: items.filter((item) => item.tier === 'active'),
     incubating: items.filter((item) => item.tier === 'incubating'),
