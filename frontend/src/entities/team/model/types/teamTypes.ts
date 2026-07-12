@@ -81,3 +81,11 @@ export interface TrainingLineupAssignment {
   side: 'red' | 'white' | 'bench' | 'backlog'
   line?: number
 }
+
+/** @spec SPEC-FR-3.1.1 - Параметры фильтра списка команд */
+export interface TeamsFilterParams {
+  leagueId?: string
+  q?: string
+  playerId?: string
+  city?: string
+}
