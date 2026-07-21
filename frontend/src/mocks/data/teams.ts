@@ -16,9 +16,20 @@ export let mockTeams: Team[] = [
     captainUserId: 'user-001',
     ownerUserId: 'user-001',
     description: 'Регулярные тренировки по вторникам и субботам',
-    memberIds: ['user-001', 'user-003', 'user-004', 'user-005'],
+    memberIds: ['user-001', 'user-002', 'user-003', 'user-004', 'user-005'],
     leagueId: 'league-001',
     homeArenaId: 'arena-001',
+  },
+  {
+    id: 'team-002',
+    name: 'Соколы Питера',
+    city: 'Санкт-Петербург',
+    skillLevel: 'amateur',
+    captainUserId: 'user-006',
+    ownerUserId: 'user-006',
+    description: 'Любительская команда Приморского района',
+    memberIds: ['user-006'],
+    homeArenaId: 'arena-003',
   },
 ]
 
@@ -32,6 +43,15 @@ export let mockRoster: RosterMember[] = [
     teamRole: 'owner',
     rosterStatus: 'active',
     joinedAt: '2026-01-10T10:00:00Z',
+  },
+  {
+    teamId: 'team-001',
+    userId: 'user-002',
+    displayName: 'Алексей Смирнов',
+    position: 'goalie',
+    teamRole: 'player',
+    rosterStatus: 'active',
+    joinedAt: '2026-01-15T10:00:00Z',
   },
   {
     teamId: 'team-001',
@@ -59,6 +79,15 @@ export let mockRoster: RosterMember[] = [
     teamRole: 'coach',
     rosterStatus: 'active',
     joinedAt: '2026-01-08T10:00:00Z',
+  },
+  {
+    teamId: 'team-002',
+    userId: 'user-006',
+    displayName: 'Артур Лебедев',
+    position: 'forward',
+    teamRole: 'owner',
+    rosterStatus: 'active',
+    joinedAt: '2026-02-20T10:00:00Z',
   },
 ]
 

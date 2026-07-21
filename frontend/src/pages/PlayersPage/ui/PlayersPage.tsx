@@ -1,31 +1,52 @@
 /**
  * SPEC-FR-2.3.1, SPEC-FR-2.3.2
  * SPEC-UI-2.1, SPEC-UI-3.1, SPEC-UI-3.3
+ * HOCFRONT-20
  */
 
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 
 import {fetchPlayers, type PlayersFilterParams} from '@/entities/profile'
 import {PlayerFilters} from '@/features/players'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
 import {PlayerCard} from '@/widgets/PlayerCard'
 
+const EMPTY_FILTERS: PlayersFilterParams = {}
+
+function hasActiveFilters(filters: PlayersFilterParams): boolean {
+  return Object.values(filters).some((v) => v !== undefined && v !== '')
+}
+
 /**
  * @spec SPEC-FR-2.3.1 - Страница списка игроков
+ * @spec HOCFRONT-20 - Рабочая панель фильтров с применением к списку
  */
 export function PlayersPage() {
-  const [filters, setFilters] = useState<PlayersFilterParams>({})
+  const [filters, setFilters] = useState<PlayersFilterParams>(EMPTY_FILTERS)
 
   const {data: players = [], isLoading} = useQuery({
     queryKey: ['players', filters],
     queryFn: () => fetchPlayers(filters),
+    placeholderData: (previous) => previous,
   })
+
+  const isFiltered = hasActiveFilters(filters)
+
+  const handleResetFilters = () => {
+    setFilters(EMPTY_FILTERS)
+  }
+
+  const activeCount = useMemo(
+    () => Object.values(filters).filter((v) => v !== undefined && v !== '').length,
+    [filters],
+  )
 
   return (
     <div
@@ -39,7 +60,21 @@ export function PlayersPage() {
       >
         Игроки
       </Text>
-      <PlayerFilters filters={filters} onChange={setFilters} />
+      <PlayerFilters
+        filters={filters}
+        onChange={setFilters}
+        onReset={handleResetFilters}
+        isFiltered={isFiltered}
+      />
+
+      {isFiltered && (
+        <div
+          className="player-filters__summary"
+          data-testid={testId('players', 'players-page', 'text', 'active-count')}
+        >
+          Активных фильтров: {activeCount}
+        </div>
+      )}
 
       {isLoading && (
         <>
@@ -56,7 +91,7 @@ export function PlayersPage() {
         </>
       )}
 
-      {!isLoading && (
+      {!isLoading && players.length > 0 && (
         <div
           className="bento-grid"
           data-testid={testId('players', 'players-page', 'list', 'cards')}
@@ -79,6 +114,18 @@ export function PlayersPage() {
           copy="Игроки не найдены по выбранным фильтрам."
           testIdPrefix="players"
           data-testid={testId('players', 'players-page', 'empty')}
+          action={
+            isFiltered ? (
+              <HockeyButton
+                view="outlined"
+                size="s"
+                onClick={handleResetFilters}
+                data-testid={testId('players', 'players-page', 'btn', 'reset')}
+              >
+                Сбросить фильтры
+              </HockeyButton>
+            ) : undefined
+          }
         />
       )}
     </div>
