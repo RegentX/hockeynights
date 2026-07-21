@@ -10,10 +10,11 @@ import {useState} from 'react'
 import type {ClubSquad} from '@/entities/club'
 import {fetchTeams} from '@/entities/team'
 import {useSessionAccess} from '@/features/access'
-import {TeamCreateForm, TeamCrest, TeamPage} from '@/features/teams'
+import {TeamCreateForm, TeamCrest} from '@/features/teams'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
+import {TeamPage} from '@/widgets/team-page'
 
 /**
  * @spec SPEC-UI-2.3 - Страница команд в стиле раздевалки

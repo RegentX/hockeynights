@@ -5,11 +5,13 @@ import type {ClubSquad} from '@/entities/club'
 import type {Team, TeamRole} from '@/entities/team'
 import {fetchTeamRoster} from '@/entities/team'
 import type {TeamPermissions} from '@/features/access'
-import {ClubProfilePanel} from '@/features/teams/ui/ClubProfilePanel'
-import {TeamChatsPanel} from '@/features/teams/ui/TeamChatsPanel'
-import {TeamRolesPanel} from '@/features/teams/ui/TeamRolesPanel'
-import {TeamRosterPanel} from '@/features/teams/ui/TeamRosterPanel'
-import {TrainingLineupBoard} from '@/features/teams/ui/TrainingLineupBoard'
+import {
+  ClubProfilePanel,
+  TeamChatsPanel,
+  TeamRolesPanel,
+  TeamRosterPanel,
+  TrainingLineupBoard,
+} from '@/features/teams'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 

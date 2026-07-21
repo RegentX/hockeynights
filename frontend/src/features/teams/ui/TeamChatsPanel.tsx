@@ -178,7 +178,7 @@ export function TeamChatsPanel({team, activeSquad, teamPermissions}: TeamChatsPa
               />
               <Button
                 view="action"
-                disabled={!canCreateChannel || !newChannelTitle.trim()}
+                disabled={!newChannelTitle.trim()}
                 loading={createTeamChannelMutation.isPending}
                 onClick={() =>
                   createTeamChannelMutation.mutate({
@@ -216,7 +216,7 @@ export function TeamChatsPanel({team, activeSquad, teamPermissions}: TeamChatsPa
               />
               <Button
                 view="outlined"
-                disabled={!canCreateChat || !newChatTitle.trim()}
+                disabled={!newChatTitle.trim()}
                 loading={createTeamChannelMutation.isPending}
                 onClick={() =>
                   createTeamChannelMutation.mutate({
