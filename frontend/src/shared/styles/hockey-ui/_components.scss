@@ -191,6 +191,82 @@
   border-radius: 2px;
 }
 
+.hockey-player-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.hockey-player-card__top-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hockey-player-card__top-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hockey-player-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.hockey-player-card__verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #36b37e;
+  border: 1px solid rgba(54, 179, 126, 0.35);
+  background: rgba(54, 179, 126, 0.1);
+}
+
+.player-favorite-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--hockey-card-border);
+  background: transparent;
+  color: var(--hockey-text-muted, #6b7785);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+
+  &:hover {
+    color: var(--hockey-board-gold);
+    border-color: var(--hockey-board-gold);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--hockey-board-gold);
+    outline-offset: 2px;
+  }
+
+  &--on {
+    color: var(--hockey-board-gold, #f5b800);
+    border-color: var(--hockey-board-gold, #f5b800);
+    background: rgba(245, 184, 0, 0.12);
+  }
+}
+
 .arenas-page {
   display: flex;
   flex-direction: column;

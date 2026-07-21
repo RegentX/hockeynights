@@ -1,7 +1,7 @@
 /**
  * SPEC-FR-2.3.1, SPEC-FR-8.2.1, SPEC-FR-8.2.2
  * SPEC-UI-2.1, SPEC-UI-1.3, SPEC-UI-1.4
- * SPEC-FR-24.2.1, SPEC-FR-24.2.3
+ * SPEC-FR-17.1.1, SPEC-FR-24.2.1, SPEC-FR-24.2.3
  */
 
 import {Text} from '@gravity-ui/uikit'
@@ -9,6 +9,7 @@ import {Link} from 'react-router-dom'
 
 import type {PlayerListItem} from '@/entities/profile'
 import {KarmaScore} from '@/features/karma'
+import {PlayerFavoriteButton} from '@/features/player-favorites'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {PositionLabel} from '@/shared/ui/PositionLabel'
@@ -20,6 +21,13 @@ const SKILL_LABELS: Record<string, string> = {
   advanced: 'Продвинутый',
   league: 'Лига',
   unknown: '—',
+}
+
+const VERIFIED_LABELS: Record<NonNullable<PlayerListItem['verificationStatus']>, string> = {
+  unverified: 'Без проверки',
+  pending: 'На проверке',
+  verified: 'Verified',
+  rejected: 'Отклонён',
 }
 
 /** @spec SPEC-FR-2.3.1 - Props карточки игрока */
@@ -44,11 +52,13 @@ export function PlayerCard({player, linkable = true}: PlayerCardProps) {
   const reliabilityLabel =
     isGoalie && player.goalieReliabilityScore != null ? 'Надёжность выходов' : 'Надёжность'
 
+  const isVerified = player.verificationStatus === 'verified'
+
   const card = (
     <IceCard padding="m" data-testid={testId('players', 'player-card', 'card', player.userId)}>
       <div className="hockey-player-card">
-        <div className="hockey-player-card__header">
-          <div>
+        <div className="hockey-player-card__top">
+          <div className="hockey-player-card__top-left">
             <PositionLabel
               position={player.position}
               testIdPrefix="players"
@@ -70,20 +80,54 @@ export function PlayerCard({player, linkable = true}: PlayerCardProps) {
               {player.displayName}
             </Text>
           </div>
-          <ScoreboardText
-            className="hockey-player-card__number"
-            data-testid={testId('players', 'player-card', 'text', 'number', player.userId)}
-          >
-            {jerseyNumber}
-          </ScoreboardText>
+          <div className="hockey-player-card__top-right">
+            <PlayerFavoriteButton playerId={player.userId} />
+            <ScoreboardText
+              className="hockey-player-card__number"
+              data-testid={testId('players', 'player-card', 'text', 'number', player.userId)}
+            >
+              {jerseyNumber}
+            </ScoreboardText>
+          </div>
         </div>
+
+        <div
+          className="hockey-player-card__meta"
+          data-testid={testId('players', 'player-card', 'panel', 'meta', player.userId)}
+        >
+          <Text
+            color="secondary"
+            data-testid={testId('players', 'player-card', 'text', 'skill', player.userId)}
+          >
+            {SKILL_LABELS[player.skillLevel] ?? player.skillLevel}
+          </Text>
+          {isVerified && (
+            <span
+              className="hockey-player-card__verified"
+              data-testid={testId('players', 'player-card', 'badge', 'verified', player.userId)}
+              aria-label="Профиль подтверждён"
+              title="Профиль подтверждён"
+            >
+              {VERIFIED_LABELS.verified}
+            </span>
+          )}
+        </div>
+
+        {player.teamName && (
+          <Text
+            color="secondary"
+            data-testid={testId('players', 'player-card', 'text', 'team', player.userId)}
+          >
+            🛡 {player.teamName}
+          </Text>
+        )}
 
         <Text
           color="secondary"
-          data-testid={testId('players', 'player-card', 'text', 'skill-district', player.userId)}
+          data-testid={testId('players', 'player-card', 'text', 'city', player.userId)}
         >
-          {SKILL_LABELS[player.skillLevel] ?? player.skillLevel} ·{' '}
-          {player.district ?? 'район не указан'}
+          📍 {player.city}
+          {player.district ? `, ${player.district}` : ''}
         </Text>
         {player.metro && (
           <Text

@@ -105,6 +105,8 @@ export const mockPlayers: PlayerListItem[] = [
     profileCompleteness: 90,
     karmaScore: 88,
     goalieReliabilityScore: 92,
+    verificationStatus: 'verified',
+    teamName: 'Медведи САО',
   },
   {
     userId: 'user-003',
@@ -120,6 +122,8 @@ export const mockPlayers: PlayerListItem[] = [
     preferredArenaIds: ['arena-002'],
     profileCompleteness: 65,
     karmaScore: 71,
+    verificationStatus: 'verified',
+    teamName: 'Медведи САО',
   },
   {
     userId: 'user-004',
@@ -135,6 +139,8 @@ export const mockPlayers: PlayerListItem[] = [
     preferredArenaIds: ['arena-001'],
     profileCompleteness: 55,
     karmaScore: 62,
+    verificationStatus: 'pending',
+    teamName: 'Медведи САО',
   },
   {
     userId: 'user-005',
@@ -150,5 +156,7 @@ export const mockPlayers: PlayerListItem[] = [
     preferredArenaIds: ['arena-001'],
     profileCompleteness: 80,
     karmaScore: 79,
+    verificationStatus: 'verified',
+    teamName: 'Медведи САО',
   },
 ]
