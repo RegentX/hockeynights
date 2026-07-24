@@ -18,13 +18,23 @@ export interface NavItem {
   tier: NavTier
 }
 
+/**
+ * HOCFRONT-15 / TASK-01-05 — разделы скрыты из MVP-меню.
+ * Маршруты и код страниц остаются; прямые URL работают через allowed prefixes.
+ */
+export const MVP_HIDDEN_NAV_PATHS = [routes.sos, routes.iq, routes.highlights] as const
+
+const isMvpHiddenNavPath = (path: string) =>
+  (MVP_HIDDEN_NAV_PATHS as readonly string[]).includes(path)
+
 export const PLAYER_NAV_ITEMS: NavItem[] = [
   {to: routes.profile, label: 'Профиль', tier: 'active'},
   {to: routes.players, label: 'Поиск тренировок', tier: 'incubating'},
   {to: routes.teams, label: 'Команды', tier: 'active'},
   {to: routes.events, label: EVENTS_LABEL, tier: 'active'},
   {to: routes.calendar, label: 'Календарь', tier: 'active'},
-  {to: routes.sos, label: 'SOS', tier: 'active'},
+  // SOS / IQ / Highlight — стратегический код, скрыты из MVP-навигации (HOCFRONT-15)
+  {to: routes.sos, label: 'SOS', tier: 'incubating'},
   {to: routes.arenas, label: ARENAS_LABEL, tier: 'active'},
   {to: routes.leagues, label: 'Лиги', tier: 'active'},
   {to: routes.shops, label: 'Маркет', tier: 'active'},
@@ -68,13 +78,17 @@ export function resolvePartnerNavItems(session: Session): NavItem[] {
   ]
 }
 
+function filterMvpNavItems(items: NavItem[]): NavItem[] {
+  return items.filter((item) => !isMvpHiddenNavPath(item.to))
+}
+
 export function resolvePlayerNavItems(session: Session): NavItem[] {
   const isAdmin = session.user.roles.includes('admin')
-  return PLAYER_NAV_ITEMS.filter((item) => item.to !== routes.admin || isAdmin)
+  return filterMvpNavItems(PLAYER_NAV_ITEMS.filter((item) => item.to !== routes.admin || isAdmin))
 }
 
 export function resolveNavItems(session: Session | undefined): NavItem[] {
-  if (!session?.isOnboarded) return PLAYER_NAV_ITEMS
+  if (!session?.isOnboarded) return filterMvpNavItems(PLAYER_NAV_ITEMS)
   if (shouldUsePartnerWorkspace(session)) return resolvePartnerNavItems(session)
   return resolvePlayerNavItems(session)
 }
@@ -110,6 +124,7 @@ export function resolveMobileNavItems(
 export function getPersonaHomePath(session: Session): string {
   if (shouldUsePartnerWorkspace(session)) return getPrimaryPartnerPath(session)
   if (session.user.roles.includes('admin')) return routes.admin
+  // HOCFRONT-15: SOS / IQ / Highlight не являются home path в MVP
   return routes.profile
 }
 

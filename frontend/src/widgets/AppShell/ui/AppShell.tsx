@@ -18,7 +18,6 @@ import {useHockeyTheme} from '@/shared/theme/HockeyThemeProvider'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {MobileNav} from '@/widgets/MobileNav'
 import {SideBoard} from '@/widgets/SideBoard'
-import {SosFab} from '@/widgets/SosFab'
 
 function formatPeriodClock(): string {
   const now = new Date()
@@ -29,7 +28,8 @@ function formatPeriodClock(): string {
 /**
  * @spec SPEC-FR-1.2.1 - Базовый layout приложения
  * @spec SPEC-UI-5.1 - Desktop 3-col layout
- * @spec SPEC-UI-5.2 - Mobile bottom nav + SOS FAB
+ * @spec SPEC-UI-5.2 - Mobile bottom nav
+ * HOCFRONT-15: SOS FAB скрыт из MVP-навигации
  */
 export function AppShell() {
   const location = useLocation()
@@ -343,7 +343,7 @@ export function AppShell() {
       </div>
 
       <MobileNav />
-      {!partnerWorkspace && <SosFab />}
+      {/* HOCFRONT-15: SosFab скрыт из MVP — маршрут /sos сохранён */}
     </div>
   )
 }

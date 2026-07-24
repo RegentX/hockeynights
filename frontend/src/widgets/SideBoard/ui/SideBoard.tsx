@@ -9,7 +9,6 @@ import {Link} from 'react-router-dom'
 
 import {fetchEvents} from '@/entities/event'
 import {fetchLeagues, fetchLeagueStandings} from '@/entities/league'
-import {fetchRecruitmentRequests} from '@/entities/recruitment'
 import {FavoritesPanel} from '@/features/favorites'
 import {LeagueStandings} from '@/features/leagues'
 import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
@@ -19,14 +18,11 @@ import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 
 /**
- * @spec SPEC-UI-5.1 - Борт с SOS, слотами и топом таблицы
+ * @spec SPEC-UI-5.1 - Борт с избранным, слотами и топом таблицы
+ * HOCFRONT-15: блок Goalkeeper SOS скрыт из MVP (маршрут /sos сохранён)
  */
 export function SideBoard() {
   const {data: events = []} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
-  const {data: sosRequests = []} = useQuery({
-    queryKey: ['recruitment-requests', true],
-    queryFn: () => fetchRecruitmentRequests({goalieOnly: true}),
-  })
   const {data: leagues = []} = useQuery({queryKey: ['leagues'], queryFn: fetchLeagues})
   const featuredLeague = leagues[0]
   const {data: standings = []} = useQuery({
@@ -36,7 +32,6 @@ export function SideBoard() {
   })
 
   const upcoming = events.slice(0, 3)
-  const openSos = sosRequests.filter((r) => r.isGoalkeeperSos).length
 
   return (
     <aside
@@ -62,35 +57,6 @@ export function SideBoard() {
       </IceCard>
 
       <FavoritesPanel />
-
-      <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'sos')}>
-        <div
-          className="side-board__title"
-          data-testid={testId('app', 'side-board', 'text', 'sos-title')}
-        >
-          Goalkeeper SOS
-        </div>
-        <Text data-testid={testId('app', 'side-board', 'text', 'sos-count')}>
-          Открытых запросов:{' '}
-          <ScoreboardText
-            tone="accent"
-            data-testid={testId('app', 'side-board', 'text', 'sos-count-value')}
-          >
-            {openSos}
-          </ScoreboardText>
-        </Text>
-        <div className="side-board__cta">
-          <Link to="/sos" data-testid={testId('app', 'side-board', 'link', 'sos')}>
-            <HockeyButton
-              variant="sos"
-              size="m"
-              data-testid={testId('app', 'side-board', 'btn', 'sos')}
-            >
-              SOS
-            </HockeyButton>
-          </Link>
-        </div>
-      </IceCard>
 
       {featuredLeague && standings.length > 0 && (
         <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'standings')}>
