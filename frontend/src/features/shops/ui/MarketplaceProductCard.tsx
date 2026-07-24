@@ -6,6 +6,7 @@ import {Text} from '@gravity-ui/uikit'
 import {useState} from 'react'
 
 import type {MarketplaceProductListing} from '@/entities/shop'
+import {FavoriteButton} from '@/features/favorites'
 import {ExternalProductLink} from '@/features/shops/ui/ExternalProductLink'
 import {testId} from '@/shared/testing/testId'
 
@@ -99,6 +100,12 @@ export function MarketplaceProductCard({listing}: MarketplaceProductCardProps) {
               {offer.price.toLocaleString('ru-RU')} ₽
             </Text>
           )}
+          <FavoriteButton
+            type="product"
+            entityId={offer.id}
+            title={offer.title}
+            className="marketplace-card__favorite"
+          />
         </div>
         <Text
           className="marketplace-card__title"

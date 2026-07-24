@@ -6,7 +6,7 @@
 import {Button, Card, Progress, Select, Switch, Text, TextArea, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
-import {Navigate} from 'react-router-dom'
+import {Navigate, useSearchParams} from 'react-router-dom'
 
 import {fetchSession} from '@/entities/auth'
 import type {PlayerPosition, SkillLevel, UserRole} from '@/entities/common'
@@ -21,6 +21,7 @@ import {
   updateSubscription,
 } from '@/entities/profile'
 import {getPrimaryPartnerPath, shouldUsePartnerWorkspace} from '@/features/access'
+import {ProfileFavoritesSection} from '@/features/favorites'
 import {KarmaHint, KarmaScore} from '@/features/karma'
 import {CoachProfilePanel} from '@/features/profile'
 import {testId} from '@/shared/testing/testId'
@@ -64,7 +65,7 @@ const SUBSCRIPTION_PLAN_OPTIONS = [
   },
 ]
 
-type ProfileHubSection = 'about' | 'settings' | 'privacy' | 'subscription'
+type ProfileHubSection = 'about' | 'favorites' | 'settings' | 'privacy' | 'subscription'
 
 function ProfileHubTabs({
   section,
@@ -84,6 +85,13 @@ function ProfileHubTabs({
         data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'about')}
       >
         О человеке
+      </Button>
+      <Button
+        view={section === 'favorites' ? 'action' : 'outlined'}
+        onClick={() => onSelect('favorites')}
+        data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'favorites')}
+      >
+        Избранное
       </Button>
       <Button
         view={section === 'settings' ? 'action' : 'outlined'}
@@ -858,7 +866,19 @@ function HockeyProfileHub({
   settings: ProfileSettings
 }) {
   const queryClient = useQueryClient()
-  const [activeSection, setActiveSection] = useState<ProfileHubSection>('about')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const sectionParam = searchParams.get('section')
+  const activeSection: ProfileHubSection =
+    sectionParam === 'favorites' ||
+    sectionParam === 'settings' ||
+    sectionParam === 'privacy' ||
+    sectionParam === 'subscription'
+      ? sectionParam
+      : 'about'
+
+  const selectSection = (value: ProfileHubSection) => {
+    setSearchParams(value === 'about' ? {} : {section: value}, {replace: true})
+  }
 
   const {data: session} = useQuery({
     queryKey: ['session'],
@@ -912,6 +932,8 @@ function HockeyProfileHub({
         isSaving={saveProfileMutation.isPending}
         isVerifying={verifyMutation.isPending}
       />
+    ) : activeSection === 'favorites' ? (
+      <ProfileFavoritesSection />
     ) : activeSection === 'settings' ? (
       <ProfileSettingsSection
         settings={settings}
@@ -934,7 +956,7 @@ function HockeyProfileHub({
 
   return (
     <div className="profile-hub" data-testid={testId('profile', 'profile-hub', 'page')}>
-      <ProfileHubTabs section={activeSection} onSelect={setActiveSection} />
+      <ProfileHubTabs section={activeSection} onSelect={selectSection} />
       <div
         className="profile-hub__panel"
         data-testid={testId('profile', 'profile-hub', 'panel', activeSection)}

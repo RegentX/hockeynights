@@ -6,6 +6,7 @@
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useEffect, useMemo, useRef, useState} from 'react'
+import {useSearchParams} from 'react-router-dom'
 
 import type {ArenaFilters as ArenaFiltersType} from '@/entities/arena'
 import {arenaHasFreeSlots, fetchArenas, fetchArenaSlots} from '@/entities/arena'
@@ -34,11 +35,20 @@ function hasActiveFilters(filters: ArenaFiltersType): boolean {
  */
 export function ArenasPage() {
   useDocumentTitle(ARENAS_PAGE_TITLE)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const arenaIdFromUrl = searchParams.get('arenaId')
   const [filters, setFilters] = useState<ArenaFiltersType>(EMPTY_FILTERS)
-  const [selectedArenaId, setSelectedArenaId] = useState<string | null>(null)
-  const [detailOpen, setDetailOpen] = useState(true)
+  const [detailClosed, setDetailClosed] = useState(false)
+  const [trackedUrlArena, setTrackedUrlArena] = useState(arenaIdFromUrl)
   const cardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map())
   const scrollOnNextArenaRef = useRef(false)
+
+  if (trackedUrlArena !== arenaIdFromUrl) {
+    setTrackedUrlArena(arenaIdFromUrl)
+    setDetailClosed(false)
+  }
+
+  const detailOpen = !detailClosed
 
   const {
     data: arenas = [],
@@ -52,6 +62,8 @@ export function ArenasPage() {
     placeholderData: (previous) => previous,
   })
 
+  const selectedArenaId = arenaIdFromUrl
+
   const activeArena = useMemo(() => {
     if (selectedArenaId) {
       const match = arenas.find((a) => a.id === selectedArenaId)
@@ -59,6 +71,11 @@ export function ArenasPage() {
     }
     return arenas[0] ?? null
   }, [arenas, selectedArenaId])
+
+  useEffect(() => {
+    if (!arenaIdFromUrl) return
+    scrollOnNextArenaRef.current = true
+  }, [arenaIdFromUrl])
 
   useEffect(() => {
     if (!activeArena) return
@@ -91,8 +108,11 @@ export function ArenasPage() {
   )
 
   const handleSelectArena = (id: string) => {
-    setSelectedArenaId(id)
-    setDetailOpen(true)
+    const next = new URLSearchParams(searchParams)
+    next.set('arenaId', id)
+    setTrackedUrlArena(id)
+    setSearchParams(next, {replace: true})
+    setDetailClosed(false)
   }
 
   const handleSelectFromMap = (id: string) => {
@@ -105,7 +125,7 @@ export function ArenasPage() {
   }
 
   const handleCloseDetail = () => {
-    setDetailOpen(false)
+    setDetailClosed(true)
   }
 
   const isFiltered = hasActiveFilters(filters)

@@ -10,6 +10,7 @@ import {useState} from 'react'
 import type {ClubSquad} from '@/entities/club'
 import {fetchTeams} from '@/entities/team'
 import {useSessionAccess} from '@/features/access'
+import {FavoriteButton} from '@/features/favorites'
 import {ClubProfilePanel, TeamControlCenter, TeamCreateForm, TeamCrest} from '@/features/teams'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
@@ -76,7 +77,11 @@ export function TeamsPage() {
                 data-testid={testId('teams', 'teams-page', 'item', team.id)}
               >
                 <div
-                  className={activeTeamId === team.id ? 'locker-room' : 'team-picker-item__surface'}
+                  className={
+                    activeTeamId === team.id
+                      ? 'locker-room team-picker-item__row'
+                      : 'team-picker-item__surface team-picker-item__row'
+                  }
                 >
                   <TeamCrest
                     name={team.name}
@@ -84,6 +89,7 @@ export function TeamsPage() {
                     skillLevel={team.skillLevel}
                     teamId={team.id}
                   />
+                  <FavoriteButton type="team" entityId={team.id} title={team.name} />
                 </div>
               </div>
             ))}

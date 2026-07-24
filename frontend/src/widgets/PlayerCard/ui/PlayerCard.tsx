@@ -8,6 +8,7 @@ import {Text} from '@gravity-ui/uikit'
 import {Link} from 'react-router-dom'
 
 import type {PlayerListItem} from '@/entities/profile'
+import {FavoriteButton} from '@/features/favorites'
 import {KarmaScore} from '@/features/karma'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
@@ -70,12 +71,15 @@ export function PlayerCard({player, linkable = true}: PlayerCardProps) {
               {player.displayName}
             </Text>
           </div>
-          <ScoreboardText
-            className="hockey-player-card__number"
-            data-testid={testId('players', 'player-card', 'text', 'number', player.userId)}
-          >
-            {jerseyNumber}
-          </ScoreboardText>
+          <div className="hockey-row hockey-row--gap-8 hockey-row--align-start">
+            <FavoriteButton type="player" entityId={player.userId} title={player.displayName} />
+            <ScoreboardText
+              className="hockey-player-card__number"
+              data-testid={testId('players', 'player-card', 'text', 'number', player.userId)}
+            >
+              {jerseyNumber}
+            </ScoreboardText>
+          </div>
         </div>
 
         <Text

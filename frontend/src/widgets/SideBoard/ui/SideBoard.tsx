@@ -9,7 +9,7 @@ import {Link} from 'react-router-dom'
 
 import {fetchEvents} from '@/entities/event'
 import {fetchLeagues, fetchLeagueStandings} from '@/entities/league'
-import {FavoritesPanel} from '@/features/favorites'
+import {EntityFavoritesPanel, FavoritesPanel} from '@/features/favorites'
 import {LeagueStandings} from '@/features/leagues'
 import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
 import {testId} from '@/shared/testing/testId'
@@ -56,6 +56,7 @@ export function SideBoard() {
         </div>
       </IceCard>
 
+      <EntityFavoritesPanel />
       <FavoritesPanel />
 
       {featuredLeague && standings.length > 0 && (

@@ -232,8 +232,12 @@
 
 .marketplace-card__price-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
+}
+
+.marketplace-card__favorite {
+  margin-left: auto;
 }
 
 .marketplace-card__price {

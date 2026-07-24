@@ -5,3 +5,9 @@ export {
   type FavoriteTier,
 } from './defaultPreset'
 export {getFavoriteIds, setFavoriteIds, toggleFavoriteId} from './favoritesStore'
+export {
+  FAVORITES_QUERY_KEY,
+  useFavoritesQuery,
+  useIsFavorite,
+  useToggleFavorite,
+} from './useFavorites'
