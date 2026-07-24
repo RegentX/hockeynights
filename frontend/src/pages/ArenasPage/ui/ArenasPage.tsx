@@ -268,7 +268,7 @@ export function ArenasPage() {
                     <HockeyButton
                       view="outlined"
                       size="s"
-                      onClick={() => setDetailOpen(true)}
+                      onClick={() => setDetailClosed(false)}
                       data-testid={testId('arenas', 'page', 'btn', 'open-detail')}
                     >
                       Открыть детали
