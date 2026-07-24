@@ -9,7 +9,6 @@ import {Link} from 'react-router-dom'
 
 import {fetchEvents} from '@/entities/event'
 import {fetchLeagues, fetchLeagueStandings} from '@/entities/league'
-import {fetchRecruitmentRequests} from '@/entities/recruitment'
 import {FavoritesPanel} from '@/features/favorites'
 import {LeagueStandings} from '@/features/leagues'
 import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
@@ -19,14 +18,11 @@ import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 
 /**
- * @spec SPEC-UI-5.1 - Борт с SOS, слотами и топом таблицы
+ * @spec SPEC-UI-5.1 - Правый борт: избранное, таблица, ближайшие события
+ * HOCFRONT-17: SOS-карточка скрыта из MVP-входов
  */
 export function SideBoard() {
   const {data: events = []} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
-  const {data: sosRequests = []} = useQuery({
-    queryKey: ['recruitment-requests', true],
-    queryFn: () => fetchRecruitmentRequests({goalieOnly: true}),
-  })
   const {data: leagues = []} = useQuery({queryKey: ['leagues'], queryFn: fetchLeagues})
   const featuredLeague = leagues[0]
   const {data: standings = []} = useQuery({
@@ -36,7 +32,6 @@ export function SideBoard() {
   })
 
   const upcoming = events.slice(0, 3)
-  const openSos = sosRequests.filter((r) => r.isGoalkeeperSos).length
 
   return (
     <aside
@@ -56,41 +51,12 @@ export function SideBoard() {
             color="secondary"
             data-testid={testId('app', 'side-board', 'text', 'hero-subtitle')}
           >
-            Панель событий и подсказок
+            Панель подсказок и избранного
           </Text>
         </div>
       </IceCard>
 
       <FavoritesPanel />
-
-      <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'sos')}>
-        <div
-          className="side-board__title"
-          data-testid={testId('app', 'side-board', 'text', 'sos-title')}
-        >
-          Goalkeeper SOS
-        </div>
-        <Text data-testid={testId('app', 'side-board', 'text', 'sos-count')}>
-          Открытых запросов:{' '}
-          <ScoreboardText
-            tone="accent"
-            data-testid={testId('app', 'side-board', 'text', 'sos-count-value')}
-          >
-            {openSos}
-          </ScoreboardText>
-        </Text>
-        <div className="side-board__cta">
-          <Link to="/sos" data-testid={testId('app', 'side-board', 'link', 'sos')}>
-            <HockeyButton
-              variant="sos"
-              size="m"
-              data-testid={testId('app', 'side-board', 'btn', 'sos')}
-            >
-              SOS
-            </HockeyButton>
-          </Link>
-        </div>
-      </IceCard>
 
       {featuredLeague && standings.length > 0 && (
         <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'standings')}>
@@ -120,11 +86,11 @@ export function SideBoard() {
           className="side-board__title"
           data-testid={testId('app', 'side-board', 'text', 'events-title')}
         >
-          Ближайшие события
+          Ближайшие игры и тренировки
         </div>
         {upcoming.length === 0 ? (
           <Text color="secondary" data-testid={testId('app', 'side-board', 'empty', 'events')}>
-            Событий нет
+            Пока пусто
           </Text>
         ) : (
           upcoming.map((event) => (

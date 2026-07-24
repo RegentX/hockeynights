@@ -1,3 +1,5 @@
+import {ARENAS_LABEL, EVENTS_LABEL} from '@/shared/config/navigationLabels'
+
 export type FavoriteTier = 'primary' | 'secondary'
 
 export interface FavoriteActionPreset {
@@ -14,8 +16,8 @@ export const DEFAULT_FAVORITE_IDS = ['events', 'teams', 'arenas', 'sos'] as cons
 export const FAVORITE_ACTIONS_PRESET: FavoriteActionPreset[] = [
   {
     id: 'events',
-    label: 'Мои события',
-    description: 'Ближайшие игры',
+    label: EVENTS_LABEL,
+    description: 'Ближайшие игры и тренировки',
     route: '/events',
     icon: '🏒',
     tier: 'primary',
@@ -30,7 +32,7 @@ export const FAVORITE_ACTIONS_PRESET: FavoriteActionPreset[] = [
   },
   {
     id: 'arenas',
-    label: 'Аренда льда',
+    label: ARENAS_LABEL,
     description: 'Найти лёд',
     route: '/arenas',
     icon: '🧊',

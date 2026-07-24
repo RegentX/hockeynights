@@ -57,23 +57,6 @@ export function CoachProfilePanel() {
             </HockeyButton>
           </Link>
           <Link
-            to="/highlights"
-            data-testid={testId(
-              'profile',
-              'coach-profile-panel',
-              'link',
-              routeToTestSlug('/highlights'),
-            )}
-          >
-            <HockeyButton
-              view="outlined"
-              size="s"
-              data-testid={testId('profile', 'coach-profile-panel', 'btn', 'highlights')}
-            >
-              Комментарии к моментам
-            </HockeyButton>
-          </Link>
-          <Link
             to="/messenger"
             data-testid={testId(
               'profile',
