@@ -11,6 +11,7 @@ import type {
   Team,
   TeamInvite,
   TeamRole,
+  TeamsFilterParams,
   TrainingLineupAssignment,
 } from '@/entities/team/model'
 import {apiRequest} from '@/shared/api/client'
@@ -18,8 +19,15 @@ import {apiRequest} from '@/shared/api/client'
 /**
  * @spec SPEC-FR-3.1.1 - Список команд
  */
-export function fetchTeams(): Promise<Team[]> {
-  return apiRequest<Team[]>('/teams')
+export function fetchTeams(filters: TeamsFilterParams = {}): Promise<Team[]> {
+  const params = new URLSearchParams()
+  if (filters.leagueId) params.set('leagueId', filters.leagueId)
+  if (filters.q) params.set('q', filters.q)
+  if (filters.playerId) params.set('playerId', filters.playerId)
+  if (filters.city) params.set('city', filters.city)
+
+  const query = params.toString()
+  return apiRequest<Team[]>(`/teams${query ? `?${query}` : ''}`)
 }
 
 /**

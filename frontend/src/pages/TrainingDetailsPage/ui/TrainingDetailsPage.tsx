@@ -35,7 +35,7 @@ export function TrainingDetailsPage() {
     queryFn: () => fetchEventById(eventId),
     enabled: Boolean(eventId),
   })
-  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: fetchTeams})
+  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
   const {data: players = []} = useQuery({
     queryKey: ['players'],
     queryFn: () => fetchPlayers(),
