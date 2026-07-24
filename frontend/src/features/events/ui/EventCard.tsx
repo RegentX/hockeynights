@@ -59,7 +59,7 @@ function EventCardHeader({event, timeStr}: {event: GameEvent; timeStr: string}) 
       </div>
       <div className="event-card__main">
         <Text
-          variant="subheader-2"
+          variant="header-2"
           className="event-card__title"
           data-testid={testId('events', 'card', 'text', 'title', event.id)}
         >

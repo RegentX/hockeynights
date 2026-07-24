@@ -33,6 +33,13 @@
     }
   }
 
+  /* Focus mode (обе панели скрыты): те же горизонтальные поля, что у контента */
+  &:has(.app-shell__body--left-collapsed.app-shell__body--right-collapsed) &__header {
+    @include breakpoint(1200px) {
+      padding-inline: clamp(20px, 4vw, 48px);
+    }
+  }
+
   &__brand {
     display: flex;
     align-items: center;
@@ -311,8 +318,14 @@
     &--left-collapsed#{&}--right-collapsed .app-shell__main-col {
       @include breakpoint(1200px) {
         grid-column: 1;
-        padding: 0;
-        overflow: hidden;
+        /* Full-width focus: keep gutters so titles/cards не прилипают к краям */
+        padding: 28px clamp(20px, 4vw, 48px);
+        padding-bottom: 28px;
+        overflow: auto;
+        max-width: 1400px;
+        width: 100%;
+        margin-inline: auto;
+        box-sizing: border-box;
       }
     }
   }
@@ -433,11 +446,14 @@
   &__tier-divider {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    margin: 10px 12px 6px 22px;
+    margin: 10px 12px 6px;
+    width: auto;
   }
 
   &__tier-label {
+    flex: 0 0 auto;
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -445,12 +461,15 @@
     color: var(--hockey-text-muted);
     opacity: 0.6;
     white-space: nowrap;
+    text-align: center;
   }
 
-  &__tier-divider::before {
+  &__tier-divider::before,
+  &__tier-divider::after {
     content: '';
-    flex: 1;
+    flex: 1 1 0;
     height: 1px;
+    min-width: 8px;
     background: var(--hockey-card-border);
     opacity: 0.5;
   }

@@ -37,10 +37,15 @@ a {
     -webkit-text-fill-color: transparent;
   }
 
+  /* Эталон display: «Ледовый дворец на Ходынке» и названия сущностей в карточках */
   .g-text_variant_header-2 {
     font-family: var(--hockey-font-display);
-    letter-spacing: 0.03em;
+    font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+    font-weight: 400;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
+    line-height: 1.1;
+    color: var(--g-color-text-primary);
   }
 
   .g-text_variant_subheader-2 {
