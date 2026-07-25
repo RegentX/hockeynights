@@ -25,7 +25,7 @@ describe('HOCFRONT-19 favorites API', () => {
       title: 'Медведи',
     })
     expect(created.id).toBe(favoriteKey('team', 'team-001'))
-    expect(created.href).toContain('/teams')
+    expect(created.href).toBe('/teams/team-001')
 
     const afterAdd = await fetchFavorites()
     expect(afterAdd.items.some((item) => item.id === created.id)).toBe(true)

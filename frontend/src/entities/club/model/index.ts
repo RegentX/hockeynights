@@ -1,1 +1,7 @@
-export type {Club, ClubSquad, ClubStaffMember} from './types/clubTypes'
+export type {
+  Club,
+  ClubSquad,
+  ClubStaffMember,
+  CreatePrivateClubTrainingPayload,
+  UpdateClubPayload,
+} from './types/clubTypes'

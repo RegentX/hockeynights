@@ -10,6 +10,7 @@ export type UserRole =
   | 'captain' // SPEC-FR-1.3.3
   | 'organizer' // SPEC-FR-1.3.4
   | 'coach' // SPEC-FR-1.3.6
+  | 'club_admin' // HOCFRONT-25 / EPIC-06
   | 'admin' // SPEC-FR-1.3.5
 
 /** @spec SPEC-FR-2.2.2 - Уровень мастерства */

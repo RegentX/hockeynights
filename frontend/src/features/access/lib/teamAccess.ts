@@ -49,17 +49,20 @@ export function resolveTeamPermissions(
   }
 
   const isAdmin = sessionRoles.includes('admin')
+  const isClubAdmin = sessionRoles.includes('club_admin')
   const isCaptain = sessionRoles.includes('captain')
   const isCoach = sessionRoles.includes('coach')
   const isOrganizer = sessionRoles.includes('organizer')
   const rank = teamRank(teamRole)
 
-  const canManageRoster = isAdmin || (isCaptain && rank >= TEAM_ROLE_RANK.team_admin)
+  const canManageRoster = isAdmin || isClubAdmin || (isCaptain && rank >= TEAM_ROLE_RANK.team_admin)
   const canManageRoles = canManageRoster
-  const canCreateChannel = isAdmin || ((isCaptain || isOrganizer) && rank >= TEAM_ROLE_RANK.captain)
-  const canCreateChat = isAdmin || ((isCoach || isCaptain) && rank >= TEAM_ROLE_RANK.coach)
+  const canCreateChannel =
+    isAdmin || isClubAdmin || ((isCaptain || isOrganizer) && rank >= TEAM_ROLE_RANK.captain)
+  const canCreateChat =
+    isAdmin || isClubAdmin || ((isCoach || isCaptain) && rank >= TEAM_ROLE_RANK.coach)
   const canEditLineup = canCreateChat
-  const canCreateTeam = isAdmin || isCaptain || isOrganizer
+  const canCreateTeam = isAdmin || isClubAdmin || isCaptain || isOrganizer
 
   return {
     canCreateTeam,

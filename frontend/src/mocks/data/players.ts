@@ -105,6 +105,7 @@ export const mockPlayers: PlayerListItem[] = [
     profileCompleteness: 90,
     karmaScore: 88,
     goalieReliabilityScore: 92,
+    avatarUrl: 'https://placehold.co/400x560/0d253f/ffffff?text=AS',
   },
   {
     userId: 'user-003',
@@ -120,6 +121,7 @@ export const mockPlayers: PlayerListItem[] = [
     preferredArenaIds: ['arena-002'],
     profileCompleteness: 65,
     karmaScore: 71,
+    avatarUrl: 'https://placehold.co/400x560/1a2f4a/ffffff?text=DK',
   },
   {
     userId: 'user-004',
@@ -135,6 +137,7 @@ export const mockPlayers: PlayerListItem[] = [
     preferredArenaIds: ['arena-001'],
     profileCompleteness: 55,
     karmaScore: 62,
+    avatarUrl: 'https://placehold.co/400x560/122a45/ffffff?text=SV',
   },
   {
     userId: 'user-005',
@@ -150,5 +153,22 @@ export const mockPlayers: PlayerListItem[] = [
     preferredArenaIds: ['arena-001'],
     profileCompleteness: 80,
     karmaScore: 79,
+    avatarUrl: 'https://placehold.co/400x560/163a5c/ffffff?text=MO',
+  },
+  {
+    userId: 'user-001',
+    displayName: 'Иван Петров',
+    fullName: 'Иван Петров',
+    city: 'Москва',
+    district: 'САО',
+    metro: 'Динамо',
+    position: 'forward',
+    skillLevel: 'amateur',
+    stickHand: 'right',
+    availability: ['weekday_evening'],
+    preferredArenaIds: ['arena-001'],
+    profileCompleteness: 85,
+    karmaScore: 84,
+    avatarUrl: 'https://placehold.co/400x560/1c3d5a/ffffff?text=IP',
   },
 ]

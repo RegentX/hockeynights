@@ -4,6 +4,7 @@
 
 import {adminHandlers} from '@/mocks/handlers/admin'
 import {arenaHandlers} from '@/mocks/handlers/arenas'
+import {clubHandlers} from '@/mocks/handlers/clubs'
 import {eventHandlers} from '@/mocks/handlers/events'
 import {externalFlowHandlers} from '@/mocks/handlers/external-flows'
 import {favoriteHandlers} from '@/mocks/handlers/favorites'
@@ -27,6 +28,7 @@ export const handlers = [
   ...eventHandlers,
   ...arenaHandlers,
   ...teamHandlers,
+  ...clubHandlers,
   ...recruitmentHandlers,
   ...leagueHandlers,
   ...feedbackHandlers,

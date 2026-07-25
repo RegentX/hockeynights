@@ -1,6 +1,8 @@
 export {
   addTeamMember,
   createTeam,
+  fetchTeam,
+  fetchTeamCalendarEvents,
   fetchTeamClubProfile,
   fetchTeamInvites,
   fetchTeamRoster,

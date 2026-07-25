@@ -109,6 +109,13 @@ function partnerCatalogItems(session: Session): NavItem[] {
   if (memberships.some((m) => m.kind === 'shop')) {
     items.push({to: routes.shops, label: 'Маркет', tier: 'active'})
   }
+  if (memberships.some((m) => m.kind === 'club')) {
+    items.push({to: routes.teams, label: 'Команды', tier: 'active'})
+    items.push({to: routes.players, label: 'Игроки', tier: 'active'})
+    items.push({to: routes.shops, label: 'Маркет', tier: 'active'})
+    items.push({to: routes.messenger, label: 'Мессенджер', tier: 'active'})
+    items.push({to: routes.events, label: EVENTS_LABEL, tier: 'active'})
+  }
   return items
 }
 
@@ -241,6 +248,16 @@ export function getAllowedPathPrefixes(session: Session): string[] {
     const memberships = session.user.partnerMemberships ?? []
     if (memberships.some((m) => m.kind === 'league')) prefixes.push(routes.leagues)
     if (memberships.some((m) => m.kind === 'shop')) prefixes.push(routes.shops)
+    if (memberships.some((m) => m.kind === 'club')) {
+      prefixes.push(
+        routes.teams,
+        routes.events,
+        routes.players,
+        routes.shops,
+        routes.messenger,
+        routes.calendar,
+      )
+    }
     return prefixes
   }
 

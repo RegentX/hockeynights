@@ -17,6 +17,7 @@ import {
   mockEvents,
   updateMockAttendance,
 } from '@/mocks/data/events'
+import {createMockChannelOrChat} from '@/mocks/data/messenger'
 import {mockPlayers} from '@/mocks/data/players'
 import {
   addMockRosterMember,
@@ -33,19 +34,73 @@ import {getMockTrainingLineup, updateMockTrainingLineup} from '@/mocks/data/trai
 
 /** @spec SPEC-FR-3.1.1 - Handlers команд, событий и календаря */
 export const teamHandlers = [
-  http.get('/mock-api/v1/teams', () => {
-    return HttpResponse.json(mockTeams)
+  http.get('/mock-api/v1/teams', ({request}) => {
+    const url = new URL(request.url)
+    const leagueId = url.searchParams.get('leagueId') ?? undefined
+    const q = url.searchParams.get('q') ?? undefined
+    const playerId = url.searchParams.get('playerId') ?? undefined
+    const city = url.searchParams.get('city') ?? undefined
+    const skillLevel = url.searchParams.get('skillLevel') ?? undefined
+
+    let result = [...mockTeams]
+
+    if (leagueId) {
+      result = result.filter((team) => team.leagueId === leagueId)
+    }
+    if (q) {
+      const needle = q.toLowerCase()
+      result = result.filter(
+        (team) =>
+          team.name.toLowerCase().includes(needle) ||
+          team.shortDescription?.toLowerCase().includes(needle) ||
+          team.description?.toLowerCase().includes(needle),
+      )
+    }
+    if (playerId) {
+      result = result.filter((team) => team.memberIds.includes(playerId))
+    }
+    if (city) {
+      const needle = city.toLowerCase()
+      result = result.filter((team) => team.city.toLowerCase().includes(needle))
+    }
+    if (skillLevel) {
+      result = result.filter((team) => team.skillLevel === skillLevel)
+    }
+
+    return HttpResponse.json(result)
+  }),
+
+  http.get('/mock-api/v1/teams/:teamId', ({params}) => {
+    const team = mockTeams.find((item) => item.id === params.teamId)
+    if (!team) {
+      return HttpResponse.json({message: 'Team not found'}, {status: 404})
+    }
+    return HttpResponse.json(team)
   }),
 
   http.post('/mock-api/v1/teams', async ({request}) => {
     const body = (await request.json()) as CreateTeamPayload
+    const playerIds = body.playerIds ?? []
+    const coachIds = body.coachIds ?? []
+    const createMessengerChat = body.createMessengerChat !== false
+    const messengerChatPublic = body.messengerChatPublic !== false
+    const memberIds = Array.from(new Set(['user-001', ...playerIds, ...coachIds]))
+
     const team = createMockTeam({
       id: `team-${Date.now()}`,
-      ...body,
+      name: body.name,
+      city: body.city,
+      skillLevel: body.skillLevel,
+      description: body.description,
+      shortDescription: body.shortDescription,
+      leagueId: body.leagueId,
+      homeArenaId: body.homeArenaId,
+      logoUrl: body.logoUrl,
       captainUserId: 'user-001',
       ownerUserId: 'user-001',
-      memberIds: ['user-001'],
+      memberIds,
     })
+
     addMockRosterMember({
       teamId: team.id,
       userId: 'user-001',
@@ -55,6 +110,47 @@ export const teamHandlers = [
       rosterStatus: 'active',
       joinedAt: new Date().toISOString(),
     })
+
+    for (const userId of playerIds) {
+      if (userId === 'user-001') continue
+      const player = mockPlayers.find((item) => item.userId === userId)
+      addMockRosterMember({
+        teamId: team.id,
+        userId,
+        displayName: player?.displayName ?? userId,
+        position: player?.position ?? 'any',
+        teamRole: 'player',
+        rosterStatus: 'invited',
+        joinedAt: new Date().toISOString(),
+      })
+    }
+
+    for (const userId of coachIds) {
+      if (userId === 'user-001') continue
+      const player = mockPlayers.find((item) => item.userId === userId)
+      addMockRosterMember({
+        teamId: team.id,
+        userId,
+        displayName: player?.displayName ?? userId,
+        position: player?.position ?? 'any',
+        teamRole: 'coach',
+        rosterStatus: 'active',
+        joinedAt: new Date().toISOString(),
+      })
+    }
+
+    /** SPEC-FR-16.1.1 — опциональный чат команды */
+    if (createMessengerChat) {
+      createMockChannelOrChat({
+        type: 'team',
+        title: team.name,
+        tag: 'team',
+        relatedEntityId: team.id,
+        visibility: messengerChatPublic ? 'public' : 'team_members',
+        restrictedUserIds: messengerChatPublic ? undefined : memberIds,
+      })
+    }
+
     return HttpResponse.json(team)
   }),
 
@@ -173,6 +269,13 @@ export const teamHandlers = [
     return HttpResponse.json(events)
   }),
 
+  http.get('/mock-api/v1/teams/:teamId/calendar', ({params}) => {
+    const events = mockEvents
+      .filter((e) => e.teamId === params.teamId)
+      .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
+    return HttpResponse.json(events)
+  }),
+
   http.get('/mock-api/v1/teams/:teamId/training-lineup/:eventId', ({params}) => {
     const actor = mockRoster.find((m) => m.teamId === params.teamId && m.userId === 'user-001')
     const canView =
@@ -205,8 +308,9 @@ export const teamHandlers = [
 
   http.get('/mock-api/v1/teams/:teamId/club-profile', ({params}) => {
     const club = findMockClubByTeamId(params.teamId as string)
+    // Нет клуба — не 404: публичная страница команды должна грузиться без клуба
     if (!club) {
-      return HttpResponse.json({message: 'Club not found for team'}, {status: 404})
+      return HttpResponse.json(null)
     }
     return HttpResponse.json(club)
   }),

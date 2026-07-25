@@ -25,7 +25,7 @@ import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 export function TrainingDetailsPage() {
   const {eventId = ''} = useParams()
-  const {userId, roles} = useSessionAccess()
+  const {userId, roles, session} = useSessionAccess()
   const {
     data: event,
     isLoading,
@@ -35,7 +35,7 @@ export function TrainingDetailsPage() {
     queryFn: () => fetchEventById(eventId),
     enabled: Boolean(eventId),
   })
-  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: fetchTeams})
+  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
   const {data: players = []} = useQuery({
     queryKey: ['players'],
     queryFn: () => fetchPlayers(),
@@ -66,7 +66,20 @@ export function TrainingDetailsPage() {
     )
   }
 
-  if (!canViewTraining(event, userId, userTeamIds, roles.includes('admin'))) {
+  const clubMemberships = session?.user.partnerMemberships?.filter((m) => m.kind === 'club') ?? []
+  const canManageClub = Boolean(
+    roles.includes('club_admin') &&
+    event.clubId &&
+    (clubMemberships.length === 0 ||
+      clubMemberships.some((membership) => membership.entityId === event.clubId)),
+  )
+
+  if (
+    !canViewTraining(event, userId, userTeamIds, {
+      isAdmin: roles.includes('admin'),
+      canManageClub,
+    })
+  ) {
     return (
       <div data-testid={testId('events', 'training-page', 'error', 'access-denied')}>
         <EmptyNetState

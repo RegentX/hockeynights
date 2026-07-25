@@ -1,9 +1,10 @@
 /**
  * SPEC-FR-3.1.1, SPEC-FR-3.1.2, SPEC-FR-3.2.1, SPEC-FR-3.2.2
  * SPEC-FR-21.1.2
+ * HOCFRONT-25 — fetchTeam
  */
 
-import type {Club} from '@/entities/club'
+import type {Club} from '@/entities/club/model'
 import type {GameEvent} from '@/entities/event'
 import type {
   CreateTeamPayload,
@@ -11,6 +12,7 @@ import type {
   Team,
   TeamInvite,
   TeamRole,
+  TeamsFilterParams,
   TrainingLineupAssignment,
 } from '@/entities/team/model'
 import {apiRequest} from '@/shared/api/client'
@@ -18,8 +20,23 @@ import {apiRequest} from '@/shared/api/client'
 /**
  * @spec SPEC-FR-3.1.1 - Список команд
  */
-export function fetchTeams(): Promise<Team[]> {
-  return apiRequest<Team[]>('/teams')
+export function fetchTeams(filters: TeamsFilterParams = {}): Promise<Team[]> {
+  const params = new URLSearchParams()
+  if (filters.leagueId) params.set('leagueId', filters.leagueId)
+  if (filters.q) params.set('q', filters.q)
+  if (filters.playerId) params.set('playerId', filters.playerId)
+  if (filters.city) params.set('city', filters.city)
+  if (filters.skillLevel) params.set('skillLevel', filters.skillLevel)
+
+  const query = params.toString()
+  return apiRequest<Team[]>(`/teams${query ? `?${query}` : ''}`)
+}
+
+/**
+ * HOCFRONT-25 / TASK-04-03 — Публичный профиль команды
+ */
+export function fetchTeam(teamId: string): Promise<Team> {
+  return apiRequest<Team>(`/teams/${teamId}`)
 }
 
 /**
@@ -94,6 +111,11 @@ export function fetchTeamTrainingEvents(teamId: string): Promise<GameEvent[]> {
   return apiRequest<GameEvent[]>(`/teams/${teamId}/training-events`)
 }
 
+/** HOCFRONT-25 — календарь команды (игры + тренировки) */
+export function fetchTeamCalendarEvents(teamId: string): Promise<GameEvent[]> {
+  return apiRequest<GameEvent[]>(`/teams/${teamId}/calendar`)
+}
+
 /** @spec SPEC-FR-21.1.6 - Получить раскладку тренировки */
 export function fetchTrainingLineup(
   teamId: string,
@@ -115,6 +137,6 @@ export function updateTrainingLineup(
 }
 
 /** @spec SPEC-FR-24.4.3 - Профиль клуба для выбранной команды */
-export function fetchTeamClubProfile(teamId: string): Promise<Club> {
-  return apiRequest<Club>(`/teams/${teamId}/club-profile`)
+export function fetchTeamClubProfile(teamId: string): Promise<Club | null> {
+  return apiRequest<Club | null>(`/teams/${teamId}/club-profile`)
 }

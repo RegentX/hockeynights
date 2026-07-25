@@ -15,7 +15,7 @@ export const mockChats: Chat[] = [
   {
     id: 'chat-1',
     type: 'team',
-    title: 'ХК «Метеор» — Раздевалка',
+    title: 'Медведи САО',
     avatarUrl: 'https://placehold.co/100x100/333/fff?text=M',
     unreadCount: 2,
     isPinned: true,
@@ -23,6 +23,8 @@ export const mockChats: Chat[] = [
     isTyping: true,
     memberIds: ['user-001', 'user-003', 'user-004'],
     relatedEntityId: 'team-001',
+    tag: 'team',
+    visibility: 'public',
   },
   {
     id: 'chat-2',
@@ -37,13 +39,26 @@ export const mockChats: Chat[] = [
   {
     id: 'chat-4',
     type: 'team',
-    title: 'Команда «Северный Лед»',
+    title: 'Соколы ЮАО',
     avatarUrl: 'https://placehold.co/100x100/0f7f95/fff?text=S',
     unreadCount: 3,
     isPinned: true,
     isOnline: true,
     memberIds: ['user-001', 'user-002', 'user-004'],
     relatedEntityId: 'team-002',
+    tag: 'team',
+    visibility: 'public',
+  },
+  {
+    id: 'chat-6',
+    type: 'team',
+    title: 'Балтика',
+    unreadCount: 0,
+    isOnline: true,
+    memberIds: ['user-004'],
+    relatedEntityId: 'team-003',
+    tag: 'team',
+    visibility: 'public',
   },
   {
     id: 'chat-5',
@@ -180,6 +195,7 @@ export const mockTopics: Record<string, ChatTopic[]> = {
   ],
   'chat-2': [{id: 'topic-3', chatId: 'chat-2', title: 'Игра 06.06', tag: 'event'}],
   'chat-4': [{id: 'topic-4', chatId: 'chat-4', title: 'Состав', tag: 'roster'}],
+  'chat-6': [{id: 'topic-7', chatId: 'chat-6', title: 'Общее', tag: 'general'}],
   'chat-3': [{id: 'topic-5', chatId: 'chat-3', title: 'Система', tag: 'system'}],
   'chat-5': [{id: 'topic-6', chatId: 'chat-5', title: 'Объявления', tag: 'notice'}],
 }
@@ -291,6 +307,7 @@ export function createDirectMockChat(targetUserId: string): Chat | null {
 
 export function createMockChannelOrChat(payload: CreateChatPayload, userId = 'user-001'): Chat {
   const chatId = `chat-${Date.now()}`
+  const restricted = payload.restrictedUserIds && payload.restrictedUserIds.length > 0
   const chat: Chat = {
     id: chatId,
     type: payload.type,
@@ -298,14 +315,12 @@ export function createMockChannelOrChat(payload: CreateChatPayload, userId = 'us
     tag: payload.tag?.trim() || undefined,
     unreadCount: 0,
     isOnline: true,
-    memberIds:
-      payload.restrictedUserIds && payload.restrictedUserIds.length > 0
-        ? Array.from(new Set([userId, ...payload.restrictedUserIds]))
-        : ['user-001', 'user-003', 'user-004'],
+    memberIds: restricted
+      ? Array.from(new Set([userId, ...payload.restrictedUserIds!]))
+      : ['user-001', 'user-003', 'user-004'],
     visibility:
-      payload.restrictedUserIds && payload.restrictedUserIds.length > 0
-        ? 'restricted'
-        : 'team_members',
+      payload.visibility ??
+      (restricted ? 'restricted' : payload.type === 'team' ? 'public' : 'team_members'),
     relatedEntityId: payload.relatedEntityId,
   }
   mockChats.unshift(chat)
@@ -321,7 +336,10 @@ export function createMockChannelOrChat(payload: CreateChatPayload, userId = 'us
     senderId: 'system',
     senderName: 'Система',
     type: 'system',
-    content: `${payload.type === 'channel' ? 'Канал' : 'Чат'} «${chat.title}» создан.`,
+    content:
+      payload.type === 'team' && chat.visibility === 'public'
+        ? `Публичный чат команды «${chat.title}» создан. Его можно найти в поиске мессенджера.`
+        : `${payload.type === 'channel' ? 'Канал' : 'Чат'} «${chat.title}» создан.`,
     timestamp: new Date().toISOString(),
   }
   mockMessages[chatId] = [firstMessage]
@@ -352,6 +370,30 @@ export function createMockChannelOrChat(payload: CreateChatPayload, userId = 'us
         },
       ],
     }
+  }
+  return chat
+}
+
+/** Публичные командные чаты для поиска в мессенджере */
+export function searchMockDiscoverableChats(query: string): Chat[] {
+  const needle = query.trim().toLowerCase()
+  if (!needle) return []
+  return mockChats.filter((chat) => {
+    if (chat.type !== 'team' || chat.visibility !== 'public') return false
+    return (
+      chat.title.toLowerCase().includes(needle) ||
+      chat.tag?.toLowerCase().includes(needle) ||
+      chat.relatedEntityId?.toLowerCase().includes(needle)
+    )
+  })
+}
+
+/** Открыть публичный чат: добавить текущего пользователя в участники */
+export function openMockDiscoverableChat(chatId: string, userId = 'user-001'): Chat | null {
+  const chat = mockChats.find((item) => item.id === chatId)
+  if (!chat || chat.visibility !== 'public') return null
+  if (!chat.memberIds?.includes(userId)) {
+    chat.memberIds = [...(chat.memberIds ?? []), userId]
   }
   return chat
 }

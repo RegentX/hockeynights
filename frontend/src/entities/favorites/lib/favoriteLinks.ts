@@ -10,7 +10,7 @@ export function buildFavoriteHref(type: FavoriteType, entityId: string): string 
     case 'player':
       return `/players/${entityId}`
     case 'team':
-      return `${routes.teams}?teamId=${encodeURIComponent(entityId)}`
+      return `/teams/${entityId}`
     case 'training':
       return `/events/trainings/${entityId}`
     case 'arena':

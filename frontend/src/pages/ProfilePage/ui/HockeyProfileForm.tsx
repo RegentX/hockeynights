@@ -124,6 +124,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
   captain: 'Капитан',
   organizer: 'Организатор',
   coach: 'Тренер',
+  club_admin: 'Админ клуба',
   admin: 'Админ',
 }
 
