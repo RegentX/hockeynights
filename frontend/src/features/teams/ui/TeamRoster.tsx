@@ -18,6 +18,7 @@ const STATUS_OPTIONS = [
   {value: 'active', content: 'Активен'},
   {value: 'bench', content: 'Запасной'},
   {value: 'invited', content: 'Приглашён'},
+  {value: 'declined', content: 'Отказано'},
   {value: 'removed', content: 'Удалён'},
 ]
 

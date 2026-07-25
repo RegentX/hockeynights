@@ -52,7 +52,7 @@ export interface RosterMember {
   /** @spec SPEC-FR-21.1.5 */
   teamRole?: TeamRole
   /** @spec SPEC-FR-3.2.2 */
-  rosterStatus: 'active' | 'bench' | 'invited' | 'removed'
+  rosterStatus: 'active' | 'bench' | 'invited' | 'declined' | 'removed'
   /** @spec SPEC-FR-3.2.1 */
   joinedAt: string
 }
@@ -94,14 +94,22 @@ export interface TeamsFilterParams {
   skillLevel?: SkillLevel
 }
 
-/** @spec SPEC-FR-21.1.2 - Email-приглашение незарегистрированному игроку */
+/** HOCFRONT-25 — статус приглашения в команду */
+export type TeamInviteStatus = 'sent' | 'received' | 'accepted' | 'declined' | 'expired'
+
+/** @spec SPEC-FR-21.1.2 - Приглашение в команду (зарегистрированный или email) */
 export interface TeamInvite {
   id: string
   teamId: string
-  email: string
+  /** Email для незарегистрированных */
+  email?: string
+  /** Зарегистрированный игрок */
+  userId?: string
+  displayName?: string
   invitedByUserId: string
-  status: 'sent' | 'accepted' | 'expired'
+  status: TeamInviteStatus
   createdAt: string
+  updatedAt?: string
 }
 
 /** @spec SPEC-FR-21.1.6, SPEC-FR-24.3.2 - Раскладка на тренировке */

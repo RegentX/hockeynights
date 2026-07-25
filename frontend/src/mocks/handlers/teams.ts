@@ -21,6 +21,7 @@ import {createMockChannelOrChat} from '@/mocks/data/messenger'
 import {mockPlayers} from '@/mocks/data/players'
 import {
   addMockRosterMember,
+  createMockRegisteredTeamInvite,
   createMockTeam,
   createMockTeamInvite,
   mockRoster,
@@ -161,7 +162,7 @@ export const teamHandlers = [
 
   http.patch('/mock-api/v1/teams/:teamId/roster/:userId', async ({params, request}) => {
     const body = (await request.json()) as {
-      rosterStatus: 'active' | 'bench' | 'invited' | 'removed'
+      rosterStatus: 'active' | 'bench' | 'invited' | 'declined' | 'removed'
     }
     const updated = updateMockRosterStatus(
       params.teamId as string,
@@ -176,6 +177,7 @@ export const teamHandlers = [
 
   http.post('/mock-api/v1/teams/:teamId/members', async ({params, request}) => {
     const body = (await request.json()) as {userId: string}
+    const teamId = params.teamId as string
     const player = mockPlayers.find((p) => p.userId === body.userId)
     if (!player) {
       return HttpResponse.json(
@@ -183,8 +185,21 @@ export const teamHandlers = [
         {status: 400},
       )
     }
+    const existing = mockRoster.find((m) => m.teamId === teamId && m.userId === player.userId)
+    if (existing && (existing.rosterStatus === 'active' || existing.rosterStatus === 'bench')) {
+      return HttpResponse.json({message: 'Игрок уже в составе'}, {status: 400})
+    }
+    if (existing && existing.rosterStatus === 'invited') {
+      return HttpResponse.json({message: 'Приглашение этому игроку уже отправлено'}, {status: 400})
+    }
+
+    createMockRegisteredTeamInvite(teamId, {
+      userId: player.userId,
+      displayName: player.displayName,
+    })
+
     const member = addMockRosterMember({
-      teamId: params.teamId as string,
+      teamId,
       userId: player.userId,
       displayName: player.displayName,
       position: player.position,

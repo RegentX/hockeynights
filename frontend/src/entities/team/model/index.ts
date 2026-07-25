@@ -5,6 +5,7 @@ export type {
   RosterMember,
   Team,
   TeamInvite,
+  TeamInviteStatus,
   TeamRole,
   TeamsFilterParams,
   TrainingDraftAssignment,

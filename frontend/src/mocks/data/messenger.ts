@@ -9,6 +9,7 @@ import type {
   Message,
 } from '@/entities/messenger'
 import {mockPlayers} from '@/mocks/data/players'
+import {mockUser} from '@/mocks/data/session'
 
 /** @spec SPEC-FR-16.1.1, SPEC-FR-16.1.2 */
 export const mockChats: Chat[] = [
@@ -284,7 +285,7 @@ export function createDirectMockChat(targetUserId: string): Chat | null {
     title: target.displayName,
     unreadCount: 0,
     isOnline: Boolean(target.isOnline),
-    memberIds: ['user-001', targetUserId],
+    memberIds: [mockUser.id, targetUserId],
   }
   mockChats.unshift(directChat)
   const defaultTopicId = `topic-${Date.now()}`

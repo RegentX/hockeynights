@@ -26,6 +26,7 @@ import {
 
 /** @spec SPEC-FR-2.3.2 - Query params фильтра игроков */
 interface PlayersQuery {
+  q?: string
   position?: PlayerPosition
   skillLevel?: SkillLevel
   district?: string
@@ -106,6 +107,7 @@ export const profileHandlers = [
   http.get('/mock-api/v1/players', ({request}) => {
     const url = new URL(request.url)
     const query: PlayersQuery = {
+      q: url.searchParams.get('q') ?? undefined,
       position: url.searchParams.get('position') as PlayerPosition | undefined,
       skillLevel: url.searchParams.get('skillLevel') as SkillLevel | undefined,
       district: url.searchParams.get('district') ?? undefined,
@@ -114,6 +116,14 @@ export const profileHandlers = [
 
     let result = [...mockPlayers]
 
+    if (query.q?.trim()) {
+      const needle = query.q.trim().toLowerCase()
+      result = result.filter((p) =>
+        [p.displayName, p.fullName, p.city, p.district, p.metro]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(needle)),
+      )
+    }
     if (query.position) {
       result = result.filter((p) => p.position === query.position)
     }
