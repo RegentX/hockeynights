@@ -164,3 +164,19 @@ export interface CreateTrainingLineupDraftPayload {
   assignments: TrainingDraftAssignment[]
   note?: string
 }
+
+/** HOCFRONT-25 / TASK-04-05 — заявка «Связаться со штабом» (без мессенджера) */
+export interface StaffContactRequestPayload {
+  name: string
+  email: string
+  message: string
+}
+
+export interface StaffContactRequest {
+  id: string
+  teamId: string
+  name: string
+  email: string
+  message: string
+  createdAt: string
+}

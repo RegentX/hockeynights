@@ -3,8 +3,9 @@
  */
 
 import {Accordion, Label, Text} from '@gravity-ui/uikit'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {Link, useNavigate, useParams} from 'react-router-dom'
+import {useQuery} from '@tanstack/react-query'
+import {useState} from 'react'
+import {Link, useParams} from 'react-router-dom'
 
 import {fetchSession} from '@/entities/auth'
 import {
@@ -13,9 +14,10 @@ import {
   fetchTeamClubProfile,
   fetchTeamRoster,
 } from '@/entities/team'
+import {canManageClubEntity} from '@/features/access'
 import {POSITION_LABELS, SKILL_LEVEL_LABELS} from '@/features/events'
 import {FavoriteButton} from '@/features/favorites'
-import {ensureTeamStaffChat, STAFF_ROLE_LABELS, TeamCalendarSection} from '@/features/teams'
+import {ContactStaffModal, STAFF_ROLE_LABELS, TeamCalendarSection} from '@/features/teams'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -25,8 +27,7 @@ import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 /** HOCFRONT-25 — публичная страница команды */
 export function TeamProfilePage() {
   const {teamId = ''} = useParams()
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
+  const [contactOpen, setContactOpen] = useState(false)
 
   const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
   const {data: team, isLoading: teamLoading} = useQuery({
@@ -48,14 +49,6 @@ export function TeamProfilePage() {
     queryKey: ['team-calendar', teamId],
     queryFn: () => fetchTeamCalendarEvents(teamId),
     enabled: Boolean(teamId),
-  })
-
-  const contactMutation = useMutation({
-    mutationFn: () => ensureTeamStaffChat(team!.id, team!.name),
-    onSuccess: (chat) => {
-      void queryClient.invalidateQueries({queryKey: ['messenger-chats']})
-      navigate(`${routes.messenger}?chatId=${encodeURIComponent(chat.id)}`)
-    },
   })
 
   if (teamLoading) {
@@ -87,11 +80,7 @@ export function TeamProfilePage() {
   }
 
   const clubId = club?.id ?? team.clubId
-  const canManageClub =
-    Boolean(clubId) &&
-    (session?.user.roles.includes('admin') ||
-      session?.user.roles.includes('club_admin') ||
-      session?.user.partnerMemberships?.some((m) => m.kind === 'club' && m.entityId === clubId))
+  const canManageClub = canManageClubEntity(session, clubId)
 
   const activeRoster = roster.filter((member) => member.rosterStatus !== 'removed')
   const initial = team.name.trim().charAt(0).toUpperCase() || '?'
@@ -188,8 +177,7 @@ export function TeamProfilePage() {
         >
           <HockeyButton
             size="l"
-            loading={contactMutation.isPending}
-            onClick={() => contactMutation.mutate()}
+            onClick={() => setContactOpen(true)}
             data-testid={testId('teams', 'profile', 'btn', 'contact-staff', team.id)}
           >
             Связаться со штабом
@@ -209,23 +197,21 @@ export function TeamProfilePage() {
             </Link>
           )}
         </div>
-        {contactMutation.isError && (
-          <Text
-            color="danger"
-            data-testid={testId('teams', 'profile', 'error', 'contact', team.id)}
-          >
-            {contactMutation.error instanceof Error
-              ? contactMutation.error.message
-              : 'Не удалось открыть чат со штабом'}
-          </Text>
-        )}
         <Text
           color="secondary"
           data-testid={testId('teams', 'profile', 'text', 'contact-hint', team.id)}
         >
-          Откроет мессенджер и создаст чат команды, если его ещё нет.
+          Откроет форму заявки в штаб — без перехода в мессенджер.
         </Text>
       </section>
+
+      <ContactStaffModal
+        open={contactOpen}
+        onClose={() => setContactOpen(false)}
+        teamId={team.id}
+        teamName={team.name}
+        clubName={club?.name}
+      />
 
       <div
         className="team-profile__sections"
@@ -315,7 +301,7 @@ export function TeamProfilePage() {
                     color="secondary"
                     data-testid={testId('teams', 'profile', 'empty', 'staff', team.id)}
                   >
-                    Штаб не указан — всё равно можно написать в чат команды.
+                    Штаб не указан — можно оставить заявку через форму выше.
                   </Text>
                 )}
                 {club?.staff.map((member) => (

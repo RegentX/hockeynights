@@ -10,6 +10,7 @@ export {
   fetchTeamTrainingEvents,
   fetchTrainingLineup,
   inviteTeamMemberByEmail,
+  submitStaffContactRequest,
   updateRosterMemberStatus,
   updateTeamMemberRole,
   updateTrainingLineup,

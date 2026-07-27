@@ -9,8 +9,8 @@ import {Link, useParams} from 'react-router-dom'
 
 import {fetchSession} from '@/entities/auth'
 import {fetchClub, fetchClubCalendar, fetchClubPrivateTrainings} from '@/entities/club'
-import {fetchTeamRoster} from '@/entities/team'
-import {useSessionAccess} from '@/features/access'
+import {fetchTeamRoster, fetchTeams} from '@/entities/team'
+import {canManageClubEntity, useSessionAccess} from '@/features/access'
 import {
   ClubDashboardSummary,
   type ClubPartnerTab,
@@ -84,10 +84,20 @@ export function ClubPartnerDashboard() {
     return sum + members.filter((member) => member.rosterStatus !== 'removed').length
   }, 0)
 
-  const canManage =
-    session?.user.roles.includes('admin') ||
-    session?.user.roles.includes('club_admin') ||
-    session?.user.partnerMemberships?.some((m) => m.kind === 'club' && m.entityId === clubId)
+  const {data: allTeams = []} = useQuery({
+    queryKey: ['teams'],
+    queryFn: () => fetchTeams(),
+    enabled: Boolean(clubId) && tab === 'roster',
+  })
+  const teamNameById = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const team of allTeams) {
+      map.set(team.id, team.name)
+    }
+    return map
+  }, [allTeams])
+
+  const canManage = canManageClubEntity(session, clubId)
 
   if (isLoading) {
     return (
@@ -210,7 +220,7 @@ export function ClubPartnerDashboard() {
       {tab === 'profile' && (
         <div data-testid={testId('clubs', 'partner', 'panel', 'profile', clubId)}>
           <IceCard padding="m">
-            <ClubProfileEditForm club={club} />
+            <ClubProfileEditForm key={club.id} club={club} />
           </IceCard>
         </div>
       )}
@@ -243,7 +253,7 @@ export function ClubPartnerDashboard() {
                     className="variable-font-header"
                     data-testid={testId('clubs', 'partner', 'text', 'roster-team', teamId)}
                   >
-                    Расстановка · {club.name}
+                    Расстановка · {teamNameById.get(teamId) ?? teamId}
                   </Text>
                   <Text
                     color="secondary"

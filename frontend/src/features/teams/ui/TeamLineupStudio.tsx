@@ -4,7 +4,7 @@
 
 import {Select, Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 
 import type {PlayerPosition} from '@/entities/common'
 import {fetchTeamRoster, type TrainingDraftAssignment} from '@/entities/team'
@@ -81,18 +81,23 @@ export function TeamLineupStudio({teamId, canEdit}: TeamLineupStudioProps) {
   )
   const rosterKey = `${teamId}:${activeRoster.map((member) => member.userId).join('|')}`
 
-  if (teamId !== syncedTeamId) {
+  useEffect(() => {
+    if (teamId === syncedTeamId) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- remount studio state for new team
     setSyncedTeamId(teamId)
     setTemplates(loadTeamLineupTemplates(teamId))
     setAssignments([])
     setSyncedRosterKey('')
     setStatusMessage(null)
-  }
+  }, [teamId, syncedTeamId])
 
-  if (!isLoading && rosterKey !== syncedRosterKey) {
+  useEffect(() => {
+    if (isLoading) return
+    if (rosterKey === syncedRosterKey) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional roster hydrate
     setSyncedRosterKey(rosterKey)
     setAssignments((prev) => mergeAssignmentsWithRoster(prev, activeRoster))
-  }
+  }, [isLoading, rosterKey, syncedRosterKey, activeRoster])
 
   function persistTemplates(next: TeamLineupTemplate[]) {
     setTemplates(next)

@@ -9,6 +9,8 @@ import type {GameEvent} from '@/entities/event'
 import type {
   CreateTeamPayload,
   RosterMember,
+  StaffContactRequest,
+  StaffContactRequestPayload,
   Team,
   TeamInvite,
   TeamRole,
@@ -139,4 +141,15 @@ export function updateTrainingLineup(
 /** @spec SPEC-FR-24.4.3 - Профиль клуба для выбранной команды */
 export function fetchTeamClubProfile(teamId: string): Promise<Club | null> {
   return apiRequest<Club | null>(`/teams/${teamId}/club-profile`)
+}
+
+/** HOCFRONT-25 / TASK-04-05 — заявка в штаб команды (MVP без мессенджера) */
+export function submitStaffContactRequest(
+  teamId: string,
+  payload: StaffContactRequestPayload,
+): Promise<StaffContactRequest> {
+  return apiRequest<StaffContactRequest>(`/teams/${teamId}/staff-contact`, {
+    method: 'POST',
+    body: payload,
+  })
 }

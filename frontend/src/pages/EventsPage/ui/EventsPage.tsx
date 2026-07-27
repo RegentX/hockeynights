@@ -49,7 +49,7 @@ const SHOW_MOCK_DEMO_LOADER =
 export function EventsPage() {
   const {data: events = [], isLoading} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
   const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
-  const {userId, roles, canOrganizeEvents} = useSessionAccess()
+  const {userId, roles, session, canOrganizeEvents} = useSessionAccess()
   const canSeeDeclineDetails =
     roles.includes('captain') || roles.includes('coach') || roles.includes('admin')
   const trainings = events.filter((event) => event.type === 'training')
@@ -81,6 +81,15 @@ export function EventsPage() {
 
   const userTeamIds = useMemo(() => getUserTeamIds(teams, userId), [teams, userId])
   const isAdmin = roles.includes('admin')
+  const clubMembershipIds = useMemo(
+    () =>
+      new Set(
+        (session?.user.partnerMemberships ?? [])
+          .filter((membership) => membership.kind === 'club')
+          .map((membership) => membership.entityId),
+      ),
+    [session?.user.partnerMemberships],
+  )
 
   const formatOptions = [...TRAINING_FORMAT_FILTER_OPTIONS]
 
@@ -134,7 +143,12 @@ export function EventsPage() {
   const filtersEnabled = isFiltersVisible
 
   const filteredTrainings = trainings
-    .filter((training) => canViewTraining(training, userId, userTeamIds, isAdmin))
+    .filter((training) =>
+      canViewTraining(training, userId, userTeamIds, {
+        isAdmin,
+        canManageClub: Boolean(training.clubId && clubMembershipIds.has(training.clubId)),
+      }),
+    )
     .filter((training) => {
       const query = searchQuery.trim().toLowerCase()
       if (!query) return true

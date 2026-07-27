@@ -26,6 +26,7 @@ import {
   fetchTeamCalendarEvents,
   fetchTeamClubProfile,
   fetchTeams,
+  submitStaffContactRequest,
 } from '@/entities/team'
 import {
   getAllowedPathPrefixes,
@@ -82,6 +83,17 @@ describe('HOCFRONT-25 team profile + club cabinet', () => {
     const calendar = await fetchTeamCalendarEvents('team-001')
     expect(calendar.length).toBeGreaterThan(0)
     expect(calendar.every((event) => event.teamId === 'team-001')).toBe(true)
+  })
+
+  it('submits staff contact request without messenger', async () => {
+    const created = await submitStaffContactRequest('team-001', {
+      name: 'Игрок Тест',
+      email: 'player@example.com',
+      message: 'Хочу записаться на просмотр',
+    })
+    expect(created.teamId).toBe('team-001')
+    expect(created.email).toBe('player@example.com')
+    expect(created.id).toMatch(/^staff-contact-/)
   })
 
   it('exposes club_admin persona and partner cabinet path', () => {

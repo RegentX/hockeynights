@@ -3,6 +3,8 @@ export type {
   CreateTrainingLineupDraftPayload,
   LineupApprovalStatus,
   RosterMember,
+  StaffContactRequest,
+  StaffContactRequestPayload,
   Team,
   TeamInvite,
   TeamInviteStatus,

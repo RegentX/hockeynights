@@ -19,6 +19,7 @@ import {
 } from '@/mocks/data/events'
 import {createMockChannelOrChat} from '@/mocks/data/messenger'
 import {mockPlayers} from '@/mocks/data/players'
+import {createMockStaffContactRequest} from '@/mocks/data/staffContact'
 import {
   addMockRosterMember,
   createMockRegisteredTeamInvite,
@@ -387,5 +388,27 @@ export const teamHandlers = [
       return HttpResponse.json({message: 'Event not found'}, {status: 404})
     }
     return HttpResponse.json(status)
+  }),
+
+  http.post('/mock-api/v1/teams/:teamId/staff-contact', async ({params, request}) => {
+    const teamId = params.teamId as string
+    const team = mockTeams.find((item) => item.id === teamId)
+    if (!team) {
+      return HttpResponse.json({message: 'Team not found'}, {status: 404})
+    }
+    const body = (await request.json()) as {
+      name?: string
+      email?: string
+      message?: string
+    }
+    if (!body.name?.trim() || !body.email?.trim() || !body.message?.trim()) {
+      return HttpResponse.json({message: 'Name, email and message are required'}, {status: 400})
+    }
+    const created = createMockStaffContactRequest(teamId, {
+      name: body.name,
+      email: body.email,
+      message: body.message,
+    })
+    return HttpResponse.json(created, {status: 201})
   }),
 ]

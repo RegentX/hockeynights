@@ -6,7 +6,7 @@ import {Link, useParams} from 'react-router-dom'
 import {fetchEventById} from '@/entities/event'
 import {fetchPlayers} from '@/entities/profile'
 import {fetchTeams} from '@/entities/team'
-import {useSessionAccess} from '@/features/access'
+import {canManageClubEntity, useSessionAccess} from '@/features/access'
 import {
   ACCESS_LABELS,
   AttendanceControl,
@@ -66,13 +66,7 @@ export function TrainingDetailsPage() {
     )
   }
 
-  const clubMemberships = session?.user.partnerMemberships?.filter((m) => m.kind === 'club') ?? []
-  const canManageClub = Boolean(
-    roles.includes('club_admin') &&
-    event.clubId &&
-    (clubMemberships.length === 0 ||
-      clubMemberships.some((membership) => membership.entityId === event.clubId)),
-  )
+  const canManageClub = canManageClubEntity(session, event.clubId)
 
   if (
     !canViewTraining(event, userId, userTeamIds, {

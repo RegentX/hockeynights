@@ -4,7 +4,7 @@
 
 import {Select, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 
 import {
   createTrainingLineupDraft,
@@ -121,10 +121,14 @@ export function TeamTrainingCreateWizard({clubId, teamIds}: TeamTrainingCreateWi
   )
   const rosterKey = `${teamId}:${activeRoster.map((member) => member.userId).join('|')}`
 
-  if (step === 'lineup' && !rosterLoading && rosterKey !== syncedRosterKey) {
+  useEffect(() => {
+    if (step !== 'lineup' || rosterLoading) return
+    if (rosterKey === syncedRosterKey) return
+    // Sync roster → assignments when entering lineup / roster changes (external data).
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional roster hydrate
     setSyncedRosterKey(rosterKey)
     setAssignments((prev) => mergeAssignmentsWithRoster(prev, activeRoster))
-  }
+  }, [step, rosterLoading, rosterKey, syncedRosterKey, activeRoster])
 
   const createMutation = useMutation({
     mutationFn: () =>

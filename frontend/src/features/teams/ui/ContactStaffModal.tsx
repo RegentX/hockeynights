@@ -3,20 +3,29 @@
  */
 
 import {Dialog, Text, TextArea, TextInput} from '@gravity-ui/uikit'
+import {useMutation} from '@tanstack/react-query'
 import {useState} from 'react'
 
+import {submitStaffContactRequest} from '@/entities/team'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 export interface ContactStaffModalProps {
   open: boolean
   onClose: () => void
+  teamId: string
   teamName: string
   clubName?: string
 }
 
 /** HOCFRONT-25 — модалка заявки в штаб (MVP без мессенджера) */
-export function ContactStaffModal({open, onClose, teamName, clubName}: ContactStaffModalProps) {
+export function ContactStaffModal({
+  open,
+  onClose,
+  teamId,
+  teamName,
+  clubName,
+}: ContactStaffModalProps) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
@@ -30,15 +39,28 @@ export function ContactStaffModal({open, onClose, teamName, clubName}: ContactSt
     onClose()
   }
 
+  const submitMutation = useMutation({
+    mutationFn: () =>
+      submitStaffContactRequest(teamId, {
+        name: name.trim(),
+        email: email.trim(),
+        message: message.trim(),
+      }),
+    onSuccess: () => {
+      setSuccess(true)
+      window.setTimeout(() => {
+        resetAndClose()
+      }, 900)
+    },
+  })
+
   const handleSubmit = () => {
-    if (!name.trim() || !email.trim() || !message.trim()) return
-    setSuccess(true)
-    window.setTimeout(() => {
-      resetAndClose()
-    }, 900)
+    if (!name.trim() || !email.trim() || !message.trim() || submitMutation.isPending) return
+    submitMutation.mutate()
   }
 
   const targetLabel = clubName ? `${teamName} · ${clubName}` : teamName
+  const canSubmit = Boolean(name.trim() && email.trim() && message.trim())
 
   return (
     <Dialog
@@ -95,6 +117,13 @@ export function ContactStaffModal({open, onClose, teamName, clubName}: ContactSt
                   data-testid={testId('teams', 'contact-staff', 'field', 'message')}
                 />
               </div>
+              {submitMutation.isError && (
+                <Text color="danger" data-testid={testId('teams', 'contact-staff', 'error')}>
+                  {submitMutation.error instanceof Error
+                    ? submitMutation.error.message
+                    : 'Не удалось отправить заявку'}
+                </Text>
+              )}
             </>
           )}
         </div>
@@ -111,6 +140,8 @@ export function ContactStaffModal({open, onClose, teamName, clubName}: ContactSt
         {!success && (
           <HockeyButton
             size="s"
+            loading={submitMutation.isPending}
+            disabled={!canSubmit}
             onClick={handleSubmit}
             data-testid={testId('teams', 'contact-staff', 'btn', 'submit')}
           >
