@@ -19,7 +19,8 @@ import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 
 /**
  * @spec SPEC-UI-5.1 - Борт с избранным, слотами и топом таблицы
- * HOCFRONT-15: блок Goalkeeper SOS скрыт из MVP (маршрут /sos сохранён)
+ * HOCFRONT-15: SOS / IQ / Highlight скрыты из MVP-навигации и из «Избранное»
+ * (см. defaultPreset / sanitizeFavoriteIds); прямые URL сохранены.
  */
 export function SideBoard() {
   const {data: events = []} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
