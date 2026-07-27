@@ -11,7 +11,14 @@ export interface FavoriteActionPreset {
   tier: FavoriteTier
 }
 
-export const DEFAULT_FAVORITE_IDS = ['events', 'teams', 'arenas', 'sos'] as const
+/**
+ * HOCFRONT-15 / TASK-01-05 — эти id не должны попадать в SideBoard «Избранное».
+ * Маршруты /sos /iq /highlights остаются доступны по прямому URL.
+ */
+export const MVP_HIDDEN_FAVORITE_IDS = ['sos', 'iq', 'highlights'] as const
+
+/** Дефолт без SOS; calendar вместо скрытого раздела (review PR-41). */
+export const DEFAULT_FAVORITE_IDS = ['events', 'teams', 'arenas', 'calendar'] as const
 
 export const FAVORITE_ACTIONS_PRESET: FavoriteActionPreset[] = [
   {
@@ -39,11 +46,11 @@ export const FAVORITE_ACTIONS_PRESET: FavoriteActionPreset[] = [
     tier: 'primary',
   },
   {
-    id: 'sos',
-    label: 'SOS',
-    description: 'Нужен игрок/вратарь',
-    route: '/sos',
-    icon: '🚨',
+    id: 'calendar',
+    label: 'Календарь',
+    description: 'Расписание',
+    route: '/calendar',
+    icon: '📅',
     tier: 'primary',
   },
   {
@@ -63,22 +70,6 @@ export const FAVORITE_ACTIONS_PRESET: FavoriteActionPreset[] = [
     tier: 'secondary',
   },
   {
-    id: 'calendar',
-    label: 'Календарь',
-    description: 'Расписание',
-    route: '/calendar',
-    icon: '📅',
-    tier: 'secondary',
-  },
-  {
-    id: 'highlights',
-    label: 'Моменты',
-    description: 'Видео и фото',
-    route: '/highlights',
-    icon: '🎬',
-    tier: 'secondary',
-  },
-  {
     id: 'shop',
     label: 'Магазин',
     description: 'Экипировка',
@@ -86,12 +77,13 @@ export const FAVORITE_ACTIONS_PRESET: FavoriteActionPreset[] = [
     icon: '🛒',
     tier: 'secondary',
   },
-  {
-    id: 'iq',
-    label: 'IQ',
-    description: 'Тесты и рейтинг',
-    route: '/iq',
-    icon: '🧠',
-    tier: 'secondary',
-  },
 ]
+
+export function isMvpHiddenFavoriteId(id: string): boolean {
+  return (MVP_HIDDEN_FAVORITE_IDS as readonly string[]).includes(id)
+}
+
+/** Убрать SOS / IQ / Highlight из сохранённого набора избранного */
+export function sanitizeFavoriteIds(ids: string[]): string[] {
+  return ids.filter((id) => !isMvpHiddenFavoriteId(id))
+}

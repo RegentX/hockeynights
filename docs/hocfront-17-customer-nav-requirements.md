@@ -87,7 +87,7 @@
 
 | # | Требование | Критерий |
 |---|------------|----------|
-| 1 | Точка входа «Уведомления» | Пункт виден в desktop top bar **и** в mobile nav (bottom и/или side) |
+| 1 | Точка входа «Уведомления» | Общий header top bar (`NotificationsBellLink` / `app-shell-link-notifications`) на **desktop и mobile**. Не дублируется в side nav / bottom bar / sheet «Ещё» — осознанный UX (колокольчик всегда в шапке). |
 | 2 | Mock notifications | Достаточно существующего `/notifications` + mock; не нужны реальные пуши |
 | 3 | Sync desktop ↔ mobile | Нет расхождения: один раздел — разные или одинаковые labels только там, где явно задано (events: длинное / короткое) |
 | 4 | SOS / IQ / Highlight | Не показывать в меню (если ещё не закрыто — не возвращать) |
@@ -103,7 +103,7 @@
 - [ ] Desktop: «Игры и тренировки», «Ледовые арены»
 - [ ] Mobile: «Тренировки» (events), «Ледовые арены» (arenas)
 - [ ] Breadcrumbs / page titles согласованы с desktop labels (или с page-title константами)
-- [ ] «Уведомления» доступны из desktop и mobile
+- [ ] «Уведомления» доступны из desktop и mobile через общий header-колокольчик (не через bottom/side nav)
 - [ ] Desktop top bar и mobile bottom/side nav синхронизированы по составу MVP-пунктов
 - [ ] Нет регрессии: маршруты открываются по прежним URL
 
@@ -115,8 +115,14 @@
 
 - Lottie: `notification-bell.json` — [Notification Bell Animation](https://lottiefiles.com/animations/notification-bell-animation-FH1bsbRMdY) (Tim John, LottieFiles)
 - Единый `PLAYER_NAV_ITEMS` → desktop left nav + mobile bottom (subset, тот же порядок)
-- `Уведомления` только в header (`app-shell__notify`), не в side/bottom nav
-- SOS / IQ / Highlight скрыты из меню; SosFab и SOS-карточка SideBoard убраны из MVP-входов
+- `Уведомления` только в shared header (`app-shell__notify` / `NotificationsBellLink`), не в side/bottom nav — DoD §2.2/§2.4 трактует header как точку входа на обеих платформах
+- SOS / IQ / Highlight скрыты из меню и из default Favorites (`DEFAULT_FAVORITE_IDS` без `sos`; preset без sos/iq/highlights)
+- Mobile «Ещё» включает календарь (`routes.calendar`) — sync с desktop MVP
 - Избранное: «Аренда льда» / «Мои события» → `ARENAS_LABEL` / `EVENTS_LABEL`
 
-Тесты: `frontend/src/test/hocfront-17-nav.spec.ts`
+### 3.1. Dependency notes (review PR-41)
+
+- **react-router:** `react-router-dom@^7.18.1` + `overrides.react-router@8.3.0` — временный cross-major pin ради CVE high в runtime. Отдельного `react-router-dom@8` на npm нет (v8 = unified `react-router` с `./dom`). Follow-up: миграция импортов на `react-router@8` и снятие override.
+- **npm audit CI:** hard-gate = `npm audit --audit-level=high --omit=dev` (runtime). Полный audit (включая eslint/minimatch toolchain) — warning / `continue-on-error`; global `minimatch@10` override ломает `eslint-plugin-jsx-a11y`.
+
+Тесты: `frontend/src/test/hocfront-17-nav.spec.ts`, `hocfront-17-notifications-entry.spec.tsx`, `mvp-nav-hide.spec.ts`

@@ -7,7 +7,7 @@
 
 import type {LottieRefCurrentProps} from 'lottie-react'
 import {useLottie} from 'lottie-react'
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {Link} from 'react-router-dom'
 
 import notificationBellAnimation from '@/shared/assets/lottie/notification-bell.json'
@@ -19,26 +19,47 @@ interface NotificationsBellLinkProps {
   active?: boolean
 }
 
+function usePrefersReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  })
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const onChange = () => setReduced(media.matches)
+    onChange()
+    media.addEventListener('change', onChange)
+    return () => media.removeEventListener('change', onChange)
+  }, [])
+
+  return reduced
+}
+
 export function NotificationsBellLink({
   to = '/notifications',
   unreadCount,
   active = false,
 }: NotificationsBellLinkProps) {
   const lottieRef = useRef<LottieRefCurrentProps>(null)
+  const prefersReducedMotion = usePrefersReducedMotion()
   const hasUnread = unreadCount > 0
+  const animate = hasUnread && !prefersReducedMotion
   const lottieSize = 22
 
   const {View} = useLottie(
     {
       animationData: notificationBellAnimation,
-      loop: hasUnread,
-      autoplay: hasUnread,
+      loop: animate,
+      autoplay: animate,
       lottieRef,
     },
     {width: lottieSize, height: lottieSize},
   )
 
   const playBellRing = () => {
+    if (prefersReducedMotion) return
     const anim = lottieRef.current
     if (!anim) return
     anim.setSpeed(1.15)
@@ -46,20 +67,20 @@ export function NotificationsBellLink({
   }
 
   const handleBellLeave = () => {
-    if (hasUnread) return
+    if (prefersReducedMotion || hasUnread) return
     lottieRef.current?.goToAndStop(0, true)
   }
 
   useEffect(() => {
     const anim = lottieRef.current
     if (!anim) return
-    if (hasUnread) {
+    if (animate) {
       anim.setSpeed(1)
       anim.goToAndPlay(0, true)
       return
     }
     anim.goToAndStop(0, true)
-  }, [hasUnread, unreadCount])
+  }, [animate, unreadCount])
 
   return (
     <Link
