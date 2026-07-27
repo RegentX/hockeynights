@@ -124,7 +124,6 @@ export function resolveMobileNavItems(
 export function getPersonaHomePath(session: Session): string {
   if (shouldUsePartnerWorkspace(session)) return getPrimaryPartnerPath(session)
   if (session.user.roles.includes('admin')) return routes.admin
-  // HOCFRONT-15: SOS / IQ / Highlight не являются home path в MVP
   return routes.profile
 }
 
