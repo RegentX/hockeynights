@@ -68,6 +68,7 @@ function EventCardHeader({event, timeStr}: {event: GameEvent; timeStr: string}) 
             {event.title}
           </Text>
           {event.type === 'training' && (
+            // FavoriteType поддерживает training, не game — игры сознательно без ♥ (TASK-02-04).
             <FavoriteButton type="training" entityId={event.id} title={event.title} />
           )}
         </div>

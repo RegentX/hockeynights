@@ -43,6 +43,7 @@ export function ArenasPage() {
   const cardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map())
   const scrollOnNextArenaRef = useRef(false)
 
+  // React: adjust state during render when URL param changes (preferred over setState-in-effect).
   if (trackedUrlArena !== arenaIdFromUrl) {
     setTrackedUrlArena(arenaIdFromUrl)
     setDetailClosed(false)

@@ -5,10 +5,11 @@
 
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
+import {useSearchParams} from 'react-router-dom'
 
 import type {ClubSquad} from '@/entities/club'
-import {fetchTeams} from '@/entities/team'
+import {fetchTeams, type Team} from '@/entities/team'
 import {useSessionAccess} from '@/features/access'
 import {FavoriteButton} from '@/features/favorites'
 import {ClubProfilePanel, TeamControlCenter, TeamCreateForm, TeamCrest} from '@/features/teams'
@@ -16,19 +17,77 @@ import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
+interface ActiveTeamPanelProps {
+  team: Team
+  userId: string
+  teamPermissions: ReturnType<typeof useSessionAccess>['teamPermissions']
+  detailRef: React.RefObject<HTMLDivElement | null>
+}
+
+function ActiveTeamPanel({team, userId, teamPermissions, detailRef}: ActiveTeamPanelProps) {
+  const [activeSquad, setActiveSquad] = useState<ClubSquad | null>(null)
+
+  return (
+    <div
+      ref={detailRef}
+      className="locker-room"
+      data-testid={testId('teams', 'teams-page', 'panel', 'active-team', team.id)}
+    >
+      <TeamCrest name={team.name} city={team.city} skillLevel={team.skillLevel} teamId={team.id} />
+      <div className="hockey-mt-16 hockey-mb-12 hockey-stack hockey-stack--gap-16">
+        <ClubProfilePanel team={team} onActiveSquadChange={setActiveSquad} />
+        <TeamControlCenter
+          team={team}
+          activeSquad={activeSquad}
+          userId={userId}
+          teamPermissions={teamPermissions}
+        />
+      </div>
+    </div>
+  )
+}
+
 /**
  * @spec SPEC-UI-2.3 - Страница команд в стиле раздевалки
  * @spec SPEC-FR-3.1.1 - Страница команд
  */
 export function TeamsPage() {
-  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
-  const [activeSquad, setActiveSquad] = useState<ClubSquad | null>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const teamIdFromUrl = searchParams.get('teamId')
   const {teamPermissions, userId} = useSessionAccess()
   const {canCreateTeam} = teamPermissions('player')
   const {data: teams = [], isLoading} = useQuery({queryKey: ['teams'], queryFn: fetchTeams})
+  const scrollOnNextTeamRef = useRef(false)
+  const detailRef = useRef<HTMLDivElement | null>(null)
 
-  const activeTeamId = selectedTeamId ?? teams[0]?.id ?? null
+  const activeTeamId = useMemo(() => {
+    if (teamIdFromUrl && teams.some((team) => team.id === teamIdFromUrl)) {
+      return teamIdFromUrl
+    }
+    return teams[0]?.id ?? null
+  }, [teamIdFromUrl, teams])
+
   const activeTeam = teams.find((t) => t.id === activeTeamId)
+
+  useEffect(() => {
+    if (!teamIdFromUrl) return
+    scrollOnNextTeamRef.current = true
+  }, [teamIdFromUrl])
+
+  useEffect(() => {
+    if (!activeTeamId || !scrollOnNextTeamRef.current) return
+    scrollOnNextTeamRef.current = false
+    const node = detailRef.current
+    if (node && typeof node.scrollIntoView === 'function') {
+      node.scrollIntoView({behavior: 'smooth', block: 'nearest'})
+    }
+  }, [activeTeamId])
+
+  const handleSelectTeam = (id: string) => {
+    const next = new URLSearchParams(searchParams)
+    next.set('teamId', id)
+    setSearchParams(next, {replace: true})
+  }
 
   return (
     <div
@@ -70,10 +129,10 @@ export function TeamsPage() {
               <div
                 key={team.id}
                 className="team-picker-item"
-                onClick={() => setSelectedTeamId(team.id)}
+                onClick={() => handleSelectTeam(team.id)}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && setSelectedTeamId(team.id)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSelectTeam(team.id)}
                 data-testid={testId('teams', 'teams-page', 'item', team.id)}
               >
                 <div
@@ -98,26 +157,13 @@ export function TeamsPage() {
       </div>
 
       {activeTeamId && activeTeam && (
-        <div
-          className="locker-room"
-          data-testid={testId('teams', 'teams-page', 'panel', 'active-team', activeTeamId)}
-        >
-          <TeamCrest
-            name={activeTeam.name}
-            city={activeTeam.city}
-            skillLevel={activeTeam.skillLevel}
-            teamId={activeTeam.id}
-          />
-          <div className="hockey-mt-16 hockey-mb-12 hockey-stack hockey-stack--gap-16">
-            <ClubProfilePanel team={activeTeam} onActiveSquadChange={setActiveSquad} />
-            <TeamControlCenter
-              team={activeTeam}
-              activeSquad={activeSquad}
-              userId={userId}
-              teamPermissions={teamPermissions}
-            />
-          </div>
-        </div>
+        <ActiveTeamPanel
+          key={activeTeam.id}
+          team={activeTeam}
+          userId={userId}
+          teamPermissions={teamPermissions}
+          detailRef={detailRef}
+        />
       )}
     </div>
   )

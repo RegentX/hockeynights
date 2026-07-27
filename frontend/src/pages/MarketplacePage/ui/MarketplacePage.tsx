@@ -4,7 +4,8 @@
 
 import {Button, Select, Switch, Text, TextInput} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
+import {useSearchParams} from 'react-router-dom'
 
 import type {PlayerPosition} from '@/entities/common'
 import type {MarketplaceFilters, MarketplaceSort} from '@/entities/shop'
@@ -30,11 +31,15 @@ const POSITION_OPTIONS = [
  * @spec SPEC-FR-9.3.1 - Маркетплейс экипировки (лента товаров)
  */
 export function MarketplacePage() {
+  const [searchParams] = useSearchParams()
+  const productIdFromUrl = searchParams.get('productId')
   const [searchInput, setSearchInput] = useState('')
   const [filters, setFilters] = useState<MarketplaceFilters>({
     sort: 'recommended',
     inStockOnly: false,
   })
+  const productCardRefs = useRef<Map<string, HTMLElement | null>>(new Map())
+  const scrollOnNextProductRef = useRef(false)
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -42,6 +47,11 @@ export function MarketplacePage() {
     }, 300)
     return () => window.clearTimeout(timer)
   }, [searchInput])
+
+  useEffect(() => {
+    if (!productIdFromUrl) return
+    scrollOnNextProductRef.current = true
+  }, [productIdFromUrl])
 
   const {data, isLoading, isFetching} = useQuery({
     queryKey: ['marketplace', filters],
@@ -51,6 +61,18 @@ export function MarketplacePage() {
   const listings = data?.listings ?? []
   const categories = data?.categories ?? []
   const spotlightShops = data?.spotlightShops ?? []
+  const listingIdsKey = listings.map((listing) => listing.offer.id).join(',')
+
+  useEffect(() => {
+    if (!productIdFromUrl || !scrollOnNextProductRef.current) return
+    if (isLoading) return
+    const node = productCardRefs.current.get(productIdFromUrl)
+    if (!node) return
+    scrollOnNextProductRef.current = false
+    if (typeof node.scrollIntoView === 'function') {
+      node.scrollIntoView({behavior: 'smooth', block: 'nearest'})
+    }
+  }, [productIdFromUrl, listingIdsKey, isLoading])
 
   function patchFilters(patch: Partial<MarketplaceFilters>) {
     setFilters((prev) => ({...prev, ...patch}))
@@ -188,7 +210,14 @@ export function MarketplacePage() {
       ) : (
         <div className="marketplace__grid" data-testid={testId('shops', 'marketplace', 'list')}>
           {listings.map((listing) => (
-            <MarketplaceProductCard key={listing.offer.id} listing={listing} />
+            <MarketplaceProductCard
+              key={listing.offer.id}
+              listing={listing}
+              highlighted={productIdFromUrl === listing.offer.id}
+              cardRef={(node) => {
+                productCardRefs.current.set(listing.offer.id, node)
+              }}
+            />
           ))}
         </div>
       )}

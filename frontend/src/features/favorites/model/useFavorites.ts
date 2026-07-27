@@ -79,12 +79,10 @@ export function useToggleFavorite() {
         })
       }
 
-      return {previous}
+      return {previous: previous ?? {items: []}}
     },
     onError: (_error, _input, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(FAVORITES_QUERY_KEY, context.previous)
-      }
+      queryClient.setQueryData(FAVORITES_QUERY_KEY, context?.previous ?? {items: []})
     },
     onSettled: () => {
       void queryClient.invalidateQueries({queryKey: FAVORITES_QUERY_KEY})
