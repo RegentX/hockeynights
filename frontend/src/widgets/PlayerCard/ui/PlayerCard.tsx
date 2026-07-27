@@ -64,7 +64,7 @@ export function PlayerCard({player, linkable = true}: PlayerCardProps) {
             )}
             <Text
               variant="header-2"
-              className="hockey-text-mt-6"
+              className="hockey-text-mt-6 hockey-entity-title--compact"
               data-testid={testId('players', 'player-card', 'text', 'name', player.userId)}
             >
               {player.displayName}

@@ -101,7 +101,8 @@ export function MarketplaceProductCard({listing}: MarketplaceProductCardProps) {
           )}
         </div>
         <Text
-          className="marketplace-card__title"
+          variant="header-2"
+          className="marketplace-card__title hockey-entity-title--compact"
           data-testid={testId('shops', 'marketplace-card', 'text', 'title', offer.id)}
         >
           {offer.title}

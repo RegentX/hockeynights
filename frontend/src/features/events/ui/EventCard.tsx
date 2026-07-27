@@ -60,7 +60,7 @@ function EventCardHeader({event, timeStr}: {event: GameEvent; timeStr: string}) 
       <div className="event-card__main">
         <Text
           variant="header-2"
-          className="event-card__title"
+          className="event-card__title hockey-entity-title--compact"
           data-testid={testId('events', 'card', 'text', 'title', event.id)}
         >
           {event.title}
@@ -133,7 +133,8 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
         </div>
         <div>
           <Text
-            variant="subheader-2"
+            variant="header-2"
+            className="hockey-entity-title--compact"
             data-testid={testId('events', 'card', 'text', 'title', event.id)}
           >
             {event.title}
