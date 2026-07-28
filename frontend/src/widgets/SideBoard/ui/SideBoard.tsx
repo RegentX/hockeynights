@@ -8,9 +8,9 @@ import {useQuery} from '@tanstack/react-query'
 import {Link} from 'react-router-dom'
 
 import {fetchEvents} from '@/entities/event'
-import {fetchProfileFavorites} from '@/entities/favorites'
 import {fetchLeagues, fetchLeagueStandings} from '@/entities/league'
 import {fetchRecruitmentRequests} from '@/entities/recruitment'
+import {FavoritesPanel} from '@/features/favorites'
 import {LeagueStandings} from '@/features/leagues'
 import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
 import {testId} from '@/shared/testing/testId'
@@ -33,11 +33,6 @@ export function SideBoard() {
     queryKey: ['league-standings', featuredLeague?.id],
     queryFn: () => fetchLeagueStandings(featuredLeague!.id),
     enabled: Boolean(featuredLeague?.id),
-  })
-
-  const {data: favorites} = useQuery({
-    queryKey: ['profile-favorites'],
-    queryFn: fetchProfileFavorites,
   })
 
   const upcoming = events.slice(0, 3)
@@ -66,34 +61,7 @@ export function SideBoard() {
         </div>
       </IceCard>
 
-      {favorites && favorites.actions.length > 0 && (
-        <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'favorites')}>
-          <div
-            className="side-board__title"
-            data-testid={testId('app', 'side-board', 'text', 'favorites-title')}
-          >
-            Избранное
-          </div>
-          <div className="side-board__cta side-board__cta--sm">
-            {favorites.actions.map((action) => (
-              <Link
-                key={action.id}
-                to={action.path}
-                data-testid={testId('app', 'side-board', 'link', 'favorite', action.id)}
-              >
-                <HockeyButton
-                  view="outlined"
-                  size="s"
-                  data-testid={testId('app', 'side-board', 'btn', 'favorite', action.id)}
-                >
-                  {action.icon ? `${action.icon} ` : ''}
-                  {action.label}
-                </HockeyButton>
-              </Link>
-            ))}
-          </div>
-        </IceCard>
-      )}
+      <FavoritesPanel />
 
       <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'sos')}>
         <div

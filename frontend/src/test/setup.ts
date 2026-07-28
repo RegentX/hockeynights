@@ -9,7 +9,10 @@ import {cleanup} from '@testing-library/react'
 import {afterAll, afterEach, beforeAll, vi} from 'vitest'
 
 import {clearTestStorage} from '@/test/clearTestStorage'
+import {ensureBrowserStorage} from '@/test/localStorageMock'
 import {server} from '@/test/msw-server'
+
+ensureBrowserStorage()
 
 /** @spec SPEC-NFR-2 - Polyfills для Gravity UI в jsdom */
 class ResizeObserverStub {
