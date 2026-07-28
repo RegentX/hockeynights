@@ -6,7 +6,7 @@
 import {ChevronDown, ChevronUp} from '@gravity-ui/icons'
 import {Button, Checkbox, Icon, Select, TextInput} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {useEffect, useMemo, useState} from 'react'
+import {useEffect, useId, useMemo, useState} from 'react'
 
 import type {PlayerPosition, SkillLevel} from '@/entities/common'
 import type {PlayersFilterParams} from '@/entities/profile'
@@ -15,6 +15,11 @@ import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 const MOBILE_BREAKPOINT = '(max-width: 768px)'
+const NAME_SEARCH_DEBOUNCE_MS = 300
+
+function isMobileViewport(): boolean {
+  return typeof window !== 'undefined' && window.matchMedia(MOBILE_BREAKPOINT).matches
+}
 
 const POSITION_OPTIONS = [
   {value: '', content: 'Все амплуа'},
@@ -50,8 +55,16 @@ export interface PlayerFiltersProps {
  * @spec HOCFRONT-20 - На mobile: сворачиваемые фильтры
  */
 export function PlayerFilters({filters, onChange, onReset, isFiltered}: PlayerFiltersProps) {
-  const [isMobile, setIsMobile] = useState(false)
-  const [isExpanded, setIsExpanded] = useState(true)
+  const filtersBodyId = useId()
+  const [isMobile, setIsMobile] = useState(isMobileViewport)
+  const [isExpanded, setIsExpanded] = useState(() => !isMobileViewport())
+  const [nameDraft, setNameDraft] = useState(filters.q ?? '')
+  const [syncedQuery, setSyncedQuery] = useState(filters.q)
+
+  if (filters.q !== syncedQuery) {
+    setSyncedQuery(filters.q)
+    setNameDraft(filters.q ?? '')
+  }
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -59,12 +72,22 @@ export function PlayerFilters({filters, onChange, onReset, isFiltered}: PlayerFi
     const update = () => {
       const mobile = mq.matches
       setIsMobile(mobile)
-      setIsExpanded((prev) => (mobile ? false : prev))
+      setIsExpanded(!mobile)
     }
-    update()
     mq.addEventListener('change', update)
     return () => mq.removeEventListener('change', update)
   }, [])
+
+  useEffect(() => {
+    const normalized = nameDraft.trim() || undefined
+    if (normalized === filters.q) return
+
+    const timer = window.setTimeout(() => {
+      onChange({...filters, q: normalized})
+    }, NAME_SEARCH_DEBOUNCE_MS)
+
+    return () => window.clearTimeout(timer)
+  }, [nameDraft, filters, onChange])
 
   const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: fetchTeams})
 
@@ -77,12 +100,14 @@ export function PlayerFilters({filters, onChange, onReset, isFiltered}: PlayerFi
   )
 
   const cityOptions = useMemo(() => {
-    const uniqueCities = Array.from(new Set(['Москва', 'Санкт-Петербург']))
+    const uniqueCities = Array.from(
+      new Set(teams.map((team) => team.city).filter((city): city is string => Boolean(city))),
+    ).sort((a, b) => a.localeCompare(b, 'ru'))
     return [
       {value: '', content: 'Все города'},
       ...uniqueCities.map((c) => ({value: c, content: c})),
     ]
-  }, [])
+  }, [teams])
 
   const showCollapsibleBody = !isMobile || isExpanded
 
@@ -107,6 +132,7 @@ export function PlayerFilters({filters, onChange, onReset, isFiltered}: PlayerFi
             view="outlined"
             onClick={() => setIsExpanded((prev) => !prev)}
             aria-expanded={isExpanded}
+            aria-controls={filtersBodyId}
             data-testid={testId('players', 'player-filters', 'btn', 'toggle')}
           >
             <Icon data={isExpanded ? ChevronUp : ChevronDown} />
@@ -117,14 +143,15 @@ export function PlayerFilters({filters, onChange, onReset, isFiltered}: PlayerFi
 
       {showCollapsibleBody && (
         <div
+          id={filtersBodyId}
           className="player-filters__body"
           data-testid={testId('players', 'player-filters', 'form')}
         >
           <TextInput
             label="Имя"
             placeholder="Поиск по имени"
-            value={filters.q ?? ''}
-            onUpdate={(v) => onChange({...filters, q: v || undefined})}
+            value={nameDraft}
+            onUpdate={setNameDraft}
             data-testid={testId('players', 'player-filters', 'field', 'name')}
           />
           <Select
@@ -167,13 +194,13 @@ export function PlayerFilters({filters, onChange, onReset, isFiltered}: PlayerFi
           />
           <Checkbox
             checked={Boolean(filters.verified)}
-            onUpdate={(checked) => onChange({...filters, verified: checked})}
+            onUpdate={(checked) => onChange({...filters, verified: checked || undefined})}
             content="Только подтверждённые"
             data-testid={testId('players', 'player-filters', 'checkbox', 'verified')}
           />
           <Checkbox
             checked={Boolean(filters.goalieOnly)}
-            onUpdate={(checked) => onChange({...filters, goalieOnly: checked})}
+            onUpdate={(checked) => onChange({...filters, goalieOnly: checked || undefined})}
             content="Только вратари"
             data-testid={testId('players', 'player-filters', 'checkbox', 'goalie-only')}
           />

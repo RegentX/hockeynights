@@ -21,7 +21,7 @@ import {PlayerCard} from '@/widgets/PlayerCard'
 const EMPTY_FILTERS: PlayersFilterParams = {}
 
 function hasActiveFilters(filters: PlayersFilterParams): boolean {
-  return Object.values(filters).some((v) => v !== undefined && v !== '')
+  return Object.values(filters).some((v) => v !== undefined && v !== '' && v !== false)
 }
 
 /**
@@ -31,28 +31,38 @@ function hasActiveFilters(filters: PlayersFilterParams): boolean {
 export function PlayersPage() {
   const [filters, setFilters] = useState<PlayersFilterParams>(EMPTY_FILTERS)
 
-  const {data: players = [], isLoading} = useQuery({
+  const {
+    data: players = [],
+    isPending,
+    isFetching,
+  } = useQuery({
     queryKey: ['players', filters],
     queryFn: () => fetchPlayers(filters),
     placeholderData: (previous) => previous,
   })
 
   const isFiltered = hasActiveFilters(filters)
+  const showProgress = isFetching && !isPending
 
   const handleResetFilters = () => {
     setFilters(EMPTY_FILTERS)
   }
 
   const activeCount = useMemo(
-    () => Object.values(filters).filter((v) => v !== undefined && v !== '').length,
+    () => Object.values(filters).filter((v) => v !== undefined && v !== '' && v !== false).length,
     [filters],
   )
 
   return (
     <div
-      className="hockey-stack hockey-stack--gap-16"
+      className="hockey-stack hockey-stack--gap-16 players-page"
       data-testid={testId('players', 'players-page', 'page')}
     >
+      <div
+        className={`players-page__progress${showProgress ? ' players-page__progress--active' : ''}`}
+        aria-hidden
+        data-testid={testId('players', 'players-page', 'progress')}
+      />
       <Text
         variant="header-1"
         className="variable-font-header"
@@ -76,7 +86,7 @@ export function PlayersPage() {
         </div>
       )}
 
-      {isLoading && (
+      {isPending && (
         <>
           <ScoreboardLoader
             testIdPrefix="players"
@@ -91,9 +101,9 @@ export function PlayersPage() {
         </>
       )}
 
-      {!isLoading && players.length > 0 && (
+      {!isPending && players.length > 0 && (
         <div
-          className="bento-grid"
+          className={`bento-grid${showProgress ? ' players-page__list--fetching' : ''}`}
           data-testid={testId('players', 'players-page', 'list', 'cards')}
         >
           {players.map((player, index) => (
@@ -108,10 +118,14 @@ export function PlayersPage() {
         </div>
       )}
 
-      {!isLoading && players.length === 0 && (
+      {!isPending && players.length === 0 && (
         <EmptyNetState
           title="Пустая сетка"
-          copy="Игроки не найдены по выбранным фильтрам."
+          copy={
+            isFiltered
+              ? 'Игроки не найдены по выбранным фильтрам.'
+              : 'Пока нет игроков для отображения.'
+          }
           testIdPrefix="players"
           data-testid={testId('players', 'players-page', 'empty')}
           action={

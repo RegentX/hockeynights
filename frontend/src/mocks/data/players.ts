@@ -106,7 +106,7 @@ export const mockPlayers: PlayerListItem[] = [
     karmaScore: 88,
     goalieReliabilityScore: 92,
     verificationStatus: 'verified',
-    teamIds: ['team-001'],
+    teamIds: ['team-002'],
   },
   {
     userId: 'user-003',
@@ -123,7 +123,7 @@ export const mockPlayers: PlayerListItem[] = [
     profileCompleteness: 65,
     karmaScore: 71,
     verificationStatus: 'verified',
-    teamIds: ['team-001'],
+    teamIds: ['team-001', 'team-002'],
   },
   {
     userId: 'user-004',
@@ -140,7 +140,7 @@ export const mockPlayers: PlayerListItem[] = [
     profileCompleteness: 55,
     karmaScore: 62,
     verificationStatus: 'unverified',
-    teamIds: ['team-001'],
+    teamIds: ['team-001', 'team-003'],
   },
   {
     userId: 'user-005',
@@ -174,7 +174,6 @@ export const mockPlayers: PlayerListItem[] = [
     profileCompleteness: 72,
     karmaScore: 80,
     verificationStatus: 'verified',
-    teamIds: ['team-002'],
   },
   {
     userId: 'user-007',
