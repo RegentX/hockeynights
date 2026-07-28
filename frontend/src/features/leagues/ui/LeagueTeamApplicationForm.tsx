@@ -38,7 +38,7 @@ export function LeagueTeamApplicationForm({league}: LeagueTeamApplicationFormPro
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
 
   const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
-  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: fetchTeams})
+  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
   const {data: seasons = []} = useQuery({
     queryKey: ['league-seasons', league.id],
     queryFn: () => fetchLeagueSeasons(league.id),

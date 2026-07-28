@@ -10,7 +10,7 @@ import {Link, Outlet, useLocation, useNavigate} from 'react-router-dom'
 import {fetchSession, logoutSession} from '@/entities/auth'
 import {fetchChats, getTotalUnreadCount} from '@/entities/messenger'
 import {fetchNotifications} from '@/entities/notification'
-import {resolveNavItems, shouldUsePartnerWorkspace} from '@/features/access'
+import {resolveNavItems, shouldUsePartnerWorkspace, splitNavItemsByTier} from '@/features/access'
 import {LAUNCH_REGION} from '@/shared/config/geo'
 import {partnerCabinetLabel, partnerCabinetPath} from '@/shared/const/partnerRoutes'
 import {routeToTestSlug, testId} from '@/shared/testing/testId'
@@ -50,6 +50,7 @@ export function AppShell() {
   const hasPartnerAccess = partnerMemberships.length > 0 && !shouldUsePartnerWorkspace(session)
   const partnerWorkspace = shouldUsePartnerWorkspace(session)
   const navItems = resolveNavItems(session)
+  const {active: activeNavItems, incubating: incubatingNavItems} = splitNavItemsByTier(navItems)
 
   const {data: notifications = []} = useQuery({
     queryKey: ['notifications'],
@@ -223,7 +224,7 @@ export function AppShell() {
               style={{['--hockey-puck-top' as string]: `${puckTop}px`}}
               aria-hidden
             />
-            {navItems.map((item) => {
+            {activeNavItems.map((item) => {
               const active = isNavActive(item.to)
               const badge =
                 item.to === '/notifications' && unreadCount > 0
@@ -254,6 +255,47 @@ export function AppShell() {
                 </Link>
               )
             })}
+            {incubatingNavItems.length > 0 && (
+              <>
+                <div
+                  className="hockey-nav__tier-divider"
+                  data-testid={testId('app', 'nav', 'divider', 'incubating')}
+                >
+                  <span className="hockey-nav__tier-label">Требует доработки</span>
+                </div>
+                {incubatingNavItems.map((item) => {
+                  const active = isNavActive(item.to)
+                  const badge =
+                    item.to === '/notifications' && unreadCount > 0
+                      ? unreadCount
+                      : item.to === '/messenger' && unreadChatCount > 0
+                        ? unreadChatCount > 99
+                          ? '99+'
+                          : unreadChatCount
+                        : null
+                  return (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      className={`hockey-nav__link hockey-nav__link--incubating${active ? ' hockey-nav__link--active' : ''}`}
+                      data-active={active ? 'true' : undefined}
+                      aria-current={active ? 'page' : undefined}
+                      data-testid={testId('app', 'nav', 'link', routeToTestSlug(item.to))}
+                    >
+                      {item.label}
+                      {badge !== null && (
+                        <span
+                          className="hockey-nav__badge"
+                          data-testid={testId('app', 'nav', 'badge', routeToTestSlug(item.to))}
+                        >
+                          {badge}
+                        </span>
+                      )}
+                    </Link>
+                  )
+                })}
+              </>
+            )}
             {hasPartnerAccess && (
               <>
                 <div

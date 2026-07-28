@@ -1,4 +1,4 @@
-export type {NavItem} from './lib/navigationAccess'
+export type {NavItem, NavTier} from './lib/navigationAccess'
 export {
   getAllowedPathPrefixes,
   getPersonaHomePath,
@@ -9,6 +9,7 @@ export {
   resolveNavItems,
   resolvePartnerNavItems,
   resolvePlayerNavItems,
+  splitNavItemsByTier,
 } from './lib/navigationAccess'
 export {canOrganizeEvents, isPlayerOnlySession} from './lib/sessionAccess'
 export {

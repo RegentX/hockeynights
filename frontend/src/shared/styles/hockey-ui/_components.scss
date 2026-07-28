@@ -553,6 +553,17 @@
   }
 }
 
+.team-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
 .rink-card--selected {
   border-color: var(--hockey-line-red);
   box-shadow:

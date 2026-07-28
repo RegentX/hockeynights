@@ -10,47 +10,50 @@ import {ARENAS_LABEL, EVENTS_LABEL, EVENTS_MOBILE_LABEL} from '@/shared/config/n
 import {routes} from '@/shared/const/appRoutes'
 import type {Session} from '@/shared/types/user'
 
+export type NavTier = 'active' | 'incubating'
+
 export interface NavItem {
   to: string
   label: string
+  tier: NavTier
 }
 
 export const PLAYER_NAV_ITEMS: NavItem[] = [
-  {to: routes.profile, label: 'Профиль'},
-  {to: routes.players, label: 'Игроки'},
-  {to: routes.teams, label: 'Команды'},
-  {to: routes.events, label: EVENTS_LABEL},
-  {to: routes.calendar, label: 'Календарь'},
-  {to: routes.sos, label: 'SOS'},
-  {to: routes.arenas, label: ARENAS_LABEL},
-  {to: routes.leagues, label: 'Лиги'},
-  {to: routes.shops, label: 'Маркет'},
-  {to: routes.iq, label: 'IQ'},
-  {to: routes.highlights, label: 'Моменты'},
-  {to: routes.feedback, label: 'Feedback'},
-  {to: routes.notifications, label: 'Уведомления'},
-  {to: routes.messenger, label: 'Мессенджер'},
-  {to: routes.admin, label: 'Admin'},
+  {to: routes.profile, label: 'Профиль', tier: 'active'},
+  {to: routes.players, label: 'Поиск тренировок', tier: 'incubating'},
+  {to: routes.teams, label: 'Команды', tier: 'active'},
+  {to: routes.events, label: EVENTS_LABEL, tier: 'active'},
+  {to: routes.calendar, label: 'Календарь', tier: 'active'},
+  {to: routes.sos, label: 'SOS', tier: 'active'},
+  {to: routes.arenas, label: ARENAS_LABEL, tier: 'active'},
+  {to: routes.leagues, label: 'Лиги', tier: 'active'},
+  {to: routes.shops, label: 'Маркет', tier: 'active'},
+  {to: routes.iq, label: 'IQ', tier: 'incubating'},
+  {to: routes.highlights, label: 'Моменты', tier: 'incubating'},
+  {to: routes.feedback, label: 'Feedback', tier: 'incubating'},
+  {to: routes.notifications, label: 'Уведомления', tier: 'active'},
+  {to: routes.messenger, label: 'Мессенджер', tier: 'active'},
+  {to: routes.admin, label: 'Admin', tier: 'incubating'},
 ]
 
 export const MOBILE_PLAYER_NAV: Array<NavItem & {icon: string}> = [
-  {to: routes.events, label: EVENTS_MOBILE_LABEL, icon: '🏒'},
-  {to: routes.players, label: 'Игроки', icon: '👤'},
-  {to: routes.teams, label: 'Команды', icon: '🛡'},
-  {to: routes.messenger, label: 'Чат', icon: '💬'},
-  {to: routes.arenas, label: ARENAS_LABEL, icon: '🧊'},
-  {to: routes.shops, label: 'Маркет', icon: '🛍'},
-  {to: routes.profile, label: 'Профиль', icon: '⚙'},
+  {to: routes.events, label: EVENTS_MOBILE_LABEL, icon: '🏒', tier: 'active'},
+  {to: routes.players, label: 'Поиск тренировок', icon: '👤', tier: 'incubating'},
+  {to: routes.teams, label: 'Команды', icon: '🛡', tier: 'active'},
+  {to: routes.messenger, label: 'Чат', icon: '💬', tier: 'active'},
+  {to: routes.arenas, label: ARENAS_LABEL, icon: '🧊', tier: 'active'},
+  {to: routes.shops, label: 'Маркет', icon: '🛍', tier: 'active'},
+  {to: routes.profile, label: 'Профиль', icon: '⚙', tier: 'active'},
 ]
 
 function partnerCatalogItems(session: Session): NavItem[] {
   const memberships = session.user.partnerMemberships ?? []
   const items: NavItem[] = []
   if (memberships.some((m) => m.kind === 'league')) {
-    items.push({to: routes.leagues, label: 'Каталог лиг'})
+    items.push({to: routes.leagues, label: 'Каталог лиг', tier: 'active'})
   }
   if (memberships.some((m) => m.kind === 'shop')) {
-    items.push({to: routes.shops, label: 'Маркет'})
+    items.push({to: routes.shops, label: 'Маркет', tier: 'active'})
   }
   return items
 }
@@ -58,9 +61,9 @@ function partnerCatalogItems(session: Session): NavItem[] {
 /** Навигация для представителя магазина/лиги */
 export function resolvePartnerNavItems(session: Session): NavItem[] {
   return [
-    {to: getPrimaryPartnerPath(session), label: 'Кабинет'},
-    {to: routes.partner, label: 'Все кабинеты'},
-    {to: routes.notifications, label: 'Уведомления'},
+    {to: getPrimaryPartnerPath(session), label: 'Кабинет', tier: 'active'},
+    {to: routes.partner, label: 'Все кабинеты', tier: 'active'},
+    {to: routes.notifications, label: 'Уведомления', tier: 'active'},
     ...partnerCatalogItems(session),
   ]
 }
@@ -76,23 +79,32 @@ export function resolveNavItems(session: Session | undefined): NavItem[] {
   return resolvePlayerNavItems(session)
 }
 
+export function splitNavItemsByTier(items: NavItem[]): {active: NavItem[]; incubating: NavItem[]} {
+  return {
+    active: items.filter((item) => item.tier === 'active'),
+    incubating: items.filter((item) => item.tier === 'incubating'),
+  }
+}
+
 export function resolveMobileNavItems(
   session: Session | undefined,
 ): Array<NavItem & {icon: string}> {
-  if (!session?.isOnboarded) return MOBILE_PLAYER_NAV
+  if (!session?.isOnboarded) return MOBILE_PLAYER_NAV.filter((item) => item.tier === 'active')
   if (shouldUsePartnerWorkspace(session)) {
     return [
-      {to: getPrimaryPartnerPath(session), label: 'Кабинет', icon: '🏪'},
-      {to: routes.partner, label: 'Партнёр', icon: '📋'},
-      {to: routes.notifications, label: 'Уведомления', icon: '🔔'},
+      {to: getPrimaryPartnerPath(session), label: 'Кабинет', icon: '🏪', tier: 'active' as NavTier},
+      {to: routes.partner, label: 'Партнёр', icon: '📋', tier: 'active' as NavTier},
+      {to: routes.notifications, label: 'Уведомления', icon: '🔔', tier: 'active' as NavTier},
       ...partnerCatalogItems(session).map((item) => ({
         ...item,
         icon: item.to === routes.leagues ? '🏆' : '🛍',
       })),
-    ]
+    ].filter((item) => item.tier === 'active')
   }
   const isAdmin = session.user.roles.includes('admin')
-  return MOBILE_PLAYER_NAV.filter((item) => item.to !== routes.admin || isAdmin)
+  return MOBILE_PLAYER_NAV.filter(
+    (item) => item.tier === 'active' && (item.to !== routes.admin || isAdmin),
+  )
 }
 
 export function getPersonaHomePath(session: Session): string {

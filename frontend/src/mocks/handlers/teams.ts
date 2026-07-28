@@ -33,8 +33,31 @@ import {getMockTrainingLineup, updateMockTrainingLineup} from '@/mocks/data/trai
 
 /** @spec SPEC-FR-3.1.1 - Handlers команд, событий и календаря */
 export const teamHandlers = [
-  http.get('/mock-api/v1/teams', () => {
-    return HttpResponse.json(mockTeams)
+  http.get('/mock-api/v1/teams', ({request}) => {
+    const url = new URL(request.url)
+    const leagueId = url.searchParams.get('leagueId') ?? undefined
+    const q = url.searchParams.get('q') ?? undefined
+    const playerId = url.searchParams.get('playerId') ?? undefined
+    const city = url.searchParams.get('city') ?? undefined
+
+    let result = [...mockTeams]
+
+    if (leagueId) {
+      result = result.filter((team) => team.leagueId === leagueId)
+    }
+    if (q) {
+      const needle = q.toLowerCase()
+      result = result.filter((team) => team.name.toLowerCase().includes(needle))
+    }
+    if (playerId) {
+      result = result.filter((team) => team.memberIds.includes(playerId))
+    }
+    if (city) {
+      const needle = city.toLowerCase()
+      result = result.filter((team) => team.city.toLowerCase().includes(needle))
+    }
+
+    return HttpResponse.json(result)
   }),
 
   http.post('/mock-api/v1/teams', async ({request}) => {
