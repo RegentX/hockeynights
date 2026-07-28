@@ -1,7 +1,6 @@
 export {
-  useIsPlayerFavorite,
+  usePlayerFavorite,
   usePlayerFavorites,
-  usePlayerFavoriteToggle,
   useTogglePlayerFavorite,
 } from './lib/usePlayerFavorite'
 export {PlayerFavoriteButton} from './ui/PlayerFavoriteButton'
