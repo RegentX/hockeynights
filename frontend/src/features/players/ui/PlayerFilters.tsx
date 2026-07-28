@@ -89,7 +89,7 @@ export function PlayerFilters({filters, onChange, onReset, isFiltered}: PlayerFi
     return () => window.clearTimeout(timer)
   }, [nameDraft, filters, onChange])
 
-  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: fetchTeams})
+  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
 
   const teamOptions = useMemo(
     () => [
