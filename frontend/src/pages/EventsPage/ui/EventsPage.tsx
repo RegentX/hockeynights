@@ -48,7 +48,7 @@ const SHOW_MOCK_DEMO_LOADER =
  */
 export function EventsPage() {
   const {data: events = [], isLoading} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
-  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: fetchTeams})
+  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
   const {userId, roles, canOrganizeEvents} = useSessionAccess()
   const canSeeDeclineDetails =
     roles.includes('captain') || roles.includes('coach') || roles.includes('admin')
