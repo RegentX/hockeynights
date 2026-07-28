@@ -5,7 +5,7 @@
 
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {fetchEvents} from '@/entities/event'
 import {fetchLeagues, fetchLeagueStandings} from '@/entities/league'

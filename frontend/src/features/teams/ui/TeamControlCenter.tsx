@@ -6,7 +6,7 @@
 import {Button, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import type {ClubSquad} from '@/entities/club'
 import type {Chat} from '@/entities/messenger'

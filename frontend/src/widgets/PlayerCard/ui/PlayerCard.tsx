@@ -5,7 +5,7 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import type {PlayerListItem} from '@/entities/profile'
 import {KarmaScore} from '@/features/karma'

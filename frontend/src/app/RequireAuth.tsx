@@ -3,7 +3,7 @@
  */
 
 import {useQuery} from '@tanstack/react-query'
-import {Navigate, Outlet} from 'react-router-dom'
+import {Navigate, Outlet} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {testId} from '@/shared/testing/testId'

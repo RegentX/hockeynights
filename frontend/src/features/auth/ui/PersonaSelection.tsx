@@ -6,7 +6,7 @@
 import {Text} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 
 import type {AvailablePersona} from '@/entities/auth'
 import {selectPersona} from '@/entities/auth'

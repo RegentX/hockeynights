@@ -4,7 +4,7 @@
  * «Свернуть» — history.back(); если истории нет — fallback на /.
  */
 
-import {useLocation, useNavigate} from 'react-router-dom'
+import {useLocation, useNavigate} from 'react-router'
 
 import {TermsOfUseDocument} from '@/features/auth'
 import {testId} from '@/shared/testing/testId'
