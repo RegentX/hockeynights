@@ -10,13 +10,8 @@ import {useMemo, useState} from 'react'
 import type {ClubSquad} from '@/entities/club'
 import {fetchTeams, type TeamsFilterParams} from '@/entities/team'
 import {useSessionAccess} from '@/features/access'
-import {
-  ClubProfilePanel,
-  TeamControlCenter,
-  TeamCreateForm,
-  TeamCrest,
-  TeamFilters,
-} from '@/features/teams'
+import {TeamCreateForm, TeamCrest, TeamFilters} from '@/features/teams'
+import {TeamPage} from '@/pages/TeamPage'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -164,12 +159,12 @@ export function TeamsPage() {
             teamId={activeTeam.id}
           />
           <div className="hockey-mt-16 hockey-mb-12 hockey-stack hockey-stack--gap-16">
-            <ClubProfilePanel team={activeTeam} onActiveSquadChange={setActiveSquad} />
-            <TeamControlCenter
+            <TeamPage
               team={activeTeam}
               activeSquad={activeSquad}
               userId={userId}
               teamPermissions={teamPermissions}
+              onActiveSquadChange={setActiveSquad}
             />
           </div>
         </div>

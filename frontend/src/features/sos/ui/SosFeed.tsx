@@ -6,7 +6,7 @@
 import {Checkbox, Text, TextArea} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {fetchRecruitmentRequests, respondToRecruitment} from '@/entities/recruitment'
 import {SosResponseReview} from '@/features/sos/ui/SosResponseReview'

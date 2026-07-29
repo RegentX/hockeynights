@@ -5,7 +5,7 @@
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import type {Shop} from '@/entities/shop'

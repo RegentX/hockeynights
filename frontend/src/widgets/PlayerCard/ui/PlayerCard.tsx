@@ -7,7 +7,7 @@
 import {MapPin, Shield} from '@gravity-ui/icons'
 import {Icon, Text} from '@gravity-ui/uikit'
 import type {ReactNode} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import type {PlayerListItem} from '@/entities/profile'
 import {KarmaScore} from '@/features/karma'

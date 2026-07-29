@@ -1,6 +1,6 @@
 import {Button, Checkbox, Dialog, Text} from '@gravity-ui/uikit'
 import {useCallback, useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {FAVORITE_ACTIONS_PRESET, getFavoriteIds, setFavoriteIds} from '@/features/favorites/model'
 import {testId} from '@/shared/testing/testId'

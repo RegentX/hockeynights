@@ -4,7 +4,7 @@
  */
 
 import {Checkbox} from '@gravity-ui/uikit'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {testId} from '@/shared/testing/testId'
 
