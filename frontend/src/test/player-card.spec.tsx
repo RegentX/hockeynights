@@ -6,7 +6,7 @@
 import {screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {delay, http, HttpResponse} from 'msw'
-import {Route, Routes} from 'react-router-dom'
+import {Route, Routes} from 'react-router'
 import {beforeEach, describe, expect, it} from 'vitest'
 
 import {getMockPlayerFavorites, resetMockPlayerFavorites} from '@/mocks/data/playerFavorites'
