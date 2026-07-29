@@ -103,6 +103,87 @@
     justify-content: flex-end;
   }
 
+  /* HOCFRONT-30 — блок профиля в шапке */
+  &__profile {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 6px 4px 4px;
+    border-radius: 999px;
+    border: 1px solid var(--hockey-card-border);
+    background: var(--hockey-glass-bg);
+  }
+
+  &__profile-identity {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 999px;
+    padding: 2px 4px;
+
+    &:hover .app-shell__profile-name {
+      color: var(--hockey-accent);
+    }
+  }
+
+  &__profile-avatar {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #fff;
+    background: linear-gradient(145deg, var(--hockey-line-red), #a00400);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+
+  &__profile-text {
+    display: none;
+    flex-direction: column;
+    min-width: 0;
+
+    @include breakpoint(768px) {
+      display: flex;
+    }
+  }
+
+  &__profile-name {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    max-width: 168px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--g-color-text-primary);
+  }
+
+  &__profile-meta {
+    @include scoreboard-caps(10px, 0.1em);
+    color: var(--hockey-text-muted);
+    max-width: 168px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__profile-cta {
+    display: none;
+    text-decoration: none;
+
+    @include breakpoint(1200px) {
+      display: inline-flex;
+    }
+  }
+
   &__panel-controls {
     display: none;
 

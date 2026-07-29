@@ -16,6 +16,7 @@ import {partnerCabinetLabel, partnerCabinetPath} from '@/shared/const/partnerRou
 import {routeToTestSlug, testId} from '@/shared/testing/testId'
 import {useHockeyTheme} from '@/shared/theme/HockeyThemeProvider'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {HeaderProfile} from '@/widgets/HeaderProfile'
 import {MobileNav} from '@/widgets/MobileNav'
 import {SideBoard} from '@/widgets/SideBoard'
 import {SosFab} from '@/widgets/SosFab'
@@ -139,6 +140,7 @@ export function AppShell() {
           >
             {periodClock}
           </span>
+          <HeaderProfile />
           <HockeyButton
             view="outlined"
             size="s"

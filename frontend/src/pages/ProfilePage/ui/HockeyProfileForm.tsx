@@ -5,7 +5,7 @@
 
 import {Button, Card, Progress, Select, Switch, Text, TextArea, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {useState} from 'react'
+import {useId, useState} from 'react'
 import {Navigate} from 'react-router-dom'
 
 import {fetchSession} from '@/entities/auth'
@@ -21,8 +21,8 @@ import {
   updateSubscription,
 } from '@/entities/profile'
 import {getPrimaryPartnerPath, shouldUsePartnerWorkspace} from '@/features/access'
-import {KarmaHint, KarmaScore} from '@/features/karma'
-import {CoachProfilePanel} from '@/features/profile'
+import {KarmaHint} from '@/features/karma'
+import {CoachProfilePanel, ProfileSummaryCard} from '@/features/profile'
 import {testId} from '@/shared/testing/testId'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
@@ -106,37 +106,6 @@ function ProfileHubTabs({
       >
         Подписка
       </Button>
-    </div>
-  )
-}
-
-const ROLE_LABELS: Record<UserRole, string> = {
-  player: 'Игрок',
-  goalie: 'Вратарь',
-  captain: 'Капитан',
-  organizer: 'Организатор',
-  coach: 'Тренер',
-  admin: 'Админ',
-}
-
-function ProfileRoleBadges({roles}: {roles: UserRole[]}) {
-  if (roles.length === 0) return null
-  return (
-    <div
-      className="profile-hub__role-badges"
-      data-testid={testId('profile', 'profile-role-badges', 'list')}
-    >
-      {roles.map((role) => (
-        <span
-          key={role}
-          className={`profile-hub__role-badge ${
-            role === 'goalie' ? 'is-goalie' : role === 'coach' ? 'is-coach' : ''
-          }`}
-          data-testid={testId('profile', 'profile-role-badges', 'badge', role)}
-        >
-          {ROLE_LABELS[role]}
-        </span>
-      ))}
     </div>
   )
 }
@@ -243,6 +212,8 @@ function ProfileAboutSection({
   isVerifying: boolean
 }) {
   const [form, setForm] = useState<Partial<HockeyProfile>>(profile)
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const detailsPanelId = useId()
 
   /** @spec SPEC-FR-2.2.2 - Обновление поля профиля */
   function updateField<K extends keyof HockeyProfile>(key: K, value: HockeyProfile[K]) {
@@ -254,239 +225,242 @@ function ProfileAboutSection({
     onSaveProfile(form)
   }
 
-  const verificationLabel =
-    profile.verificationStatus === 'verified'
-      ? 'Профиль подтвержден'
-      : profile.verificationStatus === 'pending'
-        ? 'Проверка в процессе'
-        : profile.verificationStatus === 'rejected'
-          ? 'Проверка отклонена'
-          : 'Профиль не подтвержден'
-
   const isGoalieProfile = userRoles.includes('goalie') || profile.position === 'goalie'
 
   return (
-    <Card view="filled" data-testid={testId('profile', 'profile-about-section', 'card')}>
-      <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
-        <div className="profile-hub__title-row">
-          <Text
-            variant="header-1"
-            data-testid={testId('profile', 'profile-about-section', 'text', 'title')}
-          >
-            Hockey ID
-          </Text>
-          <span
-            className={`profile-hub__verified-badge ${
-              profile.verificationStatus === 'verified' ? 'is-verified' : ''
-            }`}
-            data-testid={testId('profile', 'profile-about-section', 'badge', 'verification')}
-          >
-            {profile.verificationStatus === 'verified' ? '✓' : '•'} {verificationLabel}
-          </span>
-        </div>
+    <div className="hockey-stack hockey-stack--gap-16">
+      <ProfileSummaryCard
+        profile={profile}
+        roles={userRoles}
+        detailsOpen={detailsOpen}
+        onToggleDetails={() => setDetailsOpen((prev) => !prev)}
+        detailsPanelId={detailsPanelId}
+      />
 
-        <ProfileRoleBadges roles={userRoles} />
-
-        {userRoles.includes('coach') && <CoachProfilePanel />}
-
-        {isGoalieProfile && (
-          <div
-            className="profile-hub__goalie-panel"
-            data-testid={testId('profile', 'profile-about-section', 'panel', 'goalie')}
-          >
-            <Text
-              variant="subheader-2"
-              data-testid={testId('profile', 'profile-about-section', 'text', 'goalie-title')}
-            >
-              Профиль вратаря
-            </Text>
-            <Text
-              color="secondary"
-              data-testid={testId('profile', 'profile-about-section', 'text', 'goalie-hint')}
-            >
-              Приоритетные SOS-запросы и отдельная метрика надёжности выходов.
-            </Text>
-            {profile.goalieReliabilityScore != null && (
-              <div
-                className="profile-hub__goalie-score"
-                data-testid={testId('profile', 'profile-about-section', 'panel', 'goalie-score')}
-              >
-                <Text
-                  color="secondary"
-                  data-testid={testId(
-                    'profile',
-                    'profile-about-section',
-                    'text',
-                    'goalie-score-label',
-                  )}
-                >
-                  Надёжность выходов
-                </Text>
-                <Progress
-                  value={profile.goalieReliabilityScore}
-                  text={`${profile.goalieReliabilityScore}%`}
-                  data-testid={testId('profile', 'profile-about-section', 'cell', 'goalie-score')}
-                />
-              </div>
-            )}
-          </div>
-        )}
-
-        <div data-testid={testId('profile', 'profile-about-section', 'panel', 'completeness')}>
-          <Text
-            color="secondary"
-            data-testid={testId('profile', 'profile-about-section', 'text', 'completeness-label')}
-          >
-            Заполненность профиля
-          </Text>
-          <Progress
-            value={profile.profileCompleteness}
-            text={`${profile.profileCompleteness}%`}
-            data-testid={testId('profile', 'profile-about-section', 'cell', 'completeness')}
-          />
-        </div>
-
-        <div
-          className="hockey-stack hockey-stack--gap-4"
-          data-testid={testId('profile', 'profile-about-section', 'panel', 'karma')}
-        >
-          <KarmaScore score={profile.karmaScore} size="m" testIdPrefix="profile" />
-          <KarmaHint testIdPrefix="profile" />
-        </div>
-
-        {profile.achievements && profile.achievements.length > 0 && (
-          <div
-            className="hockey-stack hockey-stack--gap-4"
-            data-testid={testId('profile', 'profile-about-section', 'panel', 'achievements')}
-          >
-            <Text
-              color="secondary"
-              data-testid={testId('profile', 'profile-about-section', 'text', 'achievements-label')}
-            >
-              Микро-ачивки
-            </Text>
-            <ul
-              className="hockey-list hockey-list--chips"
-              data-testid={testId('profile', 'profile-about-section', 'list', 'achievements')}
-            >
-              {profile.achievements.map((ach) => (
-                <li
-                  key={ach}
-                  className="hockey-chip"
-                  data-testid={testId(
-                    'profile',
-                    'profile-about-section',
-                    'item',
-                    'achievement',
-                    ach,
-                  )}
-                >
-                  {ach}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        <TextInput
-          label="ФИО"
-          value={form.fullName ?? ''}
-          onUpdate={(v) => updateField('fullName', v)}
-          data-testid={testId('profile', 'profile-about-section', 'field', 'full-name')}
-        />
-        <TextInput
-          label="Город"
-          value={form.city ?? ''}
-          onUpdate={(v) => updateField('city', v)}
-          data-testid={testId('profile', 'profile-about-section', 'field', 'city')}
-        />
-        <TextInput
-          label="Район"
-          value={form.district ?? ''}
-          onUpdate={(v) => updateField('district', v)}
-          data-testid={testId('profile', 'profile-about-section', 'field', 'district')}
-        />
-        <TextInput
-          label="Метро"
-          value={form.metro ?? ''}
-          onUpdate={(v) => updateField('metro', v)}
-          data-testid={testId('profile', 'profile-about-section', 'field', 'metro')}
-        />
-
-        <Select
-          label="Амплуа"
-          value={[form.position ?? 'forward']}
-          onUpdate={(v) => updateField('position', v[0] as PlayerPosition)}
-          options={POSITION_OPTIONS}
-          data-testid={testId('profile', 'profile-about-section', 'select', 'position')}
-        />
-
-        <Select
-          label="Уровень"
-          value={[form.skillLevel ?? 'amateur']}
-          onUpdate={(v) => updateField('skillLevel', v[0] as SkillLevel)}
-          options={SKILL_OPTIONS}
-          data-testid={testId('profile', 'profile-about-section', 'select', 'skill-level')}
-        />
-
-        <div data-testid={testId('profile', 'profile-about-section', 'field', 'bio')}>
-          <Text
-            color="secondary"
-            data-testid={testId('profile', 'profile-about-section', 'text', 'bio-label')}
-          >
-            О себе
-          </Text>
-          <TextArea
-            value={form.bio ?? ''}
-            onUpdate={(v) => updateField('bio', v)}
-            minRows={3}
-            data-testid={testId('profile', 'profile-about-section', 'field', 'bio-input')}
-          />
-        </div>
-
+      {!detailsOpen && (
         <Text
           color="secondary"
-          data-testid={testId('profile', 'profile-about-section', 'text', 'preferred-arenas')}
+          data-testid={testId('profile', 'profile-about-section', 'text', 'details-hint')}
         >
-          Предпочитаемые арены: {(form.preferredArenaIds ?? []).join(', ') || 'не выбраны'}
+          Нажмите «Подробнее», чтобы открыть полную анкету Hockey ID, историю участия и
+          редактирование.
         </Text>
+      )}
 
-        <div
-          className="hockey-stack hockey-stack--gap-8"
-          data-testid={testId('profile', 'profile-about-section', 'panel', 'history')}
-        >
-          <Text
-            variant="subheader-2"
-            data-testid={testId('profile', 'profile-about-section', 'text', 'history-title')}
-          >
-            История участия
-          </Text>
-          <ParticipationHistorySection
-            profile={profile}
-            showHistory={settings.privacy.showParticipationHistory}
-          />
-        </div>
+      {detailsOpen && (
+        <div id={detailsPanelId}>
+          <Card view="filled" data-testid={testId('profile', 'profile-about-section', 'card')}>
+            <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
+              <Text
+                variant="header-2"
+                data-testid={testId('profile', 'profile-about-section', 'text', 'title')}
+              >
+                Hockey ID · подробно
+              </Text>
 
-        <div className="profile-hub__actions">
-          <Button
-            view="outlined"
-            loading={isVerifying}
-            onClick={onStartVerification}
-            data-testid={testId('profile', 'profile-about-section', 'btn', 'verify')}
-          >
-            Подтвердить профиль
-          </Button>
-          <Button
-            view="action"
-            loading={isSaving}
-            onClick={handleSave}
-            data-testid={testId('profile', 'profile-about-section', 'btn', 'save')}
-          >
-            Сохранить профиль
-          </Button>
+              {userRoles.includes('coach') && <CoachProfilePanel />}
+
+              {isGoalieProfile && (
+                <div
+                  className="profile-hub__goalie-panel"
+                  data-testid={testId('profile', 'profile-about-section', 'panel', 'goalie')}
+                >
+                  <Text
+                    variant="subheader-2"
+                    data-testid={testId('profile', 'profile-about-section', 'text', 'goalie-title')}
+                  >
+                    Профиль вратаря
+                  </Text>
+                  <Text
+                    color="secondary"
+                    data-testid={testId('profile', 'profile-about-section', 'text', 'goalie-hint')}
+                  >
+                    Приоритетные SOS-запросы и отдельная метрика надёжности выходов.
+                  </Text>
+                  {profile.goalieReliabilityScore != null && (
+                    <div
+                      className="profile-hub__goalie-score"
+                      data-testid={testId(
+                        'profile',
+                        'profile-about-section',
+                        'panel',
+                        'goalie-score',
+                      )}
+                    >
+                      <Text
+                        color="secondary"
+                        data-testid={testId(
+                          'profile',
+                          'profile-about-section',
+                          'text',
+                          'goalie-score-label',
+                        )}
+                      >
+                        Надёжность выходов
+                      </Text>
+                      <Progress
+                        value={profile.goalieReliabilityScore}
+                        text={`${profile.goalieReliabilityScore}%`}
+                        data-testid={testId(
+                          'profile',
+                          'profile-about-section',
+                          'cell',
+                          'goalie-score',
+                        )}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div
+                className="hockey-stack hockey-stack--gap-4"
+                data-testid={testId('profile', 'profile-about-section', 'panel', 'karma')}
+              >
+                <KarmaHint testIdPrefix="profile" />
+              </div>
+
+              {profile.achievements && profile.achievements.length > 0 && (
+                <div
+                  className="hockey-stack hockey-stack--gap-4"
+                  data-testid={testId('profile', 'profile-about-section', 'panel', 'achievements')}
+                >
+                  <Text
+                    color="secondary"
+                    data-testid={testId(
+                      'profile',
+                      'profile-about-section',
+                      'text',
+                      'achievements-label',
+                    )}
+                  >
+                    Микро-ачивки
+                  </Text>
+                  <ul
+                    className="hockey-list hockey-list--chips"
+                    data-testid={testId('profile', 'profile-about-section', 'list', 'achievements')}
+                  >
+                    {profile.achievements.map((ach) => (
+                      <li
+                        key={ach}
+                        className="hockey-chip"
+                        data-testid={testId(
+                          'profile',
+                          'profile-about-section',
+                          'item',
+                          'achievement',
+                          ach,
+                        )}
+                      >
+                        {ach}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <TextInput
+                label="ФИО"
+                value={form.fullName ?? ''}
+                onUpdate={(v) => updateField('fullName', v)}
+                data-testid={testId('profile', 'profile-about-section', 'field', 'full-name')}
+              />
+              <TextInput
+                label="Город"
+                value={form.city ?? ''}
+                onUpdate={(v) => updateField('city', v)}
+                data-testid={testId('profile', 'profile-about-section', 'field', 'city')}
+              />
+              <TextInput
+                label="Район"
+                value={form.district ?? ''}
+                onUpdate={(v) => updateField('district', v)}
+                data-testid={testId('profile', 'profile-about-section', 'field', 'district')}
+              />
+              <TextInput
+                label="Метро"
+                value={form.metro ?? ''}
+                onUpdate={(v) => updateField('metro', v)}
+                data-testid={testId('profile', 'profile-about-section', 'field', 'metro')}
+              />
+
+              <Select
+                label="Амплуа"
+                value={[form.position ?? 'forward']}
+                onUpdate={(v) => updateField('position', v[0] as PlayerPosition)}
+                options={POSITION_OPTIONS}
+                data-testid={testId('profile', 'profile-about-section', 'select', 'position')}
+              />
+
+              <Select
+                label="Уровень"
+                value={[form.skillLevel ?? 'amateur']}
+                onUpdate={(v) => updateField('skillLevel', v[0] as SkillLevel)}
+                options={SKILL_OPTIONS}
+                data-testid={testId('profile', 'profile-about-section', 'select', 'skill-level')}
+              />
+
+              <div data-testid={testId('profile', 'profile-about-section', 'field', 'bio')}>
+                <Text
+                  color="secondary"
+                  data-testid={testId('profile', 'profile-about-section', 'text', 'bio-label')}
+                >
+                  О себе
+                </Text>
+                <TextArea
+                  value={form.bio ?? ''}
+                  onUpdate={(v) => updateField('bio', v)}
+                  minRows={3}
+                  data-testid={testId('profile', 'profile-about-section', 'field', 'bio-input')}
+                />
+              </div>
+
+              <Text
+                color="secondary"
+                data-testid={testId('profile', 'profile-about-section', 'text', 'preferred-arenas')}
+              >
+                Предпочитаемые арены: {(form.preferredArenaIds ?? []).join(', ') || 'не выбраны'}
+              </Text>
+
+              <div
+                className="hockey-stack hockey-stack--gap-8"
+                data-testid={testId('profile', 'profile-about-section', 'panel', 'history')}
+              >
+                <Text
+                  variant="subheader-2"
+                  data-testid={testId('profile', 'profile-about-section', 'text', 'history-title')}
+                >
+                  История участия
+                </Text>
+                <ParticipationHistorySection
+                  profile={profile}
+                  showHistory={settings.privacy.showParticipationHistory}
+                />
+              </div>
+
+              <div className="profile-hub__actions">
+                <Button
+                  view="outlined"
+                  loading={isVerifying}
+                  onClick={onStartVerification}
+                  data-testid={testId('profile', 'profile-about-section', 'btn', 'verify')}
+                >
+                  Подтвердить профиль
+                </Button>
+                <Button
+                  view="action"
+                  loading={isSaving}
+                  onClick={handleSave}
+                  data-testid={testId('profile', 'profile-about-section', 'btn', 'save')}
+                >
+                  Сохранить профиль
+                </Button>
+              </div>
+            </div>
+          </Card>
         </div>
-      </div>
-    </Card>
+      )}
+    </div>
   )
 }
 
