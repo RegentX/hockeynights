@@ -52,8 +52,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Runtime deps only: forcing minimatch@10 for eslint/jsx-a11y breaks the linter API.
       - name: Dependency audit
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=high --omit=dev
 
   deploy:
     needs: quality
