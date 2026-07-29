@@ -8,6 +8,8 @@ import {testId} from '@/shared/testing/testId'
 import {PositionLabel} from '@/shared/ui/PositionLabel'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
+import {AddTeamMember} from './AddTeamMember'
+
 const STATUS_OPTIONS = [
   {value: 'active', content: 'Активен'},
   {value: 'bench', content: 'Запасной'},
@@ -184,6 +186,8 @@ export function TeamRosterPanel({teamId, userId, teamPermissions}: TeamRosterPan
           </div>
         </div>
       ))}
+
+      {canManageRoster && <AddTeamMember teamId={teamId} />}
     </div>
   )
 }

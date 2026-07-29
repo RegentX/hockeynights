@@ -7,6 +7,7 @@ import type {ClubSquad} from '@/entities/club'
 import type {Chat} from '@/entities/messenger'
 import {createChannelOrChat, fetchTeamChats} from '@/entities/messenger'
 import type {Team, TeamRole} from '@/entities/team'
+import {fetchTeamRoster} from '@/entities/team'
 import type {TeamPermissions} from '@/features/access'
 import {testId} from '@/shared/testing/testId'
 
@@ -17,7 +18,7 @@ export interface TeamChatsPanelProps {
   teamPermissions: (teamRole?: TeamRole) => TeamPermissions
 }
 
-export function TeamChatsPanel({team, activeSquad, teamPermissions}: TeamChatsPanelProps) {
+export function TeamChatsPanel({team, activeSquad, userId, teamPermissions}: TeamChatsPanelProps) {
   const queryClient = useQueryClient()
   const [newChannelTitle, setNewChannelTitle] = useState('')
   const [newChannelTag, setNewChannelTag] = useState('')
@@ -25,12 +26,18 @@ export function TeamChatsPanel({team, activeSquad, teamPermissions}: TeamChatsPa
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
   const [squadOnly, setSquadOnly] = useState(false)
 
+  const {data: roster = []} = useQuery({
+    queryKey: ['roster', team.id],
+    queryFn: () => fetchTeamRoster(team.id),
+  })
+
   const {data: teamChats = []} = useQuery({
     queryKey: ['team-chats', team.id],
     queryFn: () => fetchTeamChats(team.id),
   })
 
-  const {canCreateChannel, canCreateChat} = teamPermissions('coach')
+  const myTeamRole = (roster.find((m) => m.userId === userId)?.teamRole ?? 'player') as TeamRole
+  const {canCreateChannel, canCreateChat} = teamPermissions(myTeamRole)
   const squadTag = activeSquad?.id
 
   const createTeamChannelMutation = useMutation({
