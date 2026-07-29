@@ -1,6 +1,6 @@
 import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
 
-import {DEFAULT_FAVORITE_IDS} from './defaultPreset'
+import {DEFAULT_FAVORITE_IDS, sanitizeFavoriteIds} from './defaultPreset'
 
 const FAVORITES_STORE_KEY = 'hockey-favorites-ids'
 
@@ -11,7 +11,11 @@ function load(): string[] {
     if (!raw) return [...DEFAULT_FAVORITE_IDS]
     const parsed = JSON.parse(raw)
     if (!Array.isArray(parsed)) return [...DEFAULT_FAVORITE_IDS]
-    return parsed as string[]
+    const sanitized = sanitizeFavoriteIds(parsed as string[])
+    if (sanitized.length !== (parsed as string[]).length) {
+      save(sanitized.length > 0 ? sanitized : [...DEFAULT_FAVORITE_IDS])
+    }
+    return sanitized.length > 0 ? sanitized : [...DEFAULT_FAVORITE_IDS]
   } catch {
     return [...DEFAULT_FAVORITE_IDS]
   }
@@ -19,7 +23,7 @@ function load(): string[] {
 
 function save(ids: string[]): void {
   if (!canUseLocalStorage()) return
-  window.localStorage.setItem(FAVORITES_STORE_KEY, JSON.stringify(ids))
+  window.localStorage.setItem(FAVORITES_STORE_KEY, JSON.stringify(sanitizeFavoriteIds(ids)))
 }
 
 export function getFavoriteIds(): string[] {
@@ -27,10 +31,14 @@ export function getFavoriteIds(): string[] {
 }
 
 export function setFavoriteIds(ids: string[]): void {
-  save(ids)
+  const next = sanitizeFavoriteIds(ids)
+  save(next.length > 0 ? next : [...DEFAULT_FAVORITE_IDS])
 }
 
 export function toggleFavoriteId(id: string): string[] {
+  if (sanitizeFavoriteIds([id]).length === 0) {
+    return load()
+  }
   const current = load()
   const next = current.includes(id) ? current.filter((x) => x !== id) : [...current, id]
   save(next)

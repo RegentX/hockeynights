@@ -5,7 +5,7 @@
 
 import {screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {beforeEach, describe, expect, it} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {resetMockSession} from '@/mocks/data/session'
 import {HockeyProfileForm} from '@/pages/ProfilePage'
@@ -14,29 +14,54 @@ import {HeaderProfile} from '@/widgets/HeaderProfile'
 
 import {renderWithProviders} from './render'
 
+vi.mock('lottie-react', () => ({
+  useLottie: () => ({
+    View: <span data-testid="app-header-profile-lottie-stub" />,
+    animationItem: null,
+  }),
+}))
+
 describe('HOCFRONT-30 профиль в навбаре', () => {
   beforeEach(() => {
     resetMockSession()
   })
 
-  it('показывает ФИО игрока и кнопку входа в профиль', async () => {
+  it('показывает ФИО игрока и аватар в правом углу', async () => {
     renderWithProviders(<HeaderProfile />)
 
     await waitFor(() => {
       expect(screen.getByTestId('app-header-profile-text-name')).toHaveTextContent('Иван Петров')
     })
     expect(screen.getByTestId('app-header-profile-icon-avatar')).toHaveTextContent('ИП')
-    expect(screen.getByTestId('app-header-profile-link-identity')).toHaveAttribute(
-      'href',
-      '/profile',
+    expect(screen.getByTestId('app-header-profile-btn-menu')).toHaveAttribute(
+      'aria-label',
+      'Профиль: Иван Петров',
     )
-    expect(screen.getByTestId('app-header-profile-link-open')).toHaveAttribute('href', '/profile')
-    expect(screen.getByTestId('app-header-profile-btn-open')).toHaveTextContent('В профиль')
     await waitFor(() => {
       expect(screen.getByTestId('app-header-profile-text-meta')).toHaveTextContent(
         'Нападение · Любитель',
       )
     })
+  })
+
+  it('открывает ВК-подобное меню профиля вместо «⋯»', async () => {
+    const user = userEvent.setup()
+    renderWithProviders(
+      <HeaderProfile
+        sessionMenuItems={[[{text: 'Выйти', action: () => {}, qa: 'app-shell-btn-logout'}]]}
+      />,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('app-header-profile-icon-avatar')).toHaveTextContent('ИП')
+    })
+    await user.click(screen.getByTestId('app-header-profile-btn-menu'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Мой профиль')).toBeInTheDocument()
+    })
+    expect(screen.getByText('Как видят другие')).toBeInTheDocument()
+    expect(screen.getByText('Выйти')).toBeInTheDocument()
   })
 
   it('строит инициалы из ФИО', () => {

@@ -98,68 +98,36 @@
   &__header-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
     justify-content: flex-end;
   }
 
-  /* HOCFRONT-30 — блок профиля в шапке */
+  /* HOCFRONT-30 — профиль в правом углу top bar (вместо «⋯») */
   &__profile {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 4px 6px 4px 4px;
-    border-radius: 999px;
-    border: 1px solid var(--hockey-card-border);
-    background: var(--hockey-glass-bg);
-  }
-
-  &__profile-identity {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
+    gap: 8px;
     min-width: 0;
-    text-decoration: none;
-    color: inherit;
-    border-radius: 999px;
-    padding: 2px 4px;
-
-    &:hover .app-shell__profile-name {
-      color: var(--hockey-accent);
-    }
-  }
-
-  &__profile-avatar {
-    flex-shrink: 0;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: #fff;
-    background: linear-gradient(145deg, var(--hockey-line-red), #a00400);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    margin-left: 2px;
   }
 
   &__profile-text {
     display: none;
     flex-direction: column;
+    align-items: flex-end;
     min-width: 0;
 
-    @include breakpoint(768px) {
+    @include breakpoint(1200px) {
       display: flex;
     }
   }
 
   &__profile-name {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     line-height: 1.2;
-    max-width: 168px;
+    max-width: 150px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -167,21 +135,68 @@
   }
 
   &__profile-meta {
-    @include scoreboard-caps(10px, 0.1em);
+    @include scoreboard-caps(9px, 0.1em);
     color: var(--hockey-text-muted);
-    max-width: 168px;
+    max-width: 150px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  &__profile-cta {
-    display: none;
-    text-decoration: none;
+  &__profile-switcher.g-button,
+  &__profile-switcher.hockey-button {
+    --g-button-height: 34px;
+    box-sizing: border-box;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    line-height: 0 !important;
 
-    @include breakpoint(1200px) {
-      display: inline-flex;
+    &:not(:disabled):hover {
+      transform: none;
     }
+
+    .g-button__text {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin: 0 !important;
+      line-height: 0 !important;
+    }
+  }
+
+  &__profile-avatar {
+    position: relative;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+  }
+
+  &__profile-ring {
+    position: absolute;
+    inset: -5px;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+
+  &__profile-initials {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #fff;
+    background: linear-gradient(145deg, var(--hockey-line-red), #a00400);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
   }
 
   &__panel-controls {
@@ -190,8 +205,58 @@
     @include breakpoint(1200px) {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
+  }
+
+  /* Компактные icon-кнопки top bar (тема / панели / ⋯) */
+  &__icon-btn.g-button,
+  &__icon-btn.hockey-button {
+    --g-button-height: 28px;
+    box-sizing: border-box;
+    width: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 0 !important;
+
+    &:not(:disabled):hover {
+      transform: none;
+    }
+
+    .g-button__text,
+    .g-button__icon {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 0 !important;
+      height: 16px;
+    }
+
+    .g-icon {
+      display: block;
+      width: 16px;
+      height: 16px;
+      line-height: 0;
+    }
+
+    svg {
+      display: block;
+    }
+  }
+
+  &__panel-controls .g-dropdown-menu__switcher-wrapper,
+  &__header-actions > .g-dropdown-menu__switcher-wrapper {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
   }
 
   &__period {
@@ -206,6 +271,75 @@
     @include breakpoint(768px) {
       display: block;
     }
+  }
+
+  /* HOCFRONT-17 — Lottie-колокольчик в top bar (icon-only, как Button size="s") */
+  &__notify {
+    position: relative;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 8px;
+    border: 1px solid var(--hockey-card-border);
+    background: var(--hockey-glass-bg);
+    color: var(--g-color-text-primary);
+    text-decoration: none;
+    line-height: 0;
+    vertical-align: middle;
+    transition:
+      background var(--hockey-motion-fast) var(--hockey-motion-ease),
+      border-color var(--hockey-motion-fast) var(--hockey-motion-ease);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--hockey-nav-active-bg);
+      border-color: color-mix(in srgb, var(--hockey-line-red) 55%, var(--hockey-card-border));
+    }
+
+    &--active {
+      background: var(--hockey-nav-active-bg);
+      border-color: var(--hockey-line-red);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--hockey-line-red) 35%, transparent);
+    }
+
+    &--unread {
+      border-color: color-mix(in srgb, var(--hockey-line-red) 45%, var(--hockey-card-border));
+    }
+  }
+
+  &__notify-lottie {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    overflow: hidden;
+    pointer-events: none;
+    transform-origin: 50% 0%;
+  }
+
+  &__notify-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    border-radius: 999px;
+    background: var(--hockey-line-red);
+    color: #fff;
+    font-family: var(--hockey-font-scoreboard);
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 15px;
+    text-align: center;
+    border: 1.5px solid var(--hockey-header-bg);
+    box-shadow: 0 1px 4px rgba(225, 6, 0, 0.35);
+    pointer-events: none;
   }
 
   &__body {
@@ -434,9 +568,10 @@
   box-sizing: border-box;
   display: flex;
   align-items: stretch;
+  justify-content: space-between;
   gap: 0;
-  padding: 6px max(4px, env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom))
-    max(4px, env(safe-area-inset-right));
+  padding: 8px max(6px, env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom))
+    max(6px, env(safe-area-inset-right));
   background: var(--hockey-card-bg);
   border-top: 2px solid var(--hockey-card-border);
   @include glass-panel(20px);
@@ -464,48 +599,76 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: 4px;
+    width: 100%;
     min-width: 0;
     max-width: 100%;
-    padding: 6px 2px;
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    color: var(--hockey-text-muted);
+    min-height: 52px;
+    padding: 6px 4px;
+    font-family: var(--hockey-font-ui, inherit);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--hockey-nav-icon, var(--hockey-text-primary, var(--hockey-text-muted)));
     text-decoration: none;
     border-radius: 12px;
     transition:
       color var(--hockey-motion-fast) var(--hockey-motion-ease),
-      background var(--hockey-motion-fast) var(--hockey-motion-ease);
+      background var(--hockey-motion-fast) var(--hockey-motion-ease),
+      opacity var(--hockey-motion-fast) var(--hockey-motion-ease);
+
+    &--button {
+      appearance: none;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+    }
 
     &--active {
       color: var(--hockey-line-red);
       background: var(--hockey-nav-active-bg);
-
-      .mobile-nav__icon {
-        transform: scale(1.1);
-      }
+      opacity: 1;
     }
   }
 
   &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+    width: 28px;
+    height: 28px;
     font-size: 20px;
     line-height: 1;
-    transition: transform var(--hockey-motion-fast) var(--hockey-motion-ease);
+    color: inherit;
+
+    .g-icon {
+      color: inherit;
+    }
+
+    svg {
+      display: block;
+      color: inherit;
+    }
   }
 
   &__icon-wrap {
     position: relative;
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+    width: 28px;
+    height: 28px;
   }
 
   &__badge {
     position: absolute;
-    top: -5px;
-    right: -10px;
+    top: -4px;
+    right: -8px;
     min-width: 16px;
     height: 16px;
     padding: 0 4px;
@@ -523,11 +686,17 @@
   }
 
   &__label {
+    display: block;
+    width: 100%;
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 1.1;
+    line-height: 1.15;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0;
   }
 
   @include breakpoint($max: 380px) {
@@ -536,12 +705,152 @@
     }
 
     &__link {
-      padding: 8px 1px;
+      min-height: 48px;
+      padding: 8px 2px;
+    }
+  }
+}
+
+/* HOCFRONT-17 — sheet «Ещё» для каталогов (арены / лиги / маркет) */
+.mobile-nav-more {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  @include breakpoint(1200px) {
+    display: none;
+  }
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+  }
+
+  &__sheet {
+    position: relative;
+    z-index: 1;
+    max-height: min(70vh, 420px);
+    padding: 10px 16px calc(16px + env(safe-area-inset-bottom));
+    border-radius: 20px 20px 0 0;
+    background: var(--hockey-card-bg);
+    border-top: 2px solid var(--hockey-card-border);
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.28);
+    @include glass-panel(20px);
+    overflow: auto;
+  }
+
+  &__handle {
+    width: 40px;
+    height: 4px;
+    margin: 0 auto 12px;
+    border-radius: 999px;
+    background: var(--hockey-card-border);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--hockey-nav-icon, var(--hockey-text-primary, var(--g-color-text-primary)));
+  }
+
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid var(--hockey-card-border);
+    border-radius: 8px;
+    background: var(--hockey-glass-bg);
+    color: var(--hockey-nav-icon, var(--hockey-text-primary, var(--g-color-text-primary)));
+    cursor: pointer;
+    line-height: 1;
+
+    .g-icon,
+    svg {
+      color: inherit;
+    }
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    color: var(--hockey-nav-icon, var(--hockey-text-primary, var(--g-color-text-primary)));
+    text-decoration: none;
+    background: var(--hockey-glass-bg);
+    font-weight: 500;
+    transition:
+      background var(--hockey-motion-fast) var(--hockey-motion-ease),
+      border-color var(--hockey-motion-fast) var(--hockey-motion-ease),
+      color var(--hockey-motion-fast) var(--hockey-motion-ease);
+
+    &:hover,
+    &--active {
+      background: var(--hockey-nav-active-bg);
+      border-color: var(--hockey-card-border);
     }
 
-    &__icon {
-      font-size: 22px;
+    &--active {
+      color: var(--hockey-line-red);
+      box-shadow: inset 3px 0 0 var(--hockey-line-red);
     }
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    font-size: 20px;
+    line-height: 1;
+    color: inherit;
+
+    .g-icon,
+    svg {
+      display: block;
+      color: inherit;
+    }
+  }
+
+  &__label {
+    font-size: 14px;
+    font-weight: inherit;
+    letter-spacing: 0;
+    line-height: 1.2;
   }
 }
 

@@ -1,25 +1,44 @@
 /**
  * SPEC-FR-18.1.1, SPEC-UI-5.1
- * HOCFRONT-30 — блок пользователя в верхнем навбаре: ФИО + вход в профиль.
+ * HOCFRONT-30 — профиль в правом углу top bar: аватар с Lottie-кольцом + меню сессии.
  */
 
+import {ArrowRightToSquare, Eye} from '@gravity-ui/icons'
+import {DropdownMenu, type DropdownMenuItem, Icon} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {Link} from 'react-router-dom'
+import type {LottieRefCurrentProps} from 'lottie-react'
+import {useLottie} from 'lottie-react'
+import {useEffect, useMemo, useRef, useState} from 'react'
+import {useNavigate} from 'react-router-dom'
 
 import {fetchSession} from '@/entities/auth'
 import {fetchMyProfile} from '@/entities/profile'
 import {getPrimaryPartnerPath, shouldUsePartnerWorkspace} from '@/features/access'
 import {POSITION_LABELS, SKILL_LEVEL_LABELS} from '@/features/events'
+import profileRingAnimation from '@/shared/assets/lottie/profile-ring.json'
 import {routes} from '@/shared/const/appRoutes'
 import {getProfileInitials} from '@/shared/lib/profileIdentity'
+import {usePrefersReducedMotion} from '@/shared/lib/usePrefersReducedMotion'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 
+export interface HeaderProfileProps {
+  /** Пункты сессии из AppShell (сменить роль, фокус-режим, выход) */
+  sessionMenuItems?: (DropdownMenuItem | DropdownMenuItem[])[]
+}
+
 /**
  * @spec SPEC-FR-18.1.1 - Быстрый доступ к личному кабинету
- * @spec SPEC-UI-5.1 - Header-блок профиля
+ * @spec SPEC-UI-5.1 - Header-блок профиля в правом углу
  */
-export function HeaderProfile() {
+export function HeaderProfile({sessionMenuItems = []}: HeaderProfileProps) {
+  const navigate = useNavigate()
+  const lottieRef = useRef<LottieRefCurrentProps>(null)
+  const introPlayedRef = useRef(false)
+  const hoveredRef = useRef(false)
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const [menuOpen, setMenuOpen] = useState(false)
+
   const {data: session} = useQuery({
     queryKey: ['session'],
     queryFn: fetchSession,
@@ -32,61 +51,135 @@ export function HeaderProfile() {
     enabled: Boolean(session) && !partnerWorkspace,
   })
 
-  if (!session) return null
+  const {View, animationItem} = useLottie(
+    {
+      animationData: profileRingAnimation,
+      loop: true,
+      autoplay: false,
+      lottieRef,
+    },
+    {width: 44, height: 44},
+  )
 
-  const fullName = profile?.fullName?.trim() || session.user.displayName
-  const profileHref = partnerWorkspace ? getPrimaryPartnerPath(session) : routes.profile
+  /** Один приветственный цикл после загрузки; дальше — hover/фокус или открытое меню. */
+  useEffect(() => {
+    if (!animationItem) return
+    if (prefersReducedMotion) {
+      animationItem.goToAndStop(0, true)
+      return
+    }
+    if (menuOpen) {
+      animationItem.goToAndPlay(0, true)
+      return
+    }
+    if (introPlayedRef.current) {
+      animationItem.goToAndStop(0, true)
+      return
+    }
+    introPlayedRef.current = true
+    animationItem.goToAndPlay(0, true)
+    const introMs = (animationItem.getDuration(false) || 3) * 1000
+    const timer = window.setTimeout(() => {
+      if (hoveredRef.current) return
+      animationItem.goToAndStop(0, true)
+    }, introMs)
+    return () => window.clearTimeout(timer)
+  }, [animationItem, menuOpen, prefersReducedMotion])
+
+  const fullName = profile?.fullName?.trim() || session?.user.displayName || ''
+  const profileHref = partnerWorkspace && session ? getPrimaryPartnerPath(session) : routes.profile
   const meta = partnerWorkspace
     ? 'Кабинет партнёра'
     : profile
       ? `${POSITION_LABELS[profile.position]} · ${SKILL_LEVEL_LABELS[profile.skillLevel]}`
-      : (session.user.city ?? '')
+      : (session?.user.city ?? '')
+
+  const menuItems = useMemo(() => {
+    const profileGroup: DropdownMenuItem[] = [
+      {
+        text: partnerWorkspace ? 'Кабинет партнёра' : 'Мой профиль',
+        iconStart: <Icon data={ArrowRightToSquare} size={16} />,
+        action: () => navigate(profileHref),
+        qa: testId('app', 'header-profile', 'btn', 'open'),
+      },
+    ]
+    if (!partnerWorkspace && profile) {
+      profileGroup.push({
+        text: 'Как видят другие',
+        iconStart: <Icon data={Eye} size={16} />,
+        action: () => navigate(`${routes.players}/${profile.userId}`),
+        qa: testId('app', 'header-profile', 'btn', 'public-view'),
+      })
+    }
+    return [profileGroup, ...sessionMenuItems]
+  }, [navigate, partnerWorkspace, profile, profileHref, sessionMenuItems])
+
+  if (!session) return null
+
+  const playRing = () => {
+    hoveredRef.current = true
+    if (prefersReducedMotion || !animationItem) return
+    animationItem.goToAndPlay(0, true)
+  }
+
+  const stopRing = () => {
+    hoveredRef.current = false
+    if (menuOpen || !animationItem) return
+    animationItem.goToAndStop(0, true)
+  }
 
   return (
     <div className="app-shell__profile" data-testid={testId('app', 'header-profile', 'panel')}>
-      <Link
-        to={profileHref}
-        className="app-shell__profile-identity"
-        aria-label={`Мой профиль: ${fullName}`}
-        data-testid={testId('app', 'header-profile', 'link', 'identity')}
-      >
+      <span className="app-shell__profile-text">
         <span
-          className="app-shell__profile-avatar"
-          aria-hidden
-          data-testid={testId('app', 'header-profile', 'icon', 'avatar')}
+          className="app-shell__profile-name"
+          data-testid={testId('app', 'header-profile', 'text', 'name')}
         >
-          {getProfileInitials(fullName)}
+          {fullName}
         </span>
-        <span className="app-shell__profile-text">
+        {meta && (
           <span
-            className="app-shell__profile-name"
-            data-testid={testId('app', 'header-profile', 'text', 'name')}
+            className="app-shell__profile-meta"
+            data-testid={testId('app', 'header-profile', 'text', 'meta')}
           >
-            {fullName}
+            {meta}
           </span>
-          {meta && (
-            <span
-              className="app-shell__profile-meta"
-              data-testid={testId('app', 'header-profile', 'text', 'meta')}
-            >
-              {meta}
+        )}
+      </span>
+      <DropdownMenu
+        size="s"
+        open={menuOpen}
+        onOpenToggle={() => setMenuOpen((prev) => !prev)}
+        popupProps={{placement: 'bottom-end'}}
+        renderSwitcher={(props) => (
+          <HockeyButton
+            {...props}
+            className="app-shell__profile-switcher"
+            view="flat"
+            size="l"
+            aria-label={fullName ? `Профиль: ${fullName}` : 'Профиль'}
+            title={fullName || 'Профиль'}
+            onMouseEnter={playRing}
+            onMouseLeave={stopRing}
+            onFocus={playRing}
+            onBlur={stopRing}
+            data-testid={testId('app', 'header-profile', 'btn', 'menu')}
+          >
+            <span className="app-shell__profile-avatar">
+              <span className="app-shell__profile-ring" aria-hidden>
+                {View}
+              </span>
+              <span
+                className="app-shell__profile-initials"
+                data-testid={testId('app', 'header-profile', 'icon', 'avatar')}
+              >
+                {getProfileInitials(fullName)}
+              </span>
             </span>
-          )}
-        </span>
-      </Link>
-      <Link
-        to={profileHref}
-        className="app-shell__profile-cta"
-        data-testid={testId('app', 'header-profile', 'link', 'open')}
-      >
-        <HockeyButton
-          view="outlined"
-          size="s"
-          data-testid={testId('app', 'header-profile', 'btn', 'open')}
-        >
-          В профиль
-        </HockeyButton>
-      </Link>
+          </HockeyButton>
+        )}
+        items={menuItems}
+      />
     </div>
   )
 }
