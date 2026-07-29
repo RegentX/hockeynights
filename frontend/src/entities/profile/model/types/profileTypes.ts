@@ -40,6 +40,8 @@ export interface HockeyProfile {
   verificationStatus?: VerificationStatus
   /** @spec SPEC-FR-2.3.1 - Основная команда игрока для отображения в карточке */
   teamName?: string
+  /** @spec HOCFRONT-20 - Команды, в которых состоит игрок */
+  teamIds?: string[]
   /** @spec SPEC-FR-2.2.5, SPEC-FR-24.1.4 */
   participationHistory?: ParticipationRecord[]
   /** @spec SPEC-FR-5.2.4, SPEC-FR-24.2.3 (goalie only) */
