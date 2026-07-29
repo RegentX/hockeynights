@@ -38,6 +38,8 @@ export interface HockeyProfile {
   achievements?: string[]
   /** @spec SPEC-FR-17.1.1 */
   verificationStatus?: VerificationStatus
+  /** @spec SPEC-FR-2.3.1 - Основная команда игрока для отображения в карточке */
+  teamName?: string
   /** @spec HOCFRONT-20 - Команды, в которых состоит игрок */
   teamIds?: string[]
   /** @spec SPEC-FR-2.2.5, SPEC-FR-24.1.4 */

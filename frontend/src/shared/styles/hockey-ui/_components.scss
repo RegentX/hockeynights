@@ -151,13 +151,6 @@
   min-height: 180px;
 }
 
-.hockey-player-card__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 8px;
-}
-
 .hockey-player-card__number {
   font-size: 28px;
   line-height: 1;
@@ -189,6 +182,128 @@
   width: var(--hockey-fill-width, 0%);
   background: linear-gradient(90deg, var(--hockey-ice-glow), var(--hockey-board-gold));
   border-radius: 2px;
+}
+
+.hockey-player-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.hockey-player-card__top > .hockey-player-card-link {
+  flex: 1;
+  min-width: 0;
+}
+
+.hockey-player-card__top-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hockey-player-card__top-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hockey-player-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hockey-player-card__row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hockey-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hockey-player-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.hockey-player-card__verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #36b37e;
+  border: 1px solid rgba(54, 179, 126, 0.35);
+  background: rgba(54, 179, 126, 0.1);
+}
+
+.player-favorite {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.player-favorite__error {
+  max-width: 120px;
+  text-align: right;
+}
+
+.player-favorite-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--hockey-card-border);
+  background: transparent;
+  color: var(--hockey-text-muted, #6b7785);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    color: var(--hockey-board-gold);
+    border-color: var(--hockey-board-gold);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--hockey-board-gold);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &--on {
+    color: var(--hockey-board-gold, #f5b800);
+    border-color: var(--hockey-board-gold, #f5b800);
+    background: rgba(245, 184, 0, 0.12);
+  }
 }
 
 .arenas-page {
