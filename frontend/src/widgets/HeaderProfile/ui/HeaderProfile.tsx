@@ -3,7 +3,7 @@
  * HOCFRONT-30 — профиль в правом углу top bar: аватар с Lottie-кольцом + меню сессии.
  */
 
-import {ArrowRightToSquare, Eye} from '@gravity-ui/icons'
+import {Eye, Person} from '@gravity-ui/icons'
 import {DropdownMenu, type DropdownMenuItem, Icon} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import type {LottieRefCurrentProps} from 'lottie-react'
@@ -98,7 +98,7 @@ export function HeaderProfile({sessionMenuItems = []}: HeaderProfileProps) {
     const profileGroup: DropdownMenuItem[] = [
       {
         text: partnerWorkspace ? 'Кабинет партнёра' : 'Мой профиль',
-        iconStart: <Icon data={ArrowRightToSquare} size={16} />,
+        iconStart: <Icon data={Person} size={16} />,
         action: () => navigate(profileHref),
         qa: testId('app', 'header-profile', 'btn', 'open'),
       },
