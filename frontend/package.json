@@ -36,11 +36,6 @@
     "react-router": "^8.3.0",
     "three": "^0.185.1"
   },
-  "overrides": {
-    "postcss": "8.5.24",
-    "react-router": "8.3.0",
-    "brace-expansion@5": "5.0.8"
-  },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
     "@testing-library/jest-dom": "^6.9.1",
@@ -88,17 +83,5 @@
     "*.{json,css,scss,md}": [
       "prettier --write"
     ]
-  },
-  "overrides": {
-    "immutable": "5.1.9",
-    "postcss": "8.5.24",
-    "react-router": "8.3.0",
-    "brace-expansion": "5.0.8",
-    "@eslint/config-array": {
-      "minimatch": "10.2.3"
-    },
-    "@eslint/eslintrc": {
-      "minimatch": "10.2.3"
-    }
   }
 }
