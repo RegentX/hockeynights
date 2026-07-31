@@ -30,12 +30,6 @@ import {HeaderProfile} from '@/widgets/HeaderProfile'
 import {MobileNav} from '@/widgets/MobileNav'
 import {SideBoard} from '@/widgets/SideBoard'
 
-function formatPeriodClock(): string {
-  const now = new Date()
-  const period = now.getHours() < 12 ? '1-й' : now.getHours() < 18 ? '2-й' : '3-й'
-  return `${period} · ${now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}`
-}
-
 /**
  * @spec SPEC-FR-1.2.1 - Базовый layout приложения
  * @spec SPEC-UI-5.1 - Desktop 3-col layout
@@ -49,7 +43,6 @@ export function AppShell() {
   const {themeId, toggleTheme} = useHockeyTheme()
   const navRef = useRef<HTMLDivElement>(null)
   const [puckTop, setPuckTop] = useState(0)
-  const [periodClock, setPeriodClock] = useState(formatPeriodClock)
   const [isLeftCollapsed, setIsLeftCollapsed] = useState(false)
   const [isRightCollapsed, setIsRightCollapsed] = useState(false)
 
@@ -75,6 +68,8 @@ export function AppShell() {
   const unreadChatCount = getTotalUnreadCount(chats)
   const isMessengerRoute = location.pathname === '/messenger'
   const isFocusMode = isLeftCollapsed && isRightCollapsed
+  /** overflow:hidden только в мессенджере — на других страницах обе панели могут быть свёрнуты без «пустого» профиля. */
+  const isMessengerFocus = isMessengerRoute && isFocusMode
 
   const logoutMutation = useMutation({
     mutationFn: logoutSession,
@@ -94,6 +89,7 @@ export function AppShell() {
     'app-shell__body--grid',
     isLeftCollapsed ? 'app-shell__body--left-collapsed' : '',
     isRightCollapsed ? 'app-shell__body--right-collapsed' : '',
+    isMessengerFocus ? 'app-shell__body--messenger-focus' : '',
   ]
     .filter(Boolean)
     .join(' ')
@@ -106,11 +102,6 @@ export function AppShell() {
       setPuckTop(active.offsetTop + active.offsetHeight / 2 - 4)
     }
   }, [location.pathname])
-
-  useEffect(() => {
-    const timer = window.setInterval(() => setPeriodClock(formatPeriodClock()), 60_000)
-    return () => window.clearInterval(timer)
-  }, [])
 
   const sessionMenuItems = useMemo(
     () => [
@@ -183,13 +174,6 @@ export function AppShell() {
           className="app-shell__header-actions"
           data-testid={testId('app', 'shell', 'header-actions')}
         >
-          <span
-            className="app-shell__period"
-            aria-live="polite"
-            data-testid={testId('app', 'shell', 'text', 'period-clock')}
-          >
-            {periodClock}
-          </span>
           <NotificationsBellLink unreadCount={unreadCount} active={isNavActive('/notifications')} />
           <HockeyButton
             className="app-shell__icon-btn"

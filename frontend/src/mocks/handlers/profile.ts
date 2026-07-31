@@ -13,7 +13,11 @@ import type {
   SubscriptionState,
 } from '@/entities/profile'
 import {getMockFavorites, updateMockFavorites} from '@/mocks/data/favorites'
-import {buildPublicPlayerView, mockPlayers} from '@/mocks/data/players'
+import {
+  buildPublicPlayerView,
+  buildPublicPlayerViewFromProfile,
+  mockPlayers,
+} from '@/mocks/data/players'
 import {
   mockProfile,
   mockProfileSettings,
@@ -156,7 +160,12 @@ export const profileHandlers = [
   }),
 
   http.get('/mock-api/v1/players/:userId', ({params}) => {
-    const view = buildPublicPlayerView(params.userId as string)
+    const userId = params.userId as string
+    const view =
+      buildPublicPlayerView(userId) ??
+      (userId === mockProfile.userId
+        ? buildPublicPlayerViewFromProfile(mockProfile, mockProfileSettings.privacy)
+        : null)
     if (!view) {
       return HttpResponse.json({message: 'Player not found'}, {status: 404})
     }

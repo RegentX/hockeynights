@@ -56,6 +56,23 @@ export interface ParticipationRecord {
   teamName?: string
   role: 'player' | 'goalie' | 'coach'
   confirmed: boolean
+  /** Тип события для раскрытой карточки */
+  eventType?: 'game' | 'training' | 'open_ice'
+  /** Арена проведения */
+  arenaName?: string
+  /** Соперник (для игр) */
+  opponent?: string
+  /** Итог матча / тренировки */
+  result?: string
+  /** Длительность в минутах */
+  durationMinutes?: number
+  /** Короткая заметка / контекст */
+  note?: string
+  /**
+   * Чат, куда ушло приглашение (как после publish тренировки → team/event chat).
+   * Deep-link: /messenger?chatId=
+   */
+  chatId?: string
 }
 
 /** @spec SPEC-FR-2.3.1 - Карточка игрока для списка */

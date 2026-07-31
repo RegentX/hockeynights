@@ -259,20 +259,6 @@
     line-height: 0;
   }
 
-  &__period {
-    display: none;
-    @include scoreboard-caps(12px, 0.08em);
-    padding: 6px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--hockey-card-border);
-    background: var(--hockey-glass-bg);
-    color: var(--hockey-accent);
-
-    @include breakpoint(768px) {
-      display: block;
-    }
-  }
-
   /* HOCFRONT-17 — Lottie-колокольчик в top bar (icon-only, как Button size="s") */
   &__notify {
     position: relative;
@@ -407,6 +393,11 @@
     &--left-collapsed#{&}--right-collapsed .app-shell__main-col {
       @include breakpoint(1200px) {
         grid-column: 1;
+      }
+    }
+
+    &--messenger-focus#{&}--left-collapsed#{&}--right-collapsed .app-shell__main-col {
+      @include breakpoint(1200px) {
         padding: 0;
         overflow: hidden;
       }

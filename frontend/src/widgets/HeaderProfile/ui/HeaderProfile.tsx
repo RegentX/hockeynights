@@ -12,7 +12,7 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 
 import {fetchSession} from '@/entities/auth'
-import {fetchMyProfile} from '@/entities/profile'
+import {fetchMyProfile, fetchProfileSettings} from '@/entities/profile'
 import {getPrimaryPartnerPath, shouldUsePartnerWorkspace} from '@/features/access'
 import {POSITION_LABELS, SKILL_LEVEL_LABELS} from '@/features/events'
 import profileRingAnimation from '@/shared/assets/lottie/profile-ring.json'
@@ -48,6 +48,12 @@ export function HeaderProfile({sessionMenuItems = []}: HeaderProfileProps) {
   const {data: profile} = useQuery({
     queryKey: ['profile'],
     queryFn: fetchMyProfile,
+    enabled: Boolean(session) && !partnerWorkspace,
+  })
+  /** Держим settings тёплыми: иначе при уходе с /profile на событие query сбрасывается и ломает возврат. */
+  useQuery({
+    queryKey: ['profile-settings'],
+    queryFn: fetchProfileSettings,
     enabled: Boolean(session) && !partnerWorkspace,
   })
 
@@ -86,7 +92,7 @@ export function HeaderProfile({sessionMenuItems = []}: HeaderProfileProps) {
     return () => window.clearTimeout(timer)
   }, [animationItem, menuOpen, prefersReducedMotion])
 
-  const fullName = profile?.fullName?.trim() || session?.user.displayName || ''
+  const fullName = session?.user.displayName?.trim() || profile?.fullName?.trim() || ''
   const profileHref = partnerWorkspace && session ? getPrimaryPartnerPath(session) : routes.profile
   const meta = partnerWorkspace
     ? 'Кабинет партнёра'
@@ -94,25 +100,36 @@ export function HeaderProfile({sessionMenuItems = []}: HeaderProfileProps) {
       ? `${POSITION_LABELS[profile.position]} · ${SKILL_LEVEL_LABELS[profile.skillLevel]}`
       : (session?.user.city ?? '')
 
+  const sessionUserId = session?.user.id
   const menuItems = useMemo(() => {
+    const openProfile = () => {
+      setMenuOpen(false)
+      navigate(profileHref)
+    }
+    const openPublicView = () => {
+      if (!sessionUserId) return
+      setMenuOpen(false)
+      navigate(`${routes.players}/${sessionUserId}`)
+    }
+
     const profileGroup: DropdownMenuItem[] = [
       {
         text: partnerWorkspace ? 'Кабинет партнёра' : 'Мой профиль',
         iconStart: <Icon data={Person} size={16} />,
-        action: () => navigate(profileHref),
+        action: openProfile,
         qa: testId('app', 'header-profile', 'btn', 'open'),
       },
     ]
-    if (!partnerWorkspace && profile) {
+    if (!partnerWorkspace && sessionUserId) {
       profileGroup.push({
         text: 'Как видят другие',
         iconStart: <Icon data={Eye} size={16} />,
-        action: () => navigate(`${routes.players}/${profile.userId}`),
+        action: openPublicView,
         qa: testId('app', 'header-profile', 'btn', 'public-view'),
       })
     }
     return [profileGroup, ...sessionMenuItems]
-  }, [navigate, partnerWorkspace, profile, profileHref, sessionMenuItems])
+  }, [navigate, partnerWorkspace, profileHref, sessionUserId, sessionMenuItems])
 
   if (!session) return null
 

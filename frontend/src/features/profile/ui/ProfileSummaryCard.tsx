@@ -3,7 +3,7 @@
  * HOCFRONT-30 — краткая карточка профиля с раскрытием подробностей.
  */
 
-import {Card, Progress, Text} from '@gravity-ui/uikit'
+import {Card, Text} from '@gravity-ui/uikit'
 import {Link} from 'react-router-dom'
 
 import type {UserRole} from '@/entities/common'
@@ -142,20 +142,26 @@ export function ProfileSummaryCard({
           className="profile-summary__metrics"
           data-testid={testId('profile', 'profile-summary', 'panel', 'metrics')}
         >
-          <div data-testid={testId('profile', 'profile-summary', 'panel', 'completeness')}>
+          <KarmaScore score={profile.karmaScore} size="m" testIdPrefix="profile" />
+          <div
+            className="profile-summary__stat"
+            data-testid={testId('profile', 'profile-summary', 'panel', 'events-stat')}
+          >
+            <Text
+              variant="display-3"
+              className="profile-summary__stat-value"
+              data-testid={testId('profile', 'profile-summary', 'text', 'events-count')}
+            >
+              {(profile.participationHistory ?? []).filter((r) => r.confirmed).length}
+            </Text>
             <Text
               color="secondary"
-              data-testid={testId('profile', 'profile-summary', 'text', 'completeness-label')}
+              className="profile-summary__stat-label"
+              data-testid={testId('profile', 'profile-summary', 'text', 'events-label')}
             >
-              Заполненность профиля
+              игр подтверждено
             </Text>
-            <Progress
-              value={profile.profileCompleteness}
-              text={`${profile.profileCompleteness}%`}
-              data-testid={testId('profile', 'profile-summary', 'cell', 'completeness')}
-            />
           </div>
-          <KarmaScore score={profile.karmaScore} size="m" testIdPrefix="profile" />
         </div>
 
         <div className="profile-hub__actions">

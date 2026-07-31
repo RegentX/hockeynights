@@ -83,18 +83,60 @@ describe('HOCFRONT-30 краткая инфа профиля', () => {
     await waitFor(() => {
       expect(screen.getByTestId('profile-profile-summary-card')).toBeInTheDocument()
     })
+    expect(screen.getByTestId('profile-profile-hub-tabs-tab-about')).toHaveTextContent('О себе')
     expect(screen.getByTestId('profile-profile-summary-text-full-name')).toHaveTextContent(
       'Иван Петров',
     )
     expect(screen.getByTestId('profile-profile-summary-text-location')).toHaveTextContent(
       'Москва · САО · м. Динамо',
     )
-    expect(screen.getByText(/Заполненность профиля/i)).toBeInTheDocument()
+    expect(screen.getByTestId('profile-profile-summary-text-events-count')).toHaveTextContent('2')
+    expect(screen.getByTestId('profile-profile-summary-text-events-label')).toHaveTextContent(
+      'игр подтверждено',
+    )
     expect(screen.getByTestId('profile-profile-summary-link-public-view')).toHaveAttribute(
       'href',
       '/players/user-001',
     )
     expect(screen.queryByTestId('profile-profile-about-section-card')).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('profile-profile-about-section-card-history-preview'),
+    ).toBeInTheDocument()
+    expect(screen.getByTestId('profile-participation-history-list')).toBeInTheDocument()
+
+    await user.click(screen.getByTestId('profile-participation-history-btn-toggle-event-002'))
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('profile-participation-history-panel-details-event-002'),
+      ).toBeInTheDocument()
+    })
+    expect(
+      screen.getByTestId('profile-participation-history-text-arena-event-002'),
+    ).toHaveTextContent('Каток «Лужники»')
+    expect(
+      screen.getByTestId('profile-participation-history-link-invite-event-002'),
+    ).toHaveAttribute('href', '/events/trainings/event-002')
+    expect(screen.getByTestId('profile-participation-history-link-chat-event-002')).toHaveAttribute(
+      'href',
+      '/messenger?chatId=chat-1',
+    )
+
+    await user.click(screen.getByTestId('profile-participation-history-btn-toggle-event-001'))
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('profile-participation-history-panel-details-event-001'),
+      ).toBeInTheDocument()
+    })
+    expect(
+      screen.getByTestId('profile-participation-history-text-opponent-event-001'),
+    ).toHaveTextContent('Вымпел')
+    expect(
+      screen.getByTestId('profile-participation-history-text-result-event-001'),
+    ).toHaveTextContent('3:2')
+    expect(screen.getByTestId('profile-participation-history-link-chat-event-001')).toHaveAttribute(
+      'href',
+      '/messenger?chatId=chat-2',
+    )
 
     const detailsBtn = screen.getByTestId('profile-profile-summary-btn-details')
     expect(detailsBtn).toHaveAttribute('aria-expanded', 'false')
@@ -107,6 +149,9 @@ describe('HOCFRONT-30 краткая инфа профиля', () => {
       'aria-expanded',
       'true',
     )
+    expect(
+      screen.queryByTestId('profile-profile-about-section-card-history-preview'),
+    ).not.toBeInTheDocument()
     expect(screen.getByLabelText('ФИО')).toHaveValue('Иван Петров')
     expect(screen.getByText('История участия')).toBeInTheDocument()
     expect(screen.getByTestId('profile-profile-about-section-btn-save')).toBeInTheDocument()
@@ -115,5 +160,8 @@ describe('HOCFRONT-30 краткая инфа профиля', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('profile-profile-about-section-card')).not.toBeInTheDocument()
     })
+    expect(
+      screen.getByTestId('profile-profile-about-section-card-history-preview'),
+    ).toBeInTheDocument()
   })
 })
