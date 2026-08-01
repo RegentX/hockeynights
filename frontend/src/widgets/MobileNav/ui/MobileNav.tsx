@@ -3,7 +3,7 @@
  */
 
 import {useQuery} from '@tanstack/react-query'
-import {Link, useLocation} from 'react-router-dom'
+import {Link, useLocation} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {fetchChats, getTotalUnreadCount} from '@/entities/messenger'

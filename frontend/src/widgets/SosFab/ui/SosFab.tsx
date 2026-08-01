@@ -2,7 +2,7 @@
  * SPEC-UI-5.2, SPEC-FR-5.2.2
  */
 
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {testId} from '@/shared/testing/testId'
 

@@ -5,7 +5,7 @@
 
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {type FormEvent, useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {authLogin, loginWithCredentials} from '@/entities/auth'
 import {DEMO_EMAIL, DEMO_PASSWORD, isDemoCredentials} from '@/features/auth/lib/demoCredentials'

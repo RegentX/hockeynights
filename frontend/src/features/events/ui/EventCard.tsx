@@ -5,7 +5,7 @@
 
 import {Text} from '@gravity-ui/uikit'
 import {useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import type {GameEvent} from '@/entities/event'
 import {ACCESS_LABELS, EVENT_TYPE_LABELS} from '@/features/events/lib/eventLabels'

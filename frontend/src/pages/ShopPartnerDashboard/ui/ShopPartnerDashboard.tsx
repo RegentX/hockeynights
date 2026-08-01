@@ -5,7 +5,7 @@
 import {Button, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
-import {Link, useParams} from 'react-router-dom'
+import {Link, useParams} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import type {Shop} from '@/entities/shop'
