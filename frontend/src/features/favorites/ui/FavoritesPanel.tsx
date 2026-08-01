@@ -25,8 +25,8 @@ export function FavoritesPanel() {
   }, [])
 
   const handleSave = useCallback(() => {
-    setFavoriteIds(draftIds)
-    setSelectedIds(draftIds)
+    const next = setFavoriteIds(draftIds)
+    setSelectedIds(next)
     setSettingsOpen(false)
   }, [draftIds])
 

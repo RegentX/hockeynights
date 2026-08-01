@@ -22,9 +22,13 @@ import {
   setFavoriteIds,
 } from '@/features/favorites/model'
 import {routes} from '@/shared/const/appRoutes'
+import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
 import type {Session} from '@/shared/types/user'
 
 import {clearTestStorage} from './clearTestStorage'
+import {ensureBrowserStorage} from './localStorageMock'
+
+ensureBrowserStorage()
 
 function makeSession(roles: Session['user']['roles'] = ['player']): Session {
   return {
@@ -76,6 +80,7 @@ describe('HOCFRONT-15 MVP nav hide', () => {
 
 describe('HOCFRONT-15 favorites hide SOS / IQ / Highlights', () => {
   beforeEach(() => {
+    ensureBrowserStorage()
     clearTestStorage()
   })
 
@@ -98,12 +103,14 @@ describe('HOCFRONT-15 favorites hide SOS / IQ / Highlights', () => {
     expect(routesInPreset).not.toContain(routes.highlights)
   })
 
-  it('sanitizes persisted favorite ids that still contain hidden sections', () => {
+  it('sanitizes favorite ids that still contain hidden sections', () => {
     expect(sanitizeFavoriteIds(['events', 'sos', 'iq', 'highlights', 'teams'])).toEqual([
       'events',
       'teams',
     ])
+  })
 
+  it.runIf(canUseLocalStorage())('persists sanitized favorite ids without hidden sections', () => {
     setFavoriteIds(['events', 'sos', 'iq', 'highlights', 'arenas'])
     expect(getFavoriteIds()).toEqual(['events', 'arenas'])
     expect(
