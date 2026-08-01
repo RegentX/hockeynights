@@ -6,7 +6,7 @@
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useEffect, useMemo, useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {fetchArena} from '@/entities/arena'
 import type {ClubSquad} from '@/entities/club'

@@ -15,7 +15,7 @@ import {
 import {DropdownMenu, Icon} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {Link, Outlet, useLocation, useNavigate} from 'react-router-dom'
+import {Link, Outlet, useLocation, useNavigate} from 'react-router'
 
 import {fetchSession, logoutSession} from '@/entities/auth'
 import {fetchChats, getTotalUnreadCount} from '@/entities/messenger'

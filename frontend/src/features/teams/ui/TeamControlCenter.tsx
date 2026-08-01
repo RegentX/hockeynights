@@ -6,7 +6,7 @@
 import {Button, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import type {ClubSquad} from '@/entities/club'
 import type {Chat} from '@/entities/messenger'
@@ -285,7 +285,7 @@ export function TeamControlCenter({
             />
             <Button
               view="action"
-              disabled={!canCreateChannel || !newChannelTitle.trim()}
+              disabled={!newChannelTitle.trim()}
               loading={createTeamChannelMutation.isPending}
               onClick={() =>
                 createTeamChannelMutation.mutate({
@@ -298,20 +298,6 @@ export function TeamControlCenter({
             >
               Создать канал
             </Button>
-            {!canCreateChannel && (
-              <Text
-                color="secondary"
-                data-testid={testId(
-                  'teams',
-                  'team-control-center',
-                  'text',
-                  'channel-permission',
-                  team.id,
-                )}
-              >
-                Нужны права капитана или владельца.
-              </Text>
-            )}
           </div>
         )}
 
@@ -340,7 +326,7 @@ export function TeamControlCenter({
             />
             <Button
               view="outlined"
-              disabled={!canCreateChat || !newChatTitle.trim()}
+              disabled={!newChatTitle.trim()}
               loading={createTeamChannelMutation.isPending}
               onClick={() =>
                 createTeamChannelMutation.mutate({
@@ -352,42 +338,26 @@ export function TeamControlCenter({
             >
               Создать чат
             </Button>
-            {!canCreateChat && (
-              <Text
-                color="secondary"
-                data-testid={testId(
-                  'teams',
-                  'team-control-center',
-                  'text',
-                  'chat-permission',
-                  team.id,
-                )}
-              >
-                Нужны права coach/team_admin/captain/owner.
-              </Text>
-            )}
-            {canCreateChat && (
-              <Button
-                size="s"
-                view="outlined"
-                onClick={() =>
-                  createTeamChannelMutation.mutate({
-                    type: 'channel',
-                    title: `Тренерский штаб · ${team.name}`,
-                    tag: activeSquad?.id ? `coach-${activeSquad.id}` : 'coach-staff',
-                  })
-                }
-                data-testid={testId(
-                  'teams',
-                  'team-control-center',
-                  'btn',
-                  'create-staff-channel',
-                  team.id,
-                )}
-              >
-                Быстро создать канал штаба
-              </Button>
-            )}
+            <Button
+              size="s"
+              view="outlined"
+              onClick={() =>
+                createTeamChannelMutation.mutate({
+                  type: 'channel',
+                  title: `Тренерский штаб · ${team.name}`,
+                  tag: activeSquad?.id ? `coach-${activeSquad.id}` : 'coach-staff',
+                })
+              }
+              data-testid={testId(
+                'teams',
+                'team-control-center',
+                'btn',
+                'create-staff-channel',
+                team.id,
+              )}
+            >
+              Быстро создать канал штаба
+            </Button>
           </div>
         )}
       </div>

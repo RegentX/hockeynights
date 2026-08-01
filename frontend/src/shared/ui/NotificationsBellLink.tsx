@@ -8,7 +8,7 @@
 import type {LottieRefCurrentProps} from 'lottie-react'
 import {useLottie} from 'lottie-react'
 import {useEffect, useRef, useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import notificationBellAnimation from '@/shared/assets/lottie/notification-bell.json'
 import {testId} from '@/shared/testing/testId'

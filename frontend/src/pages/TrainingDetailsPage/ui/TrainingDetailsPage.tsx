@@ -1,7 +1,7 @@
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useMemo} from 'react'
-import {Link, useParams} from 'react-router-dom'
+import {Link, useParams} from 'react-router'
 
 import {fetchEventById} from '@/entities/event'
 import {fetchPlayers} from '@/entities/profile'
@@ -35,7 +35,7 @@ export function TrainingDetailsPage() {
     queryFn: () => fetchEventById(eventId),
     enabled: Boolean(eventId),
   })
-  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: fetchTeams})
+  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
   const {data: players = []} = useQuery({
     queryKey: ['players'],
     queryFn: () => fetchPlayers(),

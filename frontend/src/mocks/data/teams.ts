@@ -20,6 +20,29 @@ export let mockTeams: Team[] = [
     leagueId: 'league-001',
     homeArenaId: 'arena-001',
   },
+  {
+    id: 'team-002',
+    name: 'Соколы ЮАО',
+    city: 'Москва',
+    skillLevel: 'advanced',
+    captainUserId: 'user-002',
+    ownerUserId: 'user-002',
+    description: 'Соревновательная команда Южного округа',
+    memberIds: ['user-002', 'user-003'],
+    leagueId: 'league-002',
+    homeArenaId: 'arena-002',
+  },
+  {
+    id: 'team-003',
+    name: 'Балтика',
+    city: 'Санкт-Петербург',
+    skillLevel: 'beginner',
+    captainUserId: 'user-004',
+    ownerUserId: 'user-004',
+    description: 'Набор новичков на вечерние тренировки',
+    memberIds: ['user-004'],
+    homeArenaId: 'arena-003',
+  },
 ]
 
 /** @spec SPEC-FR-3.2.1 - Mock состав */
@@ -59,6 +82,33 @@ export let mockRoster: RosterMember[] = [
     teamRole: 'coach',
     rosterStatus: 'active',
     joinedAt: '2026-01-08T10:00:00Z',
+  },
+  {
+    teamId: 'team-002',
+    userId: 'user-002',
+    displayName: 'Алексей Смирнов',
+    position: 'goalie',
+    teamRole: 'owner',
+    rosterStatus: 'active',
+    joinedAt: '2026-02-10T10:00:00Z',
+  },
+  {
+    teamId: 'team-002',
+    userId: 'user-003',
+    displayName: 'Дмитрий Козлов',
+    position: 'defense',
+    teamRole: 'player',
+    rosterStatus: 'active',
+    joinedAt: '2026-02-12T10:00:00Z',
+  },
+  {
+    teamId: 'team-003',
+    userId: 'user-004',
+    displayName: 'Сергей Волков',
+    position: 'forward',
+    teamRole: 'owner',
+    rosterStatus: 'active',
+    joinedAt: '2026-03-01T10:00:00Z',
   },
 ]
 

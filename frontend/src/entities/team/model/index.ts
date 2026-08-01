@@ -4,5 +4,6 @@ export type {
   Team,
   TeamInvite,
   TeamRole,
+  TeamsFilterParams,
   TrainingLineupAssignment,
 } from './types/teamTypes'
