@@ -4,6 +4,7 @@ export {
   getPersonaHomePath,
   isPathAllowed,
   MOBILE_PLAYER_NAV,
+  MVP_HIDDEN_NAV_PATHS,
   PLAYER_NAV_ITEMS,
   resolveMobileNavItems,
   resolveNavItems,

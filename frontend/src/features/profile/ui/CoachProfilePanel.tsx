@@ -56,23 +56,7 @@ export function CoachProfilePanel() {
               Команды и раскладки
             </HockeyButton>
           </Link>
-          <Link
-            to="/highlights"
-            data-testid={testId(
-              'profile',
-              'coach-profile-panel',
-              'link',
-              routeToTestSlug('/highlights'),
-            )}
-          >
-            <HockeyButton
-              view="outlined"
-              size="s"
-              data-testid={testId('profile', 'coach-profile-panel', 'btn', 'highlights')}
-            >
-              Комментарии к моментам
-            </HockeyButton>
-          </Link>
+          {/* HOCFRONT-15: вход в Highlight Analysis скрыт из MVP */}
           <Link
             to="/messenger"
             data-testid={testId(
