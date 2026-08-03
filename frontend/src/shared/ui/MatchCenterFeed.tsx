@@ -88,7 +88,8 @@ export function MatchCenterFeed({
           </div>
           <div>
             <Text
-              variant="subheader-2"
+              variant="header-2"
+              className="hockey-entity-title--compact"
               data-testid={testId(testIdPrefix, 'match-center-feed', 'text', 'title', row.id)}
             >
               {row.title}

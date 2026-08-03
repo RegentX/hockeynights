@@ -34,7 +34,8 @@ export function HighlightCard({highlight, selected = false, onSelect}: Highlight
           data-testid={testId('highlights', 'card', 'panel', 'head', highlight.id)}
         >
           <Text
-            variant="subheader-2"
+            variant="header-2"
+            className="hockey-entity-title--compact"
             data-testid={testId('highlights', 'card', 'text', 'title', highlight.id)}
           >
             {highlight.title}

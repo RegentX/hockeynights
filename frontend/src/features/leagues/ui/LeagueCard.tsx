@@ -38,7 +38,8 @@ export function LeagueCard({league, onSelect, selected = false}: LeagueCardProps
           <div className="hockey-stack hockey-stack--gap-8">
             <div className="hockey-row hockey-row--gap-8 hockey-row--between">
               <Text
-                variant="subheader-2"
+                variant="header-2"
+                className="hockey-entity-title--compact"
                 data-testid={testId('leagues', 'card', 'text', 'name', league.id)}
               >
                 {league.name}
