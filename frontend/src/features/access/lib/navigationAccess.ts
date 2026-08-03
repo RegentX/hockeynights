@@ -1,5 +1,6 @@
 /**
  * SPEC-FR-1.2.1, SPEC-FR-1.3.7, SPEC-FR-24.5.3, SPEC-FR-24.7.3
+ * HOCFRONT-17 / TASK-02-02 — rename, sync desktop↔mobile, notifications in top bar
  */
 
 import {
@@ -19,7 +20,7 @@ export interface NavItem {
 }
 
 /**
- * HOCFRONT-15 / TASK-01-05 — разделы скрыты из MVP-меню.
+ * HOCFRONT-15 / TASK-01-05 / TASK-02-02 — скрыты из MVP-меню.
  * Маршруты и код страниц остаются; прямые URL работают через allowed prefixes.
  */
 export const MVP_HIDDEN_NAV_PATHS = [routes.sos, routes.iq, routes.highlights] as const
@@ -27,34 +28,77 @@ export const MVP_HIDDEN_NAV_PATHS = [routes.sos, routes.iq, routes.highlights] a
 const isMvpHiddenNavPath = (path: string) =>
   (MVP_HIDDEN_NAV_PATHS as readonly string[]).includes(path)
 
+/** Уведомления живут в header top bar, не в side/bottom nav. */
+export const HEADER_ONLY_NAV_PATHS = [routes.notifications] as const
+
+const isHeaderOnlyNavPath = (path: string) =>
+  (HEADER_ONLY_NAV_PATHS as readonly string[]).includes(path)
+
+/**
+ * Единый источник пунктов для desktop left nav и mobile bottom nav.
+ * Порядок совпадает; mobile берёт subset + короткие labels где заданы.
+ */
 export const PLAYER_NAV_ITEMS: NavItem[] = [
-  {to: routes.profile, label: 'Профиль', tier: 'active'},
-  {to: routes.players, label: 'Поиск тренировок', tier: 'incubating'},
-  {to: routes.teams, label: 'Команды', tier: 'active'},
   {to: routes.events, label: EVENTS_LABEL, tier: 'active'},
-  {to: routes.calendar, label: 'Календарь', tier: 'active'},
-  // SOS / IQ / Highlight — стратегический код, скрыты из MVP-навигации (HOCFRONT-15)
-  {to: routes.sos, label: 'SOS', tier: 'incubating'},
+  {to: routes.teams, label: 'Команды', tier: 'active'},
+  {to: routes.messenger, label: 'Мессенджер', tier: 'active'},
   {to: routes.arenas, label: ARENAS_LABEL, tier: 'active'},
   {to: routes.leagues, label: 'Лиги', tier: 'active'},
   {to: routes.shops, label: 'Маркет', tier: 'active'},
+  {to: routes.calendar, label: 'Календарь', tier: 'active'},
+  {to: routes.profile, label: 'Профиль', tier: 'active'},
+  {to: routes.players, label: 'Игроки', tier: 'incubating'},
+  // SOS / IQ / Highlight — стратегический код, скрыты из MVP-навигации
+  {to: routes.sos, label: 'SOS', tier: 'incubating'},
   {to: routes.iq, label: 'IQ', tier: 'incubating'},
   {to: routes.highlights, label: 'Моменты', tier: 'incubating'},
   {to: routes.feedback, label: 'Feedback', tier: 'incubating'},
-  {to: routes.notifications, label: 'Уведомления', tier: 'active'},
-  {to: routes.messenger, label: 'Мессенджер', tier: 'active'},
   {to: routes.admin, label: 'Admin', tier: 'incubating'},
 ]
 
-export const MOBILE_PLAYER_NAV: Array<NavItem & {icon: string}> = [
-  {to: routes.events, label: EVENTS_MOBILE_LABEL, icon: '🏒', tier: 'active'},
-  {to: routes.players, label: 'Поиск тренировок', icon: '👤', tier: 'incubating'},
-  {to: routes.teams, label: 'Команды', icon: '🛡', tier: 'active'},
-  {to: routes.messenger, label: 'Чат', icon: '💬', tier: 'active'},
-  {to: routes.arenas, label: ARENAS_LABEL, icon: '🧊', tier: 'active'},
-  {to: routes.shops, label: 'Маркет', icon: '🛍', tier: 'active'},
-  {to: routes.profile, label: 'Профиль', icon: '⚙', tier: 'active'},
-]
+const NAV_ICONS: Record<string, string> = {
+  [routes.events]: '🏒',
+  [routes.teams]: '🛡',
+  [routes.messenger]: '💬',
+  [routes.arenas]: '🧊',
+  [routes.leagues]: '🏆',
+  [routes.shops]: '🛍',
+  [routes.calendar]: '📅',
+  [routes.profile]: '⚙',
+  [routes.players]: '👤',
+  [routes.partner]: '📋',
+}
+
+/** Короткие mobile labels (остальное = desktop label). */
+const MOBILE_SHORT_LABELS: Partial<Record<string, string>> = {
+  [routes.events]: EVENTS_MOBILE_LABEL,
+}
+
+/**
+ * Mobile bottom nav — максимум 5 слотов: core + «Ещё».
+ * Каталоги (арены / лиги / маркет) живут в sheet.
+ */
+const MOBILE_PRIMARY_PATHS = [
+  routes.events,
+  routes.teams,
+  routes.messenger,
+  routes.profile,
+] as const
+
+const MOBILE_MORE_PATHS = [routes.arenas, routes.calendar, routes.leagues, routes.shops] as const
+
+/** @deprecated legacy flat list — для совместимости; bottom = primary + more */
+const MOBILE_PLAYER_PATHS = [...MOBILE_PRIMARY_PATHS, ...MOBILE_MORE_PATHS] as const
+
+/** @deprecated используйте resolveMobileNavItems — оставлено для тестов/импортов */
+export const MOBILE_PLAYER_NAV: Array<NavItem & {icon: string}> = MOBILE_PLAYER_PATHS.map((to) => {
+  const base = PLAYER_NAV_ITEMS.find((item) => item.to === to)!
+  return {
+    ...base,
+    label: MOBILE_SHORT_LABELS[to] ?? base.label,
+    icon: NAV_ICONS[to] ?? '•',
+  }
+})
 
 function partnerCatalogItems(session: Session): NavItem[] {
   const memberships = session.user.partnerMemberships ?? []
@@ -68,27 +112,26 @@ function partnerCatalogItems(session: Session): NavItem[] {
   return items
 }
 
-/** Навигация для представителя магазина/лиги */
+function filterSideNavItems(items: NavItem[]): NavItem[] {
+  return items.filter((item) => !isMvpHiddenNavPath(item.to) && !isHeaderOnlyNavPath(item.to))
+}
+
+/** Навигация для представителя магазина/лиги (без уведомлений — они в top bar). */
 export function resolvePartnerNavItems(session: Session): NavItem[] {
   return [
     {to: getPrimaryPartnerPath(session), label: 'Кабинет', tier: 'active'},
     {to: routes.partner, label: 'Все кабинеты', tier: 'active'},
-    {to: routes.notifications, label: 'Уведомления', tier: 'active'},
     ...partnerCatalogItems(session),
   ]
 }
 
-function filterMvpNavItems(items: NavItem[]): NavItem[] {
-  return items.filter((item) => !isMvpHiddenNavPath(item.to))
-}
-
 export function resolvePlayerNavItems(session: Session): NavItem[] {
   const isAdmin = session.user.roles.includes('admin')
-  return filterMvpNavItems(PLAYER_NAV_ITEMS.filter((item) => item.to !== routes.admin || isAdmin))
+  return filterSideNavItems(PLAYER_NAV_ITEMS.filter((item) => item.to !== routes.admin || isAdmin))
 }
 
 export function resolveNavItems(session: Session | undefined): NavItem[] {
-  if (!session?.isOnboarded) return filterMvpNavItems(PLAYER_NAV_ITEMS)
+  if (!session?.isOnboarded) return filterSideNavItems(PLAYER_NAV_ITEMS)
   if (shouldUsePartnerWorkspace(session)) return resolvePartnerNavItems(session)
   return resolvePlayerNavItems(session)
 }
@@ -100,30 +143,57 @@ export function splitNavItemsByTier(items: NavItem[]): {active: NavItem[]; incub
   }
 }
 
+function toMobileItem(item: NavItem): NavItem & {icon: string} {
+  return {
+    ...item,
+    label: MOBILE_SHORT_LABELS[item.to] ?? item.label,
+    icon: NAV_ICONS[item.to] ?? '•',
+  }
+}
+
 export function resolveMobileNavItems(
   session: Session | undefined,
 ): Array<NavItem & {icon: string}> {
-  if (!session?.isOnboarded) return MOBILE_PLAYER_NAV.filter((item) => item.tier === 'active')
-  if (shouldUsePartnerWorkspace(session)) {
+  if (session?.isOnboarded && shouldUsePartnerWorkspace(session)) {
     return [
       {to: getPrimaryPartnerPath(session), label: 'Кабинет', icon: '🏪', tier: 'active' as NavTier},
       {to: routes.partner, label: 'Партнёр', icon: '📋', tier: 'active' as NavTier},
-      {to: routes.notifications, label: 'Уведомления', icon: '🔔', tier: 'active' as NavTier},
-      ...partnerCatalogItems(session).map((item) => ({
-        ...item,
-        icon: item.to === routes.leagues ? '🏆' : '🛍',
-      })),
+      ...partnerCatalogItems(session).map(toMobileItem),
     ].filter((item) => item.tier === 'active')
   }
-  const isAdmin = session.user.roles.includes('admin')
-  return MOBILE_PLAYER_NAV.filter(
-    (item) => item.tier === 'active' && (item.to !== routes.admin || isAdmin),
-  )
+
+  const desktopItems = resolveNavItems(session)
+  const byPath = new Map(desktopItems.map((item) => [item.to, item]))
+
+  return MOBILE_PRIMARY_PATHS.map((path) => byPath.get(path))
+    .filter((item): item is NavItem => item != null && item.tier === 'active')
+    .map(toMobileItem)
+}
+
+/** Пункты mobile sheet «Ещё»: арены, лиги, маркет (и др. каталоги). */
+export function resolveMobileMoreNavItems(
+  session: Session | undefined,
+): Array<NavItem & {icon: string}> {
+  if (session?.isOnboarded && shouldUsePartnerWorkspace(session)) {
+    return []
+  }
+
+  const desktopItems = resolveNavItems(session)
+  const byPath = new Map(desktopItems.map((item) => [item.to, item]))
+
+  return MOBILE_MORE_PATHS.map((path) => byPath.get(path))
+    .filter((item): item is NavItem => item != null && item.tier === 'active')
+    .map(toMobileItem)
+}
+
+export function isMobileMorePathActive(pathname: string): boolean {
+  return MOBILE_MORE_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))
 }
 
 export function getPersonaHomePath(session: Session): string {
   if (shouldUsePartnerWorkspace(session)) return getPrimaryPartnerPath(session)
   if (session.user.roles.includes('admin')) return routes.admin
+  // HOCFRONT-15/17: SOS / IQ / Highlight не являются home path в MVP
   return routes.profile
 }
 

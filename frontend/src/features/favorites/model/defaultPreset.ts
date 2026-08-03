@@ -17,7 +17,8 @@ export interface FavoriteActionPreset {
  */
 export const MVP_HIDDEN_FAVORITE_IDS = ['sos', 'iq', 'highlights'] as const
 
-export const DEFAULT_FAVORITE_IDS = ['events', 'teams', 'arenas'] as const
+/** Дефолт без SOS; calendar вместо скрытого раздела (review PR-41). */
+export const DEFAULT_FAVORITE_IDS = ['events', 'teams', 'arenas', 'calendar'] as const
 
 export const FAVORITE_ACTIONS_PRESET: FavoriteActionPreset[] = [
   {
@@ -45,6 +46,14 @@ export const FAVORITE_ACTIONS_PRESET: FavoriteActionPreset[] = [
     tier: 'primary',
   },
   {
+    id: 'calendar',
+    label: 'Календарь',
+    description: 'Расписание',
+    route: '/calendar',
+    icon: '📅',
+    tier: 'primary',
+  },
+  {
     id: 'leagues',
     label: 'Лиги',
     description: 'Турниры и таблицы',
@@ -58,14 +67,6 @@ export const FAVORITE_ACTIONS_PRESET: FavoriteActionPreset[] = [
     description: 'Найти игрока',
     route: '/players',
     icon: '👤',
-    tier: 'secondary',
-  },
-  {
-    id: 'calendar',
-    label: 'Календарь',
-    description: 'Расписание',
-    route: '/calendar',
-    icon: '📅',
     tier: 'secondary',
   },
   {

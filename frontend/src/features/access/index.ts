@@ -2,10 +2,13 @@ export type {NavItem, NavTier} from './lib/navigationAccess'
 export {
   getAllowedPathPrefixes,
   getPersonaHomePath,
+  HEADER_ONLY_NAV_PATHS,
+  isMobileMorePathActive,
   isPathAllowed,
   MOBILE_PLAYER_NAV,
   MVP_HIDDEN_NAV_PATHS,
   PLAYER_NAV_ITEMS,
+  resolveMobileMoreNavItems,
   resolveMobileNavItems,
   resolveNavItems,
   resolvePartnerNavItems,

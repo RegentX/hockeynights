@@ -12,7 +12,6 @@ function load(): string[] {
     const parsed = JSON.parse(raw)
     if (!Array.isArray(parsed)) return [...DEFAULT_FAVORITE_IDS]
     const sanitized = sanitizeFavoriteIds(parsed as string[])
-    // Перезаписываем store, если там остались скрытые MVP-разделы
     if (sanitized.length !== (parsed as string[]).length) {
       save(sanitized.length > 0 ? sanitized : [...DEFAULT_FAVORITE_IDS])
     }
@@ -31,9 +30,11 @@ export function getFavoriteIds(): string[] {
   return load()
 }
 
-export function setFavoriteIds(ids: string[]): void {
+export function setFavoriteIds(ids: string[]): string[] {
   const next = sanitizeFavoriteIds(ids)
-  save(next.length > 0 ? next : [...DEFAULT_FAVORITE_IDS])
+  const persisted = next.length > 0 ? next : [...DEFAULT_FAVORITE_IDS]
+  save(persisted)
+  return persisted
 }
 
 export function toggleFavoriteId(id: string): string[] {
@@ -42,6 +43,5 @@ export function toggleFavoriteId(id: string): string[] {
   }
   const current = load()
   const next = current.includes(id) ? current.filter((x) => x !== id) : [...current, id]
-  save(next)
-  return next
+  return setFavoriteIds(next)
 }

@@ -1,10 +1,20 @@
 /**
  * SPEC-FR-1.2.1, SPEC-FR-1.2.4
  * SPEC-UI-4.3, SPEC-UI-5.1, SPEC-UI-5.2, SPEC-UI-5.5, SPEC-UI-5.6, SPEC-UI-6.1
+ * HOCFRONT-17: компактный top bar — icon toggles + меню сессии
  */
 
+import {
+  ArrowRightFromSquare,
+  DisplayPulse,
+  EllipsisVertical,
+  LayoutSideContentLeft,
+  LayoutSideContentRight,
+  Persons,
+} from '@gravity-ui/icons'
+import {DropdownMenu, Icon} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {Link, Outlet, useLocation, useNavigate} from 'react-router'
 
 import {fetchSession, logoutSession} from '@/entities/auth'
@@ -16,6 +26,7 @@ import {partnerCabinetLabel, partnerCabinetPath} from '@/shared/const/partnerRou
 import {routeToTestSlug, testId} from '@/shared/testing/testId'
 import {useHockeyTheme} from '@/shared/theme/HockeyThemeProvider'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {NotificationsBellLink} from '@/shared/ui/NotificationsBellLink'
 import {MobileNav} from '@/widgets/MobileNav'
 import {SideBoard} from '@/widgets/SideBoard'
 
@@ -29,7 +40,7 @@ function formatPeriodClock(): string {
  * @spec SPEC-FR-1.2.1 - Базовый layout приложения
  * @spec SPEC-UI-5.1 - Desktop 3-col layout
  * @spec SPEC-UI-5.2 - Mobile bottom nav
- * HOCFRONT-15: SOS FAB скрыт из MVP-навигации
+ * HOCFRONT-15/17: уведомления в header; SOS FAB скрыт из MVP
  */
 export function AppShell() {
   const location = useLocation()
@@ -101,6 +112,46 @@ export function AppShell() {
     return () => window.clearInterval(timer)
   }, [])
 
+  const sessionMenuItems = useMemo(
+    () => [
+      {
+        text: 'Сменить роль',
+        iconStart: <Icon data={Persons} size={16} />,
+        action: () => navigate('/'),
+        qa: testId('app', 'shell', 'btn', 'switch-role'),
+      },
+      ...(isMessengerRoute
+        ? [
+            {
+              text: isFocusMode ? 'Обычный режим' : 'Фокус на чат',
+              iconStart: <Icon data={DisplayPulse} size={16} />,
+              action: () => {
+                if (isFocusMode) {
+                  setIsLeftCollapsed(false)
+                  setIsRightCollapsed(false)
+                  return
+                }
+                setIsLeftCollapsed(true)
+                setIsRightCollapsed(true)
+              },
+              qa: testId('app', 'shell', 'btn', 'toggle-focus-mode'),
+            },
+          ]
+        : []),
+      [
+        {
+          text: logoutMutation.isPending ? 'Выход…' : 'Выйти',
+          theme: 'danger' as const,
+          disabled: logoutMutation.isPending,
+          iconStart: <Icon data={ArrowRightFromSquare} size={16} />,
+          action: () => logoutMutation.mutate(),
+          qa: testId('app', 'shell', 'btn', 'logout'),
+        },
+      ],
+    ],
+    [isFocusMode, isMessengerRoute, logoutMutation, navigate],
+  )
+
   return (
     <div className="app-shell" data-testid={testId('app', 'shell', 'page')}>
       <header className="app-shell__header" data-testid={testId('app', 'shell', 'header')}>
@@ -139,76 +190,66 @@ export function AppShell() {
           >
             {periodClock}
           </span>
+          <NotificationsBellLink unreadCount={unreadCount} active={isNavActive('/notifications')} />
           <HockeyButton
+            className="app-shell__icon-btn"
             view="outlined"
             size="s"
             onClick={toggleTheme}
-            aria-label="Переключить тему"
+            aria-label={
+              themeId === 'locker' ? 'Переключить на тему Лёд' : 'Переключить на тему Раздевалка'
+            }
+            title={themeId === 'locker' ? 'Тема: Раздевалка → Лёд' : 'Тема: Лёд → Раздевалка'}
             data-testid={testId('app', 'shell', 'btn', 'toggle-theme')}
           >
-            {themeId === 'locker' ? '🧊 Лёд' : '🏒 Раздевалка'}
+            <span aria-hidden>{themeId === 'locker' ? '🧊' : '🏒'}</span>
           </HockeyButton>
-          <HockeyButton
-            view="outlined"
-            size="s"
-            loading={logoutMutation.isPending}
-            onClick={() => logoutMutation.mutate()}
-            data-testid={testId('app', 'shell', 'btn', 'logout')}
-          >
-            Выйти
-          </HockeyButton>
-          <Link to="/" data-testid={testId('app', 'shell', 'link', 'switch-role')}>
-            <HockeyButton
-              view="outlined"
-              size="s"
-              data-testid={testId('app', 'shell', 'btn', 'switch-role')}
-            >
-              Сменить роль
-            </HockeyButton>
-          </Link>
           <div
             className="app-shell__panel-controls"
             aria-label="Управление панелями"
             data-testid={testId('app', 'shell', 'panel-controls')}
           >
             <HockeyButton
+              className="app-shell__icon-btn"
               view={isLeftCollapsed ? 'action' : 'outlined'}
               size="s"
               onClick={() => setIsLeftCollapsed((prev) => !prev)}
-              aria-label={isLeftCollapsed ? 'Показать левую панель' : 'Свернуть левую панель'}
+              aria-label={isLeftCollapsed ? 'Показать меню' : 'Свернуть меню'}
+              title={isLeftCollapsed ? 'Показать меню' : 'Свернуть меню'}
               data-testid={testId('app', 'shell', 'btn', 'toggle-left-panel')}
             >
-              {isLeftCollapsed ? 'Показать меню' : 'Свернуть меню'}
+              <Icon data={LayoutSideContentLeft} size={16} />
             </HockeyButton>
             <HockeyButton
+              className="app-shell__icon-btn"
               view={isRightCollapsed ? 'action' : 'outlined'}
               size="s"
               onClick={() => setIsRightCollapsed((prev) => !prev)}
-              aria-label={isRightCollapsed ? 'Показать правую панель' : 'Свернуть правую панель'}
+              aria-label={isRightCollapsed ? 'Показать борт' : 'Свернуть борт'}
+              title={isRightCollapsed ? 'Показать борт' : 'Свернуть борт'}
               data-testid={testId('app', 'shell', 'btn', 'toggle-right-panel')}
             >
-              {isRightCollapsed ? 'Показать борт' : 'Свернуть борт'}
+              <Icon data={LayoutSideContentRight} size={16} />
             </HockeyButton>
-            {isMessengerRoute && (
+          </div>
+          <DropdownMenu
+            size="s"
+            popupProps={{placement: 'bottom-end'}}
+            renderSwitcher={(props) => (
               <HockeyButton
+                {...props}
+                className="app-shell__icon-btn"
                 view="outlined"
                 size="s"
-                onClick={() => {
-                  if (isFocusMode) {
-                    setIsLeftCollapsed(false)
-                    setIsRightCollapsed(false)
-                    return
-                  }
-                  setIsLeftCollapsed(true)
-                  setIsRightCollapsed(true)
-                }}
-                aria-label={isFocusMode ? 'Выйти из фокус-режима' : 'Включить фокус-режим'}
-                data-testid={testId('app', 'shell', 'btn', 'toggle-focus-mode')}
+                aria-label="Ещё действия"
+                title="Ещё"
+                data-testid={testId('app', 'shell', 'btn', 'more')}
               >
-                {isFocusMode ? 'Обычный режим' : 'Фокус на чат'}
+                <Icon data={EllipsisVertical} size={16} />
               </HockeyButton>
             )}
-          </div>
+            items={sessionMenuItems}
+          />
         </div>
       </header>
 
@@ -227,13 +268,11 @@ export function AppShell() {
             {activeNavItems.map((item) => {
               const active = isNavActive(item.to)
               const badge =
-                item.to === '/notifications' && unreadCount > 0
-                  ? unreadCount
-                  : item.to === '/messenger' && unreadChatCount > 0
-                    ? unreadChatCount > 99
-                      ? '99+'
-                      : unreadChatCount
-                    : null
+                item.to === '/messenger' && unreadChatCount > 0
+                  ? unreadChatCount > 99
+                    ? '99+'
+                    : unreadChatCount
+                  : null
               return (
                 <Link
                   key={item.to}
@@ -265,14 +304,6 @@ export function AppShell() {
                 </div>
                 {incubatingNavItems.map((item) => {
                   const active = isNavActive(item.to)
-                  const badge =
-                    item.to === '/notifications' && unreadCount > 0
-                      ? unreadCount
-                      : item.to === '/messenger' && unreadChatCount > 0
-                        ? unreadChatCount > 99
-                          ? '99+'
-                          : unreadChatCount
-                        : null
                   return (
                     <Link
                       key={item.to}
@@ -283,14 +314,6 @@ export function AppShell() {
                       data-testid={testId('app', 'nav', 'link', routeToTestSlug(item.to))}
                     >
                       {item.label}
-                      {badge !== null && (
-                        <span
-                          className="hockey-nav__badge"
-                          data-testid={testId('app', 'nav', 'badge', routeToTestSlug(item.to))}
-                        >
-                          {badge}
-                        </span>
-                      )}
                     </Link>
                   )
                 })}
@@ -343,7 +366,7 @@ export function AppShell() {
       </div>
 
       <MobileNav />
-      {/* HOCFRONT-15: SosFab скрыт из MVP — маршрут /sos сохранён */}
+      {/* HOCFRONT-15/17: SosFab скрыт из MVP — маршрут /sos сохранён */}
     </div>
   )
 }

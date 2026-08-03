@@ -18,8 +18,8 @@ import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 
 /**
- * @spec SPEC-UI-5.1 - Борт с избранным, слотами и топом таблицы
- * HOCFRONT-15: SOS / IQ / Highlight скрыты из MVP-навигации и из «Избранное»
+ * @spec SPEC-UI-5.1 - Правый борт: избранное, таблица, ближайшие события
+ * HOCFRONT-15/17: SOS / IQ / Highlight скрыты из MVP-входов и из «Избранное»
  * (см. defaultPreset / sanitizeFavoriteIds); прямые URL сохранены.
  */
 export function SideBoard() {
@@ -52,7 +52,7 @@ export function SideBoard() {
             color="secondary"
             data-testid={testId('app', 'side-board', 'text', 'hero-subtitle')}
           >
-            Панель событий и подсказок
+            Панель подсказок и избранного
           </Text>
         </div>
       </IceCard>
@@ -87,11 +87,11 @@ export function SideBoard() {
           className="side-board__title"
           data-testid={testId('app', 'side-board', 'text', 'events-title')}
         >
-          Ближайшие события
+          Ближайшие игры и тренировки
         </div>
         {upcoming.length === 0 ? (
           <Text color="secondary" data-testid={testId('app', 'side-board', 'empty', 'events')}>
-            Событий нет
+            Пока пусто
           </Text>
         ) : (
           upcoming.map((event) => (

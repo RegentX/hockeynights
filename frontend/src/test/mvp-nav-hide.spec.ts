@@ -1,5 +1,5 @@
 /**
- * HOCFRONT-15 / TASK-01-05
+ * HOCFRONT-15 / TASK-01-05 (+ HOCFRONT-17 review PR-41)
  * SOS / IQ / Highlight скрыты из MVP-навигации и из SideBoard «Избранное»;
  * маршруты остаются доступны по прямому URL.
  */
@@ -81,6 +81,7 @@ describe('HOCFRONT-15 favorites hide SOS / IQ / Highlights', () => {
   })
 
   it('default favorite ids do not include hidden sections', () => {
+    expect([...DEFAULT_FAVORITE_IDS]).toEqual(['events', 'teams', 'arenas', 'calendar'])
     for (const hidden of MVP_HIDDEN_FAVORITE_IDS) {
       expect(DEFAULT_FAVORITE_IDS).not.toContain(hidden)
     }
