@@ -122,7 +122,7 @@
 
 ### 3.1. Dependency notes (review PR-41)
 
-- **react-router:** `react-router-dom@^7.18.1` + `overrides.react-router@8.3.0` — временный cross-major pin ради CVE high в runtime. Отдельного `react-router-dom@8` на npm нет (v8 = unified `react-router` с `./dom`). Follow-up: миграция импортов на `react-router@8` и снятие override.
+- **react-router:** миграция завершена — прямой dependency `react-router@^8.3.0`, импорты из `react-router` (в v8 пакет unified, отдельного `react-router-dom@8` нет). Временный cross-major override `react-router-dom@7` + `react-router@8` снят.
 - **npm audit CI:** hard-gate = `npm audit --audit-level=high --omit=dev` (runtime). Полный audit (включая eslint/minimatch toolchain) — warning / `continue-on-error`; global `minimatch@10` override ломает `eslint-plugin-jsx-a11y`.
 
 Тесты: `frontend/src/test/hocfront-17-nav.spec.ts`, `hocfront-17-notifications-entry.spec.tsx`, `mvp-nav-hide.spec.ts`
