@@ -22,13 +22,10 @@ import {
   setFavoriteIds,
 } from '@/features/favorites/model'
 import {routes} from '@/shared/const/appRoutes'
-import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
 import type {Session} from '@/shared/types/user'
 
 import {clearTestStorage} from './clearTestStorage'
-import {ensureBrowserStorage} from './localStorageMock'
-
-ensureBrowserStorage()
+import {createLocalStorageMock} from './localStorageMock'
 
 function makeSession(roles: Session['user']['roles'] = ['player']): Session {
   return {
@@ -80,7 +77,6 @@ describe('HOCFRONT-15 MVP nav hide', () => {
 
 describe('HOCFRONT-15 favorites hide SOS / IQ / Highlights', () => {
   beforeEach(() => {
-    ensureBrowserStorage()
     clearTestStorage()
   })
 
@@ -110,7 +106,14 @@ describe('HOCFRONT-15 favorites hide SOS / IQ / Highlights', () => {
     ])
   })
 
-  it.runIf(canUseLocalStorage())('persists sanitized favorite ids without hidden sections', () => {
+  it('persists sanitized favorite ids through the favorites store', () => {
+    // Не зависим от canUseLocalStorage() окружения (Node 26 / без Web Storage):
+    // setFavoriteIds без storage — no-op, getFavoriteIds вернёт дефолт.
+    Object.defineProperty(window, 'localStorage', {
+      value: createLocalStorageMock(),
+      configurable: true,
+    })
+
     setFavoriteIds(['events', 'sos', 'iq', 'highlights', 'arenas'])
     expect(getFavoriteIds()).toEqual(['events', 'arenas'])
     expect(

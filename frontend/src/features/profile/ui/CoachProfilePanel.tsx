@@ -56,6 +56,7 @@ export function CoachProfilePanel() {
               Команды и раскладки
             </HockeyButton>
           </Link>
+          {/* HOCFRONT-15: вход в Highlight Analysis скрыт из MVP */}
           <Link
             to="/messenger"
             data-testid={testId(

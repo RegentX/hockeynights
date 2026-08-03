@@ -40,7 +40,7 @@ function formatPeriodClock(): string {
  * @spec SPEC-FR-1.2.1 - Базовый layout приложения
  * @spec SPEC-UI-5.1 - Desktop 3-col layout
  * @spec SPEC-UI-5.2 - Mobile bottom nav
- * HOCFRONT-17: уведомления в header; SOS FAB скрыт из MVP
+ * HOCFRONT-15/17: уведомления в header; SOS FAB скрыт из MVP
  */
 export function AppShell() {
   const location = useLocation()
@@ -366,7 +366,7 @@ export function AppShell() {
       </div>
 
       <MobileNav />
-      {/* HOCFRONT-17: SosFab скрыт из MVP — маршрут /sos сохранён */}
+      {/* HOCFRONT-15/17: SosFab скрыт из MVP — маршрут /sos сохранён */}
     </div>
   )
 }
