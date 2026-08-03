@@ -5,7 +5,7 @@
 
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {fetchEvents} from '@/entities/event'
 import {fetchLeagues, fetchLeagueStandings} from '@/entities/league'
@@ -19,7 +19,8 @@ import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 
 /**
  * @spec SPEC-UI-5.1 - Правый борт: избранное, таблица, ближайшие события
- * HOCFRONT-17: SOS-карточка скрыта из MVP-входов
+ * HOCFRONT-15/17: SOS / IQ / Highlight скрыты из MVP-входов и из «Избранное»
+ * (см. defaultPreset / sanitizeFavoriteIds); прямые URL сохранены.
  */
 export function SideBoard() {
   const {data: events = []} = useQuery({queryKey: ['events'], queryFn: fetchEvents})

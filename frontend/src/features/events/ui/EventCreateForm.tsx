@@ -30,7 +30,7 @@ const SKILL_OPTIONS = [
  */
 export function EventCreateForm() {
   const queryClient = useQueryClient()
-  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: fetchTeams})
+  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
   const {data: arenas = []} = useQuery({queryKey: ['arenas'], queryFn: () => fetchArenas()})
 
   const [type, setType] = useState<EventType>('game')

@@ -3,7 +3,7 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {routeToTestSlug, testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -56,6 +56,7 @@ export function CoachProfilePanel() {
               Команды и раскладки
             </HockeyButton>
           </Link>
+          {/* HOCFRONT-15: вход в Highlight Analysis скрыт из MVP */}
           <Link
             to="/messenger"
             data-testid={testId(

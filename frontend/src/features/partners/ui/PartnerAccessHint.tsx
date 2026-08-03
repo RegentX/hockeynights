@@ -3,7 +3,7 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'

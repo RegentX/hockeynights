@@ -5,7 +5,7 @@
 import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import type {League} from '@/entities/league'
@@ -38,7 +38,7 @@ export function LeagueTeamApplicationForm({league}: LeagueTeamApplicationFormPro
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
 
   const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
-  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: fetchTeams})
+  const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
   const {data: seasons = []} = useQuery({
     queryKey: ['league-seasons', league.id],
     queryFn: () => fetchLeagueSeasons(league.id),

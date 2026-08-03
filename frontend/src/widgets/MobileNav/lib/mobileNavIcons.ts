@@ -12,6 +12,7 @@ import {
   Person,
   Persons,
   ShoppingBag,
+  Timeline,
 } from '@gravity-ui/icons'
 import type {IconData} from '@gravity-ui/uikit'
 
@@ -23,6 +24,7 @@ export const MOBILE_NAV_ICON_BY_PATH: Record<string, IconData> = {
   [routes.messenger]: Comment,
   [routes.profile]: Person,
   [routes.arenas]: MapPin,
+  [routes.calendar]: Timeline,
   [routes.leagues]: Cup,
   [routes.shops]: ShoppingBag,
 }
