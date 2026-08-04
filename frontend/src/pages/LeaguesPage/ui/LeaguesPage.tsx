@@ -6,7 +6,7 @@
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useEffect, useMemo, useRef} from 'react'
-import {useSearchParams} from 'react-router-dom'
+import {useSearchParams} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {fetchLeagues, fetchLeagueSchedule, fetchLeagueStandings} from '@/entities/league'

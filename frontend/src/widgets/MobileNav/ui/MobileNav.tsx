@@ -7,7 +7,7 @@ import {Xmark} from '@gravity-ui/icons'
 import {Icon} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useEffect, useId, useState} from 'react'
-import {Link, useLocation} from 'react-router-dom'
+import {Link, useLocation} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {fetchChats, getTotalUnreadCount} from '@/entities/messenger'

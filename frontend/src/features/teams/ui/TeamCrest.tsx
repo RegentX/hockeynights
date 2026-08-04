@@ -35,7 +35,8 @@ export function TeamCrest({name, city, skillLevel, teamId}: TeamCrestProps) {
       </div>
       <div>
         <Text
-          variant="subheader-2"
+          variant="header-2"
+          className="hockey-entity-title--compact"
           data-testid={testId('teams', 'team-crest', 'text', 'name', crestId)}
         >
           {name}

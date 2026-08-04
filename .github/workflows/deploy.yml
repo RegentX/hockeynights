@@ -52,7 +52,14 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Dependency audit
+      # Runtime deps only: forcing minimatch@10 for eslint/jsx-a11y breaks the linter API.
+      # High/critical in eslint toolchain stay out of the hard gate (see docs/hocfront-17-customer-nav-requirements.md §3.1).
+      - name: Dependency audit (runtime)
+        run: npm audit --audit-level=high --omit=dev
+
+      # Full tree (incl. devDeps) — advisory only; does not fail the job.
+      - name: Dependency audit (full, advisory)
+        continue-on-error: true
         run: npm audit --audit-level=high
 
   deploy:

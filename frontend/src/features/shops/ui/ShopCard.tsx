@@ -37,6 +37,7 @@ export function ShopCard({shop}: ShopCardProps) {
           <div className="hockey-row hockey-row--gap-8 hockey-row--between">
             <Text
               variant="header-2"
+              className="hockey-entity-title--compact"
               data-testid={testId('shops', 'shop-card', 'text', 'name', shop.id)}
             >
               {shop.name}

@@ -6,7 +6,7 @@
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {useSearchParams} from 'react-router-dom'
+import {useSearchParams} from 'react-router'
 
 import type {ArenaFilters as ArenaFiltersType} from '@/entities/arena'
 import {arenaHasFreeSlots, fetchArenas, fetchArenaSlots} from '@/entities/arena'

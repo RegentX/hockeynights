@@ -4,7 +4,7 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
-import {Link, useLocation} from 'react-router-dom'
+import {Link, useLocation} from 'react-router'
 
 import {FAVORITE_TYPE_LABELS} from '@/entities/favorites'
 import {resolveFavoritesPageContext} from '@/features/favorites/lib/favoritesPageContext'

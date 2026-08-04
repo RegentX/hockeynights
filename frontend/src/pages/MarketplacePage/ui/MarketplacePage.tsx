@@ -5,7 +5,7 @@
 import {Button, Select, Switch, Text, TextInput} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useEffect, useRef, useState} from 'react'
-import {useSearchParams} from 'react-router-dom'
+import {useSearchParams} from 'react-router'
 
 import type {PlayerPosition} from '@/entities/common'
 import type {MarketplaceFilters, MarketplaceSort} from '@/entities/shop'
