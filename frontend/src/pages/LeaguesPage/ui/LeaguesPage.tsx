@@ -5,7 +5,8 @@
 
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {useState} from 'react'
+import {useEffect, useMemo, useRef} from 'react'
+import {useSearchParams} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {fetchLeagues, fetchLeagueSchedule, fetchLeagueStandings} from '@/entities/league'
@@ -21,7 +22,10 @@ import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
  * @spec SPEC-FR-7.1.1 - Страница списка лиг
  */
 export function LeaguesPage() {
-  const [selectedLeagueId, setSelectedLeagueId] = useState<string | null>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const leagueIdFromUrl = searchParams.get('leagueId')
+  const scrollOnNextLeagueRef = useRef(false)
+  const detailRef = useRef<HTMLDivElement | null>(null)
 
   const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
   const leagueMembership = session?.user.partnerMemberships?.find((m) => m.kind === 'league')
@@ -31,8 +35,34 @@ export function LeaguesPage() {
     queryFn: fetchLeagues,
   })
 
-  const activeLeagueId = selectedLeagueId ?? leagues[0]?.id ?? null
+  const activeLeagueId = useMemo(() => {
+    if (leagueIdFromUrl && leagues.some((league) => league.id === leagueIdFromUrl)) {
+      return leagueIdFromUrl
+    }
+    return leagues[0]?.id ?? null
+  }, [leagueIdFromUrl, leagues])
+
   const selectedLeague = leagues.find((l) => l.id === activeLeagueId)
+
+  useEffect(() => {
+    if (!leagueIdFromUrl) return
+    scrollOnNextLeagueRef.current = true
+  }, [leagueIdFromUrl])
+
+  useEffect(() => {
+    if (!activeLeagueId || !scrollOnNextLeagueRef.current) return
+    scrollOnNextLeagueRef.current = false
+    const node = detailRef.current
+    if (node && typeof node.scrollIntoView === 'function') {
+      node.scrollIntoView({behavior: 'smooth', block: 'nearest'})
+    }
+  }, [activeLeagueId])
+
+  const handleSelectLeague = (id: string) => {
+    const next = new URLSearchParams(searchParams)
+    next.set('leagueId', id)
+    setSearchParams(next, {replace: true})
+  }
 
   const {data: standings = [], isLoading: standingsLoading} = useQuery({
     queryKey: ['league-standings', activeLeagueId],
@@ -79,13 +109,14 @@ export function LeaguesPage() {
             key={league.id}
             league={league}
             selected={activeLeagueId === league.id}
-            onSelect={setSelectedLeagueId}
+            onSelect={handleSelectLeague}
           />
         ))}
       </div>
 
       {activeLeagueId && selectedLeague && (
         <div
+          ref={detailRef}
           className="hockey-stack hockey-stack--gap-16"
           data-testid={testId('leagues', 'page', 'panel', 'detail', activeLeagueId)}
         >

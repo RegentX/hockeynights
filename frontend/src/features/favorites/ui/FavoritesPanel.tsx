@@ -38,7 +38,7 @@ export function FavoritesPanel() {
     <IceCard padding="s" data-testid={testId('favorites', 'panel')}>
       <div className="hockey-row hockey-row--between-center">
         <div className="side-board__title" data-testid={testId('favorites', 'text', 'title')}>
-          Избранное
+          Быстрые действия
         </div>
         <Button
           view="flat"

@@ -1,15 +1,18 @@
 /**
  * SPEC-FR-3.1.1, SPEC-FR-3.1.2, SPEC-FR-3.2.1, SPEC-FR-3.2.2
  * SPEC-UI-2.3
+ * HOCFRONT-19 — FavoriteButton + deep-link ?teamId=
  */
 
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
+import {useSearchParams} from 'react-router'
 
 import type {ClubSquad} from '@/entities/club'
 import {fetchTeams, type TeamsFilterParams} from '@/entities/team'
 import {useSessionAccess} from '@/features/access'
+import {FavoriteButton} from '@/features/favorites'
 import {TeamCreateForm, TeamCrest, TeamFilters} from '@/features/teams'
 import {TeamPage} from '@/pages/TeamPage'
 import {testId} from '@/shared/testing/testId'
@@ -29,6 +32,8 @@ function hasActiveFilters(filters: TeamsFilterParams): boolean {
  * @spec SPEC-FR-3.1.1 - Страница команд
  */
 export function TeamsPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const teamIdFromUrl = searchParams.get('teamId')
   const [filters, setFilters] = useState<TeamsFilterParams>(EMPTY_FILTERS)
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
   const [activeSquad, setActiveSquad] = useState<ClubSquad | null>(null)
@@ -39,19 +44,45 @@ export function TeamsPage() {
     queryFn: () => fetchTeams(filters),
     placeholderData: (previous) => previous,
   })
+  const scrollOnNextTeamRef = useRef(false)
+  const detailRef = useRef<HTMLDivElement | null>(null)
 
   const activeTeamId = useMemo(() => {
+    if (teamIdFromUrl && teams.some((team) => team.id === teamIdFromUrl)) {
+      return teamIdFromUrl
+    }
     if (selectedTeamId && teams.some((team) => team.id === selectedTeamId)) {
       return selectedTeamId
     }
     return teams[0]?.id ?? null
-  }, [selectedTeamId, teams])
+  }, [teamIdFromUrl, selectedTeamId, teams])
 
   const activeTeam = teams.find((t) => t.id === activeTeamId)
   const isFiltered = hasActiveFilters(filters)
 
   const handleResetFilters = () => {
     setFilters(EMPTY_FILTERS)
+  }
+
+  useEffect(() => {
+    if (!teamIdFromUrl) return
+    scrollOnNextTeamRef.current = true
+  }, [teamIdFromUrl])
+
+  useEffect(() => {
+    if (!activeTeamId || !scrollOnNextTeamRef.current) return
+    scrollOnNextTeamRef.current = false
+    const node = detailRef.current
+    if (node && typeof node.scrollIntoView === 'function') {
+      node.scrollIntoView({behavior: 'smooth', block: 'nearest'})
+    }
+  }, [activeTeamId])
+
+  const handleSelectTeam = (id: string) => {
+    setSelectedTeamId(id)
+    const next = new URLSearchParams(searchParams)
+    next.set('teamId', id)
+    setSearchParams(next, {replace: true})
   }
 
   return (
@@ -122,15 +153,17 @@ export function TeamsPage() {
                 <div
                   key={team.id}
                   className="team-picker-item"
-                  onClick={() => setSelectedTeamId(team.id)}
+                  onClick={() => handleSelectTeam(team.id)}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={(e) => e.key === 'Enter' && setSelectedTeamId(team.id)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSelectTeam(team.id)}
                   data-testid={testId('teams', 'teams-page', 'item', team.id)}
                 >
                   <div
                     className={
-                      activeTeamId === team.id ? 'locker-room' : 'team-picker-item__surface'
+                      activeTeamId === team.id
+                        ? 'locker-room team-picker-item__row'
+                        : 'team-picker-item__surface team-picker-item__row'
                     }
                   >
                     <TeamCrest
@@ -139,6 +172,7 @@ export function TeamsPage() {
                       skillLevel={team.skillLevel}
                       teamId={team.id}
                     />
+                    <FavoriteButton type="team" entityId={team.id} title={team.name} />
                   </div>
                 </div>
               ))}
@@ -149,6 +183,7 @@ export function TeamsPage() {
 
       {activeTeamId && activeTeam && (
         <div
+          ref={detailRef}
           className="locker-room"
           data-testid={testId('teams', 'teams-page', 'panel', 'active-team', activeTeamId)}
         >

@@ -6,6 +6,7 @@ import {adminHandlers} from '@/mocks/handlers/admin'
 import {arenaHandlers} from '@/mocks/handlers/arenas'
 import {eventHandlers} from '@/mocks/handlers/events'
 import {externalFlowHandlers} from '@/mocks/handlers/external-flows'
+import {favoriteHandlers} from '@/mocks/handlers/favorites'
 import {feedbackHandlers} from '@/mocks/handlers/feedback'
 import {highlightHandlers} from '@/mocks/handlers/highlights'
 import {iqHandlers} from '@/mocks/handlers/iq'
@@ -39,4 +40,5 @@ export const handlers = [
   ...radarHandlers,
   ...highlightHandlers,
   ...messengerHandlers,
+  ...favoriteHandlers,
 ]

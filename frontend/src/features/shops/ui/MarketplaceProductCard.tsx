@@ -6,6 +6,7 @@ import {Text} from '@gravity-ui/uikit'
 import {useState} from 'react'
 
 import type {MarketplaceProductListing} from '@/entities/shop'
+import {FavoriteButton} from '@/features/favorites'
 import {ExternalProductLink} from '@/features/shops/ui/ExternalProductLink'
 import {testId} from '@/shared/testing/testId'
 
@@ -17,10 +18,16 @@ const TIER_LABELS = {
 
 export interface MarketplaceProductCardProps {
   listing: MarketplaceProductListing
+  highlighted?: boolean
+  cardRef?: (node: HTMLElement | null) => void
 }
 
 /** @spec SPEC-FR-9.3.1 - Карточка товара в ленте маркетплейса */
-export function MarketplaceProductCard({listing}: MarketplaceProductCardProps) {
+export function MarketplaceProductCard({
+  listing,
+  highlighted = false,
+  cardRef,
+}: MarketplaceProductCardProps) {
   const {offer, shopName, shopAdTier, isPromoted, promoDiscount} = listing
   const [imgError, setImgError] = useState(false)
   const tierLabel = TIER_LABELS[shopAdTier]
@@ -29,10 +36,16 @@ export function MarketplaceProductCard({listing}: MarketplaceProductCardProps) {
     ? Math.round(offer.price * (1 - promoDiscount / 100))
     : offer.price
 
+  const promotedClass = isPromoted ? ` marketplace-card--${shopAdTier}` : ''
+  const highlightClass = highlighted ? ' marketplace-card--deep-linked' : ''
+
   return (
     <article
-      className={`marketplace-card${isPromoted ? ` marketplace-card--${shopAdTier}` : ''}`}
+      ref={cardRef}
+      className={`marketplace-card${promotedClass}${highlightClass}`}
       data-testid={testId('shops', 'marketplace-card', 'card', offer.id)}
+      data-highlighted={highlighted ? 'true' : undefined}
+      aria-current={highlighted ? 'true' : undefined}
     >
       <div className="marketplace-card__media">
         {offer.imageUrl && !imgError ? (
@@ -99,6 +112,12 @@ export function MarketplaceProductCard({listing}: MarketplaceProductCardProps) {
               {offer.price.toLocaleString('ru-RU')} ₽
             </Text>
           )}
+          <FavoriteButton
+            type="product"
+            entityId={offer.id}
+            title={offer.title}
+            className="marketplace-card__favorite"
+          />
         </div>
         <Text
           variant="header-2"
