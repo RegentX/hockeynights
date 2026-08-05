@@ -6,7 +6,7 @@
 import {Button, Card, Progress, Select, Switch, Text, TextArea, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
-import {Navigate, useSearchParams} from 'react-router-dom'
+import {Navigate, useSearchParams} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import type {PlayerPosition, SkillLevel, UserRole} from '@/entities/common'

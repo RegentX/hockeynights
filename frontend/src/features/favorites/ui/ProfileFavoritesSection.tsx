@@ -3,7 +3,7 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {
   type Favorite,
@@ -69,7 +69,8 @@ export function ProfileFavoritesSection() {
           className="hockey-mt-12"
           data-testid={testId('favorites', 'profile-section', 'empty')}
         >
-          Пока пусто — добавьте игроков, команды, тренировки, арены или товары через ♥ на карточках.
+          Пока пусто — добавьте игроков, команды, лиги, тренировки, арены или товары через ♥ на
+          карточках.
         </Text>
       )}
 

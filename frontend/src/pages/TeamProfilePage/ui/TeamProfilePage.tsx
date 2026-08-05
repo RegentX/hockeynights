@@ -5,7 +5,7 @@
 import {Accordion, Label, Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useState} from 'react'
-import {Link, useParams} from 'react-router-dom'
+import {Link, useParams} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {

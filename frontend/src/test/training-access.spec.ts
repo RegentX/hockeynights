@@ -43,7 +43,7 @@ describe('trainingAccess', () => {
     const training = mockEvents.find((event) => event.id === 'event-002')
     expect(training).toBeTruthy()
     expect(canViewTraining(training!, 'user-001', getUserTeamIds(mockTeams, 'user-001'))).toBe(true)
-    expect(canViewTraining(training!, 'user-002', getUserTeamIds(mockTeams, 'user-002'))).toBe(
+    expect(canViewTraining(training!, 'user-007', getUserTeamIds(mockTeams, 'user-007'))).toBe(
       false,
     )
   })

@@ -4,7 +4,7 @@
 
 import {Dialog, Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {fetchPlayers, fetchPublicPlayer} from '@/entities/profile'
 import {testId} from '@/shared/testing/testId'

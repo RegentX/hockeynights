@@ -3,7 +3,7 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import type {GameEvent} from '@/entities/event'
 import {EVENT_TYPE_LABELS} from '@/features/events'

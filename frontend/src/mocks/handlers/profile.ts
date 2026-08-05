@@ -24,13 +24,16 @@ import {
   updateMockVerificationStatus,
 } from '@/mocks/data/session'
 
-/** @spec SPEC-FR-2.3.2 - Query params фильтра игроков */
+/** @spec SPEC-FR-2.3.2, HOCFRONT-20 - Query params фильтра игроков */
 interface PlayersQuery {
   q?: string
   position?: PlayerPosition
   skillLevel?: SkillLevel
   district?: string
   goalieOnly?: string
+  verified?: string
+  teamId?: string
+  city?: string
 }
 
 /**
@@ -112,6 +115,9 @@ export const profileHandlers = [
       skillLevel: url.searchParams.get('skillLevel') as SkillLevel | undefined,
       district: url.searchParams.get('district') ?? undefined,
       goalieOnly: url.searchParams.get('goalieOnly') ?? undefined,
+      verified: url.searchParams.get('verified') ?? undefined,
+      teamId: url.searchParams.get('teamId') ?? undefined,
+      city: url.searchParams.get('city') ?? undefined,
     }
 
     let result = [...mockPlayers]
@@ -135,6 +141,16 @@ export const profileHandlers = [
     }
     if (query.goalieOnly === 'true') {
       result = result.filter((p) => p.position === 'goalie')
+    }
+    if (query.verified === 'true') {
+      result = result.filter((p) => p.verificationStatus === 'verified')
+    }
+    if (query.teamId) {
+      result = result.filter((p) => p.teamIds?.includes(query.teamId!))
+    }
+    if (query.city) {
+      const needle = query.city.toLowerCase()
+      result = result.filter((p) => p.city.toLowerCase().includes(needle))
     }
 
     return HttpResponse.json(result)

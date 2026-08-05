@@ -3,7 +3,7 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {useSessionAccess} from '@/features/access'
 import {TeamCreateWizard} from '@/features/teams'

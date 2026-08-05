@@ -84,7 +84,11 @@ export const RinkCard = forwardRef<HTMLDivElement, RinkCardProps>(function RinkC
     >
       <div className="hockey-stack hockey-stack--gap-10">
         <div className="hockey-row hockey-row--gap-8 hockey-row--between">
-          <Text variant="header-2" data-testid={testId('arenas', 'rink', 'text', 'name', arena.id)}>
+          <Text
+            variant="header-2"
+            className="hockey-entity-title--compact"
+            data-testid={testId('arenas', 'rink', 'text', 'name', arena.id)}
+          >
             {arena.name}
           </Text>
           <div className="hockey-row hockey-row--gap-8">

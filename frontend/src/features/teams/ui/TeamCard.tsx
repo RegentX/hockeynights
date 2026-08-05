@@ -3,7 +3,7 @@
  */
 
 import {Label, Text} from '@gravity-ui/uikit'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 
 import type {Team} from '@/entities/team'
 import {SKILL_LEVEL_LABELS} from '@/features/events'

@@ -59,12 +59,23 @@ describe('HOCFRONT-17 nav rename and sync', () => {
     expect(mobilePaths).toHaveLength(4)
   })
 
-  it('puts arenas, leagues and shops into mobile more sheet', () => {
+  it('puts arenas, calendar, leagues and shops into mobile more sheet', () => {
     const more = resolveMobileMoreNavItems(makeSession())
     const morePaths = more.map((item) => item.to)
 
-    expect(morePaths).toEqual([routes.arenas, routes.leagues, routes.shops])
+    expect(morePaths).toEqual([routes.arenas, routes.calendar, routes.leagues, routes.shops])
     expect(more.find((item) => item.to === routes.arenas)?.label).toBe(ARENAS_LABEL)
+    expect(more.find((item) => item.to === routes.calendar)?.label).toBe('Календарь')
+  })
+
+  it('keeps calendar reachable from mobile more (desktop↔mobile sync)', () => {
+    const desktopActive = resolvePlayerNavItems(makeSession())
+      .filter((item) => item.tier === 'active')
+      .map((item) => item.to)
+    const morePaths = resolveMobileMoreNavItems(makeSession()).map((item) => item.to)
+
+    expect(desktopActive).toContain(routes.calendar)
+    expect(morePaths).toContain(routes.calendar)
   })
 
   it('keeps mobile primary paths as ordered subset of desktop active paths', () => {
@@ -84,7 +95,7 @@ describe('HOCFRONT-17 nav rename and sync', () => {
     }
   })
 
-  it('does not put notifications into side or bottom nav', () => {
+  it('does not put notifications into side or bottom nav (header-only entry)', () => {
     expect(HEADER_ONLY_NAV_PATHS).toContain(routes.notifications)
 
     const desktop = resolveNavItems(makeSession()).map((item) => item.to)

@@ -2,8 +2,8 @@
  * SPEC-FR-1.2.1, SPEC-FR-2.1.1
  */
 
-import {Navigate, Route, Routes} from 'react-router-dom'
-import {BrowserRouter} from 'react-router-dom'
+import {Navigate, Route, Routes} from 'react-router'
+import {BrowserRouter} from 'react-router'
 
 import {LoginLayout} from '@/app/LoginLayout'
 import {PersonaGate} from '@/app/PersonaGate'

@@ -5,7 +5,7 @@
 import {Checkbox, Select, Text, TextArea, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {type ChangeEvent, useState} from 'react'
-import {Link, useNavigate} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router'
 
 import {fetchArenas} from '@/entities/arena'
 import type {SkillLevel} from '@/entities/common'

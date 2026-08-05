@@ -5,7 +5,7 @@
 import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import type {League} from '@/entities/league'

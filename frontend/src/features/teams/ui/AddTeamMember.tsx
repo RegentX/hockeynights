@@ -6,7 +6,7 @@
 import {Label, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 
 import {createDirectChat} from '@/entities/messenger'
 import {fetchPlayers} from '@/entities/profile'

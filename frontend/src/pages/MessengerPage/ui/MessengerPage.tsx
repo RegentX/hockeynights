@@ -7,7 +7,7 @@ import {PaperPlane} from '@gravity-ui/icons'
 import {Button, Icon, Switch, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useEffect, useMemo, useState} from 'react'
-import {useSearchParams} from 'react-router-dom'
+import {useSearchParams} from 'react-router'
 
 import type {
   ChannelSettings,

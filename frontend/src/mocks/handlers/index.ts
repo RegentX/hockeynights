@@ -14,6 +14,7 @@ import {iqHandlers} from '@/mocks/handlers/iq'
 import {leagueHandlers} from '@/mocks/handlers/leagues'
 import {messengerHandlers} from '@/mocks/handlers/messenger'
 import {notificationHandlers} from '@/mocks/handlers/notifications'
+import {playerFavoritesHandlers} from '@/mocks/handlers/playerFavorites'
 import {profileHandlers} from '@/mocks/handlers/profile'
 import {radarHandlers} from '@/mocks/handlers/radar'
 import {recruitmentHandlers} from '@/mocks/handlers/recruitment'
@@ -24,6 +25,7 @@ import {teamHandlers} from '@/mocks/handlers/teams'
 /** @spec SPEC-FR-12.1.2 - Все MSW handlers Phase 1 */
 export const handlers = [
   ...sessionHandlers,
+  ...playerFavoritesHandlers,
   ...profileHandlers,
   ...eventHandlers,
   ...arenaHandlers,

@@ -18,10 +18,16 @@ const TIER_LABELS = {
 
 export interface MarketplaceProductCardProps {
   listing: MarketplaceProductListing
+  highlighted?: boolean
+  cardRef?: (node: HTMLElement | null) => void
 }
 
 /** @spec SPEC-FR-9.3.1 - Карточка товара в ленте маркетплейса */
-export function MarketplaceProductCard({listing}: MarketplaceProductCardProps) {
+export function MarketplaceProductCard({
+  listing,
+  highlighted = false,
+  cardRef,
+}: MarketplaceProductCardProps) {
   const {offer, shopName, shopAdTier, isPromoted, promoDiscount} = listing
   const [imgError, setImgError] = useState(false)
   const tierLabel = TIER_LABELS[shopAdTier]
@@ -30,10 +36,16 @@ export function MarketplaceProductCard({listing}: MarketplaceProductCardProps) {
     ? Math.round(offer.price * (1 - promoDiscount / 100))
     : offer.price
 
+  const promotedClass = isPromoted ? ` marketplace-card--${shopAdTier}` : ''
+  const highlightClass = highlighted ? ' marketplace-card--deep-linked' : ''
+
   return (
     <article
-      className={`marketplace-card${isPromoted ? ` marketplace-card--${shopAdTier}` : ''}`}
+      ref={cardRef}
+      className={`marketplace-card${promotedClass}${highlightClass}`}
       data-testid={testId('shops', 'marketplace-card', 'card', offer.id)}
+      data-highlighted={highlighted ? 'true' : undefined}
+      aria-current={highlighted ? 'true' : undefined}
     >
       <div className="marketplace-card__media">
         {offer.imageUrl && !imgError ? (
@@ -108,7 +120,8 @@ export function MarketplaceProductCard({listing}: MarketplaceProductCardProps) {
           />
         </div>
         <Text
-          className="marketplace-card__title"
+          variant="header-2"
+          className="marketplace-card__title hockey-entity-title--compact"
           data-testid={testId('shops', 'marketplace-card', 'text', 'title', offer.id)}
         >
           {offer.title}

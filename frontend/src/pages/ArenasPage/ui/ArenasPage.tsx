@@ -6,7 +6,7 @@
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {useSearchParams} from 'react-router-dom'
+import {useSearchParams} from 'react-router'
 
 import type {ArenaFilters as ArenaFiltersType} from '@/entities/arena'
 import {arenaHasFreeSlots, fetchArenas, fetchArenaSlots} from '@/entities/arena'
@@ -43,6 +43,7 @@ export function ArenasPage() {
   const cardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map())
   const scrollOnNextArenaRef = useRef(false)
 
+  // React: adjust state during render when URL param changes (preferred over setState-in-effect).
   if (trackedUrlArena !== arenaIdFromUrl) {
     setTrackedUrlArena(arenaIdFromUrl)
     setDetailClosed(false)

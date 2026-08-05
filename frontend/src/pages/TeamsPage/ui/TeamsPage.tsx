@@ -2,12 +2,13 @@
  * SPEC-FR-3.1.1, SPEC-FR-3.1.2
  * SPEC-UI-2.3
  * HOCFRONT-25 — лента команд: отдельный поиск + фильтры
+ * HOCFRONT-19 — FavoriteButton на TeamCard; deep-link /teams/:teamId
  */
 
 import {Text, TextInput} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {fetchTeams, type TeamsFilterParams} from '@/entities/team'
 import {useSessionAccess} from '@/features/access'

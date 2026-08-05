@@ -909,6 +909,8 @@ export interface SourceMeta {
 | `PATCH` | `/mock-api/v1/verification-requests/{requestId}` | Обновить mock-статус проверки | `SPEC-FR-17.1.1`, `SPEC-FR-17.1.3` |
 | `POST` | `/mock-api/v1/subscription-intents` | Создать mock-upgrade/downgrade подписки | `SPEC-FR-19.1.1`–`SPEC-FR-19.1.4` |
 | `GET` | `/mock-api/v1/players` | Получить список игроков с фильтрами | `SPEC-FR-2.3.1`, `SPEC-FR-2.3.2` |
+| `GET` | `/mock-api/v1/players/favorites` | Получить список избранных игроков каталога (`playerIds`) | `SPEC-FR-2.3.1` |
+| `PATCH` | `/mock-api/v1/players/favorites` | Заменить список избранных игроков (`{ playerIds: string[] }`) | `SPEC-FR-2.3.1` |
 | `POST` | `/mock-api/v1/teams` | Создать команду | `SPEC-FR-3.1.1` |
 | `GET` | `/mock-api/v1/teams/{teamId}/roster` | Получить состав команды | `SPEC-FR-3.2.1` |
 | `PATCH` | `/mock-api/v1/teams/{teamId}/roster/{userId}` | Изменить статус участника состава | `SPEC-FR-3.2.2` |

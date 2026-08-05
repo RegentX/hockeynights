@@ -4,7 +4,7 @@
 
 import {Heart, HeartFill} from '@gravity-ui/icons'
 import {Icon} from '@gravity-ui/uikit'
-import {type MouseEvent, useState} from 'react'
+import {type MouseEvent, useId, useState} from 'react'
 
 import type {FavoriteType} from '@/entities/favorites'
 import {buildFavoriteHref} from '@/entities/favorites'
@@ -36,6 +36,7 @@ export function FavoriteButton({
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const iconSize = size === 'm' ? 20 : 16
   const slug = `${type}-${entityId}`
+  const errorId = useId()
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (stopPropagation) {
@@ -65,23 +66,39 @@ export function FavoriteButton({
   const errorClass = errorMessage ? ' favorite-btn--error' : ''
 
   return (
-    <button
-      type="button"
-      className={`favorite-btn${stateClass}${loadingClass}${errorClass}${className ? ` ${className}` : ''}`}
-      aria-pressed={favorited}
-      aria-busy={toggle.isPending}
-      aria-label={label}
-      title={errorMessage ?? label}
-      disabled={toggle.isPending}
-      onClick={handleClick}
-      data-testid={testId('favorites', 'btn', 'toggle', slug)}
-    >
-      <Icon data={favorited ? HeartFill : Heart} size={iconSize} />
-      {errorMessage && (
-        <span className="favorite-btn__error" data-testid={testId('favorites', 'error', slug)}>
-          !
-        </span>
-      )}
-    </button>
+    <span className={`favorite-btn-wrap${errorClass ? ' favorite-btn-wrap--error' : ''}`}>
+      <button
+        type="button"
+        className={`favorite-btn${stateClass}${loadingClass}${errorClass}${className ? ` ${className}` : ''}`}
+        aria-pressed={favorited}
+        aria-busy={toggle.isPending}
+        aria-label={label}
+        aria-describedby={errorMessage ? errorId : undefined}
+        title={errorMessage ?? label}
+        disabled={toggle.isPending}
+        onClick={handleClick}
+        data-testid={testId('favorites', 'btn', 'toggle', slug)}
+      >
+        <Icon data={favorited ? HeartFill : Heart} size={iconSize} />
+        {errorMessage && (
+          <span
+            className="favorite-btn__error"
+            aria-hidden
+            data-testid={testId('favorites', 'error', slug)}
+          >
+            !
+          </span>
+        )}
+      </button>
+      <span
+        id={errorId}
+        className="favorite-btn__status"
+        role="status"
+        aria-live="polite"
+        data-testid={testId('favorites', 'error-status', slug)}
+      >
+        {errorMessage ?? ''}
+      </span>
+    </span>
   )
 }

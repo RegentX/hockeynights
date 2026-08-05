@@ -5,7 +5,7 @@
 import {Button, Text} from '@gravity-ui/uikit'
 import {useQueries, useQuery} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
-import {Link, useParams} from 'react-router-dom'
+import {Link, useParams} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {fetchClub, fetchClubCalendar, fetchClubPrivateTrainings} from '@/entities/club'

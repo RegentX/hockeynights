@@ -85,7 +85,7 @@ const MOBILE_PRIMARY_PATHS = [
   routes.profile,
 ] as const
 
-const MOBILE_MORE_PATHS = [routes.arenas, routes.leagues, routes.shops] as const
+const MOBILE_MORE_PATHS = [routes.arenas, routes.calendar, routes.leagues, routes.shops] as const
 
 /** @deprecated legacy flat list — для совместимости; bottom = primary + more */
 const MOBILE_PLAYER_PATHS = [...MOBILE_PRIMARY_PATHS, ...MOBILE_MORE_PATHS] as const
