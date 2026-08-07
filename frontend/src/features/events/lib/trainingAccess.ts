@@ -5,13 +5,22 @@ export function getUserTeamIds(teams: Team[], userId: string): string[] {
   return teams.filter((team) => team.memberIds.includes(userId)).map((team) => team.id)
 }
 
+export interface TrainingAccessOptions {
+  isAdmin?: boolean
+  /** Админ клуба / partner club membership для event.clubId */
+  canManageClub?: boolean
+}
+
 export function canViewTraining(
   event: GameEvent,
   userId: string,
   userTeamIds: string[],
-  isAdmin = false,
+  isAdminOrOptions: boolean | TrainingAccessOptions = false,
 ): boolean {
-  if (isAdmin) return true
+  const options: TrainingAccessOptions =
+    typeof isAdminOrOptions === 'boolean' ? {isAdmin: isAdminOrOptions} : (isAdminOrOptions ?? {})
+
+  if (options.isAdmin) return true
   if (event.organizerUserId === userId) return true
 
   const scope = event.accessScope ?? 'public'
@@ -22,10 +31,13 @@ export function canViewTraining(
     return event.allowedUserIds.includes(userId)
   }
 
-  if (scope === 'club_only') {
+  if (scope === 'club_only' || scope === 'private_club') {
+    if (options.canManageClub) return true
     if (!event.teamId) return false
     return userTeamIds.includes(event.teamId)
   }
+
+  if (scope === 'public_open') return true
 
   return true
 }

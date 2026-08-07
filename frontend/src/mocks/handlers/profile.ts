@@ -122,11 +122,12 @@ export const profileHandlers = [
 
     let result = [...mockPlayers]
 
-    if (query.q) {
-      const needle = query.q.toLowerCase()
-      result = result.filter(
-        (p) =>
-          p.fullName.toLowerCase().includes(needle) || p.displayName.toLowerCase().includes(needle),
+    if (query.q?.trim()) {
+      const needle = query.q.trim().toLowerCase()
+      result = result.filter((p) =>
+        [p.displayName, p.fullName, p.city, p.district, p.metro]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(needle)),
       )
     }
     if (query.position) {

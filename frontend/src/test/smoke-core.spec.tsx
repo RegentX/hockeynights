@@ -7,7 +7,6 @@
  */
 
 import {screen, waitFor} from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import {beforeEach, describe, expect, it} from 'vitest'
 
 import type {PartnerModerationItem} from '@/entities/admin'
@@ -369,26 +368,11 @@ describe('TASK-QA-01 UI smoke', () => {
 
   /** @spec SPEC-FR-3.2.1 */
   it('TeamsPage loads team list', async () => {
-    const user = userEvent.setup()
     renderWithProviders(<TeamsPage />)
     await waitFor(() => {
       expect(screen.getByText('Команды')).toBeInTheDocument()
       expect(screen.getAllByText('Медведи САО').length).toBeGreaterThan(0)
-    })
-
-    await user.click(screen.getByRole('tab', {name: 'Профиль клуба'}))
-
-    await waitFor(() => {
-      expect(screen.getByText('Составы клуба')).toBeInTheDocument()
-      expect(screen.getAllByText('Медведи Pro').length).toBeGreaterThan(0)
-      expect(screen.getByText('Штаб клуба')).toBeInTheDocument()
-    })
-
-    await user.click(screen.getByRole('tab', {name: 'Расстановка'}))
-
-    await waitFor(() => {
-      expect(screen.getAllByText(/Расстановка/i).length).toBeGreaterThan(0)
-      expect(screen.getByText(/Состав: Медведи САО/i)).toBeInTheDocument()
+      expect(screen.getByTestId('teams-card-card-team-001')).toBeInTheDocument()
     })
   })
 

@@ -122,8 +122,15 @@
   gap: 6px;
   border-top: 1px solid var(--hockey-card-border);
   padding-top: 8px;
-  max-height: 168px;
+  max-height: 240px;
   overflow-y: auto;
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
 
   &__item {
     border: 1px solid var(--hockey-card-border);

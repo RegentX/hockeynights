@@ -1,6 +1,8 @@
 export {
   addTeamMember,
   createTeam,
+  fetchTeam,
+  fetchTeamCalendarEvents,
   fetchTeamClubProfile,
   fetchTeamInvites,
   fetchTeamRoster,
@@ -8,6 +10,7 @@ export {
   fetchTeamTrainingEvents,
   fetchTrainingLineup,
   inviteTeamMemberByEmail,
+  submitStaffContactRequest,
   updateRosterMemberStatus,
   updateTeamMemberRole,
   updateTrainingLineup,

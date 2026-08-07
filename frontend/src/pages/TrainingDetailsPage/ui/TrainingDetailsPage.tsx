@@ -6,7 +6,7 @@ import {Link, useParams} from 'react-router'
 import {fetchEventById} from '@/entities/event'
 import {fetchPlayers} from '@/entities/profile'
 import {fetchTeams} from '@/entities/team'
-import {useSessionAccess} from '@/features/access'
+import {canManageClubEntity, useSessionAccess} from '@/features/access'
 import {
   ACCESS_LABELS,
   AttendanceControl,
@@ -25,7 +25,7 @@ import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 export function TrainingDetailsPage() {
   const {eventId = ''} = useParams()
-  const {userId, roles} = useSessionAccess()
+  const {userId, roles, session} = useSessionAccess()
   const {
     data: event,
     isLoading,
@@ -66,7 +66,14 @@ export function TrainingDetailsPage() {
     )
   }
 
-  if (!canViewTraining(event, userId, userTeamIds, roles.includes('admin'))) {
+  const canManageClub = canManageClubEntity(session, event.clubId)
+
+  if (
+    !canViewTraining(event, userId, userTeamIds, {
+      isAdmin: roles.includes('admin'),
+      canManageClub,
+    })
+  ) {
     return (
       <div data-testid={testId('events', 'training-page', 'error', 'access-denied')}>
         <EmptyNetState

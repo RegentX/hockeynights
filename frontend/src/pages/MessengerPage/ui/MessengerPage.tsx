@@ -7,6 +7,7 @@ import {PaperPlane} from '@gravity-ui/icons'
 import {Button, Icon, Switch, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useEffect, useMemo, useState} from 'react'
+import {useSearchParams} from 'react-router'
 
 import type {
   ChannelSettings,
@@ -24,7 +25,9 @@ import {
   fetchChatMessagesByTopic,
   fetchChats,
   fetchChatTopics,
+  openDiscoverableChat,
   searchChatUsers,
+  searchDiscoverableChats,
   toggleChatPin,
   updateChannelSettings,
 } from '@/entities/messenger'
@@ -45,14 +48,25 @@ const SLOW_MODE_OPTIONS: Array<0 | 10 | 30 | 60> = [0, 10, 30, 60]
 
 export function MessengerPage() {
   const queryClient = useQueryClient()
+  const [searchParams] = useSearchParams()
+  const chatIdFromUrl = searchParams.get('chatId')
   const {data: chats = []} = useQuery({
     queryKey: ['messenger-chats'],
     queryFn: fetchChats,
   })
-  const [selectedChatId, setSelectedChatId] = useState<string | null>(null)
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(chatIdFromUrl)
+  const [syncedChatIdFromUrl, setSyncedChatIdFromUrl] = useState(chatIdFromUrl)
   const [inputText, setInputText] = useState('')
   const [isMobile, setIsMobile] = useState(isMobileViewport)
-  const [mobileView, setMobileView] = useState<'list' | 'chat'>('list')
+  const [mobileView, setMobileView] = useState<'list' | 'chat'>(chatIdFromUrl ? 'chat' : 'list')
+
+  if (chatIdFromUrl !== syncedChatIdFromUrl) {
+    setSyncedChatIdFromUrl(chatIdFromUrl)
+    if (chatIdFromUrl) {
+      setSelectedChatId(chatIdFromUrl)
+      setMobileView('chat')
+    }
+  }
   const [searchQuery, setSearchQuery] = useState('')
   const [filterMode, setFilterMode] = useState<'all' | 'pinned'>('all')
   const [composerMode, setComposerMode] = useState<ComposerMode>('none')
@@ -72,6 +86,12 @@ export function MessengerPage() {
   const {data: users = []} = useQuery({
     queryKey: ['messenger-users', searchQuery],
     queryFn: () => searchChatUsers(searchQuery),
+    enabled: searchQuery.trim().length > 0,
+  })
+  const {data: discoveredTeams = []} = useQuery({
+    queryKey: ['messenger-discover', searchQuery],
+    queryFn: () => searchDiscoverableChats(searchQuery),
+    enabled: searchQuery.trim().length > 0,
   })
   const {data: allUsers = []} = useQuery({
     queryKey: ['messenger-users', '__all__'],
@@ -84,6 +104,21 @@ export function MessengerPage() {
       void queryClient.invalidateQueries({queryKey: ['messenger-chats']})
       setSelectedChatId(chat.id)
       setMobileView('chat')
+      setSearchQuery('')
+    },
+  })
+
+  const openTeamChatMutation = useMutation({
+    mutationFn: (chatId: string) => openDiscoverableChat(chatId),
+    onSuccess: (chat) => {
+      void queryClient.invalidateQueries({queryKey: ['messenger-chats']})
+      setSelectedChatId(chat.id)
+      setMobileView('chat')
+      setSearchQuery('')
+      setStatusMessage(`Открыт чат команды «${chat.title}». Можно писать.`)
+    },
+    onError: (error) => {
+      setStatusMessage(error instanceof Error ? error.message : 'Не удалось открыть чат команды')
     },
   })
 
@@ -446,7 +481,7 @@ export function MessengerPage() {
             size="m"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Поиск игроков и новый чат"
+            placeholder="Поиск игроков и команд"
             data-testid={testId('messenger', 'page', 'field', 'search')}
           />
           {searchQuery.trim().length > 0 && (
@@ -454,6 +489,46 @@ export function MessengerPage() {
               className="chat-user-search"
               data-testid={testId('messenger', 'page', 'list', 'user-search')}
             >
+              {discoveredTeams.length > 0 && (
+                <div
+                  className="chat-user-search__group"
+                  data-testid={testId('messenger', 'page', 'list', 'team-search')}
+                >
+                  <Text
+                    variant="caption-2"
+                    color="secondary"
+                    data-testid={testId('messenger', 'page', 'text', 'team-search-title')}
+                  >
+                    Команды
+                  </Text>
+                  {discoveredTeams.map((chat) => (
+                    <button
+                      key={chat.id}
+                      type="button"
+                      className="chat-user-search__item"
+                      onClick={() => openTeamChatMutation.mutate(chat.id)}
+                      data-testid={testId('messenger', 'page', 'item', 'team-search', chat.id)}
+                    >
+                      <span data-testid={testId('messenger', 'page', 'text', 'team-name', chat.id)}>
+                        {chat.title}
+                      </span>
+                      <span
+                        className="chat-user-search__status is-online"
+                        data-testid={testId('messenger', 'page', 'badge', 'team-public', chat.id)}
+                      >
+                        написать
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              <Text
+                variant="caption-2"
+                color="secondary"
+                data-testid={testId('messenger', 'page', 'text', 'user-search-title')}
+              >
+                Игроки
+              </Text>
               {users.map((user) => (
                 <button
                   key={user.userId}
@@ -474,13 +549,13 @@ export function MessengerPage() {
                   </span>
                 </button>
               ))}
-              {users.length === 0 && (
+              {users.length === 0 && discoveredTeams.length === 0 && (
                 <Text
                   variant="body-1"
                   color="secondary"
                   data-testid={testId('messenger', 'page', 'empty', 'user-search')}
                 >
-                  Игроков по запросу не найдено
+                  Ничего не найдено
                 </Text>
               )}
             </div>

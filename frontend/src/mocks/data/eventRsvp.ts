@@ -111,9 +111,20 @@ function rsvpToAttendance(status: EventRsvpStatus): AttendanceStatus {
   return 'maybe'
 }
 
+const mockTrainingRsvpBoards: Record<string, EventRsvpBoard> = {}
+
 export function getMockEventRsvp(eventId: string): EventRsvpBoard | undefined {
-  if (eventId !== LEAGUE_SATURDAY_EVENT_ID) return undefined
-  return mockLeagueSaturdayRsvp
+  if (eventId === LEAGUE_SATURDAY_EVENT_ID) return mockLeagueSaturdayRsvp
+  return mockTrainingRsvpBoards[eventId]
+}
+
+export function upsertMockTrainingRsvpBoard(board: EventRsvpBoard): EventRsvpBoard {
+  mockTrainingRsvpBoards[board.eventId] = {
+    ...board,
+    leagueName: board.leagueName || 'Клубная тренировка',
+    opponentName: board.opponentName || '—',
+  }
+  return mockTrainingRsvpBoards[board.eventId]
 }
 
 export function updateMockEventRsvp(
@@ -122,9 +133,31 @@ export function updateMockEventRsvp(
   status: EventRsvpStatus,
   declineReason?: string,
 ): EventRsvpBoard | undefined {
-  if (eventId !== LEAGUE_SATURDAY_EVENT_ID) return undefined
+  if (eventId === LEAGUE_SATURDAY_EVENT_ID) {
+    const players = mockLeagueSaturdayRsvp.players.map((player) => {
+      if (player.userId !== userId) return player
+      return {
+        ...player,
+        status,
+        declineReason: status === 'declined' ? declineReason : undefined,
+        updatedAt: new Date().toISOString(),
+      }
+    })
 
-  const players = mockLeagueSaturdayRsvp.players.map((player) => {
+    mockLeagueSaturdayRsvp = {...mockLeagueSaturdayRsvp, players}
+    persistRsvp(mockLeagueSaturdayRsvp)
+
+    if (userId === mockUser.id) {
+      updateMockAttendance(eventId, userId, mockUser.displayName, rsvpToAttendance(status))
+    }
+
+    return mockLeagueSaturdayRsvp
+  }
+
+  const board = mockTrainingRsvpBoards[eventId]
+  if (!board) return undefined
+
+  const players = board.players.map((player) => {
     if (player.userId !== userId) return player
     return {
       ...player,
@@ -134,14 +167,14 @@ export function updateMockEventRsvp(
     }
   })
 
-  mockLeagueSaturdayRsvp = {...mockLeagueSaturdayRsvp, players}
-  persistRsvp(mockLeagueSaturdayRsvp)
-
-  if (userId === mockUser.id) {
-    updateMockAttendance(eventId, userId, mockUser.displayName, rsvpToAttendance(status))
-  }
-
-  return mockLeagueSaturdayRsvp
+  mockTrainingRsvpBoards[eventId] = {...board, players}
+  updateMockAttendance(
+    eventId,
+    userId,
+    board.players.find((p) => p.userId === userId)?.displayName ?? mockUser.displayName,
+    rsvpToAttendance(status),
+  )
+  return mockTrainingRsvpBoards[eventId]
 }
 
 export function resetMockEventRsvp(): EventRsvpBoard {

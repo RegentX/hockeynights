@@ -19,7 +19,8 @@ export interface Chat {
   memberIds?: string[]
   relatedEntityId?: string // ID команды или события
   tag?: string
-  visibility?: 'team_members' | 'restricted'
+  /** public — любой пользователь может найти чат в поиске мессенджера */
+  visibility?: 'team_members' | 'restricted' | 'public'
 }
 
 /** @spec SPEC-FR-16.1.1 - Пользователь для создания чата */
@@ -62,6 +63,7 @@ export interface CreateChatPayload {
   tag?: string
   restrictedUserIds?: string[]
   relatedEntityId?: string
+  visibility?: Chat['visibility']
 }
 
 /** @spec SPEC-FR-22.1.1 - Создание темы внутри канала */
@@ -118,11 +120,30 @@ export type ChannelSettingsPatch = Partial<
 
 /** @spec SPEC-FR-16.1.3 - Данные интерактивного сообщения */
 export interface ActionableMessageData {
-  type: 'booking' | 'join_team' | 'sos_response' | 'payment'
+  type:
+    | 'booking'
+    | 'join_team'
+    | 'sos_response'
+    | 'payment'
+    | 'training_appointment'
+    | 'lineup_approval'
   title: string
   description: string
   status: 'pending' | 'completed' | 'cancelled'
   actions: ChatAction[]
+  /** HOCFRONT-25 — назначение на тренировку */
+  eventId?: string
+  draftId?: string
+  targetUserId?: string
+  positionLabel?: string
+  declineReason?: string
+  responseStatus?: 'accepted' | 'declined'
+}
+
+/** HOCFRONT-25 — ответ игрока на назначение */
+export interface ResolveMessageActionPayload {
+  action: string
+  declineReason?: string
 }
 
 /** @spec SPEC-FR-16.1.4 - Действие в сообщении */

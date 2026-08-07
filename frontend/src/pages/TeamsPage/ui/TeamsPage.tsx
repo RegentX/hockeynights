@@ -1,88 +1,67 @@
 /**
- * SPEC-FR-3.1.1, SPEC-FR-3.1.2, SPEC-FR-3.2.1, SPEC-FR-3.2.2
+ * SPEC-FR-3.1.1, SPEC-FR-3.1.2
  * SPEC-UI-2.3
- * HOCFRONT-19 — FavoriteButton + deep-link ?teamId=
+ * HOCFRONT-25 — лента команд: отдельный поиск + фильтры
+ * HOCFRONT-19 — FavoriteButton на TeamCard; deep-link /teams/:teamId
  */
 
-import {Text} from '@gravity-ui/uikit'
+import {Text, TextInput} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {useEffect, useMemo, useRef, useState} from 'react'
-import {useSearchParams} from 'react-router'
+import {useMemo, useState} from 'react'
+import {Link} from 'react-router'
 
-import type {ClubSquad} from '@/entities/club'
 import {fetchTeams, type TeamsFilterParams} from '@/entities/team'
 import {useSessionAccess} from '@/features/access'
-import {FavoriteButton} from '@/features/favorites'
-import {TeamCreateForm, TeamCrest, TeamFilters} from '@/features/teams'
-import {TeamPage} from '@/pages/TeamPage'
+import {TeamCard, TeamFilters} from '@/features/teams'
+import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
+import {ScrollReveal} from '@/shared/ui/ScrollStory'
 
 const EMPTY_FILTERS: TeamsFilterParams = {}
 
 function hasActiveFilters(filters: TeamsFilterParams): boolean {
-  return Object.values(filters).some((v) => v !== undefined && v !== '')
+  return Object.entries(filters).some(
+    ([key, value]) => key !== 'q' && value !== undefined && value !== '',
+  )
 }
 
 /**
- * @spec SPEC-UI-2.3 - Страница команд в стиле раздевалки
- * @spec SPEC-FR-3.1.1 - Страница команд
+ * @spec SPEC-UI-2.3 - Лента команд
+ * @spec SPEC-FR-3.1.1 - Публичный список с поиском и фильтрами
  */
 export function TeamsPage() {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const teamIdFromUrl = searchParams.get('teamId')
+  const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState<TeamsFilterParams>(EMPTY_FILTERS)
-  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
-  const [activeSquad, setActiveSquad] = useState<ClubSquad | null>(null)
-  const {teamPermissions, userId} = useSessionAccess()
+  const [isFiltersVisible, setIsFiltersVisible] = useState(true)
+  const {teamPermissions} = useSessionAccess()
   const {canCreateTeam} = teamPermissions('player')
+
+  const queryFilters = useMemo<TeamsFilterParams>(
+    () => ({
+      ...filters,
+      q: searchQuery.trim() || undefined,
+    }),
+    [filters, searchQuery],
+  )
+
+  const filtersActive = useMemo(() => hasActiveFilters(filters), [filters])
+  const isFiltered = filtersActive || Boolean(searchQuery.trim())
+
   const {data: teams = [], isLoading} = useQuery({
-    queryKey: ['teams', filters],
-    queryFn: () => fetchTeams(filters),
+    queryKey: ['teams', queryFilters],
+    queryFn: () => fetchTeams(queryFilters),
     placeholderData: (previous) => previous,
   })
-  const scrollOnNextTeamRef = useRef(false)
-  const detailRef = useRef<HTMLDivElement | null>(null)
 
-  const activeTeamId = useMemo(() => {
-    if (teamIdFromUrl && teams.some((team) => team.id === teamIdFromUrl)) {
-      return teamIdFromUrl
-    }
-    if (selectedTeamId && teams.some((team) => team.id === selectedTeamId)) {
-      return selectedTeamId
-    }
-    return teams[0]?.id ?? null
-  }, [teamIdFromUrl, selectedTeamId, teams])
+  const handleResetFilters = () => setFilters(EMPTY_FILTERS)
 
-  const activeTeam = teams.find((t) => t.id === activeTeamId)
-  const isFiltered = hasActiveFilters(filters)
-
-  const handleResetFilters = () => {
+  const handleResetAll = () => {
+    setSearchQuery('')
     setFilters(EMPTY_FILTERS)
-  }
-
-  useEffect(() => {
-    if (!teamIdFromUrl) return
-    scrollOnNextTeamRef.current = true
-  }, [teamIdFromUrl])
-
-  useEffect(() => {
-    if (!activeTeamId || !scrollOnNextTeamRef.current) return
-    scrollOnNextTeamRef.current = false
-    const node = detailRef.current
-    if (node && typeof node.scrollIntoView === 'function') {
-      node.scrollIntoView({behavior: 'smooth', block: 'nearest'})
-    }
-  }, [activeTeamId])
-
-  const handleSelectTeam = (id: string) => {
-    setSelectedTeamId(id)
-    const next = new URLSearchParams(searchParams)
-    next.set('teamId', id)
-    setSearchParams(next, {replace: true})
   }
 
   return (
@@ -90,120 +69,128 @@ export function TeamsPage() {
       className="hockey-stack hockey-stack--gap-20"
       data-testid={testId('teams', 'teams-page', 'page')}
     >
-      <Text variant="header-1" data-testid={testId('teams', 'teams-page', 'text', 'title')}>
-        Команды
-      </Text>
-
-      <TeamFilters
-        filters={filters}
-        onChange={setFilters}
-        onReset={handleResetFilters}
-        isFiltered={isFiltered}
-      />
-
-      <div
-        className="hockey-grid hockey-grid--cards-280"
-        data-testid={testId('teams', 'teams-page', 'panel', 'grid')}
-      >
-        {canCreateTeam && (
-          <IceCard padding="m" data-testid={testId('teams', 'teams-page', 'card', 'create')}>
-            <TeamCreateForm />
-          </IceCard>
-        )}
-
-        <IceCard padding="m" data-testid={testId('teams', 'teams-page', 'card', 'my-teams')}>
+      <div className="hockey-row hockey-row--between">
+        <div className="hockey-stack hockey-stack--gap-8">
           <Text
-            variant="subheader-2"
-            data-testid={testId('teams', 'teams-page', 'text', 'my-teams-title')}
+            variant="header-1"
+            className="variable-font-header"
+            data-testid={testId('teams', 'teams-page', 'text', 'title')}
           >
-            Мои команды
+            Команды
           </Text>
-          {isLoading && (
-            <ScoreboardLoader
-              testIdPrefix="teams"
-              data-testid={testId('teams', 'teams-page', 'loader')}
-            />
-          )}
-          {!isLoading && teams.length === 0 && (
-            <EmptyNetState
-              title="Пустая раздевалка"
-              copy="Команды не найдены по выбранным фильтрам."
-              testIdPrefix="teams"
-              data-testid={testId('teams', 'teams-page', 'empty')}
-              action={
-                isFiltered ? (
-                  <HockeyButton
-                    view="outlined"
-                    size="s"
-                    onClick={handleResetFilters}
-                    data-testid={testId('teams', 'teams-page', 'btn', 'reset')}
-                  >
-                    Сбросить фильтры
-                  </HockeyButton>
-                ) : undefined
-              }
-            />
-          )}
-          {!isLoading && teams.length > 0 && (
-            <div
-              className="hockey-mt-12 hockey-stack hockey-stack--gap-8"
-              data-testid={testId('teams', 'teams-page', 'list', 'teams')}
+          <Text color="secondary" data-testid={testId('teams', 'teams-page', 'text', 'subtitle')}>
+            Лента публичных команд: поиск, фильтры, профиль и чат в мессенджере.
+          </Text>
+        </div>
+        {canCreateTeam && (
+          <Link
+            to={routes.teamsCreate}
+            data-testid={testId('teams', 'teams-page', 'link', 'create')}
+          >
+            <HockeyButton
+              view="outlined"
+              size="s"
+              data-testid={testId('teams', 'teams-page', 'btn', 'create')}
             >
-              {teams.map((team) => (
-                <div
-                  key={team.id}
-                  className="team-picker-item"
-                  onClick={() => handleSelectTeam(team.id)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSelectTeam(team.id)}
-                  data-testid={testId('teams', 'teams-page', 'item', team.id)}
-                >
-                  <div
-                    className={
-                      activeTeamId === team.id
-                        ? 'locker-room team-picker-item__row'
-                        : 'team-picker-item__surface team-picker-item__row'
-                    }
-                  >
-                    <TeamCrest
-                      name={team.name}
-                      city={team.city}
-                      skillLevel={team.skillLevel}
-                      teamId={team.id}
-                    />
-                    <FavoriteButton type="team" entityId={team.id} title={team.name} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </IceCard>
+              Создать команду
+            </HockeyButton>
+          </Link>
+        )}
       </div>
 
-      {activeTeamId && activeTeam && (
-        <div
-          ref={detailRef}
-          className="locker-room"
-          data-testid={testId('teams', 'teams-page', 'panel', 'active-team', activeTeamId)}
-        >
-          <TeamCrest
-            name={activeTeam.name}
-            city={activeTeam.city}
-            skillLevel={activeTeam.skillLevel}
-            teamId={activeTeam.id}
-          />
-          <div className="hockey-mt-16 hockey-mb-12 hockey-stack hockey-stack--gap-16">
-            <TeamPage
-              team={activeTeam}
-              activeSquad={activeSquad}
-              userId={userId}
-              teamPermissions={teamPermissions}
-              onActiveSquadChange={setActiveSquad}
-            />
-          </div>
+      <IceCard padding="m" data-testid={testId('teams', 'teams-page', 'card', 'search')}>
+        <TextInput
+          size="xl"
+          placeholder="Поиск по названию или описанию команды"
+          value={searchQuery}
+          onUpdate={setSearchQuery}
+          data-testid={testId('teams', 'teams-page', 'field', 'search')}
+        />
+      </IceCard>
+
+      <div
+        className="hockey-stack hockey-stack--gap-10"
+        data-testid={testId('teams', 'teams-page', 'panel', 'filters')}
+      >
+        <div className="hockey-row hockey-row--between hockey-row--align-center">
+          <Text
+            variant="subheader-2"
+            data-testid={testId('teams', 'teams-page', 'text', 'filters-title')}
+          >
+            Фильтры
+          </Text>
+          <HockeyButton
+            view="outlined"
+            size="s"
+            onClick={() => setIsFiltersVisible((prev) => !prev)}
+            data-testid={testId('teams', 'teams-page', 'btn', 'filters-toggle')}
+          >
+            {isFiltersVisible ? 'Скрыть фильтры' : 'Показать фильтры'}
+          </HockeyButton>
         </div>
+        {isFiltersVisible && (
+          <IceCard padding="m" data-testid={testId('teams', 'teams-page', 'card', 'filters')}>
+            <TeamFilters
+              filters={filters}
+              onChange={setFilters}
+              onReset={handleResetFilters}
+              isFiltered={filtersActive}
+            />
+          </IceCard>
+        )}
+      </div>
+
+      <div className="hockey-row hockey-row--between hockey-row--align-center">
+        <Text
+          color="secondary"
+          data-testid={testId('teams', 'teams-page', 'text', 'results-count')}
+        >
+          {isLoading ? 'Загрузка…' : `Найдено: ${teams.length}`}
+        </Text>
+      </div>
+
+      {isLoading && (
+        <ScoreboardLoader
+          testIdPrefix="teams"
+          data-testid={testId('teams', 'teams-page', 'loader')}
+        />
       )}
+
+      {!isLoading && teams.length === 0 && (
+        <EmptyNetState
+          title="Команды не найдены"
+          copy="Измените поиск или сбросьте фильтры."
+          testIdPrefix="teams"
+          data-testid={testId('teams', 'teams-page', 'empty')}
+          action={
+            isFiltered ? (
+              <HockeyButton
+                view="outlined"
+                size="s"
+                onClick={handleResetAll}
+                data-testid={testId('teams', 'teams-page', 'btn', 'reset-empty')}
+              >
+                Сбросить
+              </HockeyButton>
+            ) : undefined
+          }
+        />
+      )}
+
+      <div
+        className="team-feed hockey-stack hockey-stack--gap-12"
+        data-testid={testId('teams', 'teams-page', 'panel', 'feed')}
+      >
+        {teams.map((team, index) => (
+          <ScrollReveal
+            key={team.id}
+            direction={index % 2 === 0 ? 'left' : 'right'}
+            data-testid={testId('teams', 'teams-page', 'item', team.id)}
+          >
+            <TeamCard team={team} />
+          </ScrollReveal>
+        ))}
+      </div>
     </div>
   )
 }

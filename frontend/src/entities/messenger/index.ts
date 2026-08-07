@@ -9,7 +9,10 @@ export {
   fetchChatTopics,
   fetchTeamChats,
   getTotalUnreadCount,
+  openDiscoverableChat,
+  resolveMessageAction,
   searchChatUsers,
+  searchDiscoverableChats,
   toggleChatPin,
   updateChannelSettings,
 } from './api/messengerApi'

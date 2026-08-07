@@ -3,6 +3,7 @@
  */
 
 import {screen, waitFor} from '@testing-library/react'
+import {Route, Routes} from 'react-router'
 import {beforeEach, describe, expect, it} from 'vitest'
 
 import {
@@ -15,7 +16,7 @@ import {
 import {resetMockEntityFavorites} from '@/mocks/data/entityFavorites'
 import {LeaguesPage} from '@/pages/LeaguesPage'
 import {MarketplacePage} from '@/pages/MarketplacePage'
-import {TeamsPage} from '@/pages/TeamsPage'
+import {TeamProfilePage} from '@/pages/TeamProfilePage'
 import {routes} from '@/shared/const/appRoutes'
 import {renderWithProviders} from '@/test/render'
 
@@ -63,21 +64,24 @@ describe('HOCFRONT-19 favorites API', () => {
     expect(items.filter((item) => item.id === first.id)).toHaveLength(1)
   })
 
-  it('buildFavoriteHref uses query deep-links for team/league/product', () => {
-    expect(buildFavoriteHref('team', 'team-001')).toBe(`${routes.teams}?teamId=team-001`)
+  it('buildFavoriteHref uses path/query deep-links for team/league/product', () => {
+    expect(buildFavoriteHref('team', 'team-001')).toBe(`${routes.teams}/team-001`)
     expect(buildFavoriteHref('league', 'league-002')).toBe(`${routes.leagues}?leagueId=league-002`)
     expect(buildFavoriteHref('product', 'offer-001')).toBe(`${routes.shops}?productId=offer-001`)
   })
 })
 
 describe('HOCFRONT-19 favorite deep-links', () => {
-  it('TeamsPage selects team from ?teamId=', async () => {
-    renderWithProviders(<TeamsPage />, {
-      routerProps: {initialEntries: [`${routes.teams}?teamId=team-001`]},
-    })
+  it('team favorite href opens TeamProfilePage at /teams/:id', async () => {
+    renderWithProviders(
+      <Routes>
+        <Route path="/teams/:teamId" element={<TeamProfilePage />} />
+      </Routes>,
+      {routerProps: {initialEntries: ['/teams/team-001']}},
+    )
 
     await waitFor(() => {
-      expect(screen.getByTestId('teams-teams-page-panel-active-team-team-001')).toBeInTheDocument()
+      expect(screen.getByTestId('teams-profile-page-team-001')).toBeInTheDocument()
     })
   })
 

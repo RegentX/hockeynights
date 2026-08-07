@@ -1,5 +1,6 @@
 /**
  * HOCFRONT-5 — карточки демо-ролей для mock-входа.
+ * HOCFRONT-25 — персона club_admin
  */
 
 import type {OnboardingPayload} from '@/entities/user'
@@ -14,7 +15,7 @@ export interface PersonaPreset {
   payload: OnboardingPayload
 }
 
-const [leaguePartner, shopPartner] = DEMO_PARTNER_MEMBERSHIPS
+const [leaguePartner, shopPartner, clubPartner] = DEMO_PARTNER_MEMBERSHIPS
 
 export const PERSONA_PRESETS: PersonaPreset[] = [
   {
@@ -56,6 +57,18 @@ export const PERSONA_PRESETS: PersonaPreset[] = [
     destination: 'Обычный player workspace',
     icon: '📅',
     payload: {displayName: 'Мария Организаторова', roles: ['organizer'], partnerMemberships: []},
+  },
+  {
+    id: 'club-admin',
+    title: 'Админ клуба',
+    description: 'Кабинет клуба: состав, штаб, календарь и приватные тренировки',
+    destination: 'Кабинет клуба',
+    icon: '🏟',
+    payload: {
+      displayName: 'Админ клуба Медведи',
+      roles: ['club_admin'],
+      partnerMemberships: [clubPartner],
+    },
   },
   {
     id: 'league-partner',

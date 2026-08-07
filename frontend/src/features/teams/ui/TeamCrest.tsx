@@ -15,24 +15,35 @@ export interface TeamCrestProps {
   /** @spec SPEC-FR-3.1.1 */
   skillLevel?: string
   teamId?: string
+  /** HOCFRONT-25 — логотип вместо шеврона */
+  logoUrl?: string
 }
 
 /**
  * @spec SPEC-UI-2.3 - Шеврон команды в стиле раздевалки
  */
-export function TeamCrest({name, city, skillLevel, teamId}: TeamCrestProps) {
+export function TeamCrest({name, city, skillLevel, teamId, logoUrl}: TeamCrestProps) {
   const initial = name.trim().charAt(0).toUpperCase() || '?'
   const crestId = teamId ?? name
 
   return (
     <div className="team-crest" data-testid={testId('teams', 'team-crest', 'card', crestId)}>
-      <div
-        className="team-crest__chevron"
-        aria-hidden
-        data-testid={testId('teams', 'team-crest', 'icon', crestId)}
-      >
-        {initial}
-      </div>
+      {logoUrl ? (
+        <img
+          src={logoUrl}
+          alt=""
+          className="team-crest__logo"
+          data-testid={testId('teams', 'team-crest', 'img', 'logo', crestId)}
+        />
+      ) : (
+        <div
+          className="team-crest__chevron"
+          aria-hidden
+          data-testid={testId('teams', 'team-crest', 'icon', crestId)}
+        >
+          {initial}
+        </div>
+      )}
       <div>
         <Text
           variant="header-2"

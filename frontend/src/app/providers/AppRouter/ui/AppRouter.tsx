@@ -12,6 +12,8 @@ import {AdminDashboard} from '@/pages/AdminDashboard'
 import {ArenasPage} from '@/pages/ArenasPage'
 import {MockLoginPage} from '@/pages/auth'
 import {CalendarPage} from '@/pages/CalendarPage'
+import {ClubPartnerDashboard} from '@/pages/ClubPartnerDashboard'
+import {CreateTeamPage} from '@/pages/CreateTeamPage'
 import {EventsPage} from '@/pages/EventsPage'
 import {FeedbackPage} from '@/pages/FeedbackPage'
 import {HighlightsPage} from '@/pages/HighlightsPage'
@@ -27,6 +29,7 @@ import {PublicPlayerProfilePage} from '@/pages/PublicPlayerProfilePage'
 import {ShopPartnerDashboard} from '@/pages/ShopPartnerDashboard'
 import {ShopsPage} from '@/pages/ShopsPage'
 import {SosPage} from '@/pages/SosPage'
+import {TeamProfilePage} from '@/pages/TeamProfilePage'
 import {TeamsPage} from '@/pages/TeamsPage'
 import {TermsOfUsePage} from '@/pages/TermsOfUsePage'
 import {TrainingDetailsPage} from '@/pages/TrainingDetailsPage'
@@ -72,6 +75,8 @@ export function AppRouter() {
               <Route path={routes.players} element={<PlayersPage />} />
               <Route path={routes.playerProfile} element={<PublicPlayerProfilePage />} />
               <Route path={routes.teams} element={<TeamsPage />} />
+              <Route path={routes.teamsCreate} element={<CreateTeamPage />} />
+              <Route path={routes.teamProfile} element={<TeamProfilePage />} />
               <Route path={routes.events} element={<EventsPage />} />
               <Route path={routes.trainingDetails} element={<TrainingDetailsPage />} />
               <Route path={routes.calendar} element={<CalendarPage />} />
@@ -85,6 +90,7 @@ export function AppRouter() {
               <Route path={routes.partner} element={<PartnerHubPage />} />
               <Route path={routes.partnerShop} element={<ShopPartnerDashboard />} />
               <Route path={routes.partnerLeague} element={<LeaguePartnerDashboard />} />
+              <Route path={routes.partnerClub} element={<ClubPartnerDashboard />} />
               <Route path={routes.iq} element={<IqTestsPage />} />
               <Route path={routes.radar} element={<Navigate to={routes.events} replace />} />
               <Route path={routes.highlights} element={<HighlightsPage />} />

@@ -4,7 +4,9 @@ import type {
   ChannelSettingsPatch,
   CreateChatPayload,
   CreateChatTopicPayload,
+  ResolveMessageActionPayload,
 } from '@/entities/messenger'
+import {resolveMockMessageAction} from '@/mocks/data/messageActions'
 import {
   createDirectMockChat,
   createMockChannelOrChat,
@@ -14,7 +16,9 @@ import {
   getMockVisibleTopics,
   mockChats,
   mockChatUsers,
+  openMockDiscoverableChat,
   patchMockChannelSettings,
+  searchMockDiscoverableChats,
   toggleMockChatPin,
 } from '@/mocks/data/messenger'
 
@@ -26,6 +30,19 @@ export const messengerHandlers = [
       return HttpResponse.json(mockChats.filter((chat) => chat.relatedEntityId === teamId))
     }
     return HttpResponse.json(mockChats)
+  }),
+
+  http.get('/mock-api/v1/messenger/chats/discover', ({request}) => {
+    const query = new URL(request.url).searchParams.get('query') ?? ''
+    return HttpResponse.json(searchMockDiscoverableChats(query))
+  }),
+
+  http.post('/mock-api/v1/messenger/chats/:chatId/open', ({params}) => {
+    const chat = openMockDiscoverableChat(params.chatId as string)
+    if (!chat) {
+      return HttpResponse.json({message: 'Public chat not found'}, {status: 404})
+    }
+    return HttpResponse.json(chat)
   }),
 
   http.get('/mock-api/v1/messenger/users', ({request}) => {
@@ -101,5 +118,15 @@ export const messengerHandlers = [
   /** @spec SPEC-FR-16.1.4 - Обработка действий в сообщениях */
   http.post('/mock-api/v1/messenger/actions/:actionId', ({params}) => {
     return HttpResponse.json({success: true, actionId: params.actionId})
+  }),
+
+  /** HOCFRONT-25 — accept/decline training appointment */
+  http.post('/mock-api/v1/messenger/messages/:messageId/actions', async ({params, request}) => {
+    const body = (await request.json()) as ResolveMessageActionPayload
+    const result = resolveMockMessageAction(params.messageId as string, body)
+    if (!result.success) {
+      return HttpResponse.json(result, {status: 400})
+    }
+    return HttpResponse.json(result)
   }),
 ]

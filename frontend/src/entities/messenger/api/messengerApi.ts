@@ -11,6 +11,7 @@ import type {
   CreateChatPayload,
   CreateChatTopicPayload,
   Message,
+  ResolveMessageActionPayload,
 } from '@/entities/messenger/model'
 import {apiRequest} from '@/shared/api/client'
 
@@ -60,6 +61,19 @@ export function searchChatUsers(query: string): Promise<ChatUser[]> {
   return apiRequest<ChatUser[]>(`/messenger/users${suffix ? `?${suffix}` : ''}`)
 }
 
+/** Публичные командные чаты по названию / тегу */
+export function searchDiscoverableChats(query: string): Promise<Chat[]> {
+  const params = new URLSearchParams()
+  if (query.trim()) params.set('query', query.trim())
+  const suffix = params.toString()
+  return apiRequest<Chat[]>(`/messenger/chats/discover${suffix ? `?${suffix}` : ''}`)
+}
+
+/** Открыть публичный чат команды (добавляет пользователя в участники) */
+export function openDiscoverableChat(chatId: string): Promise<Chat> {
+  return apiRequest<Chat>(`/messenger/chats/${chatId}/open`, {method: 'POST'})
+}
+
 export function createDirectChat(targetUserId: string): Promise<Chat> {
   return apiRequest<Chat>('/messenger/chats', {
     method: 'POST',
@@ -88,6 +102,16 @@ export function toggleChatPin(chatId: string, pinned?: boolean): Promise<Chat> {
   return apiRequest<Chat>(`/messenger/chats/${chatId}/pin`, {
     method: 'PATCH',
     body: pinned === undefined ? {} : {pinned},
+  })
+}
+
+export function resolveMessageAction(
+  messageId: string,
+  payload: ResolveMessageActionPayload,
+): Promise<{success: boolean; messageId: string; status?: string}> {
+  return apiRequest(`/messenger/messages/${messageId}/actions`, {
+    method: 'POST',
+    body: payload,
   })
 }
 

@@ -1,9 +1,16 @@
 export type {
   CreateTeamPayload,
+  CreateTrainingLineupDraftPayload,
+  LineupApprovalStatus,
   RosterMember,
+  StaffContactRequest,
+  StaffContactRequestPayload,
   Team,
   TeamInvite,
+  TeamInviteStatus,
   TeamRole,
   TeamsFilterParams,
+  TrainingDraftAssignment,
   TrainingLineupAssignment,
+  TrainingLineupDraft,
 } from './types/teamTypes'

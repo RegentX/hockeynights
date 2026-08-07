@@ -1,3 +1,8 @@
+/**
+ * HOCFRONT-10 / HOCFRONT-25 — NHL-style табло расстановки (downstize)
+ * SPEC-FR-21.1.6, SPEC-FR-21.1.7, SPEC-FR-24.3.2
+ */
+
 import {Button, Select, Text} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {type DragEvent, useRef, useState} from 'react'
@@ -11,6 +16,7 @@ import {
   fetchTrainingLineup,
   updateTrainingLineup,
 } from '@/entities/team'
+import {FifaPlayerCardModal} from '@/features/teams/ui/FifaPlayerCardModal'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
@@ -50,19 +56,20 @@ type RinkSlot = {
   label: string
 }
 
+/** Слоты как на NHL-табло: G / LD·RD / LW·C·RW */
 const RINK_SLOTS: RinkSlot[] = [
   {id: 'red-goalie-1', side: 'red', position: 'goalie', line: 1, x: 8, y: 50, label: 'G'},
-  {id: 'red-defense-1', side: 'red', position: 'defense', line: 1, x: 24, y: 30, label: 'D1'},
-  {id: 'red-defense-2', side: 'red', position: 'defense', line: 2, x: 24, y: 70, label: 'D2'},
-  {id: 'red-forward-1', side: 'red', position: 'forward', line: 1, x: 40, y: 25, label: 'F1'},
-  {id: 'red-forward-2', side: 'red', position: 'forward', line: 2, x: 40, y: 50, label: 'F2'},
-  {id: 'red-forward-3', side: 'red', position: 'forward', line: 3, x: 40, y: 75, label: 'F3'},
+  {id: 'red-defense-1', side: 'red', position: 'defense', line: 1, x: 24, y: 30, label: 'LD'},
+  {id: 'red-defense-2', side: 'red', position: 'defense', line: 2, x: 24, y: 70, label: 'RD'},
+  {id: 'red-forward-1', side: 'red', position: 'forward', line: 1, x: 40, y: 25, label: 'LW'},
+  {id: 'red-forward-2', side: 'red', position: 'forward', line: 2, x: 40, y: 50, label: 'C'},
+  {id: 'red-forward-3', side: 'red', position: 'forward', line: 3, x: 40, y: 75, label: 'RW'},
   {id: 'white-goalie-1', side: 'white', position: 'goalie', line: 1, x: 92, y: 50, label: 'G'},
-  {id: 'white-defense-1', side: 'white', position: 'defense', line: 1, x: 76, y: 30, label: 'D1'},
-  {id: 'white-defense-2', side: 'white', position: 'defense', line: 2, x: 76, y: 70, label: 'D2'},
-  {id: 'white-forward-1', side: 'white', position: 'forward', line: 1, x: 60, y: 25, label: 'F1'},
-  {id: 'white-forward-2', side: 'white', position: 'forward', line: 2, x: 60, y: 50, label: 'F2'},
-  {id: 'white-forward-3', side: 'white', position: 'forward', line: 3, x: 60, y: 75, label: 'F3'},
+  {id: 'white-defense-1', side: 'white', position: 'defense', line: 1, x: 76, y: 30, label: 'LD'},
+  {id: 'white-defense-2', side: 'white', position: 'defense', line: 2, x: 76, y: 70, label: 'RD'},
+  {id: 'white-forward-1', side: 'white', position: 'forward', line: 1, x: 60, y: 25, label: 'LW'},
+  {id: 'white-forward-2', side: 'white', position: 'forward', line: 2, x: 60, y: 50, label: 'C'},
+  {id: 'white-forward-3', side: 'white', position: 'forward', line: 3, x: 60, y: 75, label: 'RW'},
 ]
 
 const FORMATION_TEMPLATES: Record<FormationTemplateId, {label: string; slotOrder: string[]}> = {
@@ -377,13 +384,13 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
               variant="header-2"
               data-testid={testId('teams', 'training-lineup-board', 'text', 'title', teamId)}
             >
-              Расстановка
+              Табло состава
             </Text>
             <Text
               color="secondary"
               data-testid={testId('teams', 'training-lineup-board', 'text', 'event', teamId)}
             >
-              {trainingTitle}
+              {trainingTitle} · перетащите карточки
             </Text>
           </div>
           {activeSquad && (
@@ -585,107 +592,70 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
           </div>
         </div>
 
-        {selectedPlayer && (
+        {selectedPlayer && canEdit && lineupEditableForSquad && (
           <div
-            className="lineup-board__player-detail"
+            className="lineup-board__player-detail-actions hockey-row hockey-row--gap-8"
             data-testid={testId(
               'teams',
               'training-lineup-board',
               'panel',
-              'player-detail',
+              'player-actions',
               selectedPlayer.member.userId,
             )}
           >
-            <div className="lineup-board__player-detail-header">
-              <Text
-                variant="subheader-2"
-                data-testid={testId(
-                  'teams',
-                  'training-lineup-board',
-                  'text',
-                  'detail-name',
-                  selectedPlayer.member.userId,
-                )}
-              >
-                {selectedPlayer.member.displayName}
-              </Text>
-              <Button
-                size="s"
-                view="outlined"
-                onClick={() => setSelectedPlayerId(null)}
-                data-testid={testId(
-                  'teams',
-                  'training-lineup-board',
-                  'btn',
-                  'close-detail',
-                  teamId,
-                )}
-              >
-                Закрыть
-              </Button>
-            </div>
-            <div className="lineup-board__player-detail-info">
-              <Text color="secondary">Позиция: {selectedPlayer.member.position}</Text>
-              <Text color="secondary">Роль: {selectedPlayer.member.teamRole ?? 'player'}</Text>
-              <Text color="secondary">
-                Команда:{' '}
-                {selectedPlayer.assignment.side === 'red'
-                  ? 'Красные'
-                  : selectedPlayer.assignment.side === 'white'
-                    ? 'Белые'
-                    : selectedPlayer.assignment.side === 'bench'
-                      ? 'Скамейка'
-                      : 'Без назначения'}
-              </Text>
-            </div>
-            {canEdit && lineupEditableForSquad && (
-              <div className="lineup-board__player-detail-actions">
-                <Button
-                  size="s"
-                  view="outlined"
-                  onClick={() => assignToTeam(selectedPlayer.member.userId, 'red')}
-                  data-testid={testId(
-                    'teams',
-                    'training-lineup-board',
-                    'btn',
-                    'detail-red',
-                    selectedPlayer.member.userId,
-                  )}
-                >
-                  В красные
-                </Button>
-                <Button
-                  size="s"
-                  view="outlined"
-                  onClick={() => assignToTeam(selectedPlayer.member.userId, 'white')}
-                  data-testid={testId(
-                    'teams',
-                    'training-lineup-board',
-                    'btn',
-                    'detail-white',
-                    selectedPlayer.member.userId,
-                  )}
-                >
-                  В белые
-                </Button>
-                <Button
-                  size="s"
-                  view="outlined"
-                  onClick={() => updateAssignment(selectedPlayer.member.userId, {side: 'bench'})}
-                  data-testid={testId(
-                    'teams',
-                    'training-lineup-board',
-                    'btn',
-                    'detail-bench',
-                    selectedPlayer.member.userId,
-                  )}
-                >
-                  На скамейку
-                </Button>
-              </div>
-            )}
+            <Text color="secondary">{selectedPlayer.member.displayName}:</Text>
+            <Button
+              size="s"
+              view="outlined"
+              onClick={() => assignToTeam(selectedPlayer.member.userId, 'red')}
+              data-testid={testId(
+                'teams',
+                'training-lineup-board',
+                'btn',
+                'detail-red',
+                selectedPlayer.member.userId,
+              )}
+            >
+              В красные
+            </Button>
+            <Button
+              size="s"
+              view="outlined"
+              onClick={() => assignToTeam(selectedPlayer.member.userId, 'white')}
+              data-testid={testId(
+                'teams',
+                'training-lineup-board',
+                'btn',
+                'detail-white',
+                selectedPlayer.member.userId,
+              )}
+            >
+              В белые
+            </Button>
+            <Button
+              size="s"
+              view="outlined"
+              onClick={() => updateAssignment(selectedPlayer.member.userId, {side: 'bench'})}
+              data-testid={testId(
+                'teams',
+                'training-lineup-board',
+                'btn',
+                'detail-bench',
+                selectedPlayer.member.userId,
+              )}
+            >
+              На скамейку
+            </Button>
           </div>
         )}
+
+        <FifaPlayerCardModal
+          open={Boolean(selectedPlayerId)}
+          userId={selectedPlayerId}
+          displayNameFallback={selectedPlayer?.member.displayName}
+          positionFallback={selectedPlayer?.member.position}
+          onClose={() => setSelectedPlayerId(null)}
+        />
 
         <div
           className="lineup-board__utility"
@@ -696,7 +666,7 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
               variant="subheader-2"
               data-testid={testId('teams', 'training-lineup-board', 'text', 'bench-title', teamId)}
             >
-              Скамейка ({benchPlayers.length})
+              Запасные / скамейка ({benchPlayers.length})
             </Text>
             <ul
               className={`lineup-board__list ${activeDropZone === 'bench' ? 'is-drop-active' : ''}`}

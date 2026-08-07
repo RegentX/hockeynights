@@ -61,7 +61,7 @@ export interface GameEvent {
   /** Статус набора */
   registrationStatus?: 'open' | 'full'
   /** Модель доступа к тренировке */
-  accessScope?: 'club_only' | 'limited' | 'public'
+  accessScope?: 'club_only' | 'limited' | 'public' | 'private_club' | 'public_open'
   /** Список пользователей, допущенных к limited-тренировке */
   allowedUserIds?: string[]
   /** Контакт организатора для карточки */
@@ -72,6 +72,8 @@ export interface GameEvent {
   participation: Attendance[]
   /** @spec SPEC-FR-25.6.1 - Командный RSVP board доступен для события */
   hasTeamRsvp?: boolean
+  /** HOCFRONT-25 — клуб-владелец private_club тренировки */
+  clubId?: string
 }
 
 /** @spec SPEC-FR-4.1.1 - Payload создания события */
@@ -94,6 +96,9 @@ export interface CreateEventPayload {
   requiredSlots: RequiredSlot[]
   /** @spec SPEC-FR-5.1.2 */
   pricePerPlayer?: number
+  /** HOCFRONT-25 */
+  accessScope?: GameEvent['accessScope']
+  clubId?: string
 }
 
 /** @spec SPEC-FR-4.3.1 - Статус дефицита состава */

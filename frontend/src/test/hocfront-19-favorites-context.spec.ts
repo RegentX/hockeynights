@@ -10,6 +10,7 @@ describe('resolveFavoritesPageContext', () => {
   it('scopes arenas / teams / trainings / shops', () => {
     expect(resolveFavoritesPageContext('/arenas').type).toBe('arena')
     expect(resolveFavoritesPageContext('/teams').type).toBe('team')
+    expect(resolveFavoritesPageContext('/teams/team-001').type).toBe('team')
     expect(resolveFavoritesPageContext('/events').type).toBe('training')
     expect(resolveFavoritesPageContext('/events/trainings/event-1').type).toBe('training')
     expect(resolveFavoritesPageContext('/shops').type).toBe('product')

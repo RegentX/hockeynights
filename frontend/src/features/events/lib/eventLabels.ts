@@ -5,6 +5,8 @@ export const ACCESS_LABELS: Record<NonNullable<GameEvent['accessScope']>, string
   club_only: 'Тренировка внутри клуба',
   limited: 'Тренировка для ограниченных лиц',
   public: 'Публичная тренировка',
+  private_club: 'Приватная клубная',
+  public_open: 'Публичная открытая',
 }
 
 export const TRAINING_FORMAT_LABELS: Record<NonNullable<GameEvent['trainingFormat']>, string> = {

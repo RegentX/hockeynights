@@ -5,6 +5,7 @@
 
 import {Select, Text} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {Link} from 'react-router'
 
 import type {RosterMember, TeamRole} from '@/entities/team'
 import {fetchTeamRoster, updateRosterMemberStatus, updateTeamMemberRole} from '@/entities/team'
@@ -17,6 +18,7 @@ const STATUS_OPTIONS = [
   {value: 'active', content: 'Активен'},
   {value: 'bench', content: 'Запасной'},
   {value: 'invited', content: 'Приглашён'},
+  {value: 'declined', content: 'Отказано'},
   {value: 'removed', content: 'Удалён'},
 ]
 
@@ -159,12 +161,17 @@ export function TeamRoster({teamId, userId, teamPermissions}: TeamRosterProps) {
                     🪝
                   </span>
                   <div className="roster-hook-slot__body">
-                    <Text
-                      variant="subheader-2"
-                      data-testid={testId('teams', 'team-roster', 'text', 'name', member.userId)}
+                    <Link
+                      to={`/players/${member.userId}`}
+                      data-testid={testId('teams', 'team-roster', 'link', 'player', member.userId)}
                     >
-                      {member.displayName}
-                    </Text>
+                      <Text
+                        variant="subheader-2"
+                        data-testid={testId('teams', 'team-roster', 'text', 'name', member.userId)}
+                      >
+                        {member.displayName}
+                      </Text>
+                    </Link>
                     <Text
                       color="secondary"
                       data-testid={testId(

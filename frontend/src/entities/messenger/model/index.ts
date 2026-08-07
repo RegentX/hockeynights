@@ -15,4 +15,5 @@ export type {
   CreateChatTopicPayload,
   Message,
   MessageType,
+  ResolveMessageActionPayload,
 } from './types/messengerTypes'
