@@ -110,6 +110,102 @@
     justify-content: flex-end;
   }
 
+  /* HOCFRONT-30 — профиль в правом углу top bar (вместо «⋯») */
+  &__profile {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    margin-left: 2px;
+  }
+
+  &__profile-text {
+    display: none;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 0;
+
+    @include breakpoint(1200px) {
+      display: flex;
+    }
+  }
+
+  &__profile-name {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--g-color-text-primary);
+  }
+
+  &__profile-meta {
+    @include scoreboard-caps(9px, 0.1em);
+    color: var(--hockey-text-muted);
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__profile-switcher.g-button,
+  &__profile-switcher.hockey-button {
+    --g-button-height: 34px;
+    box-sizing: border-box;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    line-height: 0 !important;
+
+    &:not(:disabled):hover {
+      transform: none;
+    }
+
+    .g-button__text {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin: 0 !important;
+      line-height: 0 !important;
+    }
+  }
+
+  &__profile-avatar {
+    position: relative;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+  }
+
+  &__profile-ring {
+    position: absolute;
+    inset: -5px;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+
+  &__profile-initials {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #fff;
+    background: linear-gradient(145deg, var(--hockey-line-red), #a00400);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+
   &__panel-controls {
     display: none;
 
@@ -168,20 +264,6 @@
     display: inline-flex;
     align-items: center;
     line-height: 0;
-  }
-
-  &__period {
-    display: none;
-    @include scoreboard-caps(12px, 0.08em);
-    padding: 6px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--hockey-card-border);
-    background: var(--hockey-glass-bg);
-    color: var(--hockey-accent);
-
-    @include breakpoint(768px) {
-      display: block;
-    }
   }
 
   /* HOCFRONT-17 — Lottie-колокольчик в top bar (icon-only, как Button size="s") */
@@ -326,6 +408,13 @@
         width: 100%;
         margin-inline: auto;
         box-sizing: border-box;
+      }
+    }
+
+    &--messenger-focus#{&}--left-collapsed#{&}--right-collapsed .app-shell__main-col {
+      @include breakpoint(1200px) {
+        padding: 0;
+        overflow: hidden;
       }
     }
   }

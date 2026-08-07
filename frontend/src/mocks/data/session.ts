@@ -82,20 +82,32 @@ export let mockProfile: HockeyProfile = {
   verificationStatus: 'verified',
   participationHistory: [
     {
-      eventId: 'event-001',
-      eventTitle: 'Тренировка вторник',
-      eventDate: '2026-06-10T19:00:00Z',
+      eventId: 'event-002',
+      eventTitle: 'Клубная тренировка: катание и передачи',
+      eventDate: '2026-07-07T08:00:00+03:00',
       teamName: 'Медведи САО',
       role: 'player',
       confirmed: true,
+      eventType: 'training',
+      arenaName: 'Каток «Лужники»',
+      durationMinutes: 90,
+      note: 'Назначение пришло в командный чат — как после создания тренировки.',
+      chatId: 'chat-1',
     },
     {
-      eventId: 'event-002',
-      eventTitle: 'Товарищеская игра',
-      eventDate: '2026-06-07T20:30:00Z',
+      eventId: 'event-001',
+      eventTitle: 'Товарищеская игра — Медведи САО',
+      eventDate: '2026-06-07T20:00:00+03:00',
       teamName: 'Медведи САО',
       role: 'player',
       confirmed: true,
+      eventType: 'game',
+      arenaName: 'Ледовый дворец на Ходынке',
+      opponent: 'Вымпел',
+      result: '3:2',
+      durationMinutes: 90,
+      note: 'Играл во второй пятёрке, +1 ассист.',
+      chatId: 'chat-2',
     },
     {
       eventId: 'event-003',
@@ -103,6 +115,11 @@ export let mockProfile: HockeyProfile = {
       eventDate: '2026-05-28T18:00:00Z',
       role: 'player',
       confirmed: false,
+      eventType: 'open_ice',
+      arenaName: 'Ледовый дворец на Ходынке',
+      durationMinutes: 60,
+      note: 'RSVP ещё не подтверждён — слот можно освободить.',
+      chatId: 'chat-6',
     },
   ],
 }
@@ -170,10 +187,10 @@ export function selectMockPersona(personaId: string): Session {
   }
 
   const pending = getPendingRegistration()
-  const displayName =
-    pending?.displayName ??
-    (mockSession.isOnboarded ? mockSession.user.displayName : payload.displayName)
+  const displayName = pending?.displayName ?? payload.displayName
   const session = completeOnboarding(displayName, payload.roles, payload.partnerMemberships ?? [])
+
+  mockProfile = {...mockProfile, fullName: displayName}
 
   mockSession = {
     ...session,

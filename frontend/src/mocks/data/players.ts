@@ -4,6 +4,7 @@
  */
 
 import type {
+  HockeyProfile,
   ParticipationRecord,
   PlayerListItem,
   PrivacySettings,
@@ -41,6 +42,13 @@ const mockParticipationByUser: Record<string, ParticipationRecord[]> = {
       teamName: 'Медведи САО',
       role: 'goalie',
       confirmed: true,
+      eventType: 'game',
+      arenaName: 'Ледовый дворец на Ходынке',
+      opponent: 'Вымпел',
+      result: '2:1',
+      durationMinutes: 90,
+      note: '22 сейва, 1 пропущенный.',
+      chatId: 'chat-2',
     },
   ],
   'user-004': [
@@ -51,21 +59,26 @@ const mockParticipationByUser: Record<string, ParticipationRecord[]> = {
       teamName: 'Медведи САО',
       role: 'player',
       confirmed: true,
+      eventType: 'game',
+      arenaName: 'Ледовый дворец на Ходынке',
+      opponent: 'Вымпел',
+      result: '3:2',
+      durationMinutes: 90,
+      chatId: 'chat-2',
     },
   ],
 }
 
-/** @spec SPEC-FR-24.1.3 - Собрать публичное представление игрока */
-export function buildPublicPlayerView(userId: string): PublicPlayerView | null {
-  const player = mockPlayers.find((p) => p.userId === userId)
-  if (!player) return null
+type PlayerPrivacy = Pick<
+  PrivacySettings,
+  'profileVisibility' | 'showContacts' | 'showParticipationHistory'
+>
 
-  const privacy = mockPlayerPrivacy[userId] ?? {
-    profileVisibility: 'public' as const,
-    showContacts: false,
-    showParticipationHistory: false,
-  }
-
+function buildViewFromPlayer(
+  player: PlayerListItem,
+  privacy: PlayerPrivacy,
+  participationHistory?: ParticipationRecord[],
+): PublicPlayerView {
   if (privacy.profileVisibility === 'private') {
     return {
       player,
@@ -82,10 +95,34 @@ export function buildPublicPlayerView(userId: string): PublicPlayerView | null {
     visibility,
     contactsVisible: privacy.showContacts,
     participationHistoryVisible: privacy.showParticipationHistory,
-    participationHistory: privacy.showParticipationHistory
-      ? mockParticipationByUser[userId]
-      : undefined,
+    participationHistory: privacy.showParticipationHistory ? participationHistory : undefined,
   }
+}
+
+/** @spec SPEC-FR-24.1.3 - Публичный вид текущего пользователя (Hockey ID /profile/me) */
+export function buildPublicPlayerViewFromProfile(
+  profile: HockeyProfile,
+  privacy: PlayerPrivacy,
+): PublicPlayerView {
+  const player: PlayerListItem = {
+    ...profile,
+    displayName: profile.fullName,
+  }
+  return buildViewFromPlayer(player, privacy, profile.participationHistory)
+}
+
+/** @spec SPEC-FR-24.1.3 - Собрать публичное представление игрока */
+export function buildPublicPlayerView(userId: string): PublicPlayerView | null {
+  const player = mockPlayers.find((p) => p.userId === userId)
+  if (!player) return null
+
+  const privacy = mockPlayerPrivacy[userId] ?? {
+    profileVisibility: 'public',
+    showContacts: false,
+    showParticipationHistory: false,
+  }
+
+  return buildViewFromPlayer(player, privacy, mockParticipationByUser[userId])
 }
 
 /** @spec SPEC-FR-2.3.1 - Mock список игроков */

@@ -48,7 +48,7 @@ const SLOW_MODE_OPTIONS: Array<0 | 10 | 30 | 60> = [0, 10, 30, 60]
 
 export function MessengerPage() {
   const queryClient = useQueryClient()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const chatIdFromUrl = searchParams.get('chatId')
   const {data: chats = []} = useQuery({
     queryKey: ['messenger-chats'],
@@ -83,6 +83,13 @@ export function MessengerPage() {
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null)
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
 
+  function clearChatIdFromUrl() {
+    if (!searchParams.has('chatId')) return
+    const next = new URLSearchParams(searchParams)
+    next.delete('chatId')
+    setSearchParams(next, {replace: true})
+  }
+
   const {data: users = []} = useQuery({
     queryKey: ['messenger-users', searchQuery],
     queryFn: () => searchChatUsers(searchQuery),
@@ -102,6 +109,7 @@ export function MessengerPage() {
     mutationFn: (targetUserId: string) => createDirectChat(targetUserId),
     onSuccess: (chat) => {
       void queryClient.invalidateQueries({queryKey: ['messenger-chats']})
+      clearChatIdFromUrl()
       setSelectedChatId(chat.id)
       setMobileView('chat')
       setSearchQuery('')
@@ -131,6 +139,7 @@ export function MessengerPage() {
     }) => createChannelOrChat(payload),
     onSuccess: (chat) => {
       void queryClient.invalidateQueries({queryKey: ['messenger-chats']})
+      clearChatIdFromUrl()
       setSelectedChatId(chat.id)
       setComposerMode('none')
       setNewEntityTitle('')
@@ -181,7 +190,9 @@ export function MessengerPage() {
   }, [chats, filterMode])
 
   const activeChatId =
-    selectedChatId ?? (!isMobile && sortedChats[0]?.id ? sortedChats[0].id : null)
+    selectedChatId ?? chatIdFromUrl ?? (!isMobile && sortedChats[0]?.id ? sortedChats[0].id : null)
+  /** Deep-link держит chat-view, пока пользователь не сменил чат / не нажал «назад». */
+  const activeMobileView: 'list' | 'chat' = chatIdFromUrl && !selectedChatId ? 'chat' : mobileView
   const selectedChat = sortedChats.find((c) => c.id === activeChatId)
   const isChannelChat = selectedChat?.type === 'channel'
   const showChannelSettingsPanel = showChannelSettings && isChannelChat
@@ -247,13 +258,16 @@ export function MessengerPage() {
   })
 
   const handleSelectChat = (chatId: string) => {
+    clearChatIdFromUrl()
+    setSelectedChatId(chatId)
     if (isMobileViewport()) {
       setMobileView('chat')
     }
-    setSelectedChatId(chatId)
   }
 
   const handleMobileBack = () => {
+    clearChatIdFromUrl()
+    setSelectedChatId(null)
     setMobileView('list')
   }
 
@@ -281,7 +295,7 @@ export function MessengerPage() {
   const layoutClass = [
     'messenger-layout',
     isMobile ? 'messenger-layout--mobile' : '',
-    isMobile && mobileView === 'chat' ? 'messenger-layout--mobile-chat' : '',
+    isMobile && activeMobileView === 'chat' ? 'messenger-layout--mobile-chat' : '',
   ]
     .filter(Boolean)
     .join(' ')

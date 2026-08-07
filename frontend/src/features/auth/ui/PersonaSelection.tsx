@@ -5,11 +5,12 @@
 
 import {Text} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 import {useNavigate} from 'react-router'
 
-import type {AvailablePersona} from '@/entities/auth'
-import {selectPersona} from '@/entities/auth'
+import type {AuthLoginResponse, AvailablePersona} from '@/entities/auth'
+import {fetchSession, selectPersona} from '@/entities/auth'
+import type {HockeyProfile} from '@/entities/profile'
 import {getPersonaHomePath} from '@/features/access'
 import {PERSONA_PRESETS, type PersonaPreset} from '@/features/auth/lib/personaPresets'
 import {testId} from '@/shared/testing/testId'
@@ -31,23 +32,39 @@ export function PersonaSelection({
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [error, setError] = useState<string | null>(null)
-  const {data: authLogin} = useQuery<{userId: string; availablePersonas: AvailablePersona[]}>({
-    queryKey: ['auth-login'],
-    enabled: false,
-  })
+  const [pendingPersonaId, setPendingPersonaId] = useState<string | null>(null)
+  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
 
-  const personas = authLogin?.availablePersonas ?? PERSONA_PRESETS
+  const personas = useMemo(() => {
+    if (isSwitching) {
+      return PERSONA_PRESETS
+    }
+    const cached = queryClient.getQueryData<AuthLoginResponse>(['auth-login'])?.availablePersonas
+    return cached?.length ? cached : PERSONA_PRESETS
+  }, [isSwitching, queryClient])
 
   const personaMutation = useMutation({
     mutationFn: (preset: PersonaPreset) => selectPersona({personaId: preset.id}),
     onSuccess: (nextSession) => {
       setError(null)
+      setPendingPersonaId(null)
       queryClient.setQueryData(['session'], nextSession)
-      void queryClient.invalidateQueries({queryKey: ['session']})
+      queryClient.setQueryData(['profile'], (prev: HockeyProfile | undefined) =>
+        prev
+          ? {
+              ...prev,
+              fullName: nextSession.user.displayName,
+              userId: nextSession.user.id,
+            }
+          : prev,
+      )
+      void queryClient.invalidateQueries({queryKey: ['profile']})
+      void queryClient.invalidateQueries({queryKey: ['profile-settings']})
       const homePath = nextSession.homePath ?? getPersonaHomePath(nextSession)
       navigate(homePath, {replace: true})
     },
     onError: (err: Error) => {
+      setPendingPersonaId(null)
       setError(err.message || 'Не удалось сохранить выбранную роль')
     },
   })
@@ -55,10 +72,11 @@ export function PersonaSelection({
   function selectPersonaCard(persona: AvailablePersona) {
     const preset = toPersonaPreset(persona)
     if (!preset) {
-      console.warn(`[PersonaSelection] Unknown persona id: ${persona.id}`)
+      setError(`Неизвестная роль: ${persona.title}`)
       return
     }
     setError(null)
+    setPendingPersonaId(persona.id)
     personaMutation.mutate(preset)
   }
 
@@ -77,23 +95,41 @@ export function PersonaSelection({
 
       <div className="persona-card-grid" data-testid={testId('auth', 'login', 'grid', 'personas')}>
         {personas.map((persona) => {
-          const known = Boolean(toPersonaPreset(persona))
+          const isCurrent = session?.personaId === persona.id
+          const isPending = pendingPersonaId === persona.id
           return (
             <button
               key={persona.id}
               type="button"
-              className="persona-card"
+              className={[
+                'persona-card',
+                isCurrent ? 'persona-card--current' : '',
+                isPending ? 'persona-card--pending' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
               aria-label={`${persona.title}. ${persona.description}. ${persona.destination}`}
-              disabled={personaMutation.isPending || !known}
+              aria-busy={isPending}
+              disabled={personaMutation.isPending}
               onClick={() => selectPersonaCard(persona)}
               data-testid={testId('auth', 'persona', 'btn', persona.id)}
             >
+              {isCurrent && (
+                <span
+                  className="persona-card__badge"
+                  data-testid={testId('auth', 'persona', 'badge', 'current')}
+                >
+                  Текущая
+                </span>
+              )}
               <span className="persona-card__icon" aria-hidden>
                 {persona.icon}
               </span>
               <span className="persona-card__title">{persona.title}</span>
               <span className="persona-card__description">{persona.description}</span>
-              <span className="persona-card__destination">→ {persona.destination}</span>
+              <span className="persona-card__destination">
+                {isPending ? 'Переключаем…' : `→ ${persona.destination}`}
+              </span>
             </button>
           )
         })}

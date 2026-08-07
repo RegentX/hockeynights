@@ -85,6 +85,14 @@ describe('TASK-QA-01 mock API smoke', () => {
     expect(view.visibility).toBe('full')
   })
 
+  /** @spec SPEC-FR-24.1.3 — текущий пользователь доступен для «Как видят другие» */
+  it('GET /players/{userId} returns public view for current mock profile', async () => {
+    const view = await mockApiGet<PublicPlayerView>('/players/user-001')
+    expect(view.player.fullName).toBe('Иван Петров')
+    expect(view.visibility).toBe('full')
+    expect(view.participationHistoryVisible).toBe(true)
+  })
+
   /** @spec SPEC-FR-3.1.1 */
   it('GET /teams returns teams', async () => {
     const teams = await mockApiGet<Team[]>('/teams')
@@ -349,11 +357,13 @@ describe('TASK-QA-01 UI smoke', () => {
   })
 
   /** @spec SPEC-FR-2.2.4 */
-  it('HockeyProfileForm loads profile completeness', async () => {
+  it('HockeyProfileForm loads profile summary', async () => {
     renderWithProviders(<HockeyProfileForm />)
     await waitFor(() => {
       expect(screen.getByText('Hockey ID')).toBeInTheDocument()
-      expect(screen.getByText(/Заполненность профиля/i)).toBeInTheDocument()
+      expect(screen.getByTestId('profile-profile-summary-text-events-label')).toHaveTextContent(
+        'игр подтверждено',
+      )
     })
   })
 
