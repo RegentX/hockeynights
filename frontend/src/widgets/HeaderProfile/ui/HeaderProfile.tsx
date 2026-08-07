@@ -9,7 +9,7 @@ import {useQuery} from '@tanstack/react-query'
 import type {LottieRefCurrentProps} from 'lottie-react'
 import {useLottie} from 'lottie-react'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {fetchMyProfile, fetchProfileSettings} from '@/entities/profile'

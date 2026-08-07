@@ -14,7 +14,7 @@ import {
 import {Icon} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {Link, Outlet, useLocation, useNavigate} from 'react-router-dom'
+import {Link, Outlet, useLocation, useNavigate} from 'react-router'
 
 import {fetchSession, logoutSession} from '@/entities/auth'
 import {fetchChats, getTotalUnreadCount} from '@/entities/messenger'
@@ -34,7 +34,7 @@ import {SideBoard} from '@/widgets/SideBoard'
  * @spec SPEC-FR-1.2.1 - Базовый layout приложения
  * @spec SPEC-UI-5.1 - Desktop 3-col layout
  * @spec SPEC-UI-5.2 - Mobile bottom nav
- * HOCFRONT-17: уведомления в header; SOS FAB скрыт из MVP
+ * HOCFRONT-15/17: уведомления в header; SOS FAB скрыт из MVP
  */
 export function AppShell() {
   const location = useLocation()
@@ -333,7 +333,7 @@ export function AppShell() {
       </div>
 
       <MobileNav />
-      {/* HOCFRONT-17: SosFab скрыт из MVP — маршрут /sos сохранён */}
+      {/* HOCFRONT-15/17: SosFab скрыт из MVP — маршрут /sos сохранён */}
     </div>
   )
 }

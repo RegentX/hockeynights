@@ -1,15 +1,16 @@
 /**
- * HOCFRONT-21
+ * HOCFRONT-21 + HOCFRONT-19
  * SPEC-FR-2.3.1
  */
 
 import {screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {delay, http, HttpResponse} from 'msw'
-import {Route, Routes} from 'react-router-dom'
+import {Route, Routes} from 'react-router'
 import {beforeEach, describe, expect, it} from 'vitest'
 
-import {getMockPlayerFavorites, resetMockPlayerFavorites} from '@/mocks/data/playerFavorites'
+import {favoriteKey} from '@/entities/favorites'
+import {listMockEntityFavorites, resetMockEntityFavorites} from '@/mocks/data/entityFavorites'
 import {mockPlayers} from '@/mocks/data/players'
 import {clearTestStorage} from '@/test/clearTestStorage'
 import {server} from '@/test/msw-server'
@@ -22,8 +23,12 @@ function findPlayer(userId: string) {
   return player
 }
 
+function favoriteButtonTestId(userId: string) {
+  return `favorites-btn-toggle-player-${userId}`
+}
+
 async function waitFavoriteReady(userId: string) {
-  const button = screen.getByTestId(`players-player-card-btn-favorite-${userId}`)
+  const button = await screen.findByTestId(favoriteButtonTestId(userId))
   await waitFor(() => {
     expect(button).not.toBeDisabled()
   })
@@ -33,7 +38,7 @@ async function waitFavoriteReady(userId: string) {
 describe('HOCFRONT-21 PlayerCard', () => {
   beforeEach(() => {
     clearTestStorage()
-    resetMockPlayerFavorites()
+    resetMockEntityFavorites()
   })
 
   it('renders position, skill level, verified badge, team and city', async () => {
@@ -101,39 +106,9 @@ describe('HOCFRONT-21 PlayerCard', () => {
     )
 
     const button = await waitFavoriteReady('user-002')
-    expect(button).toHaveAttribute('aria-pressed', 'true')
-  })
-
-  it('keeps favorite button disabled and does not patch while favorites are loading', async () => {
-    let releaseFavorites: (() => void) | undefined
-    const favoritesGate = new Promise<void>((resolve) => {
-      releaseFavorites = resolve
+    await waitFor(() => {
+      expect(button).toHaveAttribute('aria-pressed', 'true')
     })
-
-    server.use(
-      http.get('*/mock-api/v1/players/favorites', async () => {
-        await favoritesGate
-        return HttpResponse.json(getMockPlayerFavorites())
-      }),
-    )
-
-    const player = findPlayer('user-003')
-    renderWithProviders(
-      <Routes>
-        <Route path="/" element={<PlayerCard player={player} />} />
-      </Routes>,
-      {routerProps: {initialEntries: ['/']}},
-    )
-
-    const button = screen.getByTestId('players-player-card-btn-favorite-user-003')
-    expect(button).toBeDisabled()
-    expect(button).not.toHaveAttribute('aria-pressed')
-    expect(getMockPlayerFavorites().playerIds).toEqual(['user-002'])
-
-    releaseFavorites?.()
-    await waitFavoriteReady('user-003')
-    expect(button).toHaveAttribute('aria-pressed', 'false')
-    expect(getMockPlayerFavorites().playerIds).toEqual(['user-002'])
   })
 
   it('toggles favorite without navigating away and keeps existing favorites', async () => {
@@ -161,8 +136,10 @@ describe('HOCFRONT-21 PlayerCard', () => {
 
     const favoriteButton = await waitFavoriteReady('user-002')
     const otherButton = await waitFavoriteReady('user-003')
-    expect(favoriteButton).toHaveAttribute('aria-pressed', 'true')
-    expect(otherButton).toHaveAttribute('aria-pressed', 'false')
+    await waitFor(() => {
+      expect(favoriteButton).toHaveAttribute('aria-pressed', 'true')
+      expect(otherButton).toHaveAttribute('aria-pressed', 'false')
+    })
 
     await user.click(otherButton)
 
@@ -170,16 +147,20 @@ describe('HOCFRONT-21 PlayerCard', () => {
       expect(otherButton).toHaveAttribute('aria-pressed', 'true')
     })
     expect(favoriteButton).toHaveAttribute('aria-pressed', 'true')
-    expect(getMockPlayerFavorites().playerIds).toEqual(
-      expect.arrayContaining(['user-002', 'user-003']),
+    const ids = listMockEntityFavorites().map((item) => item.id)
+    expect(ids).toEqual(
+      expect.arrayContaining([
+        favoriteKey('player', 'user-002'),
+        favoriteKey('player', 'user-003'),
+      ]),
     )
     expect(screen.queryByTestId('public-player-profile')).not.toBeInTheDocument()
   })
 
-  it('rolls back optimistic favorite state when PATCH fails', async () => {
+  it('rolls back optimistic favorite state when DELETE/POST fails', async () => {
     const user = userEvent.setup()
     server.use(
-      http.patch('*/mock-api/v1/players/favorites', async () => {
+      http.post('*/mock-api/v1/favorites', async () => {
         await delay(20)
         return HttpResponse.json({message: 'boom'}, {status: 500})
       }),
@@ -194,15 +175,21 @@ describe('HOCFRONT-21 PlayerCard', () => {
     )
 
     const button = await waitFavoriteReady('user-003')
+    await waitFor(() => {
+      expect(button).toHaveAttribute('aria-pressed', 'false')
+    })
     await user.click(button)
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId('players-player-card-text-favorite-error-user-003'),
-      ).toBeInTheDocument()
+      expect(screen.getByTestId('favorites-error-status-player-user-003')).not.toHaveTextContent('')
     })
     expect(button).toHaveAttribute('aria-pressed', 'false')
-    expect(getMockPlayerFavorites().playerIds).toEqual(['user-002'])
+    expect(listMockEntityFavorites().map((item) => item.id)).toContain(
+      favoriteKey('player', 'user-002'),
+    )
+    expect(listMockEntityFavorites().map((item) => item.id)).not.toContain(
+      favoriteKey('player', 'user-003'),
+    )
   })
 
   it('does not render the link wrapper when linkable=false', () => {

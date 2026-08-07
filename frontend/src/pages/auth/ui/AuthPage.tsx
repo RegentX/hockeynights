@@ -6,7 +6,7 @@
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useState} from 'react'
-import {Link, useLocation, useNavigate} from 'react-router-dom'
+import {Link, useLocation, useNavigate} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {describeSessionPersona} from '@/features/access'

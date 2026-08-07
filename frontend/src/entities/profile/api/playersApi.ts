@@ -8,7 +8,7 @@ import {apiRequest} from '@/shared/api/client'
 
 /** @spec SPEC-FR-2.3.2, HOCFRONT-20 - Параметры фильтра игроков */
 export interface PlayersFilterParams {
-  /** @spec HOCFRONT-20 - Поиск по имени */
+  /** @spec HOCFRONT-20 - Поиск по имени / городу / району */
   q?: string
   /** @spec SPEC-FR-2.3.2 */
   position?: PlayerPosition
@@ -32,7 +32,7 @@ export interface PlayersFilterParams {
  */
 export function fetchPlayers(filters: PlayersFilterParams = {}): Promise<PlayerListItem[]> {
   const params = new URLSearchParams()
-  if (filters.q) params.set('q', filters.q)
+  if (filters.q?.trim()) params.set('q', filters.q.trim())
   if (filters.position) params.set('position', filters.position)
   if (filters.skillLevel) params.set('skillLevel', filters.skillLevel)
   if (filters.district) params.set('district', filters.district)

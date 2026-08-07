@@ -4,7 +4,7 @@
  */
 
 import {Card, Text} from '@gravity-ui/uikit'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import type {UserRole} from '@/entities/common'
 import type {HockeyProfile} from '@/entities/profile'
@@ -20,6 +20,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
   captain: 'Капитан',
   organizer: 'Организатор',
   coach: 'Тренер',
+  club_admin: 'Админ клуба',
   admin: 'Админ',
 }
 

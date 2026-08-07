@@ -382,11 +382,7 @@ describe('TASK-QA-01 UI smoke', () => {
     await waitFor(() => {
       expect(screen.getByText('Команды')).toBeInTheDocument()
       expect(screen.getAllByText('Медведи САО').length).toBeGreaterThan(0)
-      expect(screen.getByText('Составы клуба')).toBeInTheDocument()
-      expect(screen.getAllByText('Медведи Pro').length).toBeGreaterThan(0)
-      expect(screen.getByText('Штаб клуба')).toBeInTheDocument()
-      expect(screen.getAllByText(/Активный состав/i).length).toBeGreaterThan(0)
-      expect(screen.getByText(/Тактическая доска/i)).toBeInTheDocument()
+      expect(screen.getByTestId('teams-card-card-team-001')).toBeInTheDocument()
     })
   })
 

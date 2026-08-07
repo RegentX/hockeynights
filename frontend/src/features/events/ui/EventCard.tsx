@@ -5,13 +5,14 @@
 
 import {Text} from '@gravity-ui/uikit'
 import {useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import type {GameEvent} from '@/entities/event'
 import {ACCESS_LABELS, EVENT_TYPE_LABELS} from '@/features/events/lib/eventLabels'
 import {AttendanceControl} from '@/features/events/ui/AttendanceControl'
 import {EventRsvpBoard} from '@/features/events/ui/EventRsvpBoard'
 import {RosterNeedsWidget} from '@/features/events/ui/RosterNeedsWidget'
+import {FavoriteButton} from '@/features/favorites'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
@@ -58,13 +59,19 @@ function EventCardHeader({event, timeStr}: {event: GameEvent; timeStr: string}) 
         </div>
       </div>
       <div className="event-card__main">
-        <Text
-          variant="subheader-2"
-          className="event-card__title"
-          data-testid={testId('events', 'card', 'text', 'title', event.id)}
-        >
-          {event.title}
-        </Text>
+        <div className="hockey-row hockey-row--gap-8 hockey-row--between">
+          <Text
+            variant="header-2"
+            className="event-card__title hockey-entity-title--compact"
+            data-testid={testId('events', 'card', 'text', 'title', event.id)}
+          >
+            {event.title}
+          </Text>
+          {event.type === 'training' && (
+            // FavoriteType поддерживает training, не game — игры сознательно без ♥ (TASK-02-04).
+            <FavoriteButton type="training" entityId={event.id} title={event.title} />
+          )}
+        </div>
         <Text
           color="secondary"
           className="event-card__arena"
@@ -133,7 +140,8 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
         </div>
         <div>
           <Text
-            variant="subheader-2"
+            variant="header-2"
+            className="hockey-entity-title--compact"
             data-testid={testId('events', 'card', 'text', 'title', event.id)}
           >
             {event.title}

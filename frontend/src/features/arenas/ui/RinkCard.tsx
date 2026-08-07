@@ -8,6 +8,7 @@ import {forwardRef} from 'react'
 
 import type {Arena} from '@/entities/arena'
 import {ExternalBookingButton} from '@/features/arenas/ui/ExternalBookingButton'
+import {FavoriteButton} from '@/features/favorites'
 import {testId} from '@/shared/testing/testId'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -84,12 +85,14 @@ export const RinkCard = forwardRef<HTMLDivElement, RinkCardProps>(function RinkC
       <div className="hockey-stack hockey-stack--gap-10">
         <div className="hockey-row hockey-row--gap-8 hockey-row--between">
           <Text
-            variant="subheader-2"
+            variant="header-2"
+            className="hockey-entity-title--compact"
             data-testid={testId('arenas', 'rink', 'text', 'name', arena.id)}
           >
             {arena.name}
           </Text>
           <div className="hockey-row hockey-row--gap-8">
+            <FavoriteButton type="arena" entityId={arena.id} title={arena.name} />
             <div data-testid={testId('arenas', 'rink', 'badge', 'profile', arena.id)}>
               <EntityProfileBadge kind="arena" />
             </div>

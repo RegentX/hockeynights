@@ -1,3 +1,4 @@
+export {canManageClubEntity} from './lib/clubAccess'
 export type {NavItem, NavTier} from './lib/navigationAccess'
 export {
   getAllowedPathPrefixes,

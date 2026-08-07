@@ -15,6 +15,7 @@ export function canOrganizeEvents(roles: UserRole[]): boolean {
 export function isPlayerOnlySession(roles: UserRole[]): boolean {
   if (
     roles.includes('admin') ||
+    roles.includes('club_admin') ||
     roles.includes('captain') ||
     roles.includes('coach') ||
     roles.includes('organizer')

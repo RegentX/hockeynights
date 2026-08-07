@@ -21,6 +21,7 @@ import {routes} from '@/shared/const/appRoutes'
 export const MOBILE_NAV_ICON_BY_PATH: Record<string, IconData> = {
   [routes.events]: Calendar,
   [routes.teams]: Persons,
+  [routes.players]: Person,
   [routes.messenger]: Comment,
   [routes.profile]: Person,
   [routes.arenas]: MapPin,

@@ -2,16 +2,17 @@
  * SPEC-FR-2.3.1, SPEC-FR-8.2.1, SPEC-FR-8.2.2
  * SPEC-UI-2.1, SPEC-UI-1.3, SPEC-UI-1.4
  * SPEC-FR-17.1.1, SPEC-FR-24.2.1, SPEC-FR-24.2.3
+ * HOCFRONT-19 — FavoriteButton на карточке игрока
  */
 
 import {MapPin, Shield} from '@gravity-ui/icons'
 import {Icon, Text} from '@gravity-ui/uikit'
 import type {ReactNode} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import type {PlayerListItem} from '@/entities/profile'
+import {FavoriteButton} from '@/features/favorites'
 import {KarmaScore} from '@/features/karma'
-import {PlayerFavoriteButton} from '@/features/player-favorites'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {PositionLabel} from '@/shared/ui/PositionLabel'
@@ -178,8 +179,8 @@ export function PlayerCard({player, linkable = true}: PlayerCardProps) {
                 </span>
               )}
               <Text
-                variant="subheader-2"
-                className="hockey-text-mt-6"
+                variant="header-2"
+                className="hockey-text-mt-6 hockey-entity-title--compact"
                 data-testid={testId('players', 'player-card', 'text', 'name', player.userId)}
               >
                 {player.displayName}
@@ -187,7 +188,7 @@ export function PlayerCard({player, linkable = true}: PlayerCardProps) {
             </div>
           </CardNav>
           <div className="hockey-player-card__top-right">
-            <PlayerFavoriteButton playerId={player.userId} />
+            <FavoriteButton type="player" entityId={player.userId} title={player.displayName} />
             <ScoreboardText
               className="hockey-player-card__number"
               data-testid={testId('players', 'player-card', 'text', 'number', player.userId)}

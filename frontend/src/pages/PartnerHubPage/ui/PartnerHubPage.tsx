@@ -4,7 +4,7 @@
 
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {partnerCabinetLabel, partnerCabinetPath} from '@/shared/const/partnerRoutes'
@@ -15,6 +15,7 @@ import {IceCard} from '@/shared/ui/IceCard'
 const CABINET_FEATURES: Record<string, string[]> = {
   league: ['Профиль лиги', 'Заявки команд', 'Расписание и таблица', 'Публикации', 'Аналитика'],
   shop: ['Профиль магазина', 'Товары', 'Импорт каталога', 'Промо', 'Аналитика и лиды'],
+  club: ['Профиль клуба', 'Состав', 'Штаб', 'Календарь', 'Приватные тренировки'],
 }
 
 /** @spec SPEC-FR-24.5.3 - Хаб партнёрских кабинетов */
@@ -33,7 +34,8 @@ export function PartnerHubPage() {
             Партнёрские кабинеты
           </Text>
           <Text color="secondary" data-testid={testId('partners', 'hub', 'text', 'empty-hint')}>
-            Кабинеты лиги и магазина доступны после mock-входа с ролью представителя партнёра.
+            Кабинеты лиги, магазина и клуба доступны после mock-входа с ролью представителя
+            партнёра.
           </Text>
           <Link to="/" data-testid={testId('partners', 'hub', 'link', 'login')}>
             <HockeyButton view="action" data-testid={testId('partners', 'hub', 'btn', 'login')}>

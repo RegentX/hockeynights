@@ -3,7 +3,7 @@
  */
 
 import {useQuery} from '@tanstack/react-query'
-import {Navigate, Outlet, useLocation} from 'react-router-dom'
+import {Navigate, Outlet, useLocation} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {getPersonaHomePath, isPathAllowed} from '@/features/access'

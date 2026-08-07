@@ -78,7 +78,8 @@ export function RadarRecommendationCard({
         </div>
 
         <Text
-          variant="subheader-2"
+          variant="header-2"
+          className="hockey-entity-title--compact"
           data-testid={testId('radar', 'recommendation-card', 'text', 'title', recommendation.id)}
         >
           {recommendation.title}

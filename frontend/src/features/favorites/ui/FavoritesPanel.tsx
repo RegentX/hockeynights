@@ -1,6 +1,6 @@
 import {Button, Checkbox, Dialog, Text} from '@gravity-ui/uikit'
 import {useCallback, useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 
 import {FAVORITE_ACTIONS_PRESET, getFavoriteIds, setFavoriteIds} from '@/features/favorites/model'
 import {testId} from '@/shared/testing/testId'
@@ -25,8 +25,8 @@ export function FavoritesPanel() {
   }, [])
 
   const handleSave = useCallback(() => {
-    setFavoriteIds(draftIds)
-    setSelectedIds(draftIds)
+    const next = setFavoriteIds(draftIds)
+    setSelectedIds(next)
     setSettingsOpen(false)
   }, [draftIds])
 
@@ -38,7 +38,7 @@ export function FavoritesPanel() {
     <IceCard padding="s" data-testid={testId('favorites', 'panel')}>
       <div className="hockey-row hockey-row--between-center">
         <div className="side-board__title" data-testid={testId('favorites', 'text', 'title')}>
-          Избранное
+          Быстрые действия
         </div>
         <Button
           view="flat"
