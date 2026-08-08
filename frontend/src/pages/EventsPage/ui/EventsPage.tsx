@@ -74,7 +74,12 @@ const TAB_TITLES: Record<CatalogTab, string> = {
  * @spec HOCFRONT-28C - chips + URLSearchParams
  */
 export function EventsPage() {
-  const {data: events = [], isLoading} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
+  const {
+    data: events = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({queryKey: ['events'], queryFn: fetchEvents})
   const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
   const {userId, roles, session, canOrganizeEvents} = useSessionAccess()
   const canSeeDeclineDetails =
@@ -602,37 +607,65 @@ export function EventsPage() {
         </div>
       )}
 
-      {!isLoading && !isResultsLoading && !isDemoLoaderVisible && upcomingCatalog.length === 0 && (
-        <div data-testid={testId('events', 'page', 'empty', 'upcoming')}>
+      {isError && !isLoading && (
+        <div data-testid={testId('events', 'page', 'error')}>
           <EmptyNetState
-            title="Событий пока нет"
-            copy="Ближайшие игры и тренировки появятся здесь."
+            title="Не удалось загрузить события"
+            copy="Проверь соединение и попробуй ещё раз."
+            action={
+              <HockeyButton
+                view="outlined"
+                size="s"
+                onClick={() => void refetch()}
+                data-testid={testId('events', 'page', 'btn', 'retry')}
+              >
+                Повторить
+              </HockeyButton>
+            }
           />
         </div>
       )}
 
-      {!isLoading && !isResultsLoading && !isDemoLoaderVisible && filteredCatalog.length > 0 && (
-        <div
-          className="hockey-stack hockey-stack--gap-12"
-          data-testid={testId('events', 'page', 'list', 'details')}
-        >
-          <Text
-            variant="subheader-2"
-            data-testid={testId('events', 'page', 'text', 'details-title')}
-          >
-            {TAB_TITLES[filters.tab]}
-          </Text>
-          {filteredCatalog.map((event, index) => (
-            <ScrollReveal key={event.id} direction={index % 2 === 0 ? 'up' : 'down'}>
-              <div id={event.id}>
-                <EventCard event={event} currentUserId={userId} />
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      )}
+      {!isLoading &&
+        !isError &&
+        !isResultsLoading &&
+        !isDemoLoaderVisible &&
+        upcomingCatalog.length === 0 && (
+          <div data-testid={testId('events', 'page', 'empty', 'upcoming')}>
+            <EmptyNetState
+              title="Событий пока нет"
+              copy="Ближайшие игры и тренировки появятся здесь."
+            />
+          </div>
+        )}
 
       {!isLoading &&
+        !isError &&
+        !isResultsLoading &&
+        !isDemoLoaderVisible &&
+        filteredCatalog.length > 0 && (
+          <div
+            className="hockey-stack hockey-stack--gap-12"
+            data-testid={testId('events', 'page', 'list', 'details')}
+          >
+            <Text
+              variant="subheader-2"
+              data-testid={testId('events', 'page', 'text', 'details-title')}
+            >
+              {TAB_TITLES[filters.tab]}
+            </Text>
+            {filteredCatalog.map((event, index) => (
+              <ScrollReveal key={event.id} direction={index % 2 === 0 ? 'up' : 'down'}>
+                <div id={event.id}>
+                  <EventCard event={event} currentUserId={userId} />
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        )}
+
+      {!isLoading &&
+        !isError &&
         !isResultsLoading &&
         !isDemoLoaderVisible &&
         upcomingCatalog.length > 0 &&

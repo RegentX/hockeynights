@@ -13,7 +13,8 @@ export function useSessionAccess() {
   })
 
   const roles = session?.user.roles ?? []
-  const userId = session?.user.id ?? 'user-001'
+  /** Пустая строка до загрузки сессии — не подставляем demo userId. */
+  const userId = session?.user.id ?? ''
 
   return {
     session,

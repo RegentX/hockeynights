@@ -16,10 +16,15 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {Link, Outlet, useLocation, useNavigate} from 'react-router'
 
-import {fetchSession, logoutSession} from '@/entities/auth'
+import {logoutSession} from '@/entities/auth'
 import {fetchChats, getTotalUnreadCount} from '@/entities/messenger'
 import {fetchNotifications} from '@/entities/notification'
-import {resolveNavItems, shouldUsePartnerWorkspace, splitNavItemsByTier} from '@/features/access'
+import {
+  resolveNavItems,
+  shouldUsePartnerWorkspace,
+  splitNavItemsByTier,
+  useSessionAccess,
+} from '@/features/access'
 import {LAUNCH_REGION} from '@/shared/config/geo'
 import {partnerCabinetLabel, partnerCabinetPath} from '@/shared/const/partnerRoutes'
 import {routeToTestSlug, testId} from '@/shared/testing/testId'
@@ -46,10 +51,7 @@ export function AppShell() {
   const [isLeftCollapsed, setIsLeftCollapsed] = useState(false)
   const [isRightCollapsed, setIsRightCollapsed] = useState(false)
 
-  const {data: session} = useQuery({
-    queryKey: ['session'],
-    queryFn: fetchSession,
-  })
+  const {session} = useSessionAccess()
   const partnerMemberships = session?.user.partnerMemberships ?? []
   const hasPartnerAccess = partnerMemberships.length > 0 && !shouldUsePartnerWorkspace(session)
   const partnerWorkspace = shouldUsePartnerWorkspace(session)

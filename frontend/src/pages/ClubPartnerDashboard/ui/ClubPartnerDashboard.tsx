@@ -2,12 +2,11 @@
  * HOCFRONT-25 / TASK-04-07..11 — кабинет партнёра клуба
  */
 
-import {Button, Text} from '@gravity-ui/uikit'
+import {Text} from '@gravity-ui/uikit'
 import {useQueries, useQuery} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
 import {Link, useParams} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import {fetchClub, fetchClubCalendar, fetchClubPrivateTrainings} from '@/entities/club'
 import {fetchTeamRoster, fetchTeams} from '@/entities/team'
 import {canManageClubEntity, useSessionAccess} from '@/features/access'
@@ -35,9 +34,8 @@ const TAB_LABELS: Record<ClubPartnerTab, string> = {
 export function ClubPartnerDashboard() {
   const {clubId = ''} = useParams()
   const [tab, setTab] = useState<ClubPartnerTab>('dashboard')
-  const {teamPermissions, userId} = useSessionAccess()
+  const {session, teamPermissions, userId} = useSessionAccess()
 
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
   const {
     data: club,
     isLoading,
@@ -191,7 +189,7 @@ export function ClubPartnerDashboard() {
 
       <div className="club-cabinet__tabs" data-testid={testId('clubs', 'partner', 'nav', clubId)}>
         {(Object.keys(TAB_LABELS) as ClubPartnerTab[]).map((tabKey) => (
-          <Button
+          <HockeyButton
             key={tabKey}
             view={tab === tabKey ? 'action' : 'outlined'}
             size="m"
@@ -199,7 +197,7 @@ export function ClubPartnerDashboard() {
             data-testid={testId('clubs', 'partner', 'tab', tabKey, clubId)}
           >
             {TAB_LABELS[tabKey]}
-          </Button>
+          </HockeyButton>
         ))}
       </div>
 

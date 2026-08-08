@@ -8,12 +8,14 @@ import {useQuery} from '@tanstack/react-query'
 import {useEffect, useMemo, useRef} from 'react'
 import {useSearchParams} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import {fetchLeagues, fetchLeagueSchedule, fetchLeagueStandings} from '@/entities/league'
+import {useSessionAccess} from '@/features/access'
 import {LeagueCard, LeagueProfilePanel, LeagueSchedule, LeagueStandings} from '@/features/leagues'
 import {PartnerAccessHint, PartnerCabinetBanner} from '@/features/partners'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
+import {PageHeader} from '@/shared/ui/PageHeader'
+import {QueryState} from '@/shared/ui/QueryState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 
@@ -27,10 +29,15 @@ export function LeaguesPage() {
   const scrollOnNextLeagueRef = useRef(false)
   const detailRef = useRef<HTMLDivElement | null>(null)
 
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {session} = useSessionAccess()
   const leagueMembership = session?.user.partnerMemberships?.find((m) => m.kind === 'league')
 
-  const {data: leagues = [], isLoading} = useQuery({
+  const {
+    data: leagues = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['leagues'],
     queryFn: fetchLeagues,
   })
@@ -78,9 +85,11 @@ export function LeaguesPage() {
 
   return (
     <div className="hockey-stack hockey-stack--gap-20" data-testid={testId('leagues', 'page')}>
-      <Text variant="header-1" data-testid={testId('leagues', 'page', 'text', 'title')}>
-        Любительские лиги
-      </Text>
+      <PageHeader
+        title="Любительские лиги"
+        subtitle="Данные могут быть mock, manual, imported или external — смотрите бейдж источника."
+        testIdPrefix="leagues"
+      />
 
       <div data-testid={testId('leagues', 'page', 'panel', 'partner-access')}>
         {leagueMembership ? (
@@ -90,29 +99,31 @@ export function LeaguesPage() {
         )}
       </div>
 
-      <Text color="secondary" data-testid={testId('leagues', 'page', 'text', 'subtitle')}>
-        Данные могут быть mock, manual, imported или external — смотрите бейдж источника.
-      </Text>
-
-      {isLoading && (
-        <div data-testid={testId('leagues', 'page', 'loader')}>
-          <ScoreboardLoader label="Загрузка лиг" />
-        </div>
-      )}
-
-      <div
-        className="hockey-grid hockey-grid--cards-300"
-        data-testid={testId('leagues', 'page', 'list')}
+      <QueryState
+        isLoading={isLoading}
+        isError={isError}
+        isEmpty={!isLoading && !isError && leagues.length === 0}
+        loadingLabel="Загрузка лиг"
+        errorTitle="Не удалось загрузить лиги"
+        emptyTitle="Лиги не найдены"
+        emptyCopy="Каталог любительских лиг пока пуст."
+        onRetry={() => void refetch()}
+        testIdPrefix="leagues"
       >
-        {leagues.map((league) => (
-          <LeagueCard
-            key={league.id}
-            league={league}
-            selected={activeLeagueId === league.id}
-            onSelect={handleSelectLeague}
-          />
-        ))}
-      </div>
+        <div
+          className="hockey-grid hockey-grid--cards-300"
+          data-testid={testId('leagues', 'page', 'list')}
+        >
+          {leagues.map((league) => (
+            <LeagueCard
+              key={league.id}
+              league={league}
+              selected={activeLeagueId === league.id}
+              onSelect={handleSelectLeague}
+            />
+          ))}
+        </div>
+      </QueryState>
 
       {activeLeagueId && selectedLeague && (
         <div

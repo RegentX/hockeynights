@@ -7,19 +7,19 @@ import {useQuery} from '@tanstack/react-query'
 import {useState} from 'react'
 import {Link, useParams} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import {
   fetchTeam,
   fetchTeamCalendarEvents,
   fetchTeamClubProfile,
   fetchTeamRoster,
 } from '@/entities/team'
-import {canManageClubEntity} from '@/features/access'
+import {canManageClubEntity, useSessionAccess} from '@/features/access'
 import {POSITION_LABELS, SKILL_LEVEL_LABELS} from '@/features/events'
 import {FavoriteButton} from '@/features/favorites'
 import {ContactStaffModal, STAFF_ROLE_LABELS, TeamCalendarSection} from '@/features/teams'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
@@ -29,8 +29,13 @@ export function TeamProfilePage() {
   const {teamId = ''} = useParams()
   const [contactOpen, setContactOpen] = useState(false)
 
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
-  const {data: team, isLoading: teamLoading} = useQuery({
+  const {session} = useSessionAccess()
+  const {
+    data: team,
+    isLoading: teamLoading,
+    isError: isTeamError,
+    refetch: refetchTeam,
+  } = useQuery({
     queryKey: ['team', teamId],
     queryFn: () => fetchTeam(teamId),
     enabled: Boolean(teamId),
@@ -55,6 +60,27 @@ export function TeamProfilePage() {
     return (
       <div data-testid={testId('teams', 'profile', 'loader')}>
         <ScoreboardLoader label="Загрузка профиля команды" />
+      </div>
+    )
+  }
+
+  if (isTeamError) {
+    return (
+      <div data-testid={testId('teams', 'profile', 'error')}>
+        <EmptyNetState
+          title="Не удалось загрузить команду"
+          copy="Проверь соединение и попробуй ещё раз."
+          action={
+            <HockeyButton
+              view="outlined"
+              size="s"
+              onClick={() => void refetchTeam()}
+              data-testid={testId('teams', 'profile', 'btn', 'retry')}
+            >
+              Повторить
+            </HockeyButton>
+          }
+        />
       </div>
     )
   }

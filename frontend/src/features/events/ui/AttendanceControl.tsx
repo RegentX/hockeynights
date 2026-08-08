@@ -2,13 +2,15 @@
  * SPEC-FR-3.3.1, SPEC-FR-25.6.2
  */
 
-import {Button, Text} from '@gravity-ui/uikit'
+import {Text} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
 import type {AttendanceStatus} from '@/entities/common'
 import type {EventRsvpStatus} from '@/entities/event'
 import {fetchEventRsvp, updateAttendance, updateEventRsvp} from '@/entities/event'
+import {useSessionAccess} from '@/features/access'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'
 
 /** @spec SPEC-FR-3.3.1 - Props контрола посещаемости */
@@ -62,12 +64,14 @@ function buildAttendanceLabel(
 export function AttendanceControl({
   eventId,
   currentStatus,
-  currentUserId = 'user-001',
+  currentUserId,
   eventTitle,
   eventKind,
   useRsvpApi,
 }: AttendanceControlProps) {
   const queryClient = useQueryClient()
+  const {userId: sessionUserId} = useSessionAccess()
+  const resolvedUserId = currentUserId || sessionUserId
   const rsvpEnabled = useRsvpApi ?? false
 
   const {data: rsvpBoard, isLoading: isRsvpLoading} = useQuery({
@@ -119,7 +123,7 @@ export function AttendanceControl({
 
   if (rsvpEnabled && rsvpBoard) {
     const currentRsvp =
-      rsvpBoard.players.find((player) => player.userId === currentUserId)?.status ??
+      rsvpBoard.players.find((player) => player.userId === resolvedUserId)?.status ??
       attendanceToRsvp(currentStatus) ??
       'pending'
 
@@ -139,7 +143,7 @@ export function AttendanceControl({
           data-testid={testId('events', 'attendance', 'list', eventId)}
         >
           {RSVP_BUTTONS.map((btn) => (
-            <Button
+            <HockeyButton
               key={btn.status}
               view={currentRsvp === btn.status ? 'action' : 'outlined'}
               loading={rsvpMutation.isPending}
@@ -147,7 +151,7 @@ export function AttendanceControl({
               data-testid={testId('events', 'attendance', 'btn', btn.status, eventId)}
             >
               {btn.label}
-            </Button>
+            </HockeyButton>
           ))}
         </div>
       </div>
@@ -170,7 +174,7 @@ export function AttendanceControl({
         data-testid={testId('events', 'attendance', 'list', eventId)}
       >
         {ATTENDANCE_BUTTONS.map((btn) => (
-          <Button
+          <HockeyButton
             key={btn.status}
             view={currentStatus === btn.status ? 'action' : 'outlined'}
             loading={attendanceMutation.isPending}
@@ -178,7 +182,7 @@ export function AttendanceControl({
             data-testid={testId('events', 'attendance', 'btn', btn.status, eventId)}
           >
             {btn.label}
-          </Button>
+          </HockeyButton>
         ))}
       </div>
     </div>

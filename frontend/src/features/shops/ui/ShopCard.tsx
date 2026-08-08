@@ -2,13 +2,15 @@
  * SPEC-FR-9.1.1, SPEC-FR-9.1.2, SPEC-FR-9.1.3, SPEC-FR-11.2.2
  */
 
-import {Button, Card, Label, Text} from '@gravity-ui/uikit'
+import {Label, Text} from '@gravity-ui/uikit'
 import {useState} from 'react'
 
 import type {Shop} from '@/entities/shop'
 import {MockShopPortalModal} from '@/features/shops/ui/MockShopPortalModal'
 import {testId} from '@/shared/testing/testId'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {IceCard} from '@/shared/ui/IceCard'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 
 /** @spec SPEC-FR-9.1.2 - Props карточки магазина */
@@ -28,11 +30,7 @@ export function ShopCard({shop}: ShopCardProps) {
 
   return (
     <>
-      <Card
-        view="outlined"
-        className="hockey-panel"
-        data-testid={testId('shops', 'shop-card', 'card', shop.id)}
-      >
+      <IceCard padding="m" data-testid={testId('shops', 'shop-card', 'card', shop.id)}>
         <div className="hockey-stack hockey-stack--gap-8">
           <div className="hockey-row hockey-row--gap-8 hockey-row--between">
             <Text
@@ -66,7 +64,7 @@ export function ShopCard({shop}: ShopCardProps) {
           <span data-testid={testId('shops', 'shop-card', 'badge', 'source', shop.id)}>
             <SourceMetaBadge sourceMeta={shop.sourceMeta} />
           </span>
-          <Button
+          <HockeyButton
             view="outlined"
             data-testid={testId('shops', 'shop-card', 'btn', 'portal', shop.id)}
             onClick={(e) => {
@@ -75,9 +73,9 @@ export function ShopCard({shop}: ShopCardProps) {
             }}
           >
             Сайт магазина (mock)
-          </Button>
+          </HockeyButton>
         </div>
-      </Card>
+      </IceCard>
       <MockShopPortalModal open={portalOpen} onClose={() => setPortalOpen(false)} shop={shop} />
     </>
   )

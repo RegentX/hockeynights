@@ -3,7 +3,7 @@
  * HOCFRONT-28 / TASK-05-07, TASK-05-09, TASK-05-10 — форма создания/редактирования
  */
 
-import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
+import {Select, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
 import {Link} from 'react-router'
@@ -18,6 +18,7 @@ import {useSessionAccess} from '@/features/access'
 import {hasOrganizerPublishAccess} from '@/features/events/lib/organizerSubscription'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 const TYPE_OPTIONS = [
   {value: 'training', content: 'Тренировка'},
@@ -399,16 +400,16 @@ export function EventCreateForm({mode = 'create', initialEvent, onSuccess}: Even
       )}
 
       <div className="hockey-row hockey-row--gap-8 hockey-row--wrap">
-        <Button
+        <HockeyButton
           view="action"
           loading={mutation.isPending}
           onClick={handleSubmit}
           data-testid={testId('events', 'create-form', 'btn', 'submit')}
         >
           {isEdit ? 'Сохранить' : 'Создать'}
-        </Button>
+        </HockeyButton>
         {type === 'training' && (
-          <Button
+          <HockeyButton
             view="outlined"
             loading={goalieMutation.isPending}
             onClick={() => {
@@ -422,19 +423,19 @@ export function EventCreateForm({mode = 'create', initialEvent, onSuccess}: Even
             data-testid={testId('events', 'create-form', 'btn', 'goalie-request')}
           >
             Отправить запрос вратарям
-          </Button>
+          </HockeyButton>
         )}
         {isEdit && initialEvent && (
           <Link
             to={`/events/trainings/${initialEvent.id}`}
             data-testid={testId('events', 'create-form', 'link', 'back-details')}
           >
-            <Button
+            <HockeyButton
               view="flat"
               data-testid={testId('events', 'create-form', 'btn', 'back-details')}
             >
               К карточке
-            </Button>
+            </HockeyButton>
           </Link>
         )}
         {!isEdit && (
@@ -442,9 +443,12 @@ export function EventCreateForm({mode = 'create', initialEvent, onSuccess}: Even
             to={routes.profile}
             data-testid={testId('events', 'create-form', 'link', 'upgrade')}
           >
-            <Button view="flat" data-testid={testId('events', 'create-form', 'btn', 'upgrade')}>
+            <HockeyButton
+              view="flat"
+              data-testid={testId('events', 'create-form', 'btn', 'upgrade')}
+            >
               Тарифы в профиле
-            </Button>
+            </HockeyButton>
           </Link>
         )}
       </div>

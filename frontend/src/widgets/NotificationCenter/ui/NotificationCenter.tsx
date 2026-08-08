@@ -2,11 +2,13 @@
  * SPEC-FR-10.1.1, SPEC-FR-10.1.2
  */
 
-import {Card, Label, Text} from '@gravity-ui/uikit'
+import {Label, Text} from '@gravity-ui/uikit'
 
 import type {Notification} from '@/entities/notification'
 import {MarkNotificationReadButton} from '@/features/notifications'
 import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {IceCard} from '@/shared/ui/IceCard'
 
 /** @spec SPEC-FR-10.1.1 - Props центра уведомлений */
 export interface NotificationCenterProps {
@@ -29,9 +31,12 @@ const TYPE_LABELS: Record<Notification['type'], string> = {
 export function NotificationCenter({notifications}: NotificationCenterProps) {
   if (notifications.length === 0) {
     return (
-      <Text color="secondary" data-testid={testId('notifications', 'center', 'empty')}>
-        Нет уведомлений
-      </Text>
+      <EmptyNetState
+        title="Нет уведомлений"
+        copy="Когда появится активность по SOS, составу или событиям — она будет здесь."
+        testIdPrefix="notifications"
+        data-testid={testId('notifications', 'center', 'empty')}
+      />
     )
   }
 
@@ -41,10 +46,10 @@ export function NotificationCenter({notifications}: NotificationCenterProps) {
       data-testid={testId('notifications', 'center', 'list')}
     >
       {notifications.map((notification) => (
-        <Card
+        <IceCard
           key={notification.id}
-          view={notification.readAt ? 'outlined' : 'filled'}
-          className="hockey-panel"
+          padding="m"
+          className={notification.readAt ? undefined : 'ice-card--selected'}
           data-testid={testId('notifications', 'center', 'card', notification.id)}
         >
           <div className="hockey-row hockey-row--gap-12 hockey-row--between">
@@ -80,7 +85,7 @@ export function NotificationCenter({notifications}: NotificationCenterProps) {
               <MarkNotificationReadButton notificationId={notification.id} />
             )}
           </div>
-        </Card>
+        </IceCard>
       ))}
     </div>
   )

@@ -3,7 +3,7 @@
  * HOCFRONT-30 — краткая карточка профиля с раскрытием подробностей.
  */
 
-import {Card, Text} from '@gravity-ui/uikit'
+import {Text} from '@gravity-ui/uikit'
 import {Link} from 'react-router'
 
 import type {UserRole} from '@/entities/common'
@@ -13,6 +13,7 @@ import {KarmaScore} from '@/features/karma'
 import {formatProfileLocation, getProfileInitials} from '@/shared/lib/profileIdentity'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {IceCard} from '@/shared/ui/IceCard'
 
 const ROLE_LABELS: Record<UserRole, string> = {
   player: 'Игрок',
@@ -83,8 +84,8 @@ export function ProfileSummaryCard({
   const bioPreview = bio.length > BIO_PREVIEW_LIMIT ? `${bio.slice(0, BIO_PREVIEW_LIMIT)}…` : bio
 
   return (
-    <Card view="filled" data-testid={testId('profile', 'profile-summary', 'card')}>
-      <div className="hockey-panel hockey-panel--24 profile-summary">
+    <IceCard padding="l" data-testid={testId('profile', 'profile-summary', 'card')}>
+      <div className="profile-summary">
         <div className="profile-summary__head">
           <span
             className="profile-summary__avatar"
@@ -188,6 +189,6 @@ export function ProfileSummaryCard({
           </Link>
         </div>
       </div>
-    </Card>
+    </IceCard>
   )
 }

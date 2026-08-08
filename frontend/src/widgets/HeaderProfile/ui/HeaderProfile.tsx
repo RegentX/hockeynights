@@ -11,9 +11,8 @@ import {useLottie} from 'lottie-react'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {useNavigate} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import {fetchMyProfile, fetchProfileSettings} from '@/entities/profile'
-import {getPrimaryPartnerPath, shouldUsePartnerWorkspace} from '@/features/access'
+import {getPrimaryPartnerPath, shouldUsePartnerWorkspace, useSessionAccess} from '@/features/access'
 import {POSITION_LABELS, SKILL_LEVEL_LABELS} from '@/features/events'
 import profileRingAnimation from '@/shared/assets/lottie/profile-ring.json'
 import {routes} from '@/shared/const/appRoutes'
@@ -39,10 +38,7 @@ export function HeaderProfile({sessionMenuItems = []}: HeaderProfileProps) {
   const prefersReducedMotion = usePrefersReducedMotion()
   const [menuOpen, setMenuOpen] = useState(false)
 
-  const {data: session} = useQuery({
-    queryKey: ['session'],
-    queryFn: fetchSession,
-  })
+  const {session} = useSessionAccess()
   const partnerWorkspace = shouldUsePartnerWorkspace(session)
 
   const {data: profile} = useQuery({

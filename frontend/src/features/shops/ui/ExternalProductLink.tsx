@@ -2,12 +2,12 @@
  * SPEC-FR-9.2.2, SPEC-FR-9.2.3
  */
 
-import {Button} from '@gravity-ui/uikit'
 import {useState} from 'react'
 
 import type {ProductOffer} from '@/entities/shop'
 import {MockShopCheckoutModal} from '@/features/shops/ui/MockShopCheckoutModal'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 /** @spec SPEC-FR-9.2.3 - Props mock-покупки */
 export interface ExternalProductLinkProps {
@@ -27,7 +27,7 @@ export function ExternalProductLink({offer, shopName, compact = false}: External
 
   return (
     <>
-      <Button
+      <HockeyButton
         view={compact ? 'action' : 'outlined'}
         size={compact ? 'm' : 's'}
         width={compact ? 'max' : undefined}
@@ -40,7 +40,7 @@ export function ExternalProductLink({offer, shopName, compact = false}: External
           : compact
             ? 'Купить'
             : `Купить: ${offer.title}`}
-      </Button>
+      </HockeyButton>
       <MockShopCheckoutModal
         open={open}
         onClose={() => setOpen(false)}

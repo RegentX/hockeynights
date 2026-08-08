@@ -9,28 +9,35 @@ import {fetchSourceStatuses} from '@/entities/admin'
 import {AdminEntityForm, PartnerModerationPanel, SourceStatusTable} from '@/features/admin'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
+import {PageHeader} from '@/shared/ui/PageHeader'
+import {QueryState} from '@/shared/ui/QueryState'
 
 /**
  * @spec SPEC-FR-11.1.1 - Admin prototype
  * @spec SPEC-FR-11.2.1 - Статусы источников
  */
 export function AdminDashboard() {
-  const {data: sources = [], isLoading} = useQuery({
+  const {
+    data: sources = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['admin-sources'],
     queryFn: fetchSourceStatuses,
   })
 
   return (
     <div
-      className="hockey-stack hockey-stack--gap-16"
+      className="hockey-stack hockey-stack--gap-20"
       data-testid={testId('admin', 'dashboard', 'page')}
     >
-      <Text variant="header-1" data-testid={testId('admin', 'dashboard', 'text', 'title')}>
-        Админка справочников
-      </Text>
-      <Text color="secondary" data-testid={testId('admin', 'dashboard', 'text', 'subtitle')}>
-        Prototype для ручного управления аренами, лигами и магазинами.
-      </Text>
+      <PageHeader
+        title="Админка справочников"
+        subtitle="Prototype для ручного управления аренами, лигами и магазинами."
+        testIdPrefix="admin"
+        testIdSection="dashboard"
+      />
 
       <AdminEntityForm />
 
@@ -60,8 +67,16 @@ export function AdminDashboard() {
       >
         Статусы источников и видимость
       </Text>
-      {isLoading && <Text data-testid={testId('admin', 'dashboard', 'loader')}>Загрузка...</Text>}
-      <SourceStatusTable items={sources} />
+      <QueryState
+        isLoading={isLoading}
+        isError={isError}
+        loadingLabel="Загрузка статусов источников"
+        errorTitle="Не удалось загрузить статусы"
+        onRetry={() => void refetch()}
+        testIdPrefix="admin"
+      >
+        <SourceStatusTable items={sources} />
+      </QueryState>
     </div>
   )
 }

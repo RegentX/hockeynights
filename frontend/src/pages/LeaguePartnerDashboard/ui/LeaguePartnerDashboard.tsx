@@ -2,14 +2,14 @@
  * SPEC-FR-24.5.3
  */
 
-import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
+import {Select, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
 import {Link, useParams} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import type {League} from '@/entities/league'
 import {fetchLeagues, updateLeaguePartnerProfile} from '@/entities/league'
+import {useSessionAccess} from '@/features/access'
 import {
   LeagueAnalyticsPanel,
   LeagueApplicationsPanel,
@@ -37,7 +37,7 @@ export function LeaguePartnerDashboard() {
   const [tab, setTab] = useState<PartnerTab>('applications')
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
 
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {session} = useSessionAccess()
   const {data: leagues = [], isLoading} = useQuery({queryKey: ['leagues'], queryFn: fetchLeagues})
   const league = leagues.find((item) => item.id === leagueId)
   const [draft, setDraft] = useState<Partial<League>>({})
@@ -121,46 +121,46 @@ export function LeaguePartnerDashboard() {
         className="partner-dashboard__tabs"
         data-testid={testId('leagues', 'partner', 'nav', leagueId)}
       >
-        <Button
+        <HockeyButton
           view={tab === 'profile' ? 'action' : 'outlined'}
           size="s"
           onClick={() => setTab('profile')}
           data-testid={testId('leagues', 'partner', 'tab', 'profile', leagueId)}
         >
           О лиге
-        </Button>
-        <Button
+        </HockeyButton>
+        <HockeyButton
           view={tab === 'applications' ? 'action' : 'outlined'}
           size="s"
           onClick={() => setTab('applications')}
           data-testid={testId('leagues', 'partner', 'tab', 'applications', leagueId)}
         >
           Заявки
-        </Button>
-        <Button
+        </HockeyButton>
+        <HockeyButton
           view={tab === 'schedule' ? 'action' : 'outlined'}
           size="s"
           onClick={() => setTab('schedule')}
           data-testid={testId('leagues', 'partner', 'tab', 'schedule', leagueId)}
         >
           Расписание
-        </Button>
-        <Button
+        </HockeyButton>
+        <HockeyButton
           view={tab === 'posts' ? 'action' : 'outlined'}
           size="s"
           onClick={() => setTab('posts')}
           data-testid={testId('leagues', 'partner', 'tab', 'posts', leagueId)}
         >
           Публикации
-        </Button>
-        <Button
+        </HockeyButton>
+        <HockeyButton
           view={tab === 'analytics' ? 'action' : 'outlined'}
           size="s"
           onClick={() => setTab('analytics')}
           data-testid={testId('leagues', 'partner', 'tab', 'analytics', leagueId)}
         >
           Аналитика
-        </Button>
+        </HockeyButton>
       </div>
 
       {tab === 'profile' && (
@@ -215,14 +215,14 @@ export function LeaguePartnerDashboard() {
               >
                 Статус модерации: {form.moderationStatus ?? 'draft'}
               </Text>
-              <Button
+              <HockeyButton
                 view="action"
                 loading={saveMutation.isPending}
                 onClick={() => saveMutation.mutate(draft)}
                 data-testid={testId('leagues', 'partner', 'btn', 'save', leagueId)}
               >
                 Сохранить профиль
-              </Button>
+              </HockeyButton>
               {statusMessage && (
                 <Text
                   color="secondary"

@@ -2,9 +2,7 @@
  * SPEC-FR-9.1.1, SPEC-FR-9.3.1
  */
 
-import {useQuery} from '@tanstack/react-query'
-
-import {fetchSession} from '@/entities/auth'
+import {useSessionAccess} from '@/features/access'
 import {PartnerCabinetBanner} from '@/features/partners'
 import {MarketplacePage} from '@/pages/MarketplacePage'
 import {testId} from '@/shared/testing/testId'
@@ -14,12 +12,12 @@ import {testId} from '@/shared/testing/testId'
  * @spec SPEC-FR-9.3.1 - Лента товаров
  */
 export function ShopsPage() {
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {session} = useSessionAccess()
   const shopMembership = session?.user.partnerMemberships?.find((m) => m.kind === 'shop')
 
   return (
     <div
-      className="hockey-stack hockey-stack--gap-16"
+      className="hockey-stack hockey-stack--gap-20"
       data-testid={testId('shops', 'shops', 'page')}
     >
       {shopMembership && <PartnerCabinetBanner membership={shopMembership} />}

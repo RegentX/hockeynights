@@ -51,7 +51,12 @@ export function TeamsPage() {
   const filtersActive = useMemo(() => hasActiveFilters(filters), [filters])
   const isFiltered = filtersActive || Boolean(searchQuery.trim())
 
-  const {data: teams = [], isLoading} = useQuery({
+  const {
+    data: teams = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['teams', queryFilters],
     queryFn: () => fetchTeams(queryFilters),
     placeholderData: (previous) => previous,
@@ -156,7 +161,26 @@ export function TeamsPage() {
         />
       )}
 
-      {!isLoading && teams.length === 0 && (
+      {isError && !isLoading && (
+        <EmptyNetState
+          title="Не удалось загрузить команды"
+          copy="Проверь соединение и попробуй ещё раз."
+          testIdPrefix="teams"
+          data-testid={testId('teams', 'teams-page', 'error')}
+          action={
+            <HockeyButton
+              view="outlined"
+              size="s"
+              onClick={() => void refetch()}
+              data-testid={testId('teams', 'teams-page', 'btn', 'retry')}
+            >
+              Повторить
+            </HockeyButton>
+          }
+        />
+      )}
+
+      {!isLoading && !isError && teams.length === 0 && (
         <EmptyNetState
           title="Команды не найдены"
           copy="Измените поиск или сбросьте фильтры."
@@ -177,20 +201,22 @@ export function TeamsPage() {
         />
       )}
 
-      <div
-        className="team-feed hockey-stack hockey-stack--gap-12"
-        data-testid={testId('teams', 'teams-page', 'panel', 'feed')}
-      >
-        {teams.map((team, index) => (
-          <ScrollReveal
-            key={team.id}
-            direction={index % 2 === 0 ? 'left' : 'right'}
-            data-testid={testId('teams', 'teams-page', 'item', team.id)}
-          >
-            <TeamCard team={team} />
-          </ScrollReveal>
-        ))}
-      </div>
+      {!isError && (
+        <div
+          className="team-feed hockey-stack hockey-stack--gap-12"
+          data-testid={testId('teams', 'teams-page', 'panel', 'feed')}
+        >
+          {teams.map((team, index) => (
+            <ScrollReveal
+              key={team.id}
+              direction={index % 2 === 0 ? 'left' : 'right'}
+              data-testid={testId('teams', 'teams-page', 'item', team.id)}
+            >
+              <TeamCard team={team} />
+            </ScrollReveal>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

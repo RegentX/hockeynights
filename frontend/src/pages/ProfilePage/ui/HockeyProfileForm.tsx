@@ -3,12 +3,11 @@
  * SPEC-FR-17.1.1, SPEC-FR-18.1.1, SPEC-FR-18.1.3, SPEC-FR-18.1.4, SPEC-FR-19.1.1
  */
 
-import {Button, Card, Progress, Select, Switch, Text, TextArea, TextInput} from '@gravity-ui/uikit'
+import {Progress, Select, Switch, Text, TextArea, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useId, useState} from 'react'
 import {Link, Navigate, useSearchParams} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import type {PlayerPosition, SkillLevel, UserRole} from '@/entities/common'
 import type {
   HockeyProfile,
@@ -25,7 +24,7 @@ import {
   updatePrivacySettings,
   updateSubscription,
 } from '@/entities/profile'
-import {getPrimaryPartnerPath, shouldUsePartnerWorkspace} from '@/features/access'
+import {getPrimaryPartnerPath, shouldUsePartnerWorkspace, useSessionAccess} from '@/features/access'
 import {CalendarScopePreview} from '@/features/calendar'
 import {ProfileFavoritesSection} from '@/features/favorites'
 import {KarmaHint} from '@/features/karma'
@@ -93,41 +92,41 @@ function ProfileHubTabs({
       className="profile-hub__tabs"
       data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'list')}
     >
-      <Button
+      <HockeyButton
         view={section === 'about' ? 'action' : 'outlined'}
         onClick={() => onSelect('about')}
         data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'about')}
       >
         О себе
-      </Button>
-      <Button
+      </HockeyButton>
+      <HockeyButton
         view={section === 'favorites' ? 'action' : 'outlined'}
         onClick={() => onSelect('favorites')}
         data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'favorites')}
       >
         Избранное
-      </Button>
-      <Button
+      </HockeyButton>
+      <HockeyButton
         view={section === 'settings' ? 'action' : 'outlined'}
         onClick={() => onSelect('settings')}
         data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'settings')}
       >
         Настройки
-      </Button>
-      <Button
+      </HockeyButton>
+      <HockeyButton
         view={section === 'privacy' ? 'action' : 'outlined'}
         onClick={() => onSelect('privacy')}
         data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'privacy')}
       >
         Приватность
-      </Button>
-      <Button
+      </HockeyButton>
+      <HockeyButton
         view={section === 'subscription' ? 'action' : 'outlined'}
         onClick={() => onSelect('subscription')}
         data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'subscription')}
       >
         Подписка
-      </Button>
+      </HockeyButton>
     </div>
   )
 }
@@ -489,8 +488,8 @@ function ProfileAboutSection({
       />
 
       {!detailsOpen && showCollapsedHistory && (
-        <Card
-          view="filled"
+        <IceCard
+          padding="m"
           data-testid={testId('profile', 'profile-about-section', 'card', 'history-preview')}
         >
           <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-8">
@@ -510,18 +509,18 @@ function ProfileAboutSection({
               showHistory={settings.privacy.showParticipationHistory}
             />
           </div>
-        </Card>
+        </IceCard>
       )}
 
       {!detailsOpen && (
-        <Card
-          view="filled"
+        <IceCard
+          padding="m"
           data-testid={testId('profile', 'profile-about-section', 'card', 'schedule-preview')}
         >
           <div className="hockey-panel hockey-panel--24">
             <CalendarScopePreview scope="me" title="Мой график" testIdPrefix="profile" />
           </div>
-        </Card>
+        </IceCard>
       )}
 
       {!detailsOpen && (
@@ -535,7 +534,7 @@ function ProfileAboutSection({
 
       {detailsOpen && (
         <div id={detailsPanelId}>
-          <Card view="filled" data-testid={testId('profile', 'profile-about-section', 'card')}>
+          <IceCard padding="m" data-testid={testId('profile', 'profile-about-section', 'card')}>
             <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
               <Text
                 variant="header-2"
@@ -725,25 +724,25 @@ function ProfileAboutSection({
               </div>
 
               <div className="profile-hub__actions">
-                <Button
+                <HockeyButton
                   view="outlined"
                   loading={isVerifying}
                   onClick={onStartVerification}
                   data-testid={testId('profile', 'profile-about-section', 'btn', 'verify')}
                 >
                   Подтвердить профиль
-                </Button>
-                <Button
+                </HockeyButton>
+                <HockeyButton
                   view="action"
                   loading={isSaving}
                   onClick={handleSave}
                   data-testid={testId('profile', 'profile-about-section', 'btn', 'save')}
                 >
                   Сохранить профиль
-                </Button>
+                </HockeyButton>
               </div>
             </div>
-          </Card>
+          </IceCard>
         </div>
       )}
     </div>
@@ -766,7 +765,7 @@ function ProfileSettingsSection({
   }
 
   return (
-    <Card view="filled" data-testid={testId('profile', 'profile-settings-section', 'card')}>
+    <IceCard padding="m" data-testid={testId('profile', 'profile-settings-section', 'card')}>
       <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
         <Text
           variant="header-1"
@@ -916,16 +915,16 @@ function ProfileSettingsSection({
           />
         </label>
 
-        <Button
+        <HockeyButton
           view="action"
           loading={isSaving}
           onClick={() => onSave(form)}
           data-testid={testId('profile', 'profile-settings-section', 'btn', 'save')}
         >
           Сохранить настройки
-        </Button>
+        </HockeyButton>
       </div>
-    </Card>
+    </IceCard>
   )
 }
 
@@ -944,7 +943,7 @@ function ProfilePrivacySection({
   })
 
   return (
-    <Card view="filled" data-testid={testId('profile', 'profile-privacy-section', 'card')}>
+    <IceCard padding="m" data-testid={testId('profile', 'profile-privacy-section', 'card')}>
       <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
         <Text
           variant="header-1"
@@ -1035,16 +1034,16 @@ function ProfilePrivacySection({
           )}
         />
 
-        <Button
+        <HockeyButton
           view="action"
           loading={isSaving}
           onClick={() => onSave(form)}
           data-testid={testId('profile', 'profile-privacy-section', 'btn', 'save')}
         >
           Сохранить приватность
-        </Button>
+        </HockeyButton>
       </div>
-    </Card>
+    </IceCard>
   )
 }
 
@@ -1059,7 +1058,7 @@ function ProfileSubscriptionSection({
 }) {
   const activePlan = settings.subscription.planId
   return (
-    <Card view="filled" data-testid={testId('profile', 'profile-subscription-section', 'card')}>
+    <IceCard padding="m" data-testid={testId('profile', 'profile-subscription-section', 'card')}>
       <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
         <Text
           variant="header-1"
@@ -1118,16 +1117,16 @@ function ProfileSubscriptionSection({
             </button>
           ))}
         </div>
-        <Button
+        <HockeyButton
           view="action"
           loading={isSaving}
           onClick={() => onSelectPlan({status: 'mock'})}
           data-testid={testId('profile', 'profile-subscription-section', 'btn', 'save')}
         >
           Сохранить тариф
-        </Button>
+        </HockeyButton>
       </div>
-    </Card>
+    </IceCard>
   )
 }
 
@@ -1153,10 +1152,7 @@ function HockeyProfileHub({
     setSearchParams(value === 'about' ? {} : {section: value}, {replace: true})
   }
 
-  const {data: session} = useQuery({
-    queryKey: ['session'],
-    queryFn: fetchSession,
-  })
+  const {session} = useSessionAccess()
   const userRoles = session?.user.roles ?? []
 
   const saveProfileMutation = useMutation({
@@ -1247,10 +1243,7 @@ function HockeyProfileHub({
  */
 export function HockeyProfileForm() {
   const queryClient = useQueryClient()
-  const {data: session, isLoading: isSessionLoading} = useQuery({
-    queryKey: ['session'],
-    queryFn: fetchSession,
-  })
+  const {session, isLoading: isSessionLoading} = useSessionAccess()
   const partnerWorkspace = shouldUsePartnerWorkspace(session)
 
   const {

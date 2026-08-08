@@ -3,28 +3,34 @@
  * SPEC-UI-6.1, SPEC-UI-6.2
  */
 
-import {Text} from '@gravity-ui/uikit'
 import {useMutation, useQuery} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
 
 import type {IqAttemptResult, IqTest} from '@/entities/iq'
 import {fetchIqLeaderboard, fetchIqQuestions, fetchIqTests, submitIqAttempt} from '@/entities/iq'
+import {useSessionAccess} from '@/features/access'
 import {IqAttemptFlow, IqLeaderboard, IqTestCard} from '@/features/iq'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {PageHeader} from '@/shared/ui/PageHeader'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-
-const MOCK_CURRENT_USER_ID = 'user-001'
 
 /**
  * @spec SPEC-FR-13.1.1 - Страница Hockey IQ
  * @spec SPEC-UI-6.1 - Глобальный формат «тренерской доски»
  */
 export function IqTestsPage() {
+  const {userId, session} = useSessionAccess()
   const [activeTest, setActiveTest] = useState<IqTest | null>(null)
   const [attemptResult, setAttemptResult] = useState<IqAttemptResult | null>(null)
 
-  const {data: tests = [], isLoading: testsLoading} = useQuery({
+  const {
+    data: tests = [],
+    isLoading: testsLoading,
+    isError: testsError,
+    refetch: refetchTests,
+  } = useQuery({
     queryKey: ['iq-tests'],
     queryFn: fetchIqTests,
   })
@@ -60,29 +66,28 @@ export function IqTestsPage() {
   }
 
   const leaderboardWithCurrentUser = useMemo(() => {
-    if (leaderboard.some((row) => row.userId === MOCK_CURRENT_USER_ID)) {
+    if (!userId || leaderboard.some((row) => row.userId === userId)) {
       return leaderboard
     }
     return [
       ...leaderboard,
       {
         rank: leaderboard.length + 1,
-        userId: MOCK_CURRENT_USER_ID,
-        displayName: 'Ты',
+        userId,
+        displayName: session?.user.displayName ?? 'Ты',
         score: 0,
         streak: 0,
       },
     ]
-  }, [leaderboard])
+  }, [leaderboard, session?.user.displayName, userId])
 
   return (
     <div className="iq-page" data-testid={testId('iq', 'page', 'page')}>
-      <Text variant="header-1" data-testid={testId('iq', 'page', 'text', 'title')}>
-        Hockey IQ
-      </Text>
-      <Text color="secondary" data-testid={testId('iq', 'page', 'text', 'subtitle')}>
-        Тренерская доска: быстрые тесты по правилам и игровым решениям.
-      </Text>
+      <PageHeader
+        title="Hockey IQ"
+        subtitle="Тренерская доска: быстрые тесты по правилам и игровым решениям."
+        testIdPrefix="iq"
+      />
 
       <div className="iq-page__layout" data-testid={testId('iq', 'page', 'panel', 'layout')}>
         <section className="iq-page__main" data-testid={testId('iq', 'page', 'panel', 'main')}>
@@ -93,12 +98,30 @@ export function IqTestsPage() {
                   <ScoreboardLoader label="Загрузка тестов Hockey IQ" />
                 </div>
               )}
-              {!testsLoading && tests.length === 0 && (
+              {testsError && !testsLoading && (
+                <div data-testid={testId('iq', 'page', 'error', 'tests')}>
+                  <EmptyNetState
+                    title="Не удалось загрузить тесты"
+                    copy="Проверь соединение и попробуй ещё раз."
+                    action={
+                      <HockeyButton
+                        view="outlined"
+                        size="s"
+                        onClick={() => void refetchTests()}
+                        data-testid={testId('iq', 'page', 'btn', 'retry')}
+                      >
+                        Повторить
+                      </HockeyButton>
+                    }
+                  />
+                </div>
+              )}
+              {!testsLoading && !testsError && tests.length === 0 && (
                 <div data-testid={testId('iq', 'page', 'empty', 'tests')}>
                   <EmptyNetState title="Тесты не найдены" copy="Каталог Hockey IQ пока пуст." />
                 </div>
               )}
-              {!testsLoading && tests.length > 0 && (
+              {!testsLoading && !testsError && tests.length > 0 && (
                 <div className="iq-page__cards" data-testid={testId('iq', 'page', 'list', 'tests')}>
                   {tests.map((test) => (
                     <IqTestCard key={test.id} test={test} onStart={startTest} />
@@ -120,13 +143,14 @@ export function IqTestsPage() {
                   questions={questions}
                   isSubmitting={attemptMutation.isPending}
                   result={attemptResult}
-                  onSubmit={(answers) =>
+                  onSubmit={(answers) => {
+                    if (!userId) return
                     attemptMutation.mutate({
                       testId: activeTest.id,
-                      userId: MOCK_CURRENT_USER_ID,
+                      userId,
                       answers,
                     })
-                  }
+                  }}
                   onExit={exitAttempt}
                 />
               )}

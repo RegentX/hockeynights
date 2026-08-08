@@ -2,11 +2,12 @@
  * SPEC-FR-24.7.9
  */
 
-import {Button, Text} from '@gravity-ui/uikit'
+import {Text} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
 import {fetchPartnerModerationQueue, moderatePartnerItem} from '@/entities/admin'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 const KIND_LABELS: Record<string, string> = {
   league_profile: 'Профиль лиги',
@@ -81,7 +82,7 @@ export function PartnerModerationPanel() {
               </Text>
             </div>
             <div className="partner-dashboard__tabs">
-              <Button
+              <HockeyButton
                 size="s"
                 view="action"
                 loading={moderateMutation.isPending}
@@ -89,15 +90,15 @@ export function PartnerModerationPanel() {
                 onClick={() => moderateMutation.mutate({itemId: item.id, status: 'published'})}
               >
                 Опубликовать
-              </Button>
-              <Button
+              </HockeyButton>
+              <HockeyButton
                 size="s"
                 view="outlined"
                 data-testid={testId('admin', 'moderation', 'btn', 'reject', item.id)}
                 onClick={() => moderateMutation.mutate({itemId: item.id, status: 'rejected'})}
               >
                 Отклонить
-              </Button>
+              </HockeyButton>
             </div>
           </li>
         ))}

@@ -7,11 +7,10 @@ import {Select, Text, TextInput} from '@gravity-ui/uikit'
 import {useState} from 'react'
 
 import type {CreateHighlightPayload} from '@/entities/highlight'
+import {useSessionAccess} from '@/features/access'
 import {MockUploadNotice} from '@/features/highlights/ui/MockUploadNotice'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
-
-const MOCK_CURRENT_USER_ID = 'user-001'
 
 const EVENT_OPTIONS = [
   {value: 'event-001', content: 'Товарищеская игра — Медведи САО'},
@@ -29,16 +28,17 @@ export interface HighlightUploadFormProps {
  * @spec SPEC-FR-14.1.4 - Без реальной загрузки файла
  */
 export function HighlightUploadForm({onSubmit, isPending = false}: HighlightUploadFormProps) {
+  const {userId} = useSessionAccess()
   const [title, setTitle] = useState('')
   const [eventId, setEventId] = useState('event-001')
 
   function handleSubmit() {
-    if (!title.trim()) return
+    if (!title.trim() || !userId) return
     onSubmit({
       title: title.trim(),
       eventId,
       teamId: 'team-001',
-      authorUserId: MOCK_CURRENT_USER_ID,
+      authorUserId: userId,
       durationSeconds: 10,
     })
     setTitle('')

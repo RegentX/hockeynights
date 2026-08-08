@@ -12,13 +12,19 @@ import {useSessionAccess} from '@/features/access'
 import {isUpcomingEvent, OrganizerTrainingsPanel} from '@/features/events'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 export function OrganizerEventsPage() {
   const {userId, canOrganizeEvents} = useSessionAccess()
-  const {data: events = [], isLoading} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
+  const {
+    data: events = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({queryKey: ['events'], queryFn: fetchEvents})
 
   const organizerCatalog = useMemo(
     () =>
@@ -112,6 +118,23 @@ export function OrganizerEventsPage() {
       {isLoading ? (
         <div data-testid={testId('events', 'organizer-page', 'loader')}>
           <ScoreboardLoader label="Загрузка…" />
+        </div>
+      ) : isError ? (
+        <div data-testid={testId('events', 'organizer-page', 'error')}>
+          <EmptyNetState
+            title="Не удалось загрузить тренировки"
+            copy="Проверь соединение и попробуй ещё раз."
+            action={
+              <HockeyButton
+                view="outlined"
+                size="s"
+                onClick={() => void refetch()}
+                data-testid={testId('events', 'organizer-page', 'btn', 'retry')}
+              >
+                Повторить
+              </HockeyButton>
+            }
+          />
         </div>
       ) : (
         <OrganizerTrainingsPanel events={organizerCatalog} organizerUserId={userId} />

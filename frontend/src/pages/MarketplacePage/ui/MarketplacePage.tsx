@@ -12,6 +12,8 @@ import type {MarketplaceFilters, MarketplaceSort} from '@/entities/shop'
 import {fetchMarketplaceFeed} from '@/entities/shop'
 import {MarketplaceProductCard, MarketplaceShopStrip} from '@/features/shops'
 import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const SORT_OPTIONS = [
@@ -53,7 +55,7 @@ export function MarketplacePage() {
     scrollOnNextProductRef.current = true
   }, [productIdFromUrl])
 
-  const {data, isLoading, isFetching} = useQuery({
+  const {data, isLoading, isFetching, isError, refetch} = useQuery({
     queryKey: ['marketplace', filters],
     queryFn: () => fetchMarketplaceFeed(filters),
   })
@@ -177,20 +179,38 @@ export function MarketplacePage() {
           {isFetching ? 'Обновляем ленту…' : `${listings.length} товаров`}
         </Text>
         {filters.shopId && (
-          <Button
+          <HockeyButton
             view="outlined"
             size="s"
             data-testid={testId('shops', 'marketplace', 'btn', 'clear-shop-filter')}
             onClick={() => patchFilters({shopId: undefined})}
           >
             Сбросить фильтр магазина
-          </Button>
+          </HockeyButton>
         )}
       </div>
 
       {isLoading ? (
         <div data-testid={testId('shops', 'marketplace', 'loader')}>
           <ScoreboardLoader label="Загрузка маркетплейса" />
+        </div>
+      ) : isError ? (
+        <div data-testid={testId('shops', 'marketplace', 'error')}>
+          <EmptyNetState
+            title="Не удалось загрузить маркетплейс"
+            copy="Проверь соединение и попробуй ещё раз."
+            testIdPrefix="shops"
+            action={
+              <HockeyButton
+                view="outlined"
+                size="s"
+                onClick={() => void refetch()}
+                data-testid={testId('shops', 'marketplace', 'btn', 'retry')}
+              >
+                Повторить
+              </HockeyButton>
+            }
+          />
         </div>
       ) : listings.length === 0 ? (
         <div className="marketplace__empty" data-testid={testId('shops', 'marketplace', 'empty')}>

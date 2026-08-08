@@ -26,7 +26,12 @@ export function SosFeed() {
   const [message, setMessage] = useState('Готов выйти на игру')
   const [expandedRequestId, setExpandedRequestId] = useState<string | null>(null)
 
-  const {data: requests = [], isLoading} = useQuery({
+  const {
+    data: requests = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['recruitment-requests', goalieOnly],
     queryFn: () => fetchRecruitmentRequests({goalieOnly}),
   })
@@ -112,7 +117,26 @@ export function SosFeed() {
         </div>
       )}
 
-      {!isLoading && (
+      {isError && !isLoading && (
+        <div data-testid={testId('sos', 'feed', 'error')}>
+          <EmptyNetState
+            title="Не удалось загрузить SOS"
+            copy="Проверь соединение и попробуй ещё раз."
+            action={
+              <HockeyButton
+                view="outlined"
+                size="s"
+                onClick={() => void refetch()}
+                data-testid={testId('sos', 'feed', 'btn', 'retry')}
+              >
+                Повторить
+              </HockeyButton>
+            }
+          />
+        </div>
+      )}
+
+      {!isLoading && !isError && (
         <div data-testid={testId('sos', 'feed', 'table')}>
           <MatchCenterFeed
             title="SOS · Матч-центр"

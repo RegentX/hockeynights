@@ -3,10 +3,9 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
-import {useQuery} from '@tanstack/react-query'
 import {Link} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
+import {useSessionAccess} from '@/features/access'
 import {partnerCabinetLabel, partnerCabinetPath} from '@/shared/const/partnerRoutes'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -20,7 +19,7 @@ const CABINET_FEATURES: Record<string, string[]> = {
 
 /** @spec SPEC-FR-24.5.3 - Хаб партнёрских кабинетов */
 export function PartnerHubPage() {
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {session} = useSessionAccess()
   const memberships = session?.user.partnerMemberships ?? []
 
   if (memberships.length === 0) {

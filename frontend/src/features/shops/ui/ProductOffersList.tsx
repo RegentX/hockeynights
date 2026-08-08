@@ -2,11 +2,12 @@
  * SPEC-FR-9.2.1, SPEC-FR-9.2.2, SPEC-FR-9.2.3
  */
 
-import {Card, Label, Text} from '@gravity-ui/uikit'
+import {Label, Text} from '@gravity-ui/uikit'
 
 import type {ProductOffer} from '@/entities/shop'
 import {ExternalProductLink} from '@/features/shops/ui/ExternalProductLink'
 import {testId} from '@/shared/testing/testId'
+import {IceCard} from '@/shared/ui/IceCard'
 
 /** @spec SPEC-FR-9.2.1 - Props списка предложений */
 export interface ProductOffersListProps {
@@ -41,10 +42,9 @@ export function ProductOffersList({offers, shopName}: ProductOffersListProps) {
       data-testid={testId('shops', 'product-offers', 'list')}
     >
       {offers.map((offer) => (
-        <Card
+        <IceCard
           key={offer.id}
-          view="filled"
-          className="hockey-panel"
+          padding="m"
           data-testid={testId('shops', 'product-offers', 'card', offer.id)}
         >
           <div className="hockey-row hockey-row--gap-12 hockey-row--between">
@@ -74,7 +74,7 @@ export function ProductOffersList({offers, shopName}: ProductOffersListProps) {
             </div>
             <ExternalProductLink offer={offer} shopName={shopName} />
           </div>
-        </Card>
+        </IceCard>
       ))}
     </div>
   )

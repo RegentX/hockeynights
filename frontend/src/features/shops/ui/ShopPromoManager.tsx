@@ -2,12 +2,13 @@
  * SPEC-FR-24.7.6
  */
 
-import {Button, Text, TextInput} from '@gravity-ui/uikit'
+import {Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
 
 import {createShopPromo, fetchShopPromos} from '@/entities/shop'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 export interface ShopPromoManagerProps {
   shopId: string
@@ -92,7 +93,7 @@ export function ShopPromoManager({shopId}: ShopPromoManagerProps) {
           data-testid={testId('shops', shopId, 'promos', 'field', 'subtitle')}
           onUpdate={setSubtitle}
         />
-        <Button
+        <HockeyButton
           view="action"
           size="s"
           disabled={!title.trim()}
@@ -101,7 +102,7 @@ export function ShopPromoManager({shopId}: ShopPromoManagerProps) {
           onClick={() => createMutation.mutate()}
         >
           Создать промо
-        </Button>
+        </HockeyButton>
       </div>
     </div>
   )

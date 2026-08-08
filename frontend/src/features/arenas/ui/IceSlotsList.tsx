@@ -2,12 +2,13 @@
  * SPEC-FR-6.3.1, SPEC-FR-6.3.2, SPEC-FR-6.4.2
  */
 
-import {Card, Text} from '@gravity-ui/uikit'
+import {Text} from '@gravity-ui/uikit'
 
 import type {Arena} from '@/entities/arena'
 import type {IceSlot} from '@/entities/arena'
 import {ExternalBookingButton} from '@/features/arenas/ui/ExternalBookingButton'
 import {testId} from '@/shared/testing/testId'
+import {IceCard} from '@/shared/ui/IceCard'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 
 /** @spec SPEC-FR-6.3.1 - Props списка слотов */
@@ -37,12 +38,7 @@ export function IceSlotsList({slots, arena}: IceSlotsListProps) {
       data-testid={testId('arenas', 'slots', 'list', arena.id)}
     >
       {slots.map((slot) => (
-        <Card
-          key={slot.id}
-          view="filled"
-          className="hockey-panel hockey-panel--12"
-          data-testid={testId('arenas', 'slots', 'card', slot.id)}
-        >
+        <IceCard key={slot.id} padding="s" data-testid={testId('arenas', 'slots', 'card', slot.id)}>
           <div className="hockey-stack hockey-stack--gap-6">
             <Text data-testid={testId('arenas', 'slots', 'text', 'time', slot.id)}>
               {new Date(slot.startsAt).toLocaleString('ru-RU')} —{' '}
@@ -70,7 +66,7 @@ export function IceSlotsList({slots, arena}: IceSlotsListProps) {
               />
             )}
           </div>
-        </Card>
+        </IceCard>
       ))}
     </div>
   )

@@ -2,7 +2,7 @@
  * SPEC-FR-24.7.4
  */
 
-import {Button, Checkbox, Select, Text, TextInput} from '@gravity-ui/uikit'
+import {Checkbox, Select, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
 
@@ -10,6 +10,7 @@ import type {PlayerPosition, SkillLevel} from '@/entities/common'
 import type {ProductOffer, ShopProductPayload} from '@/entities/shop'
 import {createShopProduct, fetchProductOffers, updateShopProduct} from '@/entities/shop'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 const AVAILABILITY_OPTIONS = [
   {value: 'in_stock', content: 'В наличии'},
@@ -143,7 +144,7 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
                 </Text>
               </div>
             </div>
-            <Button
+            <HockeyButton
               size="s"
               view="outlined"
               data-testid={testId(
@@ -157,7 +158,7 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
               onClick={() => toggleAvailability(product)}
             >
               Сменить наличие
-            </Button>
+            </HockeyButton>
           </li>
         ))}
       </ul>
@@ -247,7 +248,7 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
             }))
           }
         />
-        <Button
+        <HockeyButton
           view="action"
           disabled={!form.title.trim() || !form.category.trim() || !form.externalUrl.trim()}
           loading={createMutation.isPending}
@@ -255,7 +256,7 @@ export function ShopProductManager({shopId}: ShopProductManagerProps) {
           onClick={() => createMutation.mutate(form)}
         >
           Добавить товар
-        </Button>
+        </HockeyButton>
       </div>
 
       {statusMessage && (

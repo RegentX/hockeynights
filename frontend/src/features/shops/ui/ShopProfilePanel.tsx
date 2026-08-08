@@ -7,9 +7,9 @@ import {useQuery} from '@tanstack/react-query'
 import {useState} from 'react'
 import {Link} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import type {Shop} from '@/entities/shop'
 import {fetchShopPromos} from '@/entities/shop'
+import {useSessionAccess} from '@/features/access'
 import {MockShopPortalModal} from '@/features/shops/ui/MockShopPortalModal'
 import {testId} from '@/shared/testing/testId'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
@@ -25,7 +25,7 @@ export interface ShopProfilePanelProps {
  */
 export function ShopProfilePanel({shop}: ShopProfilePanelProps) {
   const [portalOpen, setPortalOpen] = useState(false)
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {session} = useSessionAccess()
   const canManagePartner =
     session?.user.roles.includes('admin') ||
     session?.user.partnerMemberships?.some((m) => m.kind === 'shop' && m.entityId === shop.id)
