@@ -140,6 +140,7 @@ const defaultPrivacySettings: PrivacySettings = {
   profileVisibility: 'public',
   showContacts: false,
   showParticipationHistory: true,
+  calendarVisibility: 'public',
 }
 
 /** @spec SPEC-FR-19.1.1 - Mock подписка */

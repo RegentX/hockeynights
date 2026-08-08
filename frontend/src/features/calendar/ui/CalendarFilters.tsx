@@ -36,7 +36,7 @@ const STATUS_OPTIONS = [
 export function CalendarFilters({filters, onChange}: CalendarFiltersProps) {
   return (
     <div
-      className="hockey-row hockey-row--gap-12"
+      className="hockey-row hockey-row--gap-12 hockey-row--wrap"
       data-testid={testId('calendar', 'filters', 'filter')}
     >
       <Select

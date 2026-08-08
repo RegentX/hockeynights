@@ -26,6 +26,7 @@ import {
   updateSubscription,
 } from '@/entities/profile'
 import {getPrimaryPartnerPath, shouldUsePartnerWorkspace} from '@/features/access'
+import {CalendarScopePreview} from '@/features/calendar'
 import {ProfileFavoritesSection} from '@/features/favorites'
 import {KarmaHint} from '@/features/karma'
 import {CoachProfilePanel, ProfileSummaryCard} from '@/features/profile'
@@ -52,6 +53,12 @@ const VISIBILITY_OPTIONS = [
   {value: 'teams_only', content: 'Только командам'},
   {value: 'verified_only', content: 'Только подтвержденным'},
   {value: 'private', content: 'Скрытый'},
+]
+
+const CALENDAR_VISIBILITY_OPTIONS = [
+  {value: 'public', content: 'Всем'},
+  {value: 'teams_only', content: 'Только командам'},
+  {value: 'private', content: 'Скрыт'},
 ]
 
 const SUBSCRIPTION_PLAN_OPTIONS = [
@@ -146,8 +153,10 @@ function ParticipationHistoryItem({record}: {record: ParticipationRecord}) {
   })
   /** Как после создания тренировки: детальная карточка события = «приглашение». */
   const inviteHref =
-    record.eventType === 'training' ? `/events/trainings/${record.eventId}` : `/events`
-  const inviteLabel = record.eventType === 'training' ? 'К приглашению' : 'К событиям'
+    record.eventType === 'training'
+      ? `/events/trainings/${record.eventId}`
+      : `/events/games/${record.eventId}`
+  const inviteLabel = 'К приглашению'
   const chatHref = record.chatId ? `/messenger?chatId=${encodeURIComponent(record.chatId)}` : null
 
   return (
@@ -500,6 +509,17 @@ function ProfileAboutSection({
               profile={profile}
               showHistory={settings.privacy.showParticipationHistory}
             />
+          </div>
+        </Card>
+      )}
+
+      {!detailsOpen && (
+        <Card
+          view="filled"
+          data-testid={testId('profile', 'profile-about-section', 'card', 'schedule-preview')}
+        >
+          <div className="hockey-panel hockey-panel--24">
+            <CalendarScopePreview scope="me" title="Мой график" testIdPrefix="profile" />
           </div>
         </Card>
       )}
@@ -918,7 +938,10 @@ function ProfilePrivacySection({
   onSave: (next: ProfileSettings['privacy']) => void
   isSaving: boolean
 }) {
-  const [form, setForm] = useState(settings.privacy)
+  const [form, setForm] = useState({
+    ...settings.privacy,
+    calendarVisibility: settings.privacy.calendarVisibility ?? 'public',
+  })
 
   return (
     <Card view="filled" data-testid={testId('profile', 'profile-privacy-section', 'card')}>
@@ -993,6 +1016,24 @@ function ProfilePrivacySection({
             )}
           />
         </label>
+
+        <Select
+          label="Календарь на публичной странице"
+          value={[form.calendarVisibility ?? 'public']}
+          options={CALENDAR_VISIBILITY_OPTIONS}
+          onUpdate={(v) =>
+            setForm((prev) => ({
+              ...prev,
+              calendarVisibility: v[0] as ProfileSettings['privacy']['calendarVisibility'],
+            }))
+          }
+          data-testid={testId(
+            'profile',
+            'profile-privacy-section',
+            'select',
+            'calendar-visibility',
+          )}
+        />
 
         <Button
           view="action"

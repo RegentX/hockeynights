@@ -295,6 +295,8 @@ export function ClubPartnerDashboard() {
               events={calendar}
               emptyText="В календаре клуба пока нет событий"
               testIdPrefix="clubs"
+              scope="club"
+              scopeId={clubId}
             />
           </IceCard>
         </div>

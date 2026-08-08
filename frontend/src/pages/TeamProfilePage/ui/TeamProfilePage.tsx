@@ -355,6 +355,8 @@ export function TeamProfilePage() {
               <TeamCalendarSection
                 events={calendar}
                 emptyText="В календаре команды пока нет событий"
+                scope="team"
+                scopeId={team.id}
               />
             </Accordion.Item>
 

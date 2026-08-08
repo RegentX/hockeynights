@@ -1,0 +1,70 @@
+/**
+ * HOCFRONT-28A — отдельный экран создания игры/тренировки
+ */
+
+import {Text} from '@gravity-ui/uikit'
+import {Link} from 'react-router'
+
+import {useSessionAccess} from '@/features/access'
+import {EventCreateForm} from '@/features/events'
+import {routes} from '@/shared/const/appRoutes'
+import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {IceCard} from '@/shared/ui/IceCard'
+
+export function CreateEventPage() {
+  const {canOrganizeEvents} = useSessionAccess()
+
+  if (!canOrganizeEvents) {
+    return (
+      <div
+        className="hockey-stack hockey-stack--gap-16"
+        data-testid={testId('events', 'create-page', 'page', 'denied')}
+      >
+        <IceCard padding="m">
+          <Text data-testid={testId('events', 'create-page', 'text', 'denied')}>
+            Создавать игры и тренировки могут капитан, тренер, организатор или администратор.
+          </Text>
+          <Link
+            to={routes.events}
+            data-testid={testId('events', 'create-page', 'link', 'back-denied')}
+          >
+            <HockeyButton
+              view="outlined"
+              size="s"
+              className="hockey-mt-12"
+              data-testid={testId('events', 'create-page', 'btn', 'back-denied')}
+            >
+              К разделу
+            </HockeyButton>
+          </Link>
+        </IceCard>
+      </div>
+    )
+  }
+
+  return (
+    <div
+      className="hockey-stack hockey-stack--gap-16"
+      data-testid={testId('events', 'create-page', 'page')}
+    >
+      <div className="hockey-row hockey-row--between hockey-row--align-center hockey-row--wrap">
+        <Text variant="header-1" data-testid={testId('events', 'create-page', 'text', 'title')}>
+          Создать игру или тренировку
+        </Text>
+        <Link to={routes.events} data-testid={testId('events', 'create-page', 'link', 'back')}>
+          <HockeyButton
+            view="flat"
+            size="m"
+            data-testid={testId('events', 'create-page', 'btn', 'back')}
+          >
+            К каталогу
+          </HockeyButton>
+        </Link>
+      </div>
+      <IceCard padding="m" data-testid={testId('events', 'create-page', 'card', 'form')}>
+        <EventCreateForm />
+      </IceCard>
+    </div>
+  )
+}

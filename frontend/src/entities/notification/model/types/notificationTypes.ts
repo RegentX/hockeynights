@@ -9,7 +9,7 @@ export interface Notification {
   /** @spec SPEC-FR-10.1.1 */
   userId: string
   /** @spec SPEC-FR-10.1.1 */
-  type: 'sos' | 'roster' | 'response' | 'event_reminder'
+  type: 'sos' | 'roster' | 'response' | 'event_reminder' | 'goalie_request'
   /** @spec SPEC-FR-10.1.1 */
   title: string
   /** @spec SPEC-FR-10.1.1 */

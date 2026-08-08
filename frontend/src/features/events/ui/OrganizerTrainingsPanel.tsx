@@ -6,6 +6,7 @@ import {Text} from '@gravity-ui/uikit'
 import {Link} from 'react-router'
 
 import type {GameEvent} from '@/entities/event'
+import {eventDetailsPath} from '@/features/events/lib/eventDetailsPath'
 import {ACCESS_LABELS, EVENT_TYPE_LABELS} from '@/features/events/lib/eventLabels'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
@@ -49,8 +50,7 @@ export function OrganizerTrainingsPanel({events, organizerUserId}: OrganizerTrai
           >
             {mine.map((event) => {
               const start = new Date(event.startsAt)
-              const href =
-                event.type === 'training' ? `/events/trainings/${event.id}` : `/events#${event.id}`
+              const href = eventDetailsPath(event)
               const access = event.accessScope ? ACCESS_LABELS[event.accessScope] : undefined
               return (
                 <div

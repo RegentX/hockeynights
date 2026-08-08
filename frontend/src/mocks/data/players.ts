@@ -14,22 +14,28 @@ import type {
 /** @spec SPEC-FR-24.1.3 - Mock приватность публичных профилей */
 export const mockPlayerPrivacy: Record<
   string,
-  Pick<PrivacySettings, 'profileVisibility' | 'showContacts' | 'showParticipationHistory'>
+  Pick<
+    PrivacySettings,
+    'profileVisibility' | 'showContacts' | 'showParticipationHistory' | 'calendarVisibility'
+  >
 > = {
   'user-002': {
     profileVisibility: 'public',
     showContacts: false,
     showParticipationHistory: true,
+    calendarVisibility: 'public',
   },
   'user-003': {
     profileVisibility: 'teams_only',
     showContacts: false,
     showParticipationHistory: false,
+    calendarVisibility: 'private',
   },
   'user-004': {
     profileVisibility: 'public',
     showContacts: true,
     showParticipationHistory: true,
+    calendarVisibility: 'teams_only',
   },
 }
 
@@ -71,7 +77,7 @@ const mockParticipationByUser: Record<string, ParticipationRecord[]> = {
 
 type PlayerPrivacy = Pick<
   PrivacySettings,
-  'profileVisibility' | 'showContacts' | 'showParticipationHistory'
+  'profileVisibility' | 'showContacts' | 'showParticipationHistory' | 'calendarVisibility'
 >
 
 function buildViewFromPlayer(
@@ -85,10 +91,13 @@ function buildViewFromPlayer(
       visibility: 'hidden',
       contactsVisible: false,
       participationHistoryVisible: false,
+      calendarVisible: false,
     }
   }
 
   const visibility = privacy.profileVisibility === 'teams_only' ? 'limited' : 'full'
+  // MVP: teams_only ≠ private. Точный ACL «только сокомандникам» — на бэке.
+  const calendarVisible = privacy.calendarVisibility !== 'private'
 
   return {
     player,
@@ -96,6 +105,7 @@ function buildViewFromPlayer(
     contactsVisible: privacy.showContacts,
     participationHistoryVisible: privacy.showParticipationHistory,
     participationHistory: privacy.showParticipationHistory ? participationHistory : undefined,
+    calendarVisible,
   }
 }
 
@@ -120,6 +130,7 @@ export function buildPublicPlayerView(userId: string): PublicPlayerView | null {
     profileVisibility: 'public',
     showContacts: false,
     showParticipationHistory: false,
+    calendarVisibility: 'public',
   }
 
   return buildViewFromPlayer(player, privacy, mockParticipationByUser[userId])

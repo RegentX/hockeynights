@@ -320,7 +320,7 @@ describe('TASK-QA-02 UI smoke', () => {
     await waitFor(() => {
       expect(screen.getByText(EVENTS_LABEL)).toBeInTheDocument()
       expect(screen.getByTestId('events-page-panel-nearest-game')).toBeInTheDocument()
-      expect(screen.getByText('Список игр и тренировок')).toBeInTheDocument()
+      expect(screen.getByTestId('events-page-text-details-title')).toBeInTheDocument()
     })
   })
 

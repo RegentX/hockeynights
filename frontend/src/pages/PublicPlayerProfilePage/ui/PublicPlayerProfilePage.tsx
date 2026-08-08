@@ -7,6 +7,7 @@ import {useQuery} from '@tanstack/react-query'
 import {Link, useParams} from 'react-router'
 
 import {fetchPublicPlayer} from '@/entities/profile'
+import {CalendarScopePreview} from '@/features/calendar'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
@@ -235,6 +236,20 @@ export function PublicPlayerProfilePage() {
           </div>
         </IceCard>
       </div>
+
+      <IceCard
+        padding="m"
+        data-testid={testId('players', 'public-player-profile', 'card', 'calendar')}
+      >
+        <CalendarScopePreview
+          scope="player"
+          scopeId={userId}
+          title="График игрока"
+          hidden={!data.calendarVisible}
+          hiddenCopy="Игрок скрыл календарь в настройках приватности."
+          testIdPrefix="players"
+        />
+      </IceCard>
     </div>
   )
 }

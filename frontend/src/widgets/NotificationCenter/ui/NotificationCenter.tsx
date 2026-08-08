@@ -19,6 +19,7 @@ const TYPE_LABELS: Record<Notification['type'], string> = {
   roster: 'Состав',
   response: 'Отклик',
   event_reminder: 'Событие',
+  goalie_request: 'Вратарь',
 }
 
 /**

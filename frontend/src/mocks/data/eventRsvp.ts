@@ -12,7 +12,8 @@ import {canUseLocalStorage} from '@/shared/lib/canUseLocalStorage'
 
 export {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event'
 
-const RSVP_STORAGE_KEY = 'hockey-mock-event-rsvp'
+/** v2 — личный статус текущего игрока стартует как pending, не confirmed */
+const RSVP_STORAGE_KEY = 'hockey-mock-event-rsvp-v2'
 
 function createLeagueSaturdayRoster(): EventRsvpPlayer[] {
   return [
@@ -20,8 +21,7 @@ function createLeagueSaturdayRoster(): EventRsvpPlayer[] {
       userId: 'user-001',
       displayName: 'Иван Петров',
       position: 'forward',
-      status: 'confirmed',
-      updatedAt: '2026-06-24T10:00:00Z',
+      status: 'pending',
     },
     {
       userId: 'user-002',
@@ -102,14 +102,23 @@ function persistRsvp(board: EventRsvpBoard): void {
   window.localStorage.setItem(RSVP_STORAGE_KEY, JSON.stringify(board))
 }
 
+function rsvpToAttendance(status: EventRsvpStatus): AttendanceStatus {
+  if (status === 'confirmed') return 'going'
+  /** pending/declined не считаются записью — иначе «Мои записи» врёт */
+  return 'not_going'
+}
+
+function syncCurrentUserAttendanceFromRsvp(board: EventRsvpBoard): void {
+  const me = board.players.find((player) => player.userId === mockUser.id)
+  if (!me) return
+  updateMockAttendance(board.eventId, mockUser.id, me.displayName, rsvpToAttendance(me.status))
+}
+
 export let mockLeagueSaturdayRsvp: EventRsvpBoard =
   loadPersistedRsvp() ?? createLeagueSaturdayBoard(createLeagueSaturdayRoster())
 
-function rsvpToAttendance(status: EventRsvpStatus): AttendanceStatus {
-  if (status === 'confirmed') return 'going'
-  if (status === 'declined') return 'not_going'
-  return 'maybe'
-}
+/** Один раз при загрузке мока — до первого GET /events, чтобы кэш и RSVP не расходились */
+syncCurrentUserAttendanceFromRsvp(mockLeagueSaturdayRsvp)
 
 const mockTrainingRsvpBoards: Record<string, EventRsvpBoard> = {}
 
@@ -179,6 +188,7 @@ export function updateMockEventRsvp(
 
 export function resetMockEventRsvp(): EventRsvpBoard {
   mockLeagueSaturdayRsvp = createLeagueSaturdayBoard(createLeagueSaturdayRoster())
+  syncCurrentUserAttendanceFromRsvp(mockLeagueSaturdayRsvp)
   if (canUseLocalStorage()) {
     window.localStorage.removeItem(RSVP_STORAGE_KEY)
   }

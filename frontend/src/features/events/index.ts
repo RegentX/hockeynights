@@ -1,4 +1,33 @@
 export {
+  CATALOG_CHIPS,
+  CATALOG_TABS,
+  type CatalogChipId,
+  type CatalogFiltersState,
+  type CatalogTab,
+  countActiveCatalogFilters,
+  type DayPreset,
+  DEFAULT_CATALOG_FILTERS,
+  eventNeedsGoalie,
+  getLocalDateKey,
+  getTomorrowDateKey,
+  isCatalogChipActive,
+  isWeekendDateKey,
+  matchesCatalogDateFilters,
+  matchesDayPreset,
+  parseCatalogFilters,
+  serializeCatalogFilters,
+  toggleCatalogChip,
+} from './lib/catalogFilters'
+export {
+  countOpenSlots,
+  countOpenSlotsForPosition,
+  formatEventDurationMinutes,
+  formatEventPriceRub,
+  formatEventWeekdayDate,
+  registrationStatusLabel,
+} from './lib/eventCardMeta'
+export {eventDetailsPath} from './lib/eventDetailsPath'
+export {
   ACCESS_LABELS,
   ACCESS_SCOPE_FILTER_OPTIONS,
   EVENT_TYPE_LABELS,
@@ -10,6 +39,7 @@ export {
   TRAINING_FORMAT_LABELS,
 } from './lib/eventLabels'
 export {isUpcomingEvent} from './lib/isUpcomingEvent'
+export {isTeamRsvpConfirmed, teamRsvpStatusLabel} from './lib/teamRsvpStatus'
 export {canViewTraining, getUserTeamIds, resolveTrainingUserName} from './lib/trainingAccess'
 export {AttendanceControl} from './ui/AttendanceControl'
 export {EventCard} from './ui/EventCard'

@@ -3,14 +3,11 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {useState} from 'react'
+import {useQuery} from '@tanstack/react-query'
 
-import type {EventRsvpStatus} from '@/entities/event'
-import {fetchEventRsvp, updateEventRsvp} from '@/entities/event'
-import {DeclineReasonField} from '@/features/radar/ui/DeclineReasonField'
+import {fetchEventRsvp} from '@/entities/event'
+import {TeamRsvpResponseControl} from '@/features/radar/ui/TeamRsvpResponseControl'
 import {testId} from '@/shared/testing/testId'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 
@@ -19,42 +16,14 @@ export interface LeagueGameRsvpProps {
   currentUserId?: string
 }
 
-const PLAYER_STATUS_LABELS: Record<EventRsvpStatus, string> = {
-  confirmed: 'Вы идёте',
-  declined: 'Вы не сможете',
-  pending: 'Ответ не отправлен',
-}
-
-const PLAYER_STATUS_COLORS: Record<EventRsvpStatus, 'positive' | 'danger' | 'warning'> = {
-  confirmed: 'positive',
-  declined: 'danger',
-  pending: 'warning',
-}
-
 export function LeagueGameRsvp({eventId, currentUserId = 'user-001'}: LeagueGameRsvpProps) {
-  const queryClient = useQueryClient()
-  const [showDeclineReason, setShowDeclineReason] = useState(false)
-
   const {data: board, isLoading} = useQuery({
     queryKey: ['event-rsvp', eventId],
     queryFn: () => fetchEventRsvp(eventId),
   })
 
-  const mutation = useMutation({
-    mutationFn: (payload: {status: EventRsvpStatus; declineReason?: string}) =>
-      updateEventRsvp(eventId, payload),
-    onSuccess: () => {
-      setShowDeclineReason(false)
-      void queryClient.invalidateQueries({queryKey: ['event-rsvp', eventId]})
-      void queryClient.invalidateQueries({queryKey: ['events']})
-      void queryClient.invalidateQueries({queryKey: ['calendar']})
-    },
-  })
-
   if (isLoading || !board) return null
 
-  const myStatus =
-    board.players.find((player) => player.userId === currentUserId)?.status ?? 'pending'
   const start = new Date(board.startsAt)
   const dateTimeLabel = start.toLocaleString('ru-RU', {
     weekday: 'long',
@@ -63,14 +32,6 @@ export function LeagueGameRsvp({eventId, currentUserId = 'user-001'}: LeagueGame
     hour: '2-digit',
     minute: '2-digit',
   })
-
-  function confirmAttendance() {
-    mutation.mutate({status: 'confirmed'})
-  }
-
-  function submitDecline(reason: string) {
-    mutation.mutate({status: 'declined', declineReason: reason})
-  }
 
   return (
     <IceCard
@@ -109,52 +70,14 @@ export function LeagueGameRsvp({eventId, currentUserId = 'user-001'}: LeagueGame
               {board.arenaName}
             </Text>
           </div>
-          <div className="hockey-row hockey-row--gap-6">
-            <Text data-testid={testId('radar', 'league-rsvp', 'text', 'player-status', eventId)}>
-              Ваш статус:
-            </Text>
-            <Text
-              color={PLAYER_STATUS_COLORS[myStatus]}
-              data-testid={testId('radar', 'league-rsvp', 'text', 'player-status-value', eventId)}
-            >
-              {PLAYER_STATUS_LABELS[myStatus]}
-            </Text>
-          </div>
         </div>
 
-        {!showDeclineReason ? (
-          <div
-            className="league-game-rsvp__actions hockey-row hockey-row--gap-10 hockey-row--wrap"
-            data-testid={testId('radar', 'league-rsvp', 'panel', 'cta', eventId)}
-          >
-            <HockeyButton
-              view="action"
-              size="l"
-              loading={mutation.isPending}
-              onClick={confirmAttendance}
-              data-testid={testId('radar', 'league-rsvp', 'btn', 'confirm', eventId)}
-            >
-              Буду
-            </HockeyButton>
-            <HockeyButton
-              view="outlined"
-              size="l"
-              loading={mutation.isPending}
-              onClick={() => setShowDeclineReason(true)}
-              data-testid={testId('radar', 'league-rsvp', 'btn', 'decline', eventId)}
-            >
-              Не смогу
-            </HockeyButton>
-          </div>
-        ) : (
-          <div className="league-game-rsvp__actions">
-            <DeclineReasonField
-              onConfirm={submitDecline}
-              onCancel={() => setShowDeclineReason(false)}
-              isPending={mutation.isPending}
-            />
-          </div>
-        )}
+        <div
+          className="league-game-rsvp__actions"
+          data-testid={testId('radar', 'league-rsvp', 'panel', 'cta', eventId)}
+        >
+          <TeamRsvpResponseControl eventId={eventId} currentUserId={currentUserId} />
+        </div>
       </div>
     </IceCard>
   )

@@ -1,12 +1,13 @@
 /**
  * SPEC-FR-3.3.1, SPEC-FR-3.3.2, SPEC-FR-4.1.1, SPEC-FR-4.3.1, SPEC-FR-4.3.2
  * SPEC-UI-2.5, SPEC-UI-3.1
- * HOCFRONT-28 / TASK-05 — страница «Игры и тренировки»
+ * HOCFRONT-28A/28C — каталог с вкладками, chips и URL-фильтрами
  */
 
 import {Select, Text, TextInput} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useEffect, useMemo, useRef, useState} from 'react'
+import {Link, useSearchParams} from 'react-router'
 
 import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event'
 import {fetchEvents} from '@/entities/event'
@@ -15,23 +16,33 @@ import {useSessionAccess} from '@/features/access'
 import {
   ACCESS_SCOPE_FILTER_OPTIONS,
   canViewTraining,
+  CATALOG_CHIPS,
+  CATALOG_TABS,
+  type CatalogFiltersState,
+  type CatalogTab,
+  countActiveCatalogFilters,
+  DEFAULT_CATALOG_FILTERS,
   EventCard,
-  EventCreateForm,
+  eventNeedsGoalie,
   getUserTeamIds,
+  isCatalogChipActive,
   isUpcomingEvent,
   matchesAccessScopeFilter,
-  OrganizerTrainingsPanel,
+  matchesCatalogDateFilters,
+  parseCatalogFilters,
+  serializeCatalogFilters,
   SKILL_LEVEL_FILTER_OPTIONS,
+  toggleCatalogChip,
   TRAINING_FORMAT_FILTER_OPTIONS,
 } from '@/features/events'
 import {LeagueGameRsvp, TeamRsvpList} from '@/features/radar'
 import {getApiMode} from '@/shared/config/apiMode'
 import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
+import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {HockeyRinkLoader} from '@/shared/ui/HockeyRinkLoader'
-import {IceCard} from '@/shared/ui/IceCard'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
 
 const MOCK_RESULTS_LOADER_MS = 3000
@@ -47,12 +58,18 @@ function isDemoLoaderEnabled(): boolean {
 const SHOW_MOCK_DEMO_LOADER =
   isDemoLoaderEnabled() && getApiMode() === 'mock' && import.meta.env.MODE !== 'test'
 
-type CatalogTypeFilter = 'all' | 'training' | 'game'
+const TAB_TITLES: Record<CatalogTab, string> = {
+  'for-me': 'Для меня',
+  training: 'Тренировки',
+  game: 'Игры',
+  my: 'Мои записи',
+}
 
 /**
  * @spec SPEC-UI-2.5 - Раздел «Игры и тренировки»
  * @spec SPEC-FR-4.1.1 - Список будущих игр и тренировок
- * @spec TASK-05-02 - Без матч-центра и прошедших в основном списке
+ * @spec HOCFRONT-28A - каталог игрока отдельно от create/organizer
+ * @spec HOCFRONT-28C - chips + URLSearchParams
  */
 export function EventsPage() {
   const {data: events = [], isLoading} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
@@ -60,6 +77,9 @@ export function EventsPage() {
   const {userId, roles, session, canOrganizeEvents} = useSessionAccess()
   const canSeeDeclineDetails =
     roles.includes('captain') || roles.includes('coach') || roles.includes('admin')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const filters = useMemo(() => parseCatalogFilters(searchParams), [searchParams])
+
   const upcomingCatalog = useMemo(
     () =>
       events
@@ -71,22 +91,9 @@ export function EventsPage() {
         .sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
     [events],
   )
-  const [catalogType, setCatalogType] = useState<CatalogTypeFilter>('all')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedDate, setSelectedDate] = useState('')
-  const [selectedFormat, setSelectedFormat] = useState('all')
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState('all')
-  const [selectedLevel, setSelectedLevel] = useState('all')
-  const [selectedArena, setSelectedArena] = useState('all')
-  const [selectedStatus, setSelectedStatus] = useState('all')
-  const [selectedDistrict, setSelectedDistrict] = useState('all')
-  const [selectedAccessScope, setSelectedAccessScope] = useState('all')
-  const [selectedFillState, setSelectedFillState] = useState('all')
-  const [minPrice, setMinPrice] = useState('')
-  const [maxPrice, setMaxPrice] = useState('')
-  /** League RSVP — вторичный блок (TASK-05-02), по умолчанию свёрнут */
+
   const [isNearestGameVisible, setIsNearestGameVisible] = useState(false)
-  const [isFiltersVisible, setIsFiltersVisible] = useState(true)
+  const [isFiltersVisible, setIsFiltersVisible] = useState(false)
   const [isResultsLoading, setIsResultsLoading] = useState(false)
   const [isDemoLoaderVisible, setIsDemoLoaderVisible] = useState(SHOW_MOCK_DEMO_LOADER)
   const didMountRef = useRef(false)
@@ -112,31 +119,25 @@ export function EventsPage() {
   )
 
   const formatOptions = [...TRAINING_FORMAT_FILTER_OPTIONS]
-
   const timeOptions = [
     {value: 'all', content: 'Любое время'},
     {value: 'morning', content: 'Утро (06:00-11:59)'},
     {value: 'day', content: 'День (12:00-17:59)'},
     {value: 'evening', content: 'Вечер (18:00-23:59)'},
   ]
-
   const levelOptions = [...SKILL_LEVEL_FILTER_OPTIONS]
-
   const statusOptions = [
     {value: 'all', content: 'Любой статус'},
     {value: 'open', content: 'Открыт для записи'},
     {value: 'full', content: 'Состав укомплектован'},
   ]
-
   const accessOptions = [...ACCESS_SCOPE_FILTER_OPTIONS]
-
   const fillStateOptions = [
     {value: 'all', content: 'Любая заполненность'},
     {value: 'guaranteed', content: 'Точно состоится'},
     {value: 'questionable', content: 'Под вопросом'},
     {value: 'full', content: 'Полностью укомплектована'},
   ]
-
   const arenaOptions = [
     {value: 'all', content: 'Любая арена'},
     ...Array.from(new Set(upcomingCatalog.map((item) => item.arenaId))).map((arenaId) => ({
@@ -144,7 +145,6 @@ export function EventsPage() {
       content: upcomingCatalog.find((item) => item.arenaId === arenaId)?.arenaName ?? arenaId,
     })),
   ]
-
   const districtOptions = [
     {value: 'all', content: 'Любой округ'},
     ...Array.from(new Set(upcomingCatalog.map((item) => item.district).filter(Boolean))).map(
@@ -155,10 +155,32 @@ export function EventsPage() {
     ),
   ]
 
-  const filtersEnabled = isFiltersVisible
+  const activeFilterCount = countActiveCatalogFilters(filters)
+
+  function patchFilters(patch: Partial<CatalogFiltersState>) {
+    const next = {...filters, ...patch}
+    setSearchParams(serializeCatalogFilters(next), {replace: true})
+  }
+
+  function resetFilters() {
+    setSearchParams(serializeCatalogFilters({...DEFAULT_CATALOG_FILTERS, tab: filters.tab}), {
+      replace: true,
+    })
+  }
 
   const filteredCatalog = upcomingCatalog
-    .filter((item) => (catalogType === 'all' ? true : item.type === catalogType))
+    .filter((item) => {
+      if (filters.tab === 'training') return item.type === 'training'
+      if (filters.tab === 'game') return item.type === 'game'
+      if (filters.tab === 'my') {
+        const status = item.participation.find((entry) => entry.userId === userId)?.status
+        // Командный RSVP: в «Мои» только confirmed (attendance = going).
+        // pending/declined мапятся в not_going и сюда не попадают.
+        if (item.hasTeamRsvp) return status === 'going'
+        return status === 'going' || status === 'maybe'
+      }
+      return true
+    })
     .filter((item) =>
       canViewTraining(item, userId, userTeamIds, {
         isAdmin,
@@ -166,7 +188,7 @@ export function EventsPage() {
       }),
     )
     .filter((item) => {
-      const query = searchQuery.trim().toLowerCase()
+      const query = filters.q.trim().toLowerCase()
       if (!query) return true
       const haystack = [
         item.title,
@@ -184,70 +206,51 @@ export function EventsPage() {
         .toLowerCase()
       return haystack.includes(query)
     })
+    .filter((item) => matchesCatalogDateFilters(item.startsAt, filters))
     .filter((item) => {
-      if (!filtersEnabled) return true
-      if (!selectedDate) return true
-      return item.startsAt.slice(0, 10) === selectedDate
-    })
-    .filter((item) => {
-      if (!filtersEnabled) return true
-      if (selectedFormat === 'all') return true
+      if (filters.format === 'all') return true
       if (item.type !== 'training') return true
-      return item.trainingFormat === selectedFormat
+      return item.trainingFormat === filters.format
     })
     .filter((item) => {
-      if (!filtersEnabled) return true
-      if (selectedTimeSlot === 'all') return true
-      const hour = new Date(item.startsAt).getHours()
-      if (selectedTimeSlot === 'morning') return hour >= 6 && hour < 12
-      if (selectedTimeSlot === 'day') return hour >= 12 && hour < 18
-      return hour >= 18 || hour < 6
+      if (filters.level === 'all') return true
+      return item.requiredSkillLevel === filters.level
     })
     .filter((item) => {
-      if (!filtersEnabled) return true
-      if (selectedLevel === 'all') return true
-      return item.requiredSkillLevel === selectedLevel
+      if (filters.arena === 'all') return true
+      return item.arenaId === filters.arena
     })
     .filter((item) => {
-      if (!filtersEnabled) return true
-      if (selectedArena === 'all') return true
-      return item.arenaId === selectedArena
+      if (filters.status === 'all') return true
+      return item.registrationStatus === filters.status
     })
     .filter((item) => {
-      if (!filtersEnabled) return true
-      if (selectedStatus === 'all') return true
-      return item.registrationStatus === selectedStatus
+      if (filters.district === 'all') return true
+      return item.district === filters.district
     })
     .filter((item) => {
-      if (!filtersEnabled) return true
-      if (selectedDistrict === 'all') return true
-      return item.district === selectedDistrict
+      if (item.type !== 'training' && filters.access !== 'all') return true
+      return matchesAccessScopeFilter(item.accessScope, filters.access)
     })
     .filter((item) => {
-      if (!filtersEnabled) return true
-      if (item.type !== 'training' && selectedAccessScope !== 'all') return true
-      return matchesAccessScopeFilter(item.accessScope, selectedAccessScope)
-    })
-    .filter((item) => {
-      if (!filtersEnabled) return true
-      if (selectedFillState === 'all') return true
+      if (filters.fill === 'all') return true
       const requiredTotal = item.requiredSlots.reduce((acc, slot) => acc + slot.count, 0)
       const filledTotal = item.requiredSlots.reduce((acc, slot) => acc + slot.filledCount, 0)
       const fillRatio = requiredTotal > 0 ? filledTotal / requiredTotal : 0
-      if (selectedFillState === 'full') {
+      if (filters.fill === 'full') {
         return item.registrationStatus === 'full' || fillRatio >= 1
       }
-      if (selectedFillState === 'guaranteed') {
+      if (filters.fill === 'guaranteed') {
         return fillRatio >= 0.7 || item.registrationStatus === 'full'
       }
       return fillRatio < 0.7 && item.registrationStatus !== 'full'
     })
     .filter((item) => {
-      if (!filtersEnabled) return true
       const price = item.pricePerPlayer ?? 0
-      if (minPrice && price < Number(minPrice)) return false
-      return !(maxPrice && price > Number(maxPrice))
+      if (filters.minPrice && price < Number(filters.minPrice)) return false
+      return !(filters.maxPrice && price > Number(filters.maxPrice))
     })
+    .filter((item) => (filters.needsGoalie ? eventNeedsGoalie(item) : true))
 
   useEffect(() => {
     if (!didMountRef.current) {
@@ -259,54 +262,68 @@ export function EventsPage() {
       setIsResultsLoading(false)
     }, RESULTS_LOADER_MS)
     return () => window.clearTimeout(timer)
-  }, [
-    catalogType,
-    searchQuery,
-    selectedDate,
-    selectedFormat,
-    selectedTimeSlot,
-    selectedLevel,
-    selectedArena,
-    selectedStatus,
-    selectedDistrict,
-    selectedAccessScope,
-    selectedFillState,
-    minPrice,
-    maxPrice,
-    filtersEnabled,
-  ])
+  }, [filters, isFiltersVisible])
 
   return (
     <div className="hockey-stack hockey-stack--gap-20" data-testid={testId('events', 'page')}>
       <ScrollReveal direction="down">
-        <Text
-          variant="header-1"
-          className="variable-font-header"
-          data-testid={testId('events', 'page', 'text', 'title')}
-        >
-          {EVENTS_LABEL}
-        </Text>
-        <Text color="secondary" data-testid={testId('events', 'page', 'text', 'subtitle')}>
-          Будущие игры и тренировки: поиск, фильтры, запись. Прошедшие события убраны из списка.
-        </Text>
+        <div className="hockey-row hockey-row--between hockey-row--align-center hockey-row--wrap">
+          <div className="hockey-stack hockey-stack--gap-8">
+            <Text
+              variant="header-1"
+              className="variable-font-header"
+              data-testid={testId('events', 'page', 'text', 'title')}
+            >
+              {EVENTS_LABEL}
+            </Text>
+            <Text color="secondary" data-testid={testId('events', 'page', 'text', 'subtitle')}>
+              Найдите будущую тренировку или игру и запишитесь. Создание — отдельным экраном.
+            </Text>
+          </div>
+          {canOrganizeEvents && (
+            <div
+              className="hockey-row hockey-row--gap-8"
+              data-testid={testId('events', 'page', 'panel', 'organizer-actions')}
+            >
+              <Link
+                to={routes.eventsCreate}
+                data-testid={testId('events', 'page', 'link', 'create')}
+              >
+                <HockeyButton
+                  view="action"
+                  size="m"
+                  data-testid={testId('events', 'page', 'btn', 'create')}
+                >
+                  Создать
+                </HockeyButton>
+              </Link>
+              <Link
+                to={routes.eventsOrganizer}
+                data-testid={testId('events', 'page', 'link', 'organizer')}
+              >
+                <HockeyButton
+                  view="outlined"
+                  size="m"
+                  data-testid={testId('events', 'page', 'btn', 'organizer')}
+                >
+                  Мои тренировки
+                </HockeyButton>
+              </Link>
+            </div>
+          )}
+        </div>
       </ScrollReveal>
 
       <div
         className="hockey-row hockey-row--gap-8 hockey-row--wrap"
         data-testid={testId('events', 'page', 'panel', 'type-tabs')}
       >
-        {(
-          [
-            {id: 'all', label: 'Все'},
-            {id: 'training', label: 'Тренировки'},
-            {id: 'game', label: 'Игры'},
-          ] as const
-        ).map((tab) => (
+        {CATALOG_TABS.map((tab) => (
           <HockeyButton
             key={tab.id}
-            view={catalogType === tab.id ? 'action' : 'outlined'}
+            view={filters.tab === tab.id ? 'action' : 'outlined'}
             size="s"
-            onClick={() => setCatalogType(tab.id)}
+            onClick={() => patchFilters({tab: tab.id})}
             data-testid={testId('events', 'page', 'btn', 'type', tab.id)}
           >
             {tab.label}
@@ -314,31 +331,70 @@ export function EventsPage() {
         ))}
       </div>
 
-      <IceCard padding="m" data-testid={testId('events', 'page', 'card', 'search')}>
+      <div
+        className="events-catalog__search"
+        data-testid={testId('events', 'page', 'card', 'search')}
+      >
         <TextInput
-          size="xl"
-          placeholder="Поиск: название, арена, округ, формат, уровень, организатор"
-          value={searchQuery}
-          onUpdate={setSearchQuery}
+          size="l"
+          placeholder="Название, арена, округ, организатор…"
+          value={filters.q}
+          onUpdate={(value) => patchFilters({q: value})}
           data-testid={testId('events', 'page', 'field', 'search')}
         />
-      </IceCard>
+      </div>
 
-      {canOrganizeEvents && (
-        <ScrollReveal direction="left">
-          <div
-            className="hockey-stack hockey-stack--gap-12"
-            data-testid={testId('events', 'page', 'panel', 'organizer')}
+      <div
+        className="events-catalog__chips"
+        data-testid={testId('events', 'page', 'panel', 'chips')}
+      >
+        <div className="events-catalog__chips-head">
+          <Text
+            color="secondary"
+            className="events-catalog__chips-label"
+            data-testid={testId('events', 'page', 'text', 'chips-title')}
           >
-            <div data-testid={testId('events', 'page', 'card', 'create-form')}>
-              <IceCard padding="m">
-                <EventCreateForm />
-              </IceCard>
+            Быстрый фильтр
+          </Text>
+          {activeFilterCount > 0 && (
+            <div className="hockey-row hockey-row--gap-8 hockey-row--align-center">
+              <Text
+                color="secondary"
+                data-testid={testId('events', 'page', 'text', 'active-filters')}
+              >
+                Фильтров: {activeFilterCount}
+              </Text>
+              <HockeyButton
+                view="flat"
+                size="s"
+                onClick={resetFilters}
+                data-testid={testId('events', 'page', 'btn', 'reset-filters')}
+              >
+                Сбросить
+              </HockeyButton>
             </div>
-            <OrganizerTrainingsPanel events={upcomingCatalog} organizerUserId={userId} />
-          </div>
-        </ScrollReveal>
-      )}
+          )}
+        </div>
+        <div
+          className="events-catalog__chips-row"
+          data-testid={testId('events', 'page', 'row', 'chips')}
+        >
+          {CATALOG_CHIPS.map((chip) => {
+            const active = isCatalogChipActive(chip.id, filters)
+            return (
+              <button
+                key={chip.id}
+                type="button"
+                className={`events-catalog__chip${active ? ' is-active' : ''}`}
+                onClick={() => patchFilters(toggleCatalogChip(chip.id, filters))}
+                data-testid={testId('events', 'page', 'btn', 'chip', chip.id)}
+              >
+                {chip.label}
+              </button>
+            )
+          })}
+        </div>
+      </div>
 
       <div
         className="hockey-stack hockey-stack--gap-10"
@@ -375,8 +431,8 @@ export function EventsPage() {
               <input
                 type="date"
                 className="g-text-input__control"
-                value={selectedDate}
-                onChange={(event) => setSelectedDate(event.target.value)}
+                value={filters.date}
+                onChange={(event) => patchFilters({date: event.target.value, dayPreset: null})}
                 data-testid={testId('events', 'page', 'field', 'date')}
               />
             </div>
@@ -388,8 +444,8 @@ export function EventsPage() {
                 Формат
               </Text>
               <Select
-                value={[selectedFormat]}
-                onUpdate={(value) => setSelectedFormat(value[0] ?? 'all')}
+                value={[filters.format]}
+                onUpdate={(value) => patchFilters({format: value[0] ?? 'all'})}
                 options={formatOptions}
                 data-testid={testId('events', 'page', 'select', 'format')}
               />
@@ -402,8 +458,8 @@ export function EventsPage() {
                 Время
               </Text>
               <Select
-                value={[selectedTimeSlot]}
-                onUpdate={(value) => setSelectedTimeSlot(value[0] ?? 'all')}
+                value={[filters.time]}
+                onUpdate={(value) => patchFilters({time: value[0] ?? 'all'})}
                 options={timeOptions}
                 data-testid={testId('events', 'page', 'select', 'time')}
               />
@@ -416,8 +472,8 @@ export function EventsPage() {
                 Уровень игрока
               </Text>
               <Select
-                value={[selectedLevel]}
-                onUpdate={(value) => setSelectedLevel(value[0] ?? 'all')}
+                value={[filters.level]}
+                onUpdate={(value) => patchFilters({level: value[0] ?? 'all'})}
                 options={levelOptions}
                 data-testid={testId('events', 'page', 'select', 'level')}
               />
@@ -430,8 +486,8 @@ export function EventsPage() {
                 Арена
               </Text>
               <Select
-                value={[selectedArena]}
-                onUpdate={(value) => setSelectedArena(value[0] ?? 'all')}
+                value={[filters.arena]}
+                onUpdate={(value) => patchFilters({arena: value[0] ?? 'all'})}
                 options={arenaOptions}
                 data-testid={testId('events', 'page', 'select', 'arena')}
               />
@@ -444,8 +500,8 @@ export function EventsPage() {
                 Статус
               </Text>
               <Select
-                value={[selectedStatus]}
-                onUpdate={(value) => setSelectedStatus(value[0] ?? 'all')}
+                value={[filters.status]}
+                onUpdate={(value) => patchFilters({status: value[0] ?? 'all'})}
                 options={statusOptions}
                 data-testid={testId('events', 'page', 'select', 'status')}
               />
@@ -458,8 +514,8 @@ export function EventsPage() {
                 Округ
               </Text>
               <Select
-                value={[selectedDistrict]}
-                onUpdate={(value) => setSelectedDistrict(value[0] ?? 'all')}
+                value={[filters.district]}
+                onUpdate={(value) => patchFilters({district: value[0] ?? 'all'})}
                 options={districtOptions}
                 data-testid={testId('events', 'page', 'select', 'district')}
               />
@@ -472,8 +528,8 @@ export function EventsPage() {
                 Доступ
               </Text>
               <Select
-                value={[selectedAccessScope]}
-                onUpdate={(value) => setSelectedAccessScope(value[0] ?? 'all')}
+                value={[filters.access]}
+                onUpdate={(value) => patchFilters({access: value[0] ?? 'all'})}
                 options={accessOptions}
                 data-testid={testId('events', 'page', 'select', 'access')}
               />
@@ -486,8 +542,8 @@ export function EventsPage() {
                 Заполненность
               </Text>
               <Select
-                value={[selectedFillState]}
-                onUpdate={(value) => setSelectedFillState(value[0] ?? 'all')}
+                value={[filters.fill]}
+                onUpdate={(value) => patchFilters({fill: value[0] ?? 'all'})}
                 options={fillStateOptions}
                 data-testid={testId('events', 'page', 'select', 'fill-state')}
               />
@@ -500,8 +556,8 @@ export function EventsPage() {
                 Цена от
               </Text>
               <TextInput
-                value={minPrice}
-                onUpdate={setMinPrice}
+                value={filters.minPrice}
+                onUpdate={(value) => patchFilters({minPrice: value})}
                 data-testid={testId('events', 'page', 'field', 'price-min')}
               />
             </div>
@@ -513,8 +569,8 @@ export function EventsPage() {
                 Цена до
               </Text>
               <TextInput
-                value={maxPrice}
-                onUpdate={setMaxPrice}
+                value={filters.maxPrice}
+                onUpdate={(value) => patchFilters({maxPrice: value})}
                 data-testid={testId('events', 'page', 'field', 'price-max')}
               />
             </div>
@@ -553,7 +609,7 @@ export function EventsPage() {
             variant="subheader-2"
             data-testid={testId('events', 'page', 'text', 'details-title')}
           >
-            Список игр и тренировок
+            {TAB_TITLES[filters.tab]}
           </Text>
           {filteredCatalog.map((event, index) => (
             <ScrollReveal key={event.id} direction={index % 2 === 0 ? 'up' : 'down'}>
@@ -572,8 +628,12 @@ export function EventsPage() {
         filteredCatalog.length === 0 && (
           <div data-testid={testId('events', 'page', 'empty', 'trainings')}>
             <EmptyNetState
-              title="Ничего не найдено"
-              copy="Нет будущих событий по текущим фильтрам. Измените вкладку, фильтры или поиск."
+              title={filters.tab === 'my' ? 'Пока нет записей' : 'Ничего не найдено'}
+              copy={
+                filters.tab === 'my'
+                  ? 'Запишитесь на тренировку или игру — они появятся здесь.'
+                  : 'Нет будущих событий по текущим фильтрам. Измените вкладку, фильтры или поиск.'
+              }
             />
           </div>
         )}

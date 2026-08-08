@@ -5,16 +5,20 @@
 import {Text} from '@gravity-ui/uikit'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 
-import type {AttendanceStatus} from '@/entities/common'
+import type {AttendanceStatus, EventType} from '@/entities/common'
 import {updateAttendance} from '@/entities/event'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 export interface TrainingRegistrationControlProps {
   eventId: string
+  /** Для корректного текста «на игру» / «на тренировку» */
+  eventType?: EventType
   currentStatus?: AttendanceStatus
   registrationStatus?: 'open' | 'full'
   currentUserId?: string
+  /** Без текста статуса — для плотных карточек календаря */
+  compact?: boolean
 }
 
 function invalidateTrainingQueries(
@@ -32,23 +36,29 @@ function invalidateTrainingQueries(
  */
 export function TrainingRegistrationControl({
   eventId,
+  eventType = 'training',
   currentStatus,
   registrationStatus = 'open',
   currentUserId = 'user-001',
+  compact = false,
 }: TrainingRegistrationControlProps) {
   const queryClient = useQueryClient()
   const isRegistered = currentStatus === 'going'
   const isWaitlisted = currentStatus === 'maybe'
   const isFull = registrationStatus === 'full'
+  const entityLabel = eventType === 'game' ? 'игру' : 'тренировку'
 
   const mutation = useMutation({
     mutationFn: (status: AttendanceStatus) =>
       updateAttendance(eventId, status, currentUserId === 'user-001' ? 'Иван Петров' : undefined),
-    onSuccess: () => invalidateTrainingQueries(queryClient, eventId),
+    onSuccess: () => {
+      invalidateTrainingQueries(queryClient, eventId)
+      void queryClient.invalidateQueries({queryKey: ['calendar-shell']})
+    },
   })
 
   const statusText = isRegistered
-    ? 'Вы записаны на тренировку'
+    ? `Вы записаны на ${entityLabel}`
     : isWaitlisted
       ? 'Вы в листе ожидания'
       : isFull
@@ -57,15 +67,21 @@ export function TrainingRegistrationControl({
 
   return (
     <div
-      className="hockey-stack hockey-stack--gap-8"
+      className={
+        compact
+          ? 'hockey-row hockey-row--gap-8 hockey-row--wrap'
+          : 'hockey-stack hockey-stack--gap-8'
+      }
       data-testid={testId('events', 'training-registration', 'panel', eventId)}
     >
-      <Text
-        color="secondary"
-        data-testid={testId('events', 'training-registration', 'text', 'status', eventId)}
-      >
-        {statusText}
-      </Text>
+      {!compact && (
+        <Text
+          color="secondary"
+          data-testid={testId('events', 'training-registration', 'text', 'status', eventId)}
+        >
+          {statusText}
+        </Text>
+      )}
 
       <div
         className="hockey-row hockey-row--gap-8 hockey-row--wrap"

@@ -56,10 +56,12 @@ describe('Events page RSVP block', () => {
     renderWithProviders(<EventsPage />)
 
     await expandNearestGame(user)
-    await user.click(screen.getByTestId('radar-league-rsvp-btn-confirm-event-league-sat'))
+    await user.click(screen.getByTestId('radar-team-rsvp-response-btn-confirm-event-league-sat'))
 
     await waitFor(() => {
-      expect(screen.getByText('Вы идёте')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('radar-team-rsvp-response-text-status-event-league-sat'),
+      ).toHaveTextContent('Вы идёте')
     })
   })
 
@@ -68,12 +70,14 @@ describe('Events page RSVP block', () => {
     renderWithProviders(<EventsPage />)
 
     await expandNearestGame(user)
-    await user.click(screen.getByTestId('radar-league-rsvp-btn-decline-event-league-sat'))
+    await user.click(screen.getByTestId('radar-team-rsvp-response-btn-decline-event-league-sat'))
     await user.click(screen.getByTestId('radar-decline-reason-btn-work'))
     await user.click(screen.getByTestId('radar-decline-reason-btn-confirm'))
 
     await waitFor(() => {
-      expect(screen.getByText('Вы не сможете')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('radar-team-rsvp-response-text-status-event-league-sat'),
+      ).toHaveTextContent('Вы не сможете')
       expect(screen.getAllByText(/Работаю/).length).toBeGreaterThan(0)
     })
   })
@@ -82,7 +86,7 @@ describe('Events page RSVP block', () => {
     renderWithProviders(<EventsPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Список игр и тренировок')).toBeInTheDocument()
+      expect(screen.getByTestId('events-page-text-details-title')).toBeInTheDocument()
       expect(screen.getAllByTestId(/events-card-card-/).length).toBeGreaterThan(0)
     })
   })
@@ -90,10 +94,10 @@ describe('Events page RSVP block', () => {
   it('keeps trainings visible when nearest game block stays collapsed', async () => {
     renderWithProviders(<EventsPage />)
 
-    await screen.findByText('Список игр и тренировок')
+    await screen.findByTestId('events-page-text-details-title')
 
     await waitFor(() => {
-      expect(screen.getByText('Список игр и тренировок')).toBeInTheDocument()
+      expect(screen.getByTestId('events-page-text-details-title')).toBeInTheDocument()
       expect(screen.getAllByTestId(/events-card-card-/).length).toBeGreaterThan(0)
       expect(screen.queryByTestId('events-page-panel-league-rsvp')).not.toBeInTheDocument()
     })
@@ -103,13 +107,13 @@ describe('Events page RSVP block', () => {
     const user = userEvent.setup()
     renderWithProviders(<EventsPage />)
 
-    await screen.findByText('Список игр и тренировок')
+    await screen.findByTestId('events-page-text-details-title')
     const before = screen.getAllByTestId(/events-card-card-/).length
 
     await user.click(screen.getByTestId('events-page-btn-filters-toggle'))
 
     await waitFor(() => {
-      expect(screen.getByText('Список игр и тренировок')).toBeInTheDocument()
+      expect(screen.getByTestId('events-page-text-details-title')).toBeInTheDocument()
       expect(screen.getAllByTestId(/events-card-card-/).length).toBe(before)
     })
   })

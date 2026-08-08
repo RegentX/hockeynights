@@ -39,7 +39,8 @@ export let mockEvents: GameEvent[] = [
         eventId: LEAGUE_SATURDAY_EVENT_ID,
         userId: 'user-001',
         displayName: 'Иван Петров',
-        status: 'going',
+        /** Согласовано с командным RSVP: pending → not_going */
+        status: 'not_going',
         updatedAt: '2026-06-24T10:00:00Z',
       },
     ],

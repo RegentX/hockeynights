@@ -8,6 +8,7 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
 
 import {fetchArenas} from '@/entities/arena'
+import {sendGoalieRequestsForEvent} from '@/entities/calendar'
 import type {EventType, SkillLevel} from '@/entities/common'
 import {createEvent, type GameEvent} from '@/entities/event'
 import {fetchProfileSettings} from '@/entities/profile'
@@ -79,21 +80,43 @@ export function EventCreateForm() {
   const [trainingFormat, setTrainingFormat] =
     useState<NonNullable<GameEvent['trainingFormat']>>('training')
   const [goalieRequestSent, setGoalieRequestSent] = useState(false)
+  const [pendingGoalieNotify, setPendingGoalieNotify] = useState(false)
+  const [createdEventId, setCreatedEventId] = useState<string | null>(null)
   const [gateError, setGateError] = useState<string | null>(null)
+  const [goalieNotifyCount, setGoalieNotifyCount] = useState<number | null>(null)
 
   const hasPaidSubscription = useMemo(() => {
     const plan = settings?.subscription.planId
     return plan === 'player_plus' || plan === 'team_pro'
   }, [settings?.subscription.planId])
 
+  const goalieMutation = useMutation({
+    mutationFn: sendGoalieRequestsForEvent,
+    onSuccess: (result) => {
+      setGoalieRequestSent(true)
+      setGoalieNotifyCount(result.created)
+      void queryClient.invalidateQueries({queryKey: ['goalie-requests']})
+      void queryClient.invalidateQueries({queryKey: ['notifications']})
+    },
+  })
+
   const mutation = useMutation({
     mutationFn: createEvent,
-    onSuccess: () => {
+    onSuccess: (event) => {
       void queryClient.invalidateQueries({queryKey: ['events']})
       void queryClient.invalidateQueries({queryKey: ['calendar']})
+      void queryClient.invalidateQueries({queryKey: ['calendar-shell']})
       setTitle('')
       setGateError(null)
-      setGoalieRequestSent(false)
+      setCreatedEventId(event.id)
+      const shouldNotifyGoalies = pendingGoalieNotify && event.type === 'training'
+      setPendingGoalieNotify(false)
+      if (shouldNotifyGoalies) {
+        goalieMutation.mutate(event.id)
+      } else {
+        setGoalieRequestSent(false)
+        setGoalieNotifyCount(null)
+      }
     },
   })
 
@@ -152,13 +175,21 @@ export function EventCreateForm() {
       <TextInput
         label="Название"
         value={title}
-        onUpdate={setTitle}
+        onUpdate={(value) => {
+          setTitle(value)
+          if (createdEventId) setCreatedEventId(null)
+        }}
         data-testid={testId('events', 'create-form', 'field', 'title')}
       />
       <Select
         label="Тип"
         value={[type]}
-        onUpdate={(v) => setType(v[0] as EventType)}
+        onUpdate={(v) => {
+          const next = v[0] as EventType
+          setType(next)
+          if (next !== 'training') setPendingGoalieNotify(false)
+          if (createdEventId) setCreatedEventId(null)
+        }}
         options={TYPE_OPTIONS}
         data-testid={testId('events', 'create-form', 'select', 'type')}
       />
@@ -248,9 +279,19 @@ export function EventCreateForm() {
         </Text>
       )}
 
+      {pendingGoalieNotify && !goalieRequestSent && (
+        <Text
+          color="secondary"
+          data-testid={testId('events', 'create-form', 'text', 'goalie-pending')}
+        >
+          После создания тренировки уйдёт запрос вратарям по окнам возможностей.
+        </Text>
+      )}
+
       {goalieRequestSent && (
         <Text color="positive" data-testid={testId('events', 'create-form', 'text', 'goalie-sent')}>
-          Запрос вратарям отправлен (mock).
+          Запрос вратарям отправлен
+          {goalieNotifyCount != null ? `: ${goalieNotifyCount}` : ''} (mock).
         </Text>
       )}
 
@@ -266,7 +307,17 @@ export function EventCreateForm() {
         {type === 'training' && (
           <Button
             view="outlined"
-            onClick={() => setGoalieRequestSent(true)}
+            loading={goalieMutation.isPending}
+            onClick={() => {
+              // После create title очищается — старый createdEventId не трогаем.
+              // Кнопка с непустым title + id = «дослать» на только что созданное.
+              if (createdEventId && title.trim()) {
+                goalieMutation.mutate(createdEventId)
+                return
+              }
+              setCreatedEventId(null)
+              setPendingGoalieNotify(true)
+            }}
             data-testid={testId('events', 'create-form', 'btn', 'goalie-request')}
           >
             Отправить запрос вратарям
