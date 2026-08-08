@@ -80,6 +80,7 @@ export function AttendanceControl({
     mutationFn: (status: AttendanceStatus) => updateAttendance(eventId, status),
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ['events']})
+      void queryClient.invalidateQueries({queryKey: ['event', eventId]})
       void queryClient.invalidateQueries({queryKey: ['calendar']})
       void queryClient.invalidateQueries({queryKey: ['roster-status', eventId]})
     },

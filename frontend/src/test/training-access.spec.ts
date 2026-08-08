@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
 import {canManageClubEntity} from '@/features/access/lib/clubAccess'
-import {canViewTraining, getUserTeamIds} from '@/features/events/lib/trainingAccess'
+import {canViewTraining, getUserClubIds, getUserTeamIds} from '@/features/events/lib/trainingAccess'
 import {mockEvents} from '@/mocks/data/events'
 import {mockTeams} from '@/mocks/data/teams'
 import type {Session} from '@/shared/types/user'
@@ -39,13 +39,28 @@ describe('trainingAccess', () => {
     )
   })
 
-  it('restricts private_club training to team members', () => {
+  it('restricts private_club training to club / team members', () => {
     const training = mockEvents.find((event) => event.id === 'event-002')
     expect(training).toBeTruthy()
     expect(canViewTraining(training!, 'user-001', getUserTeamIds(mockTeams, 'user-001'))).toBe(true)
     expect(canViewTraining(training!, 'user-007', getUserTeamIds(mockTeams, 'user-007'))).toBe(
       false,
     )
+  })
+
+  it('allows private_club for members of any club team via userClubIds', () => {
+    const training = mockEvents.find((event) => event.id === 'event-002')
+    expect(training).toBeTruthy()
+    expect(
+      canViewTraining(training!, 'user-777', [], {
+        userClubIds: ['club-001'],
+      }),
+    ).toBe(true)
+    expect(
+      canViewTraining(training!, 'user-777', [], {
+        userClubIds: ['club-999'],
+      }),
+    ).toBe(false)
   })
 
   it('allows private_club training for club admin via canManageClub', () => {
@@ -61,6 +76,11 @@ describe('trainingAccess', () => {
         canManageClub: false,
       }),
     ).toBe(false)
+  })
+
+  it('resolves club ids from team memberships', () => {
+    expect(getUserClubIds(mockTeams, 'user-001')).toContain('club-001')
+    expect(getUserClubIds(mockTeams, 'user-002')).toEqual([])
   })
 })
 

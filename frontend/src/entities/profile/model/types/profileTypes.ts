@@ -90,6 +90,8 @@ export interface PublicPlayerView {
   contactsVisible: boolean
   participationHistoryVisible: boolean
   participationHistory?: ParticipationRecord[]
+  /** HOCFRONT-28CAL-D — можно ли показывать публичный календарь (going) */
+  calendarVisible: boolean
 }
 
 /** @spec SPEC-FR-17.1.1 - Статус подтверждения пользователя */
@@ -111,6 +113,8 @@ export interface PrivacySettings {
   profileVisibility: 'public' | 'teams_only' | 'verified_only' | 'private'
   showContacts: boolean
   showParticipationHistory: boolean
+  /** HOCFRONT-28CAL-D — видимость календаря на публичной странице */
+  calendarVisibility: 'public' | 'teams_only' | 'private'
 }
 
 /** @spec SPEC-FR-19.1.1 - Состояние mock-подписки */

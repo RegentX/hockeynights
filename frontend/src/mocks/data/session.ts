@@ -140,13 +140,14 @@ const defaultPrivacySettings: PrivacySettings = {
   profileVisibility: 'public',
   showContacts: false,
   showParticipationHistory: true,
+  calendarVisibility: 'public',
 }
 
-/** @spec SPEC-FR-19.1.1 - Mock подписка */
+/** @spec SPEC-FR-19.1.1 - Mock подписка (paid period до 15.08.2026) */
 const defaultSubscriptionState: SubscriptionState = {
   planId: 'free',
   status: 'mock',
-  currentPeriodEndsAt: '2026-07-01T00:00:00Z',
+  currentPeriodEndsAt: '2026-08-15T23:59:59+03:00',
   entitlements: ['basic_profile', 'team_chat_access'],
 }
 

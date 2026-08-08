@@ -13,15 +13,19 @@ import {ArenasPage} from '@/pages/ArenasPage'
 import {MockLoginPage} from '@/pages/auth'
 import {CalendarPage} from '@/pages/CalendarPage'
 import {ClubPartnerDashboard} from '@/pages/ClubPartnerDashboard'
+import {CreateEventPage} from '@/pages/CreateEventPage'
 import {CreateTeamPage} from '@/pages/CreateTeamPage'
+import {EditTrainingPage} from '@/pages/EditTrainingPage'
 import {EventsPage} from '@/pages/EventsPage'
 import {FeedbackPage} from '@/pages/FeedbackPage'
+import {GameDetailsPage} from '@/pages/GameDetailsPage'
 import {HighlightsPage} from '@/pages/HighlightsPage'
 import {IqTestsPage} from '@/pages/IqTestsPage'
 import {LeaguePartnerDashboard} from '@/pages/LeaguePartnerDashboard'
 import {LeaguesPage} from '@/pages/LeaguesPage'
 import {MessengerPage} from '@/pages/MessengerPage'
 import {NotificationsPage} from '@/pages/NotificationsPage'
+import {OrganizerEventsPage} from '@/pages/OrganizerEventsPage'
 import {PartnerHubPage} from '@/pages/PartnerHubPage'
 import {PlayersPage} from '@/pages/PlayersPage'
 import {HockeyProfileForm} from '@/pages/ProfilePage'
@@ -78,7 +82,11 @@ export function AppRouter() {
               <Route path={routes.teamsCreate} element={<CreateTeamPage />} />
               <Route path={routes.teamProfile} element={<TeamProfilePage />} />
               <Route path={routes.events} element={<EventsPage />} />
+              <Route path={routes.eventsCreate} element={<CreateEventPage />} />
+              <Route path={routes.eventsOrganizer} element={<OrganizerEventsPage />} />
+              <Route path={routes.trainingEdit} element={<EditTrainingPage />} />
               <Route path={routes.trainingDetails} element={<TrainingDetailsPage />} />
+              <Route path={routes.gameDetails} element={<GameDetailsPage />} />
               <Route path={routes.calendar} element={<CalendarPage />} />
               <Route path={routes.sos} element={<SosPage />} />
               <Route path={routes.arenas} element={<ArenasPage />} />

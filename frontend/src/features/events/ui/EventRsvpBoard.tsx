@@ -8,6 +8,7 @@ import {useQuery} from '@tanstack/react-query'
 
 import type {EventRsvpStatus} from '@/entities/event'
 import {fetchEventRsvp} from '@/entities/event'
+import {useSessionAccess} from '@/features/access'
 import {testId} from '@/shared/testing/testId'
 
 export interface EventRsvpBoardProps {
@@ -27,6 +28,7 @@ const STATUS_COLORS: Record<EventRsvpStatus, 'positive' | 'danger' | 'secondary'
 }
 
 export function EventRsvpBoard({eventId}: EventRsvpBoardProps) {
+  const {userId} = useSessionAccess()
   const {data: board} = useQuery({
     queryKey: ['event-rsvp', eventId],
     queryFn: () => fetchEventRsvp(eventId),
@@ -46,24 +48,28 @@ export function EventRsvpBoard({eventId}: EventRsvpBoardProps) {
         className="hockey-stack hockey-stack--gap-4"
         data-testid={testId('events', 'rsvp', 'list', eventId)}
       >
-        {board.players.map((player) => (
-          <div
-            key={player.userId}
-            className="hockey-row hockey-row--between hockey-row--gap-12"
-            data-testid={testId('events', 'rsvp', 'item', player.userId, eventId)}
-          >
-            <Text data-testid={testId('events', 'rsvp', 'text', 'name', player.userId)}>
-              {player.displayName}
-            </Text>
-            <Text
-              color={STATUS_COLORS[player.status]}
-              data-testid={testId('events', 'rsvp', 'text', 'status', player.userId)}
+        {board.players.map((player) => {
+          const isMe = player.userId === userId
+          return (
+            <div
+              key={player.userId}
+              className="hockey-row hockey-row--between hockey-row--gap-12"
+              data-testid={testId('events', 'rsvp', 'item', player.userId, eventId)}
             >
-              {STATUS_LABELS[player.status]}
-              {player.declineReason ? ` · ${player.declineReason}` : ''}
-            </Text>
-          </div>
-        ))}
+              <Text data-testid={testId('events', 'rsvp', 'text', 'name', player.userId)}>
+                {player.displayName}
+                {isMe ? ' (вы)' : ''}
+              </Text>
+              <Text
+                color={STATUS_COLORS[player.status]}
+                data-testid={testId('events', 'rsvp', 'text', 'status', player.userId)}
+              >
+                {STATUS_LABELS[player.status]}
+                {player.declineReason ? ` · ${player.declineReason}` : ''}
+              </Text>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

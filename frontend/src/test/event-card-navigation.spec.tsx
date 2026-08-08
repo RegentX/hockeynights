@@ -24,4 +24,21 @@ describe('EventCard navigation', () => {
     await user.click(screen.getByTestId('events-card-card-event-005'))
     expect(await screen.findByText('Детальная тренировка')).toBeInTheDocument()
   })
+
+  it('opens game details by tap on card', async () => {
+    const user = userEvent.setup()
+    const game = mockEvents.find((event) => event.id === 'event-001' && event.type === 'game')
+    if (!game) throw new Error('game event-001 not found in mocks')
+
+    renderWithProviders(
+      <Routes>
+        <Route path="/" element={<EventCard event={game} />} />
+        <Route path="/events/games/:eventId" element={<div>Детальная игра</div>} />
+      </Routes>,
+      {routerProps: {initialEntries: ['/']}},
+    )
+
+    await user.click(screen.getByTestId('events-card-card-event-001'))
+    expect(await screen.findByText('Детальная игра')).toBeInTheDocument()
+  })
 })

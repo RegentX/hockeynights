@@ -314,13 +314,13 @@ describe('TASK-QA-02 UI smoke', () => {
     })
   })
 
-  /** @spec SPEC-FR-15.1.1, SPEC-UI-6.5, HOCFRONT-9 */
-  it('EventsPage loads league RSVP hero inside training section', async () => {
+  /** @spec SPEC-FR-15.1.1, SPEC-UI-6.5, HOCFRONT-9 / TASK-05-02 */
+  it('EventsPage loads upcoming trainings with secondary league RSVP entry', async () => {
     renderWithProviders(<EventsPage />)
     await waitFor(() => {
       expect(screen.getByText(EVENTS_LABEL)).toBeInTheDocument()
-      expect(screen.getByTestId('events-page-panel-league-rsvp')).toBeInTheDocument()
-      expect(screen.getByText('Список тренировок')).toBeInTheDocument()
+      expect(screen.getByTestId('events-page-panel-nearest-game')).toBeInTheDocument()
+      expect(screen.getByTestId('events-page-text-details-title')).toBeInTheDocument()
     })
   })
 
