@@ -6,6 +6,7 @@ export type {
   GameEvent,
   RequiredSlot,
   RosterStatus,
+  UpdateEventPayload,
 } from './types/eventTypes'
 export type {
   EventRsvpBoard,

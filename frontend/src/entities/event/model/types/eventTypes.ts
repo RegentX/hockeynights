@@ -103,6 +103,9 @@ export interface CreateEventPayload {
   district?: string
 }
 
+/** HOCFRONT-28G — payload редактирования события */
+export type UpdateEventPayload = Partial<CreateEventPayload>
+
 /** @spec SPEC-FR-4.3.1 - Статус дефицита состава */
 export interface RosterStatus {
   /** @spec SPEC-FR-4.1.1 */
