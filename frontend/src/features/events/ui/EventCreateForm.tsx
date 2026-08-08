@@ -1,20 +1,22 @@
 /**
  * SPEC-FR-4.1.1, SPEC-FR-4.1.2
+ * HOCFRONT-28 / TASK-05-07, TASK-05-09, TASK-05-10 — форма создания тренировки/игры
  */
 
 import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 
 import {fetchArenas} from '@/entities/arena'
 import type {EventType, SkillLevel} from '@/entities/common'
-import {createEvent} from '@/entities/event'
+import {createEvent, type GameEvent} from '@/entities/event'
+import {fetchProfileSettings} from '@/entities/profile'
 import {fetchTeams} from '@/entities/team'
 import {testId} from '@/shared/testing/testId'
 
 const TYPE_OPTIONS = [
-  {value: 'game', content: 'Игра'},
   {value: 'training', content: 'Тренировка'},
+  {value: 'game', content: 'Игра'},
   {value: 'open_ice', content: 'Открытый лёд'},
 ]
 
@@ -22,24 +24,67 @@ const SKILL_OPTIONS = [
   {value: 'beginner', content: 'Дебютант'},
   {value: 'amateur', content: 'Любитель'},
   {value: 'advanced', content: 'Продвинутый'},
+  {value: 'league', content: 'Лига'},
 ]
+
+const ACCESS_OPTIONS = [
+  {value: 'public_open', content: 'Публичная открытая'},
+  {value: 'private_club', content: 'Только для клуба'},
+  {value: 'limited', content: 'По приглашению'},
+]
+
+const FORMAT_OPTIONS = [
+  {value: 'training', content: 'Тренировка'},
+  {value: 'two_way', content: 'Двухсторонка'},
+  {value: 'training_two_way', content: 'Тренировка + двухсторонка'},
+]
+
+function toLocalInputValue(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+function defaultStart(): string {
+  const d = new Date(Date.now() + 86400000)
+  d.setMinutes(0, 0, 0)
+  d.setHours(20)
+  return toLocalInputValue(d)
+}
 
 /**
  * @spec SPEC-FR-4.1.1 - Форма создания игры/тренировки
- * @spec SPEC-FR-4.1.2 - Типы game, training, open_ice
+ * @spec TASK-05-07 - поля даты, доступа, мест
+ * @spec TASK-05-09 - gate подписки для public_open
  */
 export function EventCreateForm() {
   const queryClient = useQueryClient()
   const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
   const {data: arenas = []} = useQuery({queryKey: ['arenas'], queryFn: () => fetchArenas()})
+  const {data: settings} = useQuery({
+    queryKey: ['profile-settings'],
+    queryFn: fetchProfileSettings,
+  })
 
-  const [type, setType] = useState<EventType>('game')
+  const [type, setType] = useState<EventType>('training')
   const [title, setTitle] = useState('')
+  const [startsLocal, setStartsLocal] = useState(defaultStart)
   const [arenaIdOverride, setArenaIdOverride] = useState<string | null>(null)
   const resolvedArenaId = arenaIdOverride ?? arenas[0]?.id ?? ''
   const [teamId, setTeamId] = useState<string | undefined>(teams[0]?.id)
   const [skillLevel, setSkillLevel] = useState<SkillLevel>('amateur')
   const [pricePerPlayer, setPricePerPlayer] = useState('1500')
+  const [slotsTotal, setSlotsTotal] = useState('12')
+  const [accessScope, setAccessScope] =
+    useState<NonNullable<GameEvent['accessScope']>>('public_open')
+  const [trainingFormat, setTrainingFormat] =
+    useState<NonNullable<GameEvent['trainingFormat']>>('training')
+  const [goalieRequestSent, setGoalieRequestSent] = useState(false)
+  const [gateError, setGateError] = useState<string | null>(null)
+
+  const hasPaidSubscription = useMemo(() => {
+    const plan = settings?.subscription.planId
+    return plan === 'player_plus' || plan === 'team_pro'
+  }, [settings?.subscription.planId])
 
   const mutation = useMutation({
     mutationFn: createEvent,
@@ -47,29 +92,49 @@ export function EventCreateForm() {
       void queryClient.invalidateQueries({queryKey: ['events']})
       void queryClient.invalidateQueries({queryKey: ['calendar']})
       setTitle('')
+      setGateError(null)
+      setGoalieRequestSent(false)
     },
   })
 
-  /** @spec SPEC-FR-4.1.1 - Создание события */
   function handleSubmit() {
     if (!title.trim() || !resolvedArenaId) return
-    const startsAt = new Date(Date.now() + 86400000).toISOString()
-    const endsAt = new Date(Date.now() + 86400000 + 5400000).toISOString()
+
+    if (type === 'training' && accessScope === 'public_open' && !hasPaidSubscription) {
+      setGateError(
+        'Публичная тренировка доступна только с активной подпиской. Оформите Player Plus / Team Pro или выберите «Только для клуба».',
+      )
+      return
+    }
+
+    const startsAt = new Date(startsLocal)
+    if (Number.isNaN(startsAt.getTime())) return
+    const endsAt = new Date(startsAt.getTime() + 90 * 60 * 1000)
+    const total = Math.max(1, Number(slotsTotal) || 12)
+    const goalieCount = Math.min(2, Math.max(1, Math.floor(total / 8)))
+    const defenseCount = Math.floor((total - goalieCount) / 2)
+    const forwardCount = total - goalieCount - defenseCount
 
     mutation.mutate({
       type,
       title: title.trim(),
-      startsAt,
-      endsAt,
+      startsAt: startsAt.toISOString(),
+      endsAt: endsAt.toISOString(),
       arenaId: resolvedArenaId,
       teamId,
       requiredSkillLevel: skillLevel,
       requiredSlots: [
-        {position: 'goalie', count: 2, filledCount: 0},
-        {position: 'defense', count: 4, filledCount: 0},
-        {position: 'forward', count: 6, filledCount: 0},
+        {position: 'goalie', count: goalieCount, filledCount: 0},
+        {position: 'defense', count: defenseCount, filledCount: 0},
+        {position: 'forward', count: forwardCount, filledCount: 0},
       ],
-      pricePerPlayer: Number(pricePerPlayer) || undefined,
+      pricePerPlayer:
+        accessScope === 'private_club' && type === 'training'
+          ? 0
+          : Number(pricePerPlayer) || undefined,
+      accessScope: type === 'training' ? accessScope : 'public',
+      clubId: type === 'training' && accessScope === 'private_club' ? 'club-001' : undefined,
+      trainingFormat: type === 'training' ? trainingFormat : undefined,
     })
   }
 
@@ -82,7 +147,7 @@ export function EventCreateForm() {
       data-testid={testId('events', 'create-form', 'panel')}
     >
       <Text variant="subheader-2" data-testid={testId('events', 'create-form', 'text', 'title')}>
-        Создать событие
+        Создать игру или тренировку
       </Text>
       <TextInput
         label="Название"
@@ -97,6 +162,21 @@ export function EventCreateForm() {
         options={TYPE_OPTIONS}
         data-testid={testId('events', 'create-form', 'select', 'type')}
       />
+      <div className="hockey-stack hockey-stack--gap-4">
+        <Text
+          variant="body-2"
+          data-testid={testId('events', 'create-form', 'text', 'starts-at-label')}
+        >
+          Дата и время старта
+        </Text>
+        <input
+          type="datetime-local"
+          className="g-text-input__control"
+          value={startsLocal}
+          onChange={(event) => setStartsLocal(event.target.value)}
+          data-testid={testId('events', 'create-form', 'field', 'starts-at')}
+        />
+      </div>
       <Select
         label="Арена"
         value={resolvedArenaId ? [resolvedArenaId] : []}
@@ -120,20 +200,79 @@ export function EventCreateForm() {
         options={SKILL_OPTIONS}
         data-testid={testId('events', 'create-form', 'select', 'skill')}
       />
+      {type === 'training' && (
+        <>
+          <Select
+            label="Формат"
+            value={[trainingFormat]}
+            onUpdate={(v) => setTrainingFormat(v[0] as NonNullable<GameEvent['trainingFormat']>)}
+            options={FORMAT_OPTIONS}
+            data-testid={testId('events', 'create-form', 'select', 'format')}
+          />
+          <Select
+            label="Тип доступа"
+            value={[accessScope]}
+            onUpdate={(v) => {
+              setAccessScope(v[0] as NonNullable<GameEvent['accessScope']>)
+              setGateError(null)
+            }}
+            options={ACCESS_OPTIONS}
+            data-testid={testId('events', 'create-form', 'select', 'access')}
+          />
+        </>
+      )}
+      <TextInput
+        label="Количество мест"
+        value={slotsTotal}
+        onUpdate={setSlotsTotal}
+        data-testid={testId('events', 'create-form', 'field', 'slots')}
+      />
       <TextInput
         label="Цена за игрока (RUB)"
-        value={pricePerPlayer}
+        value={accessScope === 'private_club' && type === 'training' ? '0' : pricePerPlayer}
         onUpdate={setPricePerPlayer}
+        disabled={accessScope === 'private_club' && type === 'training'}
         data-testid={testId('events', 'create-form', 'field', 'price')}
       />
-      <Button
-        view="action"
-        loading={mutation.isPending}
-        onClick={handleSubmit}
-        data-testid={testId('events', 'create-form', 'btn', 'submit')}
-      >
-        Создать событие
-      </Button>
+
+      {type === 'training' && accessScope === 'public_open' && !hasPaidSubscription && (
+        <Text color="warning" data-testid={testId('events', 'create-form', 'text', 'paywall')}>
+          Публикация `public_open` требует подписку (mock gate). Сейчас план:{' '}
+          {settings?.subscription.planId ?? 'free'}.
+        </Text>
+      )}
+
+      {gateError && (
+        <Text color="danger" data-testid={testId('events', 'create-form', 'error', 'gate')}>
+          {gateError}
+        </Text>
+      )}
+
+      {goalieRequestSent && (
+        <Text color="positive" data-testid={testId('events', 'create-form', 'text', 'goalie-sent')}>
+          Запрос вратарям отправлен (mock).
+        </Text>
+      )}
+
+      <div className="hockey-row hockey-row--gap-8 hockey-row--wrap">
+        <Button
+          view="action"
+          loading={mutation.isPending}
+          onClick={handleSubmit}
+          data-testid={testId('events', 'create-form', 'btn', 'submit')}
+        >
+          Создать
+        </Button>
+        {type === 'training' && (
+          <Button
+            view="outlined"
+            onClick={() => setGoalieRequestSent(true)}
+            data-testid={testId('events', 'create-form', 'btn', 'goalie-request')}
+          >
+            Отправить запрос вратарям
+          </Button>
+        )}
+      </div>
     </div>
   )
 }

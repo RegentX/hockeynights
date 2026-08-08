@@ -96,9 +96,11 @@ export interface CreateEventPayload {
   requiredSlots: RequiredSlot[]
   /** @spec SPEC-FR-5.1.2 */
   pricePerPlayer?: number
-  /** HOCFRONT-25 */
+  /** HOCFRONT-25 / HOCFRONT-28 */
   accessScope?: GameEvent['accessScope']
   clubId?: string
+  trainingFormat?: GameEvent['trainingFormat']
+  district?: string
 }
 
 /** @spec SPEC-FR-4.3.1 - Статус дефицита состава */

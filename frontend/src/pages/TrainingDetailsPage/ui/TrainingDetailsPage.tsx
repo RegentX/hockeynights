@@ -9,13 +9,13 @@ import {fetchTeams} from '@/entities/team'
 import {canManageClubEntity, useSessionAccess} from '@/features/access'
 import {
   ACCESS_LABELS,
-  AttendanceControl,
   canViewTraining,
   getUserTeamIds,
   POSITION_LABELS,
   resolveTrainingUserName,
   SKILL_LEVEL_LABELS,
   TRAINING_FORMAT_LABELS,
+  TrainingRegistrationControl,
 } from '@/features/events'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
@@ -294,20 +294,19 @@ export function TrainingDetailsPage() {
       <IceCard padding="m">
         <div
           className="hockey-stack hockey-stack--gap-8"
-          data-testid={testId('events', 'training-page', 'panel', 'attendance', event.id)}
+          data-testid={testId('events', 'training-page', 'panel', 'registration', event.id)}
         >
           <Text
             variant="subheader-2"
-            data-testid={testId('events', 'training-page', 'text', 'attendance-title', event.id)}
+            data-testid={testId('events', 'training-page', 'text', 'registration-title', event.id)}
           >
-            Мое участие
+            Запись на тренировку
           </Text>
-          <AttendanceControl
+          <TrainingRegistrationControl
             eventId={event.id}
             currentStatus={currentStatus}
+            registrationStatus={event.registrationStatus}
             currentUserId={userId}
-            eventTitle={event.title}
-            eventKind="training"
           />
         </div>
       </IceCard>
