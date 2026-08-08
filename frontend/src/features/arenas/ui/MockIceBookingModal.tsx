@@ -3,11 +3,12 @@
  */
 
 import {Button, Text, TextArea, TextInput} from '@gravity-ui/uikit'
-import {useMutation} from '@tanstack/react-query'
+import {useMutation, useQuery} from '@tanstack/react-query'
 import {useState} from 'react'
 
 import type {IceSlot} from '@/entities/arena'
 import type {Arena} from '@/entities/arena'
+import {fetchSession} from '@/entities/auth'
 import type {IceBookingRequest} from '@/entities/external-flow'
 import {submitIceBooking} from '@/entities/external-flow'
 import {testId} from '@/shared/testing/testId'
@@ -33,6 +34,7 @@ export function MockIceBookingModal({open, onClose, arena, slot}: MockIceBooking
   const [phone, setPhone] = useState('+7 (999) 000-00-00')
   const [comment, setComment] = useState('')
   const [result, setResult] = useState<IceBookingRequest | null>(null)
+  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
 
   const mutation = useMutation({
     mutationFn: submitIceBooking,
@@ -51,6 +53,9 @@ export function MockIceBookingModal({open, onClose, arena, slot}: MockIceBooking
       slotId: slot?.id,
       contactPhone: phone,
       comment: comment || undefined,
+      organizerUserId: session?.user.id,
+      purpose: slot ? 'Бронь слота' : 'Заявка на лёд',
+      headcount: 'уточняется',
     })
   }
 
@@ -122,7 +127,8 @@ export function MockIceBookingModal({open, onClose, arena, slot}: MockIceBooking
               color="secondary"
               data-testid={testId('arenas', 'ice-booking', 'modal', 'text', 'phase-note')}
             >
-              В Phase 2 заявка уйдёт на портал аренды. Сейчас это только демонстрация UX.
+              Заявка попала в кабинет арены со статусом «На рассмотрении». Админ увидит ваш профиль
+              и сможет написать в чат.
             </Text>
           </div>
         ) : (

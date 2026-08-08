@@ -152,7 +152,7 @@ export function TrainingDetailsPage() {
           <Text data-testid={testId('events', 'training-page', 'text', 'arena', event.id)}>
             Арена:{' '}
             <Link
-              to={`/arenas?arenaId=${event.arenaId}`}
+              to={`/arenas/${event.arenaId}`}
               data-testid={testId('events', 'training-page', 'link', 'arena', event.id)}
             >
               {event.arenaName ?? event.arenaId}

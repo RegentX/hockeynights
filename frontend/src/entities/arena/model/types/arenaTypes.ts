@@ -66,10 +66,15 @@ export interface IceSlot {
   sourceMeta: SourceMeta
 }
 
+/** HOCFRONT-32A — регион города для фильтра каталога */
+export type ArenaCityRegion = 'moscow' | 'moscow_oblast'
+
 /** @spec SPEC-FR-6.1.2 - Фильтры арен */
 export interface ArenaFilters {
   /** @spec SPEC-FR-6.1.2 */
   query?: string
+  /** HOCFRONT-32A */
+  cityRegion?: ArenaCityRegion
   /** @spec SPEC-FR-6.1.2 */
   district?: string
   /** @spec SPEC-FR-6.1.2 */

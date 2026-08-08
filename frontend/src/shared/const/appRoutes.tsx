@@ -1,4 +1,8 @@
 /** Route path constants — single source for router and navigation. */
+export function arenaDetailsPath(arenaId: string): string {
+  return `/arenas/${encodeURIComponent(arenaId)}`
+}
+
 export const routes = {
   home: '/',
   login: '/login',
@@ -18,6 +22,7 @@ export const routes = {
   calendar: '/calendar',
   sos: '/sos',
   arenas: '/arenas',
+  arenaDetails: '/arenas/:arenaId',
   leagues: '/leagues',
   feedback: '/feedback',
   notifications: '/notifications',
@@ -27,6 +32,7 @@ export const routes = {
   partnerShop: '/partner/shops/:shopId',
   partnerLeague: '/partner/leagues/:leagueId',
   partnerClub: '/partner/clubs/:clubId',
+  partnerArena: '/partner/arenas/:arenaId',
   iq: '/iq',
   radar: '/radar',
   highlights: '/highlights',

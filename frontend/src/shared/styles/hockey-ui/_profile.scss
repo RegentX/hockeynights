@@ -419,33 +419,37 @@
 }
 
 .entity-profile-badge {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-height: 26px;
   border-radius: 999px;
-  padding: 3px 8px;
+  padding: 0 10px;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+  line-height: 1;
   border: 1px solid var(--hockey-card-border);
   color: var(--hockey-text-muted);
   white-space: nowrap;
 
   &--league {
     color: #fbbf24;
-    border-color: rgba(251, 191, 36, 0.35);
+    border-color: rgba(251, 191, 36, 0.4);
     background: rgba(251, 191, 36, 0.1);
   }
 
   &--arena {
     color: #38bdf8;
-    border-color: rgba(56, 189, 248, 0.35);
+    border-color: rgba(56, 189, 248, 0.4);
     background: rgba(56, 189, 248, 0.1);
   }
 
   &--shop {
     color: #a78bfa;
-    border-color: rgba(167, 139, 250, 0.35);
+    border-color: rgba(167, 139, 250, 0.4);
     background: rgba(167, 139, 250, 0.1);
   }
 }

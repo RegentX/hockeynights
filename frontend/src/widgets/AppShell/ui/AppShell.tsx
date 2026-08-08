@@ -67,6 +67,7 @@ export function AppShell() {
   const unreadCount = notifications.filter((n) => !n.readAt).length
   const unreadChatCount = getTotalUnreadCount(chats)
   const isMessengerRoute = location.pathname === '/messenger'
+  const isArenasRoute = location.pathname === '/arenas' || location.pathname.startsWith('/arenas/')
   const isFocusMode = isLeftCollapsed && isRightCollapsed
   /** overflow:hidden только в мессенджере — на других страницах обе панели могут быть свёрнуты без «пустого» профиля. */
   const isMessengerFocus = isMessengerRoute && isFocusMode
@@ -102,6 +103,13 @@ export function AppShell() {
       setPuckTop(active.offsetTop + active.offsetHeight / 2 - 4)
     }
   }, [location.pathname])
+
+  // Карта арен нуждается в ширине — правый «борт» по умолчанию сворачиваем.
+  const [wasArenasRoute, setWasArenasRoute] = useState(isArenasRoute)
+  if (isArenasRoute !== wasArenasRoute) {
+    setWasArenasRoute(isArenasRoute)
+    if (isArenasRoute) setIsRightCollapsed(true)
+  }
 
   const sessionMenuItems = useMemo(
     () => [

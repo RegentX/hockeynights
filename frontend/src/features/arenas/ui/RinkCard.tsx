@@ -7,18 +7,16 @@ import {Text} from '@gravity-ui/uikit'
 import {forwardRef} from 'react'
 
 import type {Arena} from '@/entities/arena'
-import {ExternalBookingButton} from '@/features/arenas/ui/ExternalBookingButton'
+import {formatArenaAmenities} from '@/entities/arena'
 import {FavoriteButton} from '@/features/favorites'
 import {testId} from '@/shared/testing/testId'
-import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
-import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 
 const BOOKING_MODE_LABELS = {
   slot_calendar: 'Слоты',
-  external_portal: 'Портал',
+  external_portal: 'Заявка',
 } as const
 
 /** @spec SPEC-FR-6.2.1 - Props карточки катка */
@@ -29,14 +27,10 @@ export interface RinkCardProps {
   onOpenDetails?: (arenaId: string) => void
   /** @spec SPEC-UI-2.2 */
   hasFreeSlot?: boolean
+  /** HOCFRONT-32E — число опубликованных объявлений льда */
+  publishedListingsCount?: number
   /** @spec SPEC-FR-6.2.2 - Активная карточка (синхронизирована с картой) */
   selected?: boolean
-}
-
-function formatFreshness(updatedAt: string): string {
-  const updated = new Date(updatedAt)
-  if (Number.isNaN(updated.getTime())) return ''
-  return updated.toLocaleDateString('ru-RU', {day: '2-digit', month: 'short'})
 }
 
 /**
@@ -45,10 +39,9 @@ function formatFreshness(updatedAt: string): string {
  * @spec SPEC-FR-6.2.2 - Кликабельная карточка, открывающая детали
  */
 export const RinkCard = forwardRef<HTMLDivElement, RinkCardProps>(function RinkCard(
-  {arena, onOpenDetails, hasFreeSlot, selected = false},
+  {arena, onOpenDetails, hasFreeSlot, publishedListingsCount = 0, selected = false},
   ref,
 ) {
-  const showSlotLamp = arena.bookingMode === 'slot_calendar' && hasFreeSlot !== undefined
   const handleSelect = onOpenDetails ? () => onOpenDetails(arena.id) : undefined
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!handleSelect) return
@@ -57,12 +50,12 @@ export const RinkCard = forwardRef<HTMLDivElement, RinkCardProps>(function RinkC
       handleSelect()
     }
   }
-  const freshness = formatFreshness(arena.sourceMeta.updatedAt)
-  const ctaLabel = selected
-    ? 'Открыто'
-    : arena.bookingMode === 'slot_calendar'
-      ? 'Подробнее'
-      : 'Забронировать'
+
+  const amenities =
+    arena.amenities.length > 0 ? formatArenaAmenities(arena.amenities) : 'Удобства не указаны'
+  const metroLine = arena.metro
+    ? `м. ${arena.metro}${arena.district ? ` · ${arena.district}` : ''}`
+    : arena.district || 'Метро не указано'
 
   return (
     <IceCard
@@ -82,88 +75,121 @@ export const RinkCard = forwardRef<HTMLDivElement, RinkCardProps>(function RinkC
       onKeyDown={handleSelect ? handleKeyDown : undefined}
       data-testid={testId('arenas', 'rink', 'card', arena.id)}
     >
-      <div className="hockey-stack hockey-stack--gap-10">
-        <div className="hockey-row hockey-row--gap-8 hockey-row--between">
-          <Text
-            variant="header-2"
-            className="hockey-entity-title--compact"
-            data-testid={testId('arenas', 'rink', 'text', 'name', arena.id)}
-          >
-            {arena.name}
-          </Text>
-          <div className="hockey-row hockey-row--gap-8">
-            <FavoriteButton type="arena" entityId={arena.id} title={arena.name} />
-            <div data-testid={testId('arenas', 'rink', 'badge', 'profile', arena.id)}>
-              <EntityProfileBadge kind="arena" />
-            </div>
-            <span
-              className={`rink-card__mode rink-card__mode--${arena.bookingMode}`}
-              data-testid={testId('arenas', 'rink', 'badge', 'mode', arena.id)}
-            >
-              {BOOKING_MODE_LABELS[arena.bookingMode]}
-            </span>
-          </div>
-        </div>
-        {showSlotLamp && (
-          <span
-            className={`rink-slot-lamp${hasFreeSlot ? '' : ' rink-slot-lamp--busy'}`}
-            aria-label={hasFreeSlot ? 'Есть свободные слоты' : 'Слоты заняты'}
-            data-testid={testId('arenas', 'rink', 'badge', 'slot-lamp', arena.id)}
-          >
-            <span className="rink-slot-lamp__dot" aria-hidden />
-            {hasFreeSlot ? 'Слот свободен' : 'Занято'}
-          </span>
-        )}
-        <Text color="secondary" data-testid={testId('arenas', 'rink', 'text', 'address', arena.id)}>
-          {arena.address}
-        </Text>
-        {arena.metro && (
-          <Text color="secondary" data-testid={testId('arenas', 'rink', 'text', 'metro', arena.id)}>
-            м. {arena.metro}
-            {arena.district ? ` · ${arena.district}` : ''}
-          </Text>
-        )}
-        {arena.phone && (
-          <Text color="secondary" data-testid={testId('arenas', 'rink', 'text', 'phone', arena.id)}>
-            {arena.phone}
-          </Text>
-        )}
-        {arena.priceRange && (
-          <ScoreboardText
-            tone="accent"
-            data-testid={testId('arenas', 'rink', 'text', 'price', arena.id)}
-          >
-            {arena.priceRange}
-          </ScoreboardText>
-        )}
-        <Text
-          color="secondary"
-          data-testid={testId('arenas', 'rink', 'text', 'amenities', arena.id)}
-        >
-          Удобства: {arena.amenities.join(', ')}
-        </Text>
-        <div
-          className="hockey-row hockey-row--gap-8 hockey-row--between"
-          data-testid={testId('arenas', 'rink', 'badge', 'source', arena.id)}
-        >
-          <SourceMetaBadge sourceMeta={arena.sourceMeta} />
-          {freshness && (
+      <div className="rink-card__inner">
+        <div className="rink-card__body">
+          <div className="hockey-row hockey-row--gap-8 hockey-row--between hockey-row--align-start">
             <Text
-              color="secondary"
-              data-testid={testId('arenas', 'rink', 'text', 'freshness', arena.id)}
+              variant="header-2"
+              className="rink-card__title hockey-entity-title--compact"
+              data-testid={testId('arenas', 'rink', 'text', 'name', arena.id)}
             >
-              Обновлено {freshness}
+              {arena.name}
             </Text>
-          )}
+            <div
+              className="arena-meta-chips"
+              data-testid={testId('arenas', 'rink', 'panel', 'chips', arena.id)}
+            >
+              <FavoriteButton
+                type="arena"
+                entityId={arena.id}
+                title={arena.name}
+                className="arena-meta-chip arena-meta-chip--favorite"
+              />
+              <span
+                className={`arena-meta-chip arena-meta-chip--${arena.bookingMode === 'slot_calendar' ? 'slots' : 'portal'}`}
+                data-testid={testId('arenas', 'rink', 'badge', 'mode', arena.id)}
+              >
+                {BOOKING_MODE_LABELS[arena.bookingMode]}
+              </span>
+            </div>
+          </div>
+
+          <div
+            className="rink-card__status"
+            data-testid={testId('arenas', 'rink', 'panel', 'status', arena.id)}
+          >
+            {arena.bookingMode === 'slot_calendar' ? (
+              <span
+                className={`rink-slot-lamp${hasFreeSlot ? '' : ' rink-slot-lamp--busy'}`}
+                aria-label={
+                  hasFreeSlot === undefined
+                    ? 'Статус слотов неизвестен'
+                    : hasFreeSlot
+                      ? 'Есть свободные слоты'
+                      : 'Слоты заняты'
+                }
+                data-testid={testId('arenas', 'rink', 'badge', 'slot-lamp', arena.id)}
+              >
+                <span className="rink-slot-lamp__dot" aria-hidden />
+                {hasFreeSlot === undefined
+                  ? 'Слоты уточняются'
+                  : hasFreeSlot
+                    ? 'Есть свободные слоты'
+                    : 'Сейчас занято'}
+              </span>
+            ) : (
+              <span
+                className="rink-slot-lamp rink-slot-lamp--portal"
+                data-testid={testId('arenas', 'rink', 'badge', 'portal-status', arena.id)}
+              >
+                Запись по заявке
+              </span>
+            )}
+          </div>
+
+          <Text
+            color="secondary"
+            className="rink-card__address"
+            data-testid={testId('arenas', 'rink', 'text', 'address', arena.id)}
+          >
+            {arena.address}
+          </Text>
+          <Text
+            color="secondary"
+            className="rink-card__metro"
+            data-testid={testId('arenas', 'rink', 'text', 'metro', arena.id)}
+          >
+            {metroLine}
+          </Text>
+          <div className="rink-card__price">
+            {arena.priceRange ? (
+              <ScoreboardText
+                tone="accent"
+                data-testid={testId('arenas', 'rink', 'text', 'price', arena.id)}
+              >
+                {arena.priceRange}
+              </ScoreboardText>
+            ) : (
+              <Text
+                color="secondary"
+                data-testid={testId('arenas', 'rink', 'text', 'price-empty', arena.id)}
+              >
+                Цена по запросу
+              </Text>
+            )}
+          </div>
+          <Text
+            color="secondary"
+            className="rink-card__amenities"
+            data-testid={testId('arenas', 'rink', 'text', 'amenities', arena.id)}
+          >
+            {amenities}
+          </Text>
+          <Text
+            color="secondary"
+            className="rink-card__listings-hint"
+            data-testid={testId('arenas', 'rink', 'text', 'listings', arena.id)}
+          >
+            {publishedListingsCount > 0
+              ? `Объявлений льда: ${publishedListingsCount}`
+              : 'Нет объявлений льда'}
+          </Text>
         </div>
 
-        <div className="hockey-row hockey-row--gap-8">
-          {arena.bookingMode === 'external_portal' && (
-            <ExternalBookingButton arena={arena} size="s" label="Заявка на лёд" />
-          )}
-          {handleSelect && (
+        {handleSelect && (
+          <div className="rink-card__footer">
             <HockeyButton
-              view={selected ? 'action' : 'outlined'}
+              view="outlined"
               size="s"
               onClick={(e) => {
                 e.stopPropagation()
@@ -171,10 +197,10 @@ export const RinkCard = forwardRef<HTMLDivElement, RinkCardProps>(function RinkC
               }}
               data-testid={testId('arenas', 'rink', 'btn', 'open', arena.id)}
             >
-              {ctaLabel}
+              {selected ? 'Открыто' : 'Подробнее'}
             </HockeyButton>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </IceCard>
   )

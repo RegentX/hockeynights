@@ -116,6 +116,9 @@ function partnerCatalogItems(session: Session): NavItem[] {
     items.push({to: routes.messenger, label: 'Мессенджер', tier: 'active'})
     items.push({to: routes.events, label: EVENTS_LABEL, tier: 'active'})
   }
+  if (memberships.some((m) => m.kind === 'arena')) {
+    items.push({to: routes.arenas, label: 'Ледовые арены', tier: 'active'})
+  }
   return items
 }
 
@@ -197,6 +200,18 @@ export function isMobileMorePathActive(pathname: string): boolean {
   return MOBILE_MORE_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))
 }
 
+/**
+ * Active-state для bottom nav.
+ * `/partner` — только exact match, иначе кабинет `/partner/arenas/:id`
+ * подсвечивает и «Кабинет», и «Партнёр».
+ */
+export function isMobileNavItemActive(pathname: string, itemTo: string): boolean {
+  if (itemTo === routes.partner) {
+    return pathname === routes.partner
+  }
+  return pathname === itemTo || pathname.startsWith(`${itemTo}/`)
+}
+
 export function getPersonaHomePath(session: Session): string {
   if (shouldUsePartnerWorkspace(session)) return getPrimaryPartnerPath(session)
   if (session.user.roles.includes('admin')) return routes.admin
@@ -257,6 +272,9 @@ export function getAllowedPathPrefixes(session: Session): string[] {
         routes.messenger,
         routes.calendar,
       )
+    }
+    if (memberships.some((m) => m.kind === 'arena')) {
+      prefixes.push(routes.arenas, routes.calendar, routes.messenger, routes.players, routes.teams)
     }
     return prefixes
   }

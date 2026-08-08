@@ -13,6 +13,7 @@ import {fetchSession} from '@/entities/auth'
 import {fetchChats, getTotalUnreadCount} from '@/entities/messenger'
 import {
   isMobileMorePathActive,
+  isMobileNavItemActive,
   resolveMobileMoreNavItems,
   resolveMobileNavItems,
   shouldUsePartnerWorkspace,
@@ -77,7 +78,9 @@ export function MobileNav() {
           <Link
             to="/partner"
             className={`mobile-nav__link${
-              location.pathname.startsWith('/partner') ? ' mobile-nav__link--active' : ''
+              isMobileNavItemActive(location.pathname, '/partner')
+                ? ' mobile-nav__link--active'
+                : ''
             }`}
             data-testid={testId('app', 'mobile-nav', 'link', routeToTestSlug('/partner'))}
           >
@@ -97,8 +100,7 @@ export function MobileNav() {
           </Link>
         )}
         {mobileNav.map((item) => {
-          const active =
-            location.pathname === item.to || location.pathname.startsWith(`${item.to}/`)
+          const active = isMobileNavItemActive(location.pathname, item.to)
           const showUnreadBadge = item.to === '/messenger' && unreadChatCount > 0
           const iconData = MOBILE_NAV_ICON_BY_PATH[item.to]
           return (
@@ -209,8 +211,7 @@ export function MobileNav() {
               data-testid={testId('app', 'mobile-nav', 'list', 'more')}
             >
               {moreNav.map((item) => {
-                const active =
-                  location.pathname === item.to || location.pathname.startsWith(`${item.to}/`)
+                const active = isMobileNavItemActive(location.pathname, item.to)
                 const iconData = MOBILE_NAV_ICON_BY_PATH[item.to]
                 return (
                   <li key={item.to}>

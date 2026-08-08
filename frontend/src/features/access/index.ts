@@ -1,3 +1,4 @@
+export {canManageArena} from './lib/arenaAccess'
 export {canManageClubEntity} from './lib/clubAccess'
 export type {NavItem, NavTier} from './lib/navigationAccess'
 export {
@@ -5,6 +6,7 @@ export {
   getPersonaHomePath,
   HEADER_ONLY_NAV_PATHS,
   isMobileMorePathActive,
+  isMobileNavItemActive,
   isPathAllowed,
   MOBILE_PLAYER_NAV,
   MVP_HIDDEN_NAV_PATHS,

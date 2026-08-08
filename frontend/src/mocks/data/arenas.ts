@@ -108,6 +108,15 @@ export function setArenaVisibility(arenaId: string, visible: boolean): void {
   mockArenas = mockArenas.map((a) => (a.id === arenaId ? {...a, visible} : a))
 }
 
+/** HOCFRONT-32D — обновить поля арены */
+export function updateMockArena(arenaId: string, patch: Partial<Arena>): Arena | undefined {
+  const index = mockArenas.findIndex((a) => a.id === arenaId)
+  if (index === -1) return undefined
+  const next = {...mockArenas[index], ...patch}
+  mockArenas = mockArenas.map((a, i) => (i === index ? next : a))
+  return next
+}
+
 /** @spec SPEC-FR-6.3.1 - Mock слоты льда */
 export const mockIceSlots: IceSlot[] = [
   {
