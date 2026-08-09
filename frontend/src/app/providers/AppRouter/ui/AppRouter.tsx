@@ -9,6 +9,8 @@ import {LoginLayout} from '@/app/LoginLayout'
 import {PersonaGate} from '@/app/PersonaGate'
 import {RequireAuth} from '@/app/RequireAuth'
 import {AdminDashboard} from '@/pages/AdminDashboard'
+import {ArenaDetailsPage} from '@/pages/ArenaDetailsPage'
+import {ArenaPartnerDashboard} from '@/pages/ArenaPartnerDashboard'
 import {ArenasPage} from '@/pages/ArenasPage'
 import {MockLoginPage} from '@/pages/auth'
 import {CalendarPage} from '@/pages/CalendarPage'
@@ -90,6 +92,7 @@ export function AppRouter() {
               <Route path={routes.calendar} element={<CalendarPage />} />
               <Route path={routes.sos} element={<SosPage />} />
               <Route path={routes.arenas} element={<ArenasPage />} />
+              <Route path={routes.arenaDetails} element={<ArenaDetailsPage />} />
               <Route path={routes.leagues} element={<LeaguesPage />} />
               <Route path={routes.feedback} element={<FeedbackPage />} />
               <Route path={routes.notifications} element={<NotificationsPage />} />
@@ -99,6 +102,7 @@ export function AppRouter() {
               <Route path={routes.partnerShop} element={<ShopPartnerDashboard />} />
               <Route path={routes.partnerLeague} element={<LeaguePartnerDashboard />} />
               <Route path={routes.partnerClub} element={<ClubPartnerDashboard />} />
+              <Route path={routes.partnerArena} element={<ArenaPartnerDashboard />} />
               <Route path={routes.iq} element={<IqTestsPage />} />
               <Route path={routes.radar} element={<Navigate to={routes.events} replace />} />
               <Route path={routes.highlights} element={<HighlightsPage />} />

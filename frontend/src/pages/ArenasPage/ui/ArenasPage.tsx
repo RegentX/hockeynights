@@ -1,17 +1,28 @@
 /**
  * SPEC-FR-6.1.1, SPEC-FR-6.1.2, SPEC-FR-6.2.1, SPEC-FR-6.3.1
  * SPEC-UI-2.2, SPEC-UI-3.1
+ * HOCFRONT-32 — каталог; карточка арены → /arenas/:arenaId
  */
 
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {useSearchParams} from 'react-router'
+import {useNavigate, useSearchParams} from 'react-router'
 
-import type {ArenaFilters as ArenaFiltersType} from '@/entities/arena'
-import {arenaHasFreeSlots, fetchArenas, fetchArenaSlots} from '@/entities/arena'
-import {ArenaDetailPanel, ArenaFilters, ArenaMap, RinkCard} from '@/features/arenas'
+import type {
+  ArenaBookingMode,
+  ArenaCityRegion,
+  ArenaFilters as ArenaFiltersType,
+} from '@/entities/arena'
+import {
+  arenaHasFreeSlots,
+  fetchArenas,
+  fetchArenaSlots,
+  fetchPublishedIceListings,
+} from '@/entities/arena'
+import {type ArenaCatalogView, ArenaFilters, ArenaMap, RinkCard} from '@/features/arenas'
 import {ARENAS_PAGE_TITLE} from '@/shared/config/navigationLabels'
+import {arenaDetailsPath} from '@/shared/const/appRoutes'
 import {useDocumentTitle} from '@/shared/hooks/useDocumentTitle'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
@@ -27,29 +38,70 @@ function hasActiveFilters(filters: ArenaFiltersType): boolean {
   return Object.values(filters).some((v) => v !== undefined && v !== '' && v !== false)
 }
 
+function viewFromSearchParams(params: URLSearchParams): ArenaCatalogView {
+  return params.get('view') === 'map' ? 'map' : 'list'
+}
+
+function filtersFromSearchParams(params: URLSearchParams): ArenaFiltersType {
+  const cityRegion = params.get('city')
+  return {
+    query: params.get('q') || undefined,
+    cityRegion:
+      cityRegion === 'moscow' || cityRegion === 'moscow_oblast'
+        ? (cityRegion as ArenaCityRegion)
+        : undefined,
+    district: params.get('district') || undefined,
+    metro: params.get('metro') || undefined,
+    amenity: params.get('amenity') || undefined,
+    bookingMode:
+      params.get('bookingMode') === 'slot_calendar' ||
+      params.get('bookingMode') === 'external_portal'
+        ? (params.get('bookingMode') as ArenaBookingMode)
+        : undefined,
+    hasFreeSlots: params.get('hasFreeSlots') === 'true' ? true : undefined,
+  }
+}
+
+function writeFiltersToSearchParams(
+  filters: ArenaFiltersType,
+  view: ArenaCatalogView,
+): URLSearchParams {
+  const next = new URLSearchParams()
+  if (filters.query) next.set('q', filters.query)
+  if (filters.cityRegion) next.set('city', filters.cityRegion)
+  if (filters.district) next.set('district', filters.district)
+  if (filters.metro) next.set('metro', filters.metro)
+  if (filters.amenity) next.set('amenity', filters.amenity)
+  if (filters.bookingMode) next.set('bookingMode', filters.bookingMode)
+  if (filters.hasFreeSlots) next.set('hasFreeSlots', 'true')
+  if (view === 'map') next.set('view', 'map')
+  return next
+}
+
 /**
  * @spec SPEC-FR-6.1.1 - Страница списка и карты арен
- * @spec SPEC-FR-6.1.2 - Единый источник выбора арены, синхронизация списка и карты
- * @spec SPEC-FR-6.2.1 - Детальная панель по выбранной арене
- * @spec SPEC-FR-6.2.2 - Полноценный поиск: текст, район, метро, удобства
+ * @spec SPEC-FR-6.1.2 - Фильтрация и синхронизация списка и карты
+ * @spec SPEC-FR-6.2.1 - Выбор арены открывает страницу деталей
  */
 export function ArenasPage() {
   useDocumentTitle(ARENAS_PAGE_TITLE)
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const arenaIdFromUrl = searchParams.get('arenaId')
-  const [filters, setFilters] = useState<ArenaFiltersType>(EMPTY_FILTERS)
-  const [detailClosed, setDetailClosed] = useState(false)
-  const [trackedUrlArena, setTrackedUrlArena] = useState(arenaIdFromUrl)
+  const legacyArenaId = searchParams.get('arenaId')
+
+  const [filters, setFilters] = useState<ArenaFiltersType>(() =>
+    filtersFromSearchParams(searchParams),
+  )
+  const [view, setView] = useState<ArenaCatalogView>(() => viewFromSearchParams(searchParams))
+  const [selectedArenaId, setSelectedArenaId] = useState<string | null>(null)
+  const mapSectionRef = useRef<HTMLDivElement | null>(null)
   const cardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map())
-  const scrollOnNextArenaRef = useRef(false)
 
-  // React: adjust state during render when URL param changes (preferred over setState-in-effect).
-  if (trackedUrlArena !== arenaIdFromUrl) {
-    setTrackedUrlArena(arenaIdFromUrl)
-    setDetailClosed(false)
-  }
-
-  const detailOpen = !detailClosed
+  // Старые ссылки ?arenaId= → полноценная страница арены
+  useEffect(() => {
+    if (!legacyArenaId) return
+    navigate(arenaDetailsPath(legacyArenaId), {replace: true})
+  }, [legacyArenaId, navigate])
 
   const {
     data: arenas = [],
@@ -63,30 +115,10 @@ export function ArenasPage() {
     placeholderData: (previous) => previous,
   })
 
-  const selectedArenaId = arenaIdFromUrl
-
-  const activeArena = useMemo(() => {
-    if (selectedArenaId) {
-      const match = arenas.find((a) => a.id === selectedArenaId)
-      if (match) return match
-    }
-    return arenas[0] ?? null
-  }, [arenas, selectedArenaId])
-
-  useEffect(() => {
-    if (!arenaIdFromUrl) return
-    scrollOnNextArenaRef.current = true
-  }, [arenaIdFromUrl])
-
-  useEffect(() => {
-    if (!activeArena) return
-    if (!scrollOnNextArenaRef.current) return
-    scrollOnNextArenaRef.current = false
-    const node = cardRefs.current.get(activeArena.id)
-    if (node && typeof node.scrollIntoView === 'function') {
-      node.scrollIntoView({behavior: 'smooth', block: 'nearest'})
-    }
-  }, [activeArena])
+  const activeArenaId =
+    selectedArenaId && arenas.some((a) => a.id === selectedArenaId)
+      ? selectedArenaId
+      : (arenas[0]?.id ?? null)
 
   const {data: allSlots = []} = useQuery({
     queryKey: ['arena-slots-all', arenas.map((arena) => arena.id).join(',')],
@@ -97,40 +129,57 @@ export function ArenasPage() {
     enabled: arenas.length > 0,
   })
 
-  const {data: slots = []} = useQuery({
-    queryKey: ['arena-slots', activeArena?.id],
-    queryFn: () => fetchArenaSlots(activeArena!.id),
-    enabled: Boolean(activeArena),
-  })
-
   const freeSlotArenaIds = useMemo(
     () => new Set(arenas.filter((a) => arenaHasFreeSlots(a.id, allSlots)).map((a) => a.id)),
     [allSlots, arenas],
   )
 
-  const handleSelectArena = (id: string) => {
-    const next = new URLSearchParams(searchParams)
-    next.set('arenaId', id)
-    setTrackedUrlArena(id)
-    setSearchParams(next, {replace: true})
-    setDetailClosed(false)
+  const {data: publishedListings = []} = useQuery({
+    queryKey: ['ice-listings-published'],
+    queryFn: fetchPublishedIceListings,
+  })
+
+  const publishedListingsByArena = useMemo(() => {
+    const map = new Map<string, number>()
+    for (const listing of publishedListings) {
+      map.set(listing.arenaId, (map.get(listing.arenaId) ?? 0) + 1)
+    }
+    return map
+  }, [publishedListings])
+
+  const syncUrl = (nextFilters: ArenaFiltersType, nextView: ArenaCatalogView) => {
+    setSearchParams(writeFiltersToSearchParams(nextFilters, nextView), {replace: true})
   }
 
-  const handleSelectFromMap = (id: string) => {
-    scrollOnNextArenaRef.current = true
-    handleSelectArena(id)
+  const applyFilters = (nextFilters: ArenaFiltersType) => {
+    setFilters(nextFilters)
+    syncUrl(nextFilters, view)
+  }
+
+  const handleViewChange = (nextView: ArenaCatalogView) => {
+    setView(nextView)
+    syncUrl(filters, nextView)
+    if (nextView === 'map') {
+      requestAnimationFrame(() => {
+        const node = mapSectionRef.current
+        if (node && typeof node.scrollIntoView === 'function') {
+          node.scrollIntoView({behavior: 'smooth', block: 'start'})
+        }
+      })
+    }
+  }
+
+  const openArena = (id: string) => {
+    setSelectedArenaId(id)
+    navigate(arenaDetailsPath(id))
   }
 
   const handleResetFilters = () => {
-    setFilters(EMPTY_FILTERS)
-  }
-
-  const handleCloseDetail = () => {
-    setDetailClosed(true)
+    applyFilters(EMPTY_FILTERS)
   }
 
   const isFiltered = hasActiveFilters(filters)
-  const showLayout = !isPending && !isError
+  const showLayout = !isPending && !isError && !legacyArenaId
   const showEmpty = showLayout && arenas.length === 0
   const showProgress = isFetching && !isPending
 
@@ -142,28 +191,31 @@ export function ArenasPage() {
         data-testid={testId('arenas', 'page', 'progress')}
       />
       <ScrollReveal direction="down">
-        <Text
-          variant="header-1"
-          className="variable-font-header"
-          data-testid={testId('arenas', 'page', 'text', 'title')}
-        >
-          {ARENAS_PAGE_TITLE}
-        </Text>
-        <Text color="secondary" data-testid={testId('arenas', 'page', 'text', 'subtitle')}>
-          Карта площадок и разные способы записи: слоты по времени или заявка через портал.
-        </Text>
+        <div className="arenas-page__intro hockey-stack hockey-stack--gap-4">
+          <Text
+            variant="header-1"
+            className="variable-font-header"
+            data-testid={testId('arenas', 'page', 'text', 'title')}
+          >
+            {ARENAS_PAGE_TITLE}
+          </Text>
+          <Text color="secondary" data-testid={testId('arenas', 'page', 'text', 'subtitle')}>
+            Найдите площадку рядом: список, карта и свободные слоты.
+          </Text>
+        </div>
       </ScrollReveal>
 
       <ArenaFilters
         filters={filters}
-        onChange={setFilters}
+        onChange={applyFilters}
         onReset={handleResetFilters}
-        isFiltered={isFiltered}
+        view={view}
+        onViewChange={handleViewChange}
       />
 
       {isPending && (
         <div data-testid={testId('arenas', 'page', 'loader')}>
-          <ScoreboardLoader label="Загрузка арен" />
+          <ScoreboardLoader label="Загрузка ледовых арен" />
           <div className="arenas-page__skeleton">
             <IceSkeleton height={380} />
             <IceSkeleton count={2} height={200} />
@@ -174,7 +226,7 @@ export function ArenasPage() {
       {isError && !isPending && (
         <div data-testid={testId('arenas', 'page', 'error')}>
           <EmptyNetState
-            title="Не удалось загрузить катки"
+            title="Не удалось загрузить ледовые арены"
             copy="Проверь соединение и попробуй ещё раз."
             action={
               <HockeyButton view="outlined" size="s" onClick={() => refetch()}>
@@ -189,7 +241,7 @@ export function ArenasPage() {
         <div data-testid={testId('arenas', 'page', 'empty')}>
           <EmptyNetState
             title="Пустая сетка"
-            copy="По выбранным фильтрам катки не найдены."
+            copy="По выбранным фильтрам ледовые арены не найдены."
             action={
               isFiltered ? (
                 <HockeyButton
@@ -208,26 +260,15 @@ export function ArenasPage() {
 
       {showLayout && arenas.length > 0 && (
         <div
-          className="arenas-page__layout"
+          className={`arenas-page__layout arenas-page__layout--${view} arenas-page__layout--catalog`}
           aria-busy={showProgress}
           data-testid={testId('arenas', 'page', 'layout')}
         >
-          <div className="arenas-page__map-col" data-testid={testId('arenas', 'page', 'map-col')}>
-            <div data-testid={testId('arenas', 'page', 'card', 'map')}>
-              <IceCard padding="m">
-                <ArenaMap
-                  arenas={arenas}
-                  selectedArenaId={activeArena?.id ?? null}
-                  onSelectArena={handleSelectFromMap}
-                  freeSlotArenaIds={freeSlotArenaIds}
-                />
-              </IceCard>
-            </div>
-
+          {view === 'list' && (
             <div
               className={`arenas-page__list${showProgress ? ' arenas-page__list--refreshing' : ''}`}
               role="list"
-              aria-label="Список арен"
+              aria-label="Список ледовых арен"
               data-testid={testId('arenas', 'page', 'list')}
             >
               {arenas.map((arena, index) => (
@@ -238,48 +279,61 @@ export function ArenasPage() {
                       else cardRefs.current.delete(arena.id)
                     }}
                     arena={arena}
-                    selected={arena.id === activeArena?.id}
-                    onOpenDetails={handleSelectArena}
+                    selected={arena.id === activeArenaId}
+                    onOpenDetails={openArena}
                     hasFreeSlot={
                       arena.bookingMode === 'slot_calendar'
                         ? arenaHasFreeSlots(arena.id, allSlots)
                         : undefined
                     }
+                    publishedListingsCount={publishedListingsByArena.get(arena.id) ?? 0}
                   />
                 </ScrollReveal>
               ))}
             </div>
-          </div>
+          )}
 
-          <div
-            className="arenas-page__detail-col"
-            data-testid={testId('arenas', 'page', 'detail-col')}
-          >
-            {activeArena && detailOpen ? (
-              <ArenaDetailPanel
-                arena={activeArena}
-                slots={slots}
-                hasFreeSlot={arenaHasFreeSlots(activeArena.id, slots.length > 0 ? slots : allSlots)}
-                onClose={handleCloseDetail}
-              />
-            ) : (
-              <div data-testid={testId('arenas', 'page', 'empty', 'detail')}>
-                <EmptyNetState
-                  action={
-                    <HockeyButton
-                      view="outlined"
-                      size="s"
-                      onClick={() => setDetailClosed(false)}
-                      data-testid={testId('arenas', 'page', 'btn', 'open-detail')}
-                    >
-                      Открыть детали
-                    </HockeyButton>
-                  }
-                  copy="Детали скрыты. Открой их снова или выбери другую площадку."
+          {view === 'map' && (
+            <div
+              ref={mapSectionRef}
+              className="arenas-page__map"
+              data-testid={testId('arenas', 'page', 'card', 'map')}
+            >
+              <IceCard padding="m">
+                <div className="arenas-page__map-head hockey-row hockey-row--between hockey-row--align-center">
+                  <Text
+                    variant="subheader-2"
+                    data-testid={testId('arenas', 'page', 'text', 'map-title')}
+                  >
+                    Поиск на карте
+                  </Text>
+                  <HockeyButton
+                    view="flat"
+                    size="s"
+                    onClick={() => handleViewChange('list')}
+                    data-testid={testId('arenas', 'page', 'btn', 'to-list')}
+                  >
+                    К списку
+                  </HockeyButton>
+                </div>
+                <ArenaMap
+                  arenas={arenas}
+                  selectedArenaId={activeArenaId}
+                  onSelectArena={openArena}
+                  freeSlotArenaIds={freeSlotArenaIds}
                 />
-              </div>
-            )}
-          </div>
+              </IceCard>
+              <Text
+                color="secondary"
+                className="arenas-page__map-results"
+                data-testid={testId('arenas', 'page', 'text', 'map-results')}
+              >
+                На карте: {arenas.length}{' '}
+                {arenas.length === 1 ? 'арена' : arenas.length < 5 ? 'арены' : 'арен'}. Нажмите пин
+                — откроется страница арены.
+              </Text>
+            </div>
+          )}
         </div>
       )}
     </div>

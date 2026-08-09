@@ -11,7 +11,6 @@ import type {IceSlot} from '@/entities/arena'
 import {ExternalBookingButton} from '@/features/arenas/ui/ExternalBookingButton'
 import {testId} from '@/shared/testing/testId'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
-import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 
 /** @spec SPEC-FR-6.3.1 */
 export interface SlotCalendarProps {
@@ -141,12 +140,15 @@ export function SlotCalendar({slots, arena}: SlotCalendarProps) {
           <Text
             data-testid={testId('arenas', 'slot-calendar', 'text', 'selected', selectedSlot.id)}
           >
-            Выбран слот: {new Date(selectedSlot.startsAt).toLocaleString('ru-RU')}
-            {selectedSlot.price ? ` · ${selectedSlot.price} RUB` : ''}
+            Выбрано:{' '}
+            {new Date(selectedSlot.startsAt).toLocaleString('ru-RU', {
+              day: 'numeric',
+              month: 'short',
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+            {selectedSlot.price ? ` · ${selectedSlot.price.toLocaleString('ru-RU')} ₽` : ''}
           </Text>
-          <div data-testid={testId('arenas', 'slot-calendar', 'badge', 'source', selectedSlot.id)}>
-            <SourceMetaBadge sourceMeta={selectedSlot.sourceMeta} />
-          </div>
           <ExternalBookingButton arena={arena} slot={selectedSlot} label="Забронировать слот" />
         </div>
       )}

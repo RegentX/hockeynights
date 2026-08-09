@@ -1,2 +1,7 @@
-export {createCheckoutIntent, submitIceBooking} from './api/externalFlowsApi'
+export {
+  createCheckoutIntent,
+  fetchArenaIceBookings,
+  submitIceBooking,
+  updateIceBooking,
+} from './api/externalFlowsApi'
 export * from './model'

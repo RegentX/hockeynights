@@ -34,6 +34,7 @@ export function describeSessionPersona(session: Session): string {
   const partner = session.user.partnerMemberships?.[0]
   if (partner?.kind === 'league') return 'Представитель лиги'
   if (partner?.kind === 'shop') return 'Представитель магазина'
+  if (partner?.kind === 'arena') return 'Представитель арены'
   if (partner?.kind === 'club' || session.user.roles.includes('club_admin')) return 'Админ клуба'
   if (session.user.roles.includes('coach')) return 'Тренер'
   if (session.user.roles.includes('captain')) return 'Капитан'

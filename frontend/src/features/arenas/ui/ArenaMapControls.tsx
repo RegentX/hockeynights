@@ -42,13 +42,32 @@ export function FitMoscowRegionBounds() {
   return null
 }
 
-/** @spec SPEC-FR-6.1.1 - Пересчитать размер после layout */
+/** @spec SPEC-FR-6.1.1 - Пересчитать размер после layout / ресайза контейнера */
 export function MapResizeFix() {
   const map = useMap()
 
   useEffect(() => {
-    const timer = window.setTimeout(() => map.invalidateSize(), 150)
-    return () => window.clearTimeout(timer)
+    if (typeof map.invalidateSize !== 'function') return
+
+    const invalidate = () => map.invalidateSize({animate: false})
+    const timers = [0, 50, 200, 500].map((ms) => window.setTimeout(invalidate, ms))
+
+    const container = typeof map.getContainer === 'function' ? map.getContainer() : null
+    const parent = container?.parentElement ?? null
+    const observer =
+      typeof ResizeObserver !== 'undefined' && (parent || container)
+        ? new ResizeObserver(() => {
+            invalidate()
+          })
+        : null
+    if (observer) observer.observe(parent ?? container!)
+
+    window.addEventListener('resize', invalidate)
+    return () => {
+      timers.forEach((id) => window.clearTimeout(id))
+      observer?.disconnect()
+      window.removeEventListener('resize', invalidate)
+    }
   }, [map])
 
   return null

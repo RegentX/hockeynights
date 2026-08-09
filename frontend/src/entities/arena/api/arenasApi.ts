@@ -1,8 +1,19 @@
 /**
  * SPEC-FR-6.1.1, SPEC-FR-6.1.2, SPEC-FR-6.2.1, SPEC-FR-6.3.1
+ * HOCFRONT-32 — listings + cabinet
  */
 
-import type {Arena, ArenaFilters, IceSlot} from '@/entities/arena/model'
+import type {
+  Arena,
+  ArenaFilters,
+  CreateIceListingPayload,
+  CreateIceSlotPayload,
+  IceListing,
+  IceSlot,
+  UpdateArenaPayload,
+  UpdateIceListingPayload,
+  UpdateIceSlotPayload,
+} from '@/entities/arena/model'
 import {apiRequest} from '@/shared/api/client'
 
 /**
@@ -12,6 +23,7 @@ import {apiRequest} from '@/shared/api/client'
 export function fetchArenas(filters: ArenaFilters = {}): Promise<Arena[]> {
   const params = new URLSearchParams()
   if (filters.query) params.set('q', filters.query)
+  if (filters.cityRegion) params.set('cityRegion', filters.cityRegion)
   if (filters.district) params.set('district', filters.district)
   if (filters.metro) params.set('metro', filters.metro)
   if (filters.amenity) params.set('amenity', filters.amenity)
@@ -34,4 +46,48 @@ export function fetchArena(arenaId: string): Promise<Arena> {
  */
 export function fetchArenaSlots(arenaId: string): Promise<IceSlot[]> {
   return apiRequest<IceSlot[]>(`/arenas/${arenaId}/slots`)
+}
+
+/** HOCFRONT-32B — публичные объявления арены */
+export function fetchArenaListings(
+  arenaId: string,
+  options?: {publicOnly?: boolean},
+): Promise<IceListing[]> {
+  const params = new URLSearchParams()
+  if (options?.publicOnly) params.set('publicOnly', 'true')
+  const query = params.toString()
+  return apiRequest<IceListing[]>(`/arenas/${arenaId}/listings${query ? `?${query}` : ''}`)
+}
+
+/** HOCFRONT-32D — правка профиля арены из кабинета */
+export function updateArena(arenaId: string, payload: UpdateArenaPayload): Promise<Arena> {
+  return apiRequest<Arena>(`/arenas/${arenaId}`, {method: 'PATCH', body: payload})
+}
+
+/** HOCFRONT-32E — опубликованные объявления (каталог) */
+export function fetchPublishedIceListings(): Promise<IceListing[]> {
+  return apiRequest<IceListing[]>('/ice-listings?status=published')
+}
+
+/** HOCFRONT-32E — создать объявление */
+export function createIceListing(payload: CreateIceListingPayload): Promise<IceListing> {
+  return apiRequest<IceListing>('/ice-listings', {method: 'POST', body: payload})
+}
+
+/** HOCFRONT-32E — обновить / опубликовать объявление */
+export function updateIceListing(
+  listingId: string,
+  payload: UpdateIceListingPayload,
+): Promise<IceListing> {
+  return apiRequest<IceListing>(`/ice-listings/${listingId}`, {method: 'PATCH', body: payload})
+}
+
+/** HOCFRONT-32 — создать слот расписания */
+export function createIceSlot(payload: CreateIceSlotPayload): Promise<IceSlot> {
+  return apiRequest<IceSlot>('/ice-slots', {method: 'POST', body: payload})
+}
+
+/** HOCFRONT-32 — обновить слот расписания */
+export function updateIceSlot(slotId: string, payload: UpdateIceSlotPayload): Promise<IceSlot> {
+  return apiRequest<IceSlot>(`/ice-slots/${slotId}`, {method: 'PATCH', body: payload})
 }

@@ -31,13 +31,13 @@ export function ArenaBookingPanel({arena, slots}: ArenaBookingPanelProps) {
             variant="subheader-2"
             data-testid={testId('arenas', 'booking', 'text', 'title', arena.id)}
           >
-            Запись по слотам
+            Свободное время
           </Text>
           <Text
             color="secondary"
             data-testid={testId('arenas', 'booking', 'text', 'subtitle', arena.id)}
           >
-            Выбери свободное время — заявка уйдёт в mock-мастер с привязкой к слоту.
+            Выберите слот — отправим заявку на бронь.
           </Text>
         </div>
         <SlotCalendar slots={slots} arena={arena} />
@@ -55,14 +55,13 @@ export function ArenaBookingPanel({arena, slots}: ArenaBookingPanelProps) {
           variant="subheader-2"
           data-testid={testId('arenas', 'booking', 'text', 'title', arena.id)}
         >
-          Запись через портал
+          Заявка на лёд
         </Text>
         <Text
           color="secondary"
           data-testid={testId('arenas', 'booking', 'text', 'subtitle', arena.id)}
         >
-          У этой площадки нет публичного календаря слотов — отправь общую заявку или перейди на
-          внешний портал в Phase 2.
+          У этой площадки нет календаря слотов — оставьте заявку, администратор свяжется с вами.
         </Text>
       </div>
       {arena.phone && (

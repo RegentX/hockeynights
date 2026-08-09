@@ -15,7 +15,7 @@ export interface PersonaPreset {
   payload: OnboardingPayload
 }
 
-const [leaguePartner, shopPartner, clubPartner] = DEMO_PARTNER_MEMBERSHIPS
+const [leaguePartner, shopPartner, clubPartner, arenaPartner] = DEMO_PARTNER_MEMBERSHIPS
 
 export const PERSONA_PRESETS: PersonaPreset[] = [
   {
@@ -95,11 +95,27 @@ export const PERSONA_PRESETS: PersonaPreset[] = [
     },
   },
   {
+    id: 'arena-partner',
+    title: 'Представитель арены',
+    description: 'Кабинет ледовой арены: профиль, объявления, расписание и публичность',
+    destination: 'Кабинет ледовой арены',
+    icon: '🧊',
+    payload: {
+      displayName: 'Партнёр арены Ходынка',
+      roles: ['organizer'],
+      partnerMemberships: [arenaPartner],
+    },
+  },
+  {
     id: 'admin',
     title: 'Администратор',
-    description: 'Модерация, источники данных и admin prototype',
+    description: 'Модерация, источники данных, admin prototype и доступ к кабинету арены',
     destination: 'Admin prototype',
     icon: '⚙',
-    payload: {displayName: 'Админ демо', roles: ['admin'], partnerMemberships: []},
+    payload: {
+      displayName: 'Админ демо',
+      roles: ['admin'],
+      partnerMemberships: [arenaPartner],
+    },
   },
 ]
