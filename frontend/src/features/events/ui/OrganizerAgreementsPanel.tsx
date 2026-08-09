@@ -13,9 +13,9 @@ import {fetchMyIceAgreements, updateIceBooking} from '@/entities/external-flow'
 import {createDirectChat} from '@/entities/messenger'
 import {
   ICE_BOOKING_BUCKET_LABELS,
-  ICE_BOOKING_STATUS_LABELS,
   iceBookingBucket,
   type IceBookingInboxBucket,
+  ORGANIZER_ICE_BOOKING_STATUS_LABELS,
 } from '@/features/arenas/lib/iceBookingStatus'
 import {
   agreementCreatePath,
@@ -184,7 +184,7 @@ export function OrganizerAgreementsPanel() {
                         color="secondary"
                         data-testid={testId('events', 'agreements', 'text', 'status', agreement.id)}
                       >
-                        {ICE_BOOKING_STATUS_LABELS[agreement.bookingStatus]}
+                        {ORGANIZER_ICE_BOOKING_STATUS_LABELS[agreement.bookingStatus]}
                         {agreement.purpose ? ` · ${agreement.purpose}` : ''}
                       </Text>
                     </div>
@@ -242,7 +242,7 @@ export function OrganizerAgreementsPanel() {
                       selected.id,
                     )}
                   >
-                    {ICE_BOOKING_STATUS_LABELS[selected.bookingStatus]}
+                    {ORGANIZER_ICE_BOOKING_STATUS_LABELS[selected.bookingStatus]}
                   </span>
                 </div>
 

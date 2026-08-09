@@ -6,6 +6,22 @@ import type {IceBookingStatus} from '@/entities/external-flow'
 
 export const ICE_BOOKING_STATUS_LABELS: Record<IceBookingStatus, string> = {
   draft: 'Черновик',
+  pending_review: 'На рассмотрении',
+  needs_info: 'Нужны данные',
+  confirmed: 'Подтверждено',
+  awaiting_payment: 'Ждём оплату',
+  payment_received: 'Оплата переведена',
+  booked: 'Забронировано',
+  declined: 'Отклонено',
+  cancelled: 'Отменено',
+  expired: 'Просрочено',
+  mock_submitted: 'На рассмотрении',
+  redirect_pending: 'На рассмотрении',
+}
+
+/** Лейблы с точки зрения организатора тренировок (кабинет заявок) */
+export const ORGANIZER_ICE_BOOKING_STATUS_LABELS: Record<IceBookingStatus, string> = {
+  draft: 'Черновик',
   pending_review: 'Создана · на рассмотрении',
   needs_info: 'Нужны данные',
   confirmed: 'Принята арены',
