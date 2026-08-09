@@ -1,6 +1,7 @@
 /**
- * SPEC-FR-24.1.2, SPEC-FR-24.1.3, SPEC-FR-2.3.3
+ * SPEC-FR-24.1.2, SPEC-FR-24.1.3, SPEC-FR-2.3.3, SPEC-FR-17.1.2
  * HOCFRONT-22 — публичная страница игрока `/players/:userId`
+ * HOCFRONT-23 — verified badge на странице игрока
  */
 
 import {Text} from '@gravity-ui/uikit'
@@ -9,6 +10,7 @@ import {Link, useParams} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {fetchPublicPlayer} from '@/entities/profile'
+import {VerifiedBadge} from '@/features/players'
 import {CalendarShell} from '@/features/calendar'
 import {ProfileFavoritesSection} from '@/features/favorites'
 import {PlayerPublicInfoSection, PlayerTeamsSection} from '@/features/players'
@@ -23,6 +25,7 @@ import {PlayerCard} from '@/widgets/PlayerCard'
 /**
  * @spec SPEC-FR-24.1.3 - Публичный просмотр Hockey ID с учётом приватности
  * @spec HOCFRONT-22 - Публичная инфа, команда, избранное, календарь внутри страницы
+ * @spec HOCFRONT-23 - Verified badge на странице игрока
  */
 export function PublicPlayerProfilePage() {
   const {userId = ''} = useParams()
@@ -107,6 +110,7 @@ export function PublicPlayerProfilePage() {
   }
 
   const {player} = data
+  const isVerified = player.verificationStatus === 'verified'
 
   return (
     <div
@@ -126,12 +130,25 @@ export function PublicPlayerProfilePage() {
             ← Каталог игроков
           </HockeyButton>
         </Link>
-        <Text
-          variant="header-1"
-          data-testid={testId('players', 'public-player-profile', 'text', 'title')}
-        >
-          Страница игрока
-        </Text>
+        <div className="public-player-profile__title-row">
+          <Text
+            variant="header-1"
+            data-testid={testId('players', 'public-player-profile', 'text', 'title')}
+          >
+            Hockey ID
+          </Text>
+          <VerifiedBadge
+            verified={isVerified}
+            entityId={player.userId}
+            data-testid={testId(
+              'players',
+              'public-player-profile',
+              'badge',
+              'verified',
+              player.userId,
+            )}
+          />
+        </div>
       </div>
 
       <div
