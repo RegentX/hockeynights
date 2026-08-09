@@ -18,10 +18,12 @@ import {canManageClubEntity} from '@/features/access'
 import {POSITION_LABELS, SKILL_LEVEL_LABELS} from '@/features/events'
 import {FavoriteButton} from '@/features/favorites'
 import {ContactStaffModal, STAFF_ROLE_LABELS, TeamCalendarSection} from '@/features/teams'
+import {isNotFoundError} from '@/shared/api/client'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 /** HOCFRONT-25 — публичная страница команды */
@@ -30,7 +32,12 @@ export function TeamProfilePage() {
   const [contactOpen, setContactOpen] = useState(false)
 
   const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
-  const {data: team, isLoading: teamLoading} = useQuery({
+  const {
+    data: team,
+    isLoading: teamLoading,
+    error: teamError,
+    refetch: refetchTeam,
+  } = useQuery({
     queryKey: ['team', teamId],
     queryFn: () => fetchTeam(teamId),
     enabled: Boolean(teamId),
@@ -56,6 +63,18 @@ export function TeamProfilePage() {
       <div data-testid={testId('teams', 'profile', 'loader')}>
         <ScoreboardLoader label="Загрузка профиля команды" />
       </div>
+    )
+  }
+
+  // Сбой загрузки ≠ «команда не найдена»: предлагаем повторить
+  if (teamError && !isNotFoundError(teamError)) {
+    return (
+      <QueryErrorState
+        title="Не удалось загрузить профиль команды"
+        onRetry={() => refetchTeam()}
+        testIdPrefix="teams"
+        data-testid={testId('teams', 'profile', 'error')}
+      />
     )
   }
 

@@ -2,7 +2,7 @@
  * SPEC-FR-1.2.3, SPEC-FR-12.1.1, SPEC-FR-12.1.2, SPEC-FR-12.1.3
  */
 
-import {getApiBaseUrl} from '@/shared/config/apiMode'
+import {getApiBaseUrl, getApiMode} from '@/shared/config/apiMode'
 
 /** @spec SPEC-FR-12.1.1 - Опции HTTP-запроса */
 export interface RequestOptions {
@@ -12,6 +12,63 @@ export interface RequestOptions {
   body?: unknown
   /** @spec SPEC-FR-12.1.1 */
   headers?: Record<string, string>
+}
+
+/**
+ * Запрос не дошёл до mock/backend API и был обслужен dev-сервером
+ * (SPA-fallback отдаёт index.html со статусом 200).
+ *
+ * В mock-режиме это значит, что MSW не перехватил запрос: service worker
+ * не контролирует страницу (hard-reload / первый запуск / SW выгружен)
+ * либо на путь нет handler'а. Без этой проверки `response.json()` падал
+ * с «Unexpected token '<'», и UI показывал ошибку загрузки без причины.
+ */
+export class ApiNotInterceptedError extends Error {
+  readonly method: string
+  readonly path: string
+
+  constructor(method: string, path: string) {
+    super(
+      `API ${method} ${path}: запрос не дошёл до ${getApiMode() === 'mock' ? 'mock API' : 'backend'} — ` +
+        'dev-сервер вернул HTML вместо JSON. ' +
+        (getApiMode() === 'mock'
+          ? 'Скорее всего mock service worker не контролирует страницу — обновите страницу (Cmd/Ctrl+R).'
+          : 'Проверьте VITE_BACKEND_URL и доступность бэкенда.'),
+    )
+    this.name = 'ApiNotInterceptedError'
+    this.method = method
+    this.path = path
+  }
+}
+
+/**
+ * Ошибка со статусом ответа. Позволяет UI отличить «сущности нет» (404)
+ * от «запрос не прошёл» — раньше и то и другое показывалось как
+ * «не найдено», хотя во втором случае нужен retry, а не возврат в каталог.
+ */
+export class ApiError extends Error {
+  readonly status: number
+  readonly method: string
+  readonly path: string
+
+  constructor(method: string, path: string, status: number, details: string) {
+    super(`API ${method} ${path} failed: ${status} ${details}`)
+    this.name = 'ApiError'
+    this.status = status
+    this.method = method
+    this.path = path
+  }
+}
+
+/** Сущность отсутствует на сервере (а не сбой загрузки) */
+export function isNotFoundError(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 404
+}
+
+/** Ответ — HTML/текст вместо ожидаемого JSON */
+function isNonJsonResponse(response: Response): boolean {
+  const contentType = response.headers.get('content-type') ?? ''
+  return contentType !== '' && !contentType.includes('json')
 }
 
 /**
@@ -33,11 +90,16 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 
   if (!response.ok) {
     const errorText = await response.text()
-    throw new Error(`API ${method} ${path} failed: ${response.status} ${errorText}`)
+    throw new ApiError(method, path, response.status, errorText)
   }
 
   if (response.status === 204) {
     return undefined as T
+  }
+
+  // 200 + text/html = SPA-fallback dev-сервера, а не ответ API
+  if (isNonJsonResponse(response)) {
+    throw new ApiNotInterceptedError(method, path)
   }
 
   return response.json() as Promise<T>

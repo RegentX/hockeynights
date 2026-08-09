@@ -72,7 +72,7 @@ export function TeamCreateWizard() {
   const [createdTeamId, setCreatedTeamId] = useState<string | null>(null)
   const [logoHint, setLogoHint] = useState<string | null>(null)
 
-  const {data: leagues = []} = useQuery({queryKey: ['leagues'], queryFn: fetchLeagues})
+  const {data: leagues = []} = useQuery({queryKey: ['leagues'], queryFn: () => fetchLeagues()})
   const {data: arenas = []} = useQuery({queryKey: ['arenas'], queryFn: () => fetchArenas()})
   const {data: players = []} = useQuery({
     queryKey: ['players'],

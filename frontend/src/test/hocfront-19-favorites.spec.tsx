@@ -14,6 +14,7 @@ import {
   removeFavorite,
 } from '@/entities/favorites'
 import {resetMockEntityFavorites} from '@/mocks/data/entityFavorites'
+import {LeagueDetailsPage} from '@/pages/LeagueDetailsPage'
 import {LeaguesPage} from '@/pages/LeaguesPage'
 import {MarketplacePage} from '@/pages/MarketplacePage'
 import {TeamProfilePage} from '@/pages/TeamProfilePage'
@@ -85,13 +86,17 @@ describe('HOCFRONT-19 favorite deep-links', () => {
     })
   })
 
-  it('LeaguesPage selects league from ?leagueId=', async () => {
-    renderWithProviders(<LeaguesPage />, {
-      routerProps: {initialEntries: [`${routes.leagues}?leagueId=league-002`]},
-    })
+  it('LeaguesPage redirects legacy ?leagueId= deep-link to the league page', async () => {
+    renderWithProviders(
+      <Routes>
+        <Route path={routes.leagues} element={<LeaguesPage />} />
+        <Route path={routes.leagueDetails} element={<LeagueDetailsPage />} />
+      </Routes>,
+      {routerProps: {initialEntries: [`${routes.leagues}?leagueId=league-002`]}},
+    )
 
     await waitFor(() => {
-      expect(screen.getByTestId('leagues-page-panel-detail-league-002')).toBeInTheDocument()
+      expect(screen.getByTestId('leagues-details-page-league-002')).toBeInTheDocument()
     })
   })
 

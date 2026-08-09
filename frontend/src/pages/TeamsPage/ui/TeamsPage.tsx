@@ -18,6 +18,7 @@ import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
 
@@ -51,7 +52,12 @@ export function TeamsPage() {
   const filtersActive = useMemo(() => hasActiveFilters(filters), [filters])
   const isFiltered = filtersActive || Boolean(searchQuery.trim())
 
-  const {data: teams = [], isLoading} = useQuery({
+  const {
+    data: teams = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['teams', queryFilters],
     queryFn: () => fetchTeams(queryFilters),
     placeholderData: (previous) => previous,
@@ -145,7 +151,7 @@ export function TeamsPage() {
           color="secondary"
           data-testid={testId('teams', 'teams-page', 'text', 'results-count')}
         >
-          {isLoading ? 'Загрузка…' : `Найдено: ${teams.length}`}
+          {isLoading ? 'Загрузка…' : isError ? 'Ошибка загрузки' : `Найдено: ${teams.length}`}
         </Text>
       </div>
 
@@ -156,7 +162,16 @@ export function TeamsPage() {
         />
       )}
 
-      {!isLoading && teams.length === 0 && (
+      {isError && !isLoading && (
+        <QueryErrorState
+          title="Не удалось загрузить команды"
+          onRetry={() => refetch()}
+          testIdPrefix="teams"
+          data-testid={testId('teams', 'teams-page', 'error')}
+        />
+      )}
+
+      {!isLoading && !isError && teams.length === 0 && (
         <EmptyNetState
           title="Команды не найдены"
           copy="Измените поиск или сбросьте фильтры."

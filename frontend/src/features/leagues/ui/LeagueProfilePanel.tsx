@@ -10,6 +10,8 @@ import {Link} from 'react-router'
 import {fetchSession} from '@/entities/auth'
 import type {League} from '@/entities/league'
 import {fetchLeaguePosts} from '@/entities/league'
+import {SKILL_LEVEL_LABELS} from '@/features/events'
+import {FavoriteButton} from '@/features/favorites'
 import {LeagueTeamApplicationForm} from '@/features/leagues/ui/LeagueTeamApplicationForm'
 import {MockLeaguePortalModal} from '@/features/leagues/ui/MockLeaguePortalModal'
 import {testId} from '@/shared/testing/testId'
@@ -42,7 +44,7 @@ export function LeagueProfilePanel({league}: LeagueProfilePanelProps) {
     <div data-testid={testId('leagues', 'profile', 'panel', league.id)}>
       <IceCard padding="m">
         <div className="league-profile hockey-stack hockey-stack--gap-12">
-          <div className="league-profile__header hockey-row hockey-row--between">
+          <div className="league-profile__header hockey-row hockey-row--between hockey-row--align-start">
             <div className="hockey-stack hockey-stack--gap-4">
               <Text
                 variant="subheader-2"
@@ -57,8 +59,19 @@ export function LeagueProfilePanel({league}: LeagueProfilePanelProps) {
                 {league.name}
               </Text>
             </div>
-            <div data-testid={testId('leagues', 'profile', 'badge', 'profile', league.id)}>
-              <EntityProfileBadge kind="league" />
+            <div
+              className="league-meta-chips"
+              data-testid={testId('leagues', 'profile', 'panel', 'chips', league.id)}
+            >
+              <FavoriteButton
+                type="league"
+                entityId={league.id}
+                title={league.name}
+                className="league-meta-chip league-meta-chip--favorite"
+              />
+              <div data-testid={testId('leagues', 'profile', 'badge', 'profile', league.id)}>
+                <EntityProfileBadge kind="league" />
+              </div>
             </div>
           </div>
 
@@ -87,7 +100,7 @@ export function LeagueProfilePanel({league}: LeagueProfilePanelProps) {
                 Уровень
               </Text>
               <Text data-testid={testId('leagues', 'profile', 'text', 'level', league.id)}>
-                {league.level || 'Любительский'}
+                {league.level ? (SKILL_LEVEL_LABELS[league.level] ?? league.level) : 'Не указан'}
               </Text>
             </div>
           </div>

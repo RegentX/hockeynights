@@ -23,6 +23,7 @@ import {FeedbackPage} from '@/pages/FeedbackPage'
 import {GameDetailsPage} from '@/pages/GameDetailsPage'
 import {HighlightsPage} from '@/pages/HighlightsPage'
 import {IqTestsPage} from '@/pages/IqTestsPage'
+import {LeagueDetailsPage} from '@/pages/LeagueDetailsPage'
 import {LeaguePartnerDashboard} from '@/pages/LeaguePartnerDashboard'
 import {LeaguesPage} from '@/pages/LeaguesPage'
 import {MessengerPage} from '@/pages/MessengerPage'
@@ -95,6 +96,7 @@ export function AppRouter() {
               <Route path={routes.arenas} element={<ArenasPage />} />
               <Route path={routes.arenaDetails} element={<ArenaDetailsPage />} />
               <Route path={routes.leagues} element={<LeaguesPage />} />
+              <Route path={routes.leagueDetails} element={<LeagueDetailsPage />} />
               <Route path={routes.feedback} element={<FeedbackPage />} />
               <Route path={routes.notifications} element={<NotificationsPage />} />
               <Route path={routes.messenger} element={<MessengerPage />} />

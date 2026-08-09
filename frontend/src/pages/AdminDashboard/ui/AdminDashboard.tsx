@@ -9,13 +9,19 @@ import {fetchSourceStatuses} from '@/entities/admin'
 import {AdminEntityForm, PartnerModerationPanel, SourceStatusTable} from '@/features/admin'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 
 /**
  * @spec SPEC-FR-11.1.1 - Admin prototype
  * @spec SPEC-FR-11.2.1 - Статусы источников
  */
 export function AdminDashboard() {
-  const {data: sources = [], isLoading} = useQuery({
+  const {
+    data: sources = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['admin-sources'],
     queryFn: fetchSourceStatuses,
   })
@@ -61,7 +67,16 @@ export function AdminDashboard() {
         Статусы источников и видимость
       </Text>
       {isLoading && <Text data-testid={testId('admin', 'dashboard', 'loader')}>Загрузка...</Text>}
-      <SourceStatusTable items={sources} />
+      {isError && !isLoading ? (
+        <QueryErrorState
+          title="Не удалось загрузить статусы источников"
+          onRetry={() => refetch()}
+          testIdPrefix="admin"
+          data-testid={testId('admin', 'dashboard', 'error')}
+        />
+      ) : (
+        <SourceStatusTable items={sources} />
+      )}
     </div>
   )
 }

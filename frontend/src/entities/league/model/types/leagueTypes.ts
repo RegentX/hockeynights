@@ -36,6 +36,17 @@ export interface League {
   moderationStatus?: PartnerModerationStatus
 }
 
+/** HOCFRONT-34A — регион для фильтра каталога (Москва / Россия) */
+export type LeagueRegionFilter = 'moscow' | 'russia'
+
+/** HOCFRONT-34A — краткие фильтры каталога лиг */
+export interface LeagueFilters {
+  query?: string
+  region?: LeagueRegionFilter
+  level?: SkillLevel
+  recruitingStatus?: League['recruitingStatus']
+}
+
 /** @spec SPEC-FR-7.2.1 - Строка турнирной таблицы */
 export interface LeagueStanding {
   /** @spec SPEC-FR-7.2.1 */

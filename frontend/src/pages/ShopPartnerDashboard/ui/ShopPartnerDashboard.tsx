@@ -17,9 +17,11 @@ import {
   ShopPromoManager,
 } from '@/features/shops'
 import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 type PartnerTab = 'profile' | 'products' | 'import' | 'promos' | 'analytics'
@@ -32,7 +34,12 @@ export function ShopPartnerDashboard() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
 
   const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
-  const {data: shops = [], isLoading} = useQuery({queryKey: ['shops'], queryFn: fetchShops})
+  const {
+    data: shops = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({queryKey: ['shops'], queryFn: fetchShops})
   const shop = shops.find((item) => item.id === shopId)
 
   const [draft, setDraft] = useState<Partial<Shop>>({})
@@ -52,10 +59,44 @@ export function ShopPartnerDashboard() {
     },
   })
 
-  if (isLoading || !shop) {
+  if (isLoading) {
     return (
       <div data-testid={testId('shops', shopId, 'dashboard', 'loader')}>
         <ScoreboardLoader label="Загрузка кабинета магазина" />
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <QueryErrorState
+        title="Не удалось загрузить кабинет магазина"
+        onRetry={() => refetch()}
+        testIdPrefix="shops"
+        data-testid={testId('shops', shopId, 'dashboard', 'error')}
+      />
+    )
+  }
+
+  if (!shop) {
+    return (
+      <div
+        className="hockey-stack hockey-stack--gap-12"
+        data-testid={testId('shops', shopId, 'dashboard', 'empty')}
+      >
+        <EmptyNetState
+          title="Магазин не найден"
+          copy="Возможно, ссылка устарела или магазин скрыт."
+        />
+        <Link to="/shops" data-testid={testId('shops', shopId, 'dashboard', 'link', 'back-empty')}>
+          <HockeyButton
+            view="flat"
+            size="m"
+            data-testid={testId('shops', shopId, 'dashboard', 'btn', 'back-empty')}
+          >
+            К маркету
+          </HockeyButton>
+        </Link>
       </div>
     )
   }

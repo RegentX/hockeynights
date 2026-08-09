@@ -152,6 +152,7 @@ cd frontend && npm ci
 - `SPEC-FR-2.1.1` - `SPEC-FR-2.1.3` — mock auth/onboarding
 - `SPEC-FR-2.2.1` - `SPEC-FR-2.2.4` — Hockey ID
 - `SPEC-FR-2.3.1`, `SPEC-FR-2.3.2` — игроки и фильтры
+- `SPEC-FR-17.1.2` — галочка verified на карточке/странице игрока + фильтр verified-only
 - `SPEC-FR-6.1.1` - `SPEC-FR-6.3.2` — катки, RinkCard, слоты
 
 ### Этап 2

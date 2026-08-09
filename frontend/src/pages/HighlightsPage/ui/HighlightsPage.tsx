@@ -19,6 +19,7 @@ import {HighlightCard, HighlightUploadForm, HighlightVideoBoard} from '@/feature
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const MOCK_CURRENT_USER_ID = 'user-001'
@@ -32,7 +33,12 @@ export function HighlightsPage() {
   const queryClient = useQueryClient()
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
-  const {data: highlights = [], isLoading: listLoading} = useQuery({
+  const {
+    data: highlights = [],
+    isLoading: listLoading,
+    isError: listError,
+    refetch: refetchList,
+  } = useQuery({
     queryKey: ['highlights'],
     queryFn: fetchHighlights,
   })
@@ -89,6 +95,17 @@ export function HighlightsPage() {
       <div data-testid={testId('highlights', 'page', 'loader')}>
         <ScoreboardLoader label="Загружаем моменты…" />
       </div>
+    )
+  }
+
+  if (listError) {
+    return (
+      <QueryErrorState
+        title="Не удалось загрузить моменты"
+        onRetry={() => refetchList()}
+        testIdPrefix="highlights"
+        data-testid={testId('highlights', 'page', 'error')}
+      />
     )
   }
 

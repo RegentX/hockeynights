@@ -14,6 +14,7 @@ import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
 import {PlayerCard} from '@/widgets/PlayerCard'
@@ -35,6 +36,8 @@ export function PlayersPage() {
     data: players = [],
     isPending,
     isFetching,
+    isError,
+    refetch,
   } = useQuery({
     queryKey: ['players', filters],
     queryFn: () => fetchPlayers(filters),
@@ -101,7 +104,16 @@ export function PlayersPage() {
         </>
       )}
 
-      {!isPending && players.length > 0 && (
+      {isError && !isPending && (
+        <QueryErrorState
+          title="Не удалось загрузить игроков"
+          onRetry={() => refetch()}
+          testIdPrefix="players"
+          data-testid={testId('players', 'players-page', 'error')}
+        />
+      )}
+
+      {!isPending && !isError && players.length > 0 && (
         <div
           className={`bento-grid${showProgress ? ' players-page__list--fetching' : ''}`}
           data-testid={testId('players', 'players-page', 'list', 'cards')}
@@ -118,7 +130,7 @@ export function PlayersPage() {
         </div>
       )}
 
-      {!isPending && players.length === 0 && (
+      {!isPending && !isError && players.length === 0 && (
         <EmptyNetState
           title="Пустая сетка"
           copy={

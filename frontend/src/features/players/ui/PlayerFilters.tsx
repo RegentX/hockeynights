@@ -1,6 +1,6 @@
 /**
  * SPEC-FR-2.3.2
- * HOCFRONT-20
+ * HOCFRONT-20, HOCFRONT-23
  */
 
 import {ChevronDown, ChevronUp} from '@gravity-ui/icons'
@@ -52,6 +52,7 @@ export interface PlayerFiltersProps {
 /**
  * @spec SPEC-FR-2.3.2 - Фильтры по амплуа, уровню, району и роли вратаря
  * @spec HOCFRONT-20 - Панель фильтров списка игроков: имя, амплуа, уровень, верификация, команда, город
+ * @spec HOCFRONT-23 - Фильтр «только подтверждённые» (verified-only)
  * @spec HOCFRONT-20 - На mobile: сворачиваемые фильтры
  */
 export function PlayerFilters({filters, onChange, onReset, isFiltered}: PlayerFiltersProps) {
@@ -192,12 +193,13 @@ export function PlayerFilters({filters, onChange, onReset, isFiltered}: PlayerFi
             options={cityOptions}
             data-testid={testId('players', 'player-filters', 'select', 'city')}
           />
-          <Checkbox
-            checked={Boolean(filters.verified)}
-            onUpdate={(checked) => onChange({...filters, verified: checked || undefined})}
-            content="Только подтверждённые"
-            data-testid={testId('players', 'player-filters', 'checkbox', 'verified')}
-          />
+          <span data-testid={testId('players', 'player-filters', 'checkbox', 'verified')}>
+            <Checkbox
+              checked={Boolean(filters.verified)}
+              onUpdate={(checked) => onChange({...filters, verified: checked || undefined})}
+              content="Только подтверждённые"
+            />
+          </span>
           <Checkbox
             checked={Boolean(filters.goalieOnly)}
             onUpdate={(checked) => onChange({...filters, goalieOnly: checked || undefined})}

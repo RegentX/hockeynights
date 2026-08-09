@@ -22,6 +22,7 @@ import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 type CabinetTab = 'trainings' | 'agreements' | 'calendar' | 'registrations' | 'profile'
@@ -29,7 +30,12 @@ type CabinetTab = 'trainings' | 'agreements' | 'calendar' | 'registrations' | 'p
 export function OrganizerEventsPage() {
   const {userId, session, canOrganizeEvents} = useSessionAccess()
   const [tab, setTab] = useState<CabinetTab>('agreements')
-  const {data: events = [], isLoading} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
+  const {
+    data: events = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({queryKey: ['events'], queryFn: fetchEvents})
 
   const mine = useMemo(
     () =>
@@ -176,56 +182,68 @@ export function OrganizerEventsPage() {
         <div data-testid={testId('events', 'organizer-page', 'loader')}>
           <ScoreboardLoader label="Загрузка…" />
         </div>
-      ) : null}
+      ) : isError ? (
+        <QueryErrorState
+          title="Не удалось загрузить тренировки"
+          onRetry={() => refetch()}
+          testIdPrefix="events"
+          data-testid={testId('events', 'organizer-page', 'error')}
+        />
+      ) : (
+        <>
+          {tab === 'trainings' ? (
+            <OrganizerTrainingsPanel events={mine} organizerUserId={userId} />
+          ) : null}
 
-      {!isLoading && tab === 'trainings' ? (
-        <OrganizerTrainingsPanel events={mine} organizerUserId={userId} />
-      ) : null}
+          {tab === 'agreements' ? <OrganizerAgreementsPanel /> : null}
 
-      {!isLoading && tab === 'agreements' ? <OrganizerAgreementsPanel /> : null}
+          {tab === 'calendar' ? (
+            <div data-testid={testId('events', 'organizer-page', 'panel', 'calendar')}>
+              <CalendarShell title="Календарь организатора" />
+            </div>
+          ) : null}
 
-      {!isLoading && tab === 'calendar' ? (
-        <div data-testid={testId('events', 'organizer-page', 'panel', 'calendar')}>
-          <CalendarShell title="Календарь организатора" />
-        </div>
-      ) : null}
+          {tab === 'registrations' ? <OrganizerRegistrationsPanel events={mine} /> : null}
 
-      {!isLoading && tab === 'registrations' ? <OrganizerRegistrationsPanel events={mine} /> : null}
-
-      {!isLoading && tab === 'profile' ? (
-        <IceCard padding="m" data-testid={testId('events', 'organizer-page', 'panel', 'profile')}>
-          <div className="hockey-stack hockey-stack--gap-8">
-            <Text
-              variant="subheader-2"
-              data-testid={testId('events', 'organizer-page', 'text', 'profile-title')}
+          {tab === 'profile' ? (
+            <IceCard
+              padding="m"
+              data-testid={testId('events', 'organizer-page', 'panel', 'profile')}
             >
-              Профиль организатора
-            </Text>
-            <Text data-testid={testId('events', 'organizer-page', 'text', 'profile-name')}>
-              {session?.user.displayName ?? 'Организатор'}
-            </Text>
-            <Text
-              color="secondary"
-              data-testid={testId('events', 'organizer-page', 'text', 'profile-hint')}
-            >
-              Публичные тренировки потребуют активной подписки (gate на экране создания). Приватные
-              клубные — через кабинет клуба.
-            </Text>
-            <Link
-              to={routes.profile}
-              data-testid={testId('events', 'organizer-page', 'link', 'profile')}
-            >
-              <HockeyButton
-                view="outlined"
-                size="s"
-                data-testid={testId('events', 'organizer-page', 'btn', 'profile')}
-              >
-                Открыть профиль игрока
-              </HockeyButton>
-            </Link>
-          </div>
-        </IceCard>
-      ) : null}
+              <div className="hockey-stack hockey-stack--gap-8">
+                <Text
+                  variant="subheader-2"
+                  data-testid={testId('events', 'organizer-page', 'text', 'profile-title')}
+                >
+                  Профиль организатора
+                </Text>
+                <Text data-testid={testId('events', 'organizer-page', 'text', 'profile-name')}>
+                  {session?.user.displayName ?? 'Организатор'}
+                </Text>
+                <Text
+                  color="secondary"
+                  data-testid={testId('events', 'organizer-page', 'text', 'profile-hint')}
+                >
+                  Публичные тренировки потребуют активной подписки (gate на экране создания).
+                  Приватные клубные — через кабинет клуба.
+                </Text>
+                <Link
+                  to={routes.profile}
+                  data-testid={testId('events', 'organizer-page', 'link', 'profile')}
+                >
+                  <HockeyButton
+                    view="outlined"
+                    size="s"
+                    data-testid={testId('events', 'organizer-page', 'btn', 'profile')}
+                  >
+                    Открыть профиль игрока
+                  </HockeyButton>
+                </Link>
+              </div>
+            </IceCard>
+          ) : null}
+        </>
+      )}
     </div>
   )
 }
