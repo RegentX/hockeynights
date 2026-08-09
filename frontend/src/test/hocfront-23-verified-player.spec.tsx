@@ -54,7 +54,8 @@ describe('HOCFRONT-23 verified player', () => {
 
     const badge = screen.getByTestId('players-player-card-badge-verified-user-002')
     expect(badge).toHaveTextContent('Подтверждён')
-    expect(badge).toHaveAttribute('aria-label', 'Профиль подтверждён')
+    expect(badge).toHaveAttribute('title', 'Профиль подтверждён')
+    expect(badge).not.toHaveAttribute('aria-label')
     expect(badge.querySelector('svg')).not.toBeNull()
   })
 
@@ -92,10 +93,10 @@ describe('HOCFRONT-23 verified player', () => {
       {routerProps: {initialEntries: ['/players/user-002']}},
     )
 
-    expect(
-      await screen.findByTestId('players-public-player-profile-badge-verified-user-002'),
-    ).toHaveTextContent('Подтверждён')
-    expect(screen.getByTestId('players-player-card-badge-verified-user-002')).toBeInTheDocument()
+    await screen.findByTestId('players-public-player-profile-page-user-002')
+    const badge = screen.getByTestId('players-player-card-badge-verified-user-002')
+    expect(badge).toHaveTextContent('Подтверждён')
+    expect(badge.querySelector('svg')).not.toBeNull()
   })
 
   it('hides page verified badge for unverified player', async () => {
@@ -106,9 +107,9 @@ describe('HOCFRONT-23 verified player', () => {
       {routerProps: {initialEntries: ['/players/user-004']}},
     )
 
-    await screen.findByTestId('players-public-player-profile-page')
+    await screen.findByTestId('players-public-player-profile-page-user-004')
     expect(
-      screen.queryByTestId('players-public-player-profile-badge-verified-user-004'),
+      screen.queryByTestId('players-player-card-badge-verified-user-004'),
     ).not.toBeInTheDocument()
   })
 

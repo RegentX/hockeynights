@@ -43,7 +43,7 @@ export function VerifiedBadge({
       data-testid={
         dataTestId ?? testId(testIdPrefix, 'verified-badge', 'badge', entityId ?? 'verified')
       }
-      aria-label={VERIFIED_ARIA}
+      {...(withLabel ? {} : {'aria-label': VERIFIED_ARIA})}
       title={VERIFIED_ARIA}
     >
       <Icon data={CircleCheckFill} size={14} className="hockey-verified-badge__icon" aria-hidden />

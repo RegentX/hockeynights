@@ -483,13 +483,6 @@
   gap: 8px;
 }
 
-.public-player-profile__title-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-}
-
 .public-player-profile__grid {
   display: grid;
   grid-template-columns: minmax(260px, 320px) 1fr;

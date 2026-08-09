@@ -10,7 +10,6 @@ import {Link, useParams} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {fetchPublicPlayer} from '@/entities/profile'
-import {VerifiedBadge} from '@/features/players'
 import {CalendarShell} from '@/features/calendar'
 import {ProfileFavoritesSection} from '@/features/favorites'
 import {PlayerPublicInfoSection, PlayerTeamsSection} from '@/features/players'
@@ -110,7 +109,6 @@ export function PublicPlayerProfilePage() {
   }
 
   const {player} = data
-  const isVerified = player.verificationStatus === 'verified'
 
   return (
     <div
@@ -130,25 +128,12 @@ export function PublicPlayerProfilePage() {
             ← Каталог игроков
           </HockeyButton>
         </Link>
-        <div className="public-player-profile__title-row">
-          <Text
-            variant="header-1"
-            data-testid={testId('players', 'public-player-profile', 'text', 'title')}
-          >
-            Hockey ID
-          </Text>
-          <VerifiedBadge
-            verified={isVerified}
-            entityId={player.userId}
-            data-testid={testId(
-              'players',
-              'public-player-profile',
-              'badge',
-              'verified',
-              player.userId,
-            )}
-          />
-        </div>
+        <Text
+          variant="header-1"
+          data-testid={testId('players', 'public-player-profile', 'text', 'title')}
+        >
+          Страница игрока
+        </Text>
       </div>
 
       <div
