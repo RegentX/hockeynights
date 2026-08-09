@@ -9,6 +9,7 @@ import type {
   CreateEventPayload,
   GameEvent,
   RosterStatus,
+  UpdateEventPayload,
 } from '@/entities/event/model'
 import {apiRequest} from '@/shared/api/client'
 
@@ -29,6 +30,11 @@ export function fetchEventById(eventId: string): Promise<GameEvent> {
  */
 export function createEvent(payload: CreateEventPayload): Promise<GameEvent> {
   return apiRequest<GameEvent>('/events', {method: 'POST', body: payload})
+}
+
+/** HOCFRONT-28G — обновить событие */
+export function updateEvent(eventId: string, payload: UpdateEventPayload): Promise<GameEvent> {
+  return apiRequest<GameEvent>(`/events/${eventId}`, {method: 'PATCH', body: payload})
 }
 
 /**

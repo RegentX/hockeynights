@@ -18,6 +18,7 @@ export const routes = {
   eventsCreate: '/events/create',
   eventsOrganizer: '/events/organizer',
   trainingDetails: '/events/trainings/:eventId',
+  trainingEdit: '/events/trainings/:eventId/edit',
   gameDetails: '/events/games/:eventId',
   calendar: '/calendar',
   sos: '/sos',

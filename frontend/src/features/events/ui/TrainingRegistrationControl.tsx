@@ -4,9 +4,11 @@
 
 import {Text} from '@gravity-ui/uikit'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
+import {useState} from 'react'
 
 import type {AttendanceStatus, EventType} from '@/entities/common'
 import {updateAttendance} from '@/entities/event'
+import {useSessionAccess} from '@/features/access'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 
@@ -39,19 +41,22 @@ export function TrainingRegistrationControl({
   eventType = 'training',
   currentStatus,
   registrationStatus = 'open',
-  currentUserId = 'user-001',
   compact = false,
 }: TrainingRegistrationControlProps) {
   const queryClient = useQueryClient()
+  const {session} = useSessionAccess()
+  const displayName = session?.user.displayName
+  const [confirmCancel, setConfirmCancel] = useState(false)
+
   const isRegistered = currentStatus === 'going'
   const isWaitlisted = currentStatus === 'maybe'
   const isFull = registrationStatus === 'full'
   const entityLabel = eventType === 'game' ? 'игру' : 'тренировку'
 
   const mutation = useMutation({
-    mutationFn: (status: AttendanceStatus) =>
-      updateAttendance(eventId, status, currentUserId === 'user-001' ? 'Иван Петров' : undefined),
+    mutationFn: (status: AttendanceStatus) => updateAttendance(eventId, status, displayName),
     onSuccess: () => {
+      setConfirmCancel(false)
       invalidateTrainingQueries(queryClient, eventId)
       void queryClient.invalidateQueries({queryKey: ['calendar-shell']})
     },
@@ -111,18 +116,77 @@ export function TrainingRegistrationControl({
           </HockeyButton>
         )}
 
-        {(isRegistered || isWaitlisted) && (
+        {(isRegistered || isWaitlisted) && !confirmCancel && (
           <HockeyButton
             view="outlined"
             size="m"
             loading={mutation.isPending}
-            onClick={() => mutation.mutate('not_going')}
+            onClick={() => setConfirmCancel(true)}
             data-testid={testId('events', 'training-registration', 'btn', 'cancel', eventId)}
           >
             Отменить запись
           </HockeyButton>
         )}
       </div>
+
+      {confirmCancel && (
+        <div
+          className="hockey-stack hockey-stack--gap-8"
+          data-testid={testId(
+            'events',
+            'training-registration',
+            'panel',
+            'confirm-cancel',
+            eventId,
+          )}
+        >
+          <Text
+            color="secondary"
+            data-testid={testId(
+              'events',
+              'training-registration',
+              'text',
+              'confirm-cancel',
+              eventId,
+            )}
+          >
+            Отменить запись? Место может сразу перейти игроку из листа ожидания. Оплата на MVP не
+            списывается.
+          </Text>
+          <div className="hockey-row hockey-row--gap-8 hockey-row--wrap">
+            <HockeyButton
+              view="outlined"
+              size="m"
+              loading={mutation.isPending}
+              onClick={() => mutation.mutate('not_going')}
+              data-testid={testId(
+                'events',
+                'training-registration',
+                'btn',
+                'confirm-cancel',
+                eventId,
+              )}
+            >
+              Подтвердить отмену
+            </HockeyButton>
+            <HockeyButton
+              view="flat"
+              size="m"
+              disabled={mutation.isPending}
+              onClick={() => setConfirmCancel(false)}
+              data-testid={testId(
+                'events',
+                'training-registration',
+                'btn',
+                'dismiss-cancel',
+                eventId,
+              )}
+            >
+              Оставить запись
+            </HockeyButton>
+          </div>
+        </div>
+      )}
 
       {mutation.isError && (
         <Text

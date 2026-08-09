@@ -8,17 +8,20 @@
 import {http, HttpResponse} from 'msw'
 
 import type {AttendanceStatus, EventType} from '@/entities/common'
-import type {CreateEventPayload} from '@/entities/event'
+import type {CreateEventPayload, UpdateEventPayload} from '@/entities/event'
 import type {CreateTeamPayload} from '@/entities/team'
 import {findMockClubByTeamId} from '@/mocks/data/clubs'
 import {
   createMockEvent,
   getMockRosterStatus,
+  listVisibleMockEvents,
   mockEvents,
   updateMockAttendance,
+  updateMockEvent,
 } from '@/mocks/data/events'
 import {createMockChannelOrChat} from '@/mocks/data/messenger'
 import {mockPlayers} from '@/mocks/data/players'
+import {mockUser} from '@/mocks/data/session'
 import {createMockStaffContactRequest} from '@/mocks/data/staffContact'
 import {
   addMockRosterMember,
@@ -332,7 +335,7 @@ export const teamHandlers = [
   }),
 
   http.get('/mock-api/v1/events', () => {
-    return HttpResponse.json(mockEvents)
+    return HttpResponse.json(listVisibleMockEvents())
   }),
 
   http.get('/mock-api/v1/events/:eventId', ({params}) => {
@@ -349,12 +352,21 @@ export const teamHandlers = [
     return HttpResponse.json(event)
   }),
 
+  http.patch('/mock-api/v1/events/:eventId', async ({params, request}) => {
+    const body = (await request.json()) as UpdateEventPayload
+    const updated = updateMockEvent(params.eventId as string, body)
+    if (!updated) {
+      return HttpResponse.json({message: 'Event not found'}, {status: 404})
+    }
+    return HttpResponse.json(updated)
+  }),
+
   http.get('/mock-api/v1/calendar', ({request}) => {
     const url = new URL(request.url)
     const type = url.searchParams.get('type') as EventType | null
     const attendanceStatus = url.searchParams.get('attendanceStatus') as AttendanceStatus | null
 
-    let result = [...mockEvents]
+    let result = listVisibleMockEvents()
 
     if (type) {
       result = result.filter((e) => e.type === type)
@@ -372,8 +384,8 @@ export const teamHandlers = [
     const body = (await request.json()) as {status: AttendanceStatus; displayName?: string}
     const updated = updateMockAttendance(
       params.eventId as string,
-      'user-001',
-      body.displayName ?? 'Иван Петров',
+      mockUser.id,
+      body.displayName ?? mockUser.displayName,
       body.status,
     )
     if (!updated) {

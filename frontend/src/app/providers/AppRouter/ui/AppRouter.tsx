@@ -17,6 +17,7 @@ import {CalendarPage} from '@/pages/CalendarPage'
 import {ClubPartnerDashboard} from '@/pages/ClubPartnerDashboard'
 import {CreateEventPage} from '@/pages/CreateEventPage'
 import {CreateTeamPage} from '@/pages/CreateTeamPage'
+import {EditTrainingPage} from '@/pages/EditTrainingPage'
 import {EventsPage} from '@/pages/EventsPage'
 import {FeedbackPage} from '@/pages/FeedbackPage'
 import {GameDetailsPage} from '@/pages/GameDetailsPage'
@@ -85,6 +86,7 @@ export function AppRouter() {
               <Route path={routes.events} element={<EventsPage />} />
               <Route path={routes.eventsCreate} element={<CreateEventPage />} />
               <Route path={routes.eventsOrganizer} element={<OrganizerEventsPage />} />
+              <Route path={routes.trainingEdit} element={<EditTrainingPage />} />
               <Route path={routes.trainingDetails} element={<TrainingDetailsPage />} />
               <Route path={routes.gameDetails} element={<GameDetailsPage />} />
               <Route path={routes.calendar} element={<CalendarPage />} />

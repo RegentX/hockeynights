@@ -5,7 +5,7 @@
 import {screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {Route, Routes} from 'react-router'
-import {beforeEach, describe, expect, it} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {CreateEventPage} from '@/pages/CreateEventPage'
 import {EventsPage} from '@/pages/EventsPage'
@@ -17,6 +17,10 @@ import {renderWithProviders} from '@/test/render'
 describe('HOCFRONT-28A EventsPage IA', () => {
   beforeEach(() => {
     clearTestStorage()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('shows new catalog tabs and upcoming games + trainings', async () => {
@@ -95,8 +99,10 @@ describe('HOCFRONT-28A EventsPage IA', () => {
     })
   })
 
-  it('blocks public_open create without subscription on /events/create', async () => {
-    const user = userEvent.setup()
+  it('blocks public_open create without subscription after mock paid period', async () => {
+    vi.useFakeTimers({shouldAdvanceTime: true})
+    vi.setSystemTime(new Date('2026-08-16T12:00:00+03:00'))
+    const user = userEvent.setup({advanceTimers: vi.advanceTimersByTime})
     renderWithProviders(
       <Routes>
         <Route path={routes.eventsCreate} element={<CreateEventPage />} />
@@ -115,6 +121,7 @@ describe('HOCFRONT-28A EventsPage IA', () => {
     await waitFor(() => {
       expect(screen.getByTestId('events-create-form-error-gate')).toBeInTheDocument()
     })
+    vi.useRealTimers()
   })
 
   it('applies chips into URL and restores filters from search params', async () => {
