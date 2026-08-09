@@ -568,28 +568,35 @@ export function ArenaPartnerDashboard() {
                 onUpdate={(value) => updateForm('title', value)}
                 data-testid={testId('arenas', 'partner', 'field', 'listing-title')}
               />
-              <TextInput
-                label="Начало"
-                type="datetime-local"
-                value={form.start}
-                onUpdate={(value) => {
-                  setForm((prev) => ({
-                    ...prev,
-                    start: value,
-                    end: defaultListingEnd(value),
-                  }))
-                  setFormError(null)
-                  setSuccessMessage(null)
-                }}
-                data-testid={testId('arenas', 'partner', 'field', 'listing-start')}
-              />
-              <TextInput
-                label="Конец"
-                type="datetime-local"
-                value={form.end}
-                onUpdate={(value) => updateForm('end', value)}
-                data-testid={testId('arenas', 'partner', 'field', 'listing-end')}
-              />
+              <label className="hockey-stack hockey-stack--gap-4">
+                <Text variant="body-2">Начало</Text>
+                <input
+                  type="datetime-local"
+                  className="g-text-input__control"
+                  value={form.start}
+                  onChange={(event) => {
+                    const value = event.target.value
+                    setForm((prev) => ({
+                      ...prev,
+                      start: value,
+                      end: defaultListingEnd(value),
+                    }))
+                    setFormError(null)
+                    setSuccessMessage(null)
+                  }}
+                  data-testid={testId('arenas', 'partner', 'field', 'listing-start')}
+                />
+              </label>
+              <label className="hockey-stack hockey-stack--gap-4">
+                <Text variant="body-2">Конец</Text>
+                <input
+                  type="datetime-local"
+                  className="g-text-input__control"
+                  value={form.end}
+                  onChange={(event) => updateForm('end', event.target.value)}
+                  data-testid={testId('arenas', 'partner', 'field', 'listing-end')}
+                />
+              </label>
               <TextInput
                 label="Цена, ₽"
                 value={form.price}
