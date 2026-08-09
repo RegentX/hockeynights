@@ -184,8 +184,9 @@ cd frontend && npm ci
 ## Маршруты
 
 - `/login` — onboarding
-- `/profile` — Hockey ID
+- `/profile` — Hockey ID (личный кабинет)
 - `/players` — игроки
+- `/players/:id` — публичная страница игрока (календарь, команда, избранное)
 - `/teams` — команды и состав
 - `/events` — игры и тренировки
 - `/calendar` — календарь

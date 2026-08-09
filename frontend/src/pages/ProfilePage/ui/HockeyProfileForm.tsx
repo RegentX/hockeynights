@@ -657,18 +657,6 @@ function ProfileAboutSection({
                 onUpdate={(v) => updateField('city', v)}
                 data-testid={testId('profile', 'profile-about-section', 'field', 'city')}
               />
-              <TextInput
-                label="Район"
-                value={form.district ?? ''}
-                onUpdate={(v) => updateField('district', v)}
-                data-testid={testId('profile', 'profile-about-section', 'field', 'district')}
-              />
-              <TextInput
-                label="Метро"
-                value={form.metro ?? ''}
-                onUpdate={(v) => updateField('metro', v)}
-                data-testid={testId('profile', 'profile-about-section', 'field', 'metro')}
-              />
 
               <Select
                 label="Амплуа"
