@@ -32,6 +32,11 @@ describe('ICE organizer arena agreements', () => {
     )
 
     await waitFor(() => {
+      expect(screen.getByTestId('events-organizer-page-btn-tab-agreements')).toBeInTheDocument()
+    })
+    await user.click(screen.getByTestId('events-organizer-page-btn-tab-agreements'))
+
+    await waitFor(() => {
       expect(screen.getByTestId('events-agreements-panel')).toBeInTheDocument()
       expect(
         screen.getByTestId('events-agreements-row-agreement-booking-org-ready-001'),

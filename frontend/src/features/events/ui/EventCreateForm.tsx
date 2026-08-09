@@ -12,7 +12,13 @@ import {Link, useSearchParams} from 'react-router'
 import {fetchArenas} from '@/entities/arena'
 import {sendGoalieRequestsForEvent} from '@/entities/calendar'
 import type {EventType, SkillLevel} from '@/entities/common'
-import {createEvent, type CreateEventPayload, type GameEvent, updateEvent} from '@/entities/event'
+import {
+  createEvent,
+  type CreateEventPayload,
+  fetchEventById,
+  type GameEvent,
+  updateEvent,
+} from '@/entities/event'
 import {fetchMyIceAgreements} from '@/entities/external-flow'
 import {fetchProfileSettings} from '@/entities/profile'
 import {fetchTeams} from '@/entities/team'
@@ -25,6 +31,7 @@ import {hasOrganizerPublishAccess} from '@/features/events/lib/organizerSubscrip
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const TYPE_OPTIONS = [
   {value: 'training', content: 'Тренировка'},
@@ -51,12 +58,14 @@ const FORMAT_OPTIONS = [
   {value: 'training_two_way', content: 'Тренировка + двухсторонка'},
 ]
 
-type WizardStep = 'basics' | 'place' | 'format' | 'access' | 'publish'
+type WizardStep = 'basics' | 'place' | 'format' | 'roster' | 'money' | 'access' | 'publish'
 
 const STEPS: {id: WizardStep; label: string}[] = [
   {id: 'basics', label: 'Основное'},
   {id: 'place', label: 'Место'},
   {id: 'format', label: 'Формат'},
+  {id: 'roster', label: 'Состав'},
+  {id: 'money', label: 'Деньги'},
   {id: 'access', label: 'Доступ'},
   {id: 'publish', label: 'Публикация'},
 ]
@@ -101,11 +110,74 @@ export interface EventCreateFormProps {
   onSuccess?: (event: GameEvent) => void
 }
 
+function resolveAccessScope(
+  event: GameEvent | undefined,
+  accessParam: string | null,
+): NonNullable<GameEvent['accessScope']> {
+  if (event?.accessScope === 'club_only') return 'private_club'
+  if (
+    event?.accessScope === 'public_open' ||
+    event?.accessScope === 'private_club' ||
+    event?.accessScope === 'limited'
+  ) {
+    return event.accessScope
+  }
+  return initialAccessFromSearch(accessParam)
+}
+
 /**
  * @spec SPEC-FR-4.1.1 - Форма создания/редактирования игры/тренировки
  * @spec TASK-05-07 / 05-09 / 05-10 / HOCFRONT-28G / ICE
  */
-export function EventCreateForm({mode = 'create', initialEvent, onSuccess}: EventCreateFormProps) {
+export function EventCreateForm(props: EventCreateFormProps) {
+  const [searchParams] = useSearchParams()
+  const isEdit = props.mode === 'edit' && Boolean(props.initialEvent)
+  const copyFromId = !isEdit ? searchParams.get('copyFrom') : null
+  const {
+    data: copySource,
+    isFetched,
+    isError,
+  } = useQuery({
+    queryKey: ['event', copyFromId],
+    queryFn: () => fetchEventById(copyFromId!),
+    enabled: Boolean(copyFromId),
+  })
+
+  if (copyFromId && !isFetched) {
+    return (
+      <div data-testid={testId('events', 'create-form', 'loader', 'copy')}>
+        <ScoreboardLoader label="Загрузка копии…" />
+      </div>
+    )
+  }
+
+  if (copyFromId && (isError || !copySource)) {
+    return (
+      <Text color="danger" data-testid={testId('events', 'create-form', 'error', 'copy')}>
+        Не удалось загрузить событие для копирования.
+      </Text>
+    )
+  }
+
+  return (
+    <EventCreateFormFields
+      key={copyFromId ? `copy-${copyFromId}` : (props.initialEvent?.id ?? 'create')}
+      {...props}
+      copySource={copySource}
+    />
+  )
+}
+
+interface EventCreateFormFieldsProps extends EventCreateFormProps {
+  copySource?: GameEvent
+}
+
+function EventCreateFormFields({
+  mode = 'create',
+  initialEvent,
+  copySource,
+  onSuccess,
+}: EventCreateFormFieldsProps) {
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams()
   const {session} = useSessionAccess()
@@ -126,59 +198,57 @@ export function EventCreateForm({mode = 'create', initialEvent, onSuccess}: Even
     [agreements],
   )
 
-  const initialAgreementId = searchParams.get('agreementId') ?? initialEvent?.iceAgreementId ?? null
-  const initialBookingId = searchParams.get('bookingId') ?? initialEvent?.iceBookingId ?? null
-  const initialArenaId = searchParams.get('arenaId') ?? initialEvent?.arenaId ?? null
-  const initialStarts = searchParams.get('startsAt')
-  const initialEnds = searchParams.get('endsAt')
+  const seed = initialEvent ?? copySource
+  const isCopy = Boolean(copySource) && !isEdit
+  const initialAgreementId = isCopy
+    ? null
+    : (searchParams.get('agreementId') ?? initialEvent?.iceAgreementId ?? null)
+  const initialBookingId = isCopy
+    ? null
+    : (searchParams.get('bookingId') ?? initialEvent?.iceBookingId ?? null)
+  const initialArenaId = isCopy
+    ? (copySource?.arenaId ?? null)
+    : (searchParams.get('arenaId') ?? initialEvent?.arenaId ?? null)
+  const initialStarts = isCopy ? null : searchParams.get('startsAt')
+  const initialEnds = isCopy ? null : searchParams.get('endsAt')
 
   const [step, setStep] = useState<WizardStep>(() =>
-    !isEdit && (initialAgreementId || initialArenaId) ? 'place' : 'basics',
+    !isEdit && !isCopy && (initialAgreementId || initialArenaId) ? 'place' : 'basics',
   )
-  const [type, setType] = useState<EventType>(initialEvent?.type ?? 'training')
-  const [title, setTitle] = useState(initialEvent?.title ?? '')
+  const [type, setType] = useState<EventType>(seed?.type ?? 'training')
+  const [title, setTitle] = useState(() =>
+    isCopy && copySource ? `${copySource.title} (копия)` : (initialEvent?.title ?? ''),
+  )
   const [placeMode, setPlaceMode] = useState<'agreement' | 'manual'>(() =>
-    initialAgreementId || initialBookingId ? 'agreement' : 'manual',
+    isCopy ? 'manual' : initialAgreementId || initialBookingId ? 'agreement' : 'manual',
   )
   const [selectedAgreementId, setSelectedAgreementId] = useState<string | null>(initialAgreementId)
   const [iceBookingId, setIceBookingId] = useState<string | null>(initialBookingId)
   const [iceAgreementId, setIceAgreementId] = useState<string | null>(initialAgreementId)
   const [startsLocal, setStartsLocal] = useState(() => {
+    if (isCopy) return defaultStart()
     if (initialEvent) return toLocalInputValue(new Date(initialEvent.startsAt))
     if (initialStarts) return isoToLocal(initialStarts)
     return defaultStart()
   })
   const [endsLocal, setEndsLocal] = useState(() => {
+    if (isCopy) return defaultEnd(defaultStart())
     if (initialEvent) return toLocalInputValue(new Date(initialEvent.endsAt))
     if (initialEnds) return isoToLocal(initialEnds)
     return defaultEnd(initialStarts ? isoToLocal(initialStarts) : defaultStart())
   })
   const [arenaIdOverride, setArenaIdOverride] = useState<string | null>(initialArenaId)
   const resolvedArenaId = arenaIdOverride ?? arenas[0]?.id ?? ''
-  const [teamId, setTeamId] = useState<string | undefined>(initialEvent?.teamId ?? teams[0]?.id)
-  const [clubId, setClubId] = useState<string | undefined>(initialEvent?.clubId)
-  const [skillLevel, setSkillLevel] = useState<SkillLevel>(
-    initialEvent?.requiredSkillLevel ?? 'amateur',
+  const [teamId, setTeamId] = useState<string | undefined>(seed?.teamId ?? teams[0]?.id)
+  const [clubId, setClubId] = useState<string | undefined>(seed?.clubId)
+  const [skillLevel, setSkillLevel] = useState<SkillLevel>(seed?.requiredSkillLevel ?? 'amateur')
+  const [pricePerPlayer, setPricePerPlayer] = useState(String(seed?.pricePerPlayer ?? 1500))
+  const [slotsTotal, setSlotsTotal] = useState(() => (seed ? slotsFromEvent(seed) : '12'))
+  const [accessScope, setAccessScope] = useState<NonNullable<GameEvent['accessScope']>>(() =>
+    resolveAccessScope(seed, searchParams.get('access')),
   )
-  const [pricePerPlayer, setPricePerPlayer] = useState(String(initialEvent?.pricePerPlayer ?? 1500))
-  const [slotsTotal, setSlotsTotal] = useState(() =>
-    initialEvent ? slotsFromEvent(initialEvent) : '12',
-  )
-  const [accessScope, setAccessScope] = useState<NonNullable<GameEvent['accessScope']>>(() => {
-    if (initialEvent?.accessScope === 'club_only') return 'private_club'
-    if (initialEvent?.accessScope) {
-      if (
-        initialEvent.accessScope === 'public_open' ||
-        initialEvent.accessScope === 'private_club' ||
-        initialEvent.accessScope === 'limited'
-      ) {
-        return initialEvent.accessScope
-      }
-    }
-    return initialAccessFromSearch(searchParams.get('access'))
-  })
   const [trainingFormat, setTrainingFormat] = useState<NonNullable<GameEvent['trainingFormat']>>(
-    initialEvent?.trainingFormat ?? 'training',
+    seed?.trainingFormat ?? 'training',
   )
   const [goalieRequestSent, setGoalieRequestSent] = useState(false)
   const [pendingGoalieNotify, setPendingGoalieNotify] = useState(false)
@@ -627,12 +697,52 @@ export function EventCreateForm({mode = 'create', initialEvent, onSuccess}: Even
               data-testid={testId('events', 'create-form', 'select', 'format')}
             />
           ) : null}
+        </>
+      ) : null}
+
+      {step === 'roster' ? (
+        <>
           <TextInput
             label="Количество мест"
             value={slotsTotal}
             onUpdate={setSlotsTotal}
             data-testid={testId('events', 'create-form', 'field', 'slots')}
           />
+          <Text
+            color="secondary"
+            data-testid={testId('events', 'create-form', 'text', 'roster-hint')}
+          >
+            Места распределяются по вратарям, защите и нападению автоматически. Запрос вратарям — на
+            шаге публикации.
+          </Text>
+        </>
+      ) : null}
+
+      {step === 'money' ? (
+        <>
+          <TextInput
+            label="Цена за игрока (₽)"
+            value={isPrivateClub ? '0' : pricePerPlayer}
+            onUpdate={setPricePerPlayer}
+            disabled={isPrivateClub}
+            data-testid={testId('events', 'create-form', 'field', 'price')}
+          />
+          {isPrivateClub ? (
+            <Text
+              color="secondary"
+              data-testid={testId('events', 'create-form', 'text', 'money-private')}
+            >
+              Для клубной тренировки цена для участников — 0 ₽.
+            </Text>
+          ) : (
+            <Text
+              color="secondary"
+              data-testid={testId('events', 'create-form', 'text', 'money-hint')}
+            >
+              Укажите стоимость участия. Доступ (открытая / клуб / по приглашению) — на следующем
+              шаге.
+            </Text>
+          )}
         </>
       ) : null}
 
@@ -675,13 +785,6 @@ export function EventCreateForm({mode = 'create', initialEvent, onSuccess}: Even
               </Text>
             </>
           ) : null}
-          <TextInput
-            label="Цена за игрока (₽)"
-            value={isPrivateClub ? '0' : pricePerPlayer}
-            onUpdate={setPricePerPlayer}
-            disabled={isPrivateClub}
-            data-testid={testId('events', 'create-form', 'field', 'price')}
-          />
         </>
       ) : null}
 

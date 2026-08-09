@@ -34,7 +34,7 @@ describe('HOCFRONT-28G create wizard / edit form', () => {
     })
     await user.type(screen.getByLabelText('Название'), 'Черновик утро')
 
-    for (let i = 0; i < 4; i += 1) {
+    for (let i = 0; i < 6; i += 1) {
       await user.click(screen.getByTestId('events-create-form-btn-next'))
     }
 
@@ -59,12 +59,28 @@ describe('HOCFRONT-28G create wizard / edit form', () => {
       expect(screen.getByTestId('events-create-form-panel')).toBeInTheDocument()
     })
     await user.type(screen.getByLabelText('Название'), 'Клубная закрытая')
-    await user.click(screen.getByTestId('events-create-form-btn-next'))
-    await user.click(screen.getByTestId('events-create-form-btn-next'))
-    await user.click(screen.getByTestId('events-create-form-btn-next'))
+    for (let i = 0; i < 5; i += 1) {
+      await user.click(screen.getByTestId('events-create-form-btn-next'))
+    }
 
     await waitFor(() => {
       expect(screen.getByTestId('events-create-form-text-private-badge')).toBeInTheDocument()
+    })
+  })
+
+  it('prefills create form from copyFrom query', async () => {
+    renderWithProviders(
+      <Routes>
+        <Route path={routes.eventsCreate} element={<CreateEventPage />} />
+      </Routes>,
+      {routerProps: {initialEntries: [`${routes.eventsCreate}?copyFrom=event-002`]}},
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('events-create-form-panel')).toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect((screen.getByLabelText('Название') as HTMLInputElement).value).toMatch(/\(копия\)/)
     })
   })
 

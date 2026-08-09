@@ -18,7 +18,7 @@ import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 export function EditTrainingPage() {
   const {eventId = ''} = useParams()
-  const {userId, canOrganizeEvents, roles} = useSessionAccess()
+  const {userId, canOrganizeEvents, roles, isLoading: sessionLoading} = useSessionAccess()
   const {
     data: event,
     isLoading,
@@ -26,15 +26,25 @@ export function EditTrainingPage() {
   } = useQuery({
     queryKey: ['event', eventId],
     queryFn: () => fetchEventById(eventId),
-    enabled: Boolean(eventId),
+    enabled: Boolean(eventId) && !sessionLoading && canOrganizeEvents,
   })
+
+  if (sessionLoading) {
+    return (
+      <div data-testid={testId('events', 'edit-page', 'loader', 'session')}>
+        <ScoreboardLoader label="Проверка сессии…" />
+      </div>
+    )
+  }
 
   if (!canOrganizeEvents) {
     return (
       <div data-testid={testId('events', 'edit-page', 'page', 'denied')}>
         <IceCard padding="m">
           <Text data-testid={testId('events', 'edit-page', 'text', 'denied')}>
-            Редактирование доступно организатору тренировок, админам клуба и администратору.
+            Раздел редактирования доступен организатору тренировок, админу клуба, капитану, тренеру
+            или администратору. Сохранять изменения может только организатор этой тренировки, админ
+            клуба или администратор.
           </Text>
         </IceCard>
       </div>

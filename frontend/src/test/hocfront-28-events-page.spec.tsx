@@ -116,10 +116,9 @@ describe('HOCFRONT-28A EventsPage IA', () => {
     })
 
     await user.type(screen.getByLabelText('Название'), 'Открытая тренировка теста')
-    await user.click(screen.getByTestId('events-create-form-btn-next'))
-    await user.click(screen.getByTestId('events-create-form-btn-next'))
-    await user.click(screen.getByTestId('events-create-form-btn-next'))
-    await user.click(screen.getByTestId('events-create-form-btn-next'))
+    for (let i = 0; i < 6; i += 1) {
+      await user.click(screen.getByTestId('events-create-form-btn-next'))
+    }
 
     await waitFor(() => {
       expect(screen.getByTestId('events-create-form-btn-submit')).toBeInTheDocument()

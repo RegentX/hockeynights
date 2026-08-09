@@ -18,7 +18,8 @@ export function useSessionAccess() {
   })
 
   const roles = session?.user.roles ?? []
-  const userId = session?.user.id ?? 'user-001'
+  // Пустая строка до загрузки сессии — страницы не должны фильтровать «мои» по mock id.
+  const userId = session?.user.id ?? ''
 
   return {
     session,

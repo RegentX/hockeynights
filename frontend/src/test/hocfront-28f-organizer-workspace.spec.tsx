@@ -23,11 +23,6 @@ describe('HOCFRONT-28F organizer workspace', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('events-organizer-page-page')).toBeInTheDocument()
-      expect(screen.getByTestId('events-agreements-panel')).toBeInTheDocument()
-    })
-
-    await user.click(screen.getByTestId('events-organizer-page-btn-tab-trainings'))
-    await waitFor(() => {
       expect(screen.getByTestId('events-organizer-card')).toBeInTheDocument()
       expect(screen.getByTestId('events-organizer-text-status-event-007')).toHaveTextContent(
         'Черновик',
@@ -60,6 +55,10 @@ describe('HOCFRONT-28F organizer workspace', () => {
       expect(screen.getByTestId('events-organizer-page-text-profile-name')).toHaveTextContent(
         'Мария Организаторова',
       )
+      expect(screen.getByTestId('events-organizer-page-text-profile-stats')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('events-organizer-page-text-profile-subscription'),
+      ).toBeInTheDocument()
     })
   })
 })

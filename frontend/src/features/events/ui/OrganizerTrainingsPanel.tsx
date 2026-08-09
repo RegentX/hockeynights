@@ -8,7 +8,11 @@ import {Link} from 'react-router'
 
 import type {GameEvent} from '@/entities/event'
 import {countOpenSlots} from '@/features/events/lib/eventCardMeta'
-import {eventDetailsPath, eventEditPath} from '@/features/events/lib/eventDetailsPath'
+import {
+  eventCopyCreatePath,
+  eventDetailsPath,
+  eventEditPath,
+} from '@/features/events/lib/eventDetailsPath'
 import {ACCESS_LABELS, EVENT_TYPE_LABELS} from '@/features/events/lib/eventLabels'
 import {
   countOrganizerStatuses,
@@ -21,31 +25,21 @@ import {
   type OrganizerEventFilter,
   resolveOrganizerEventStatus,
 } from '@/features/events/lib/organizerWorkspace'
-import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 
 export interface OrganizerTrainingsPanelProps {
+  /** Уже отфильтрованные и отсортированные события организатора. */
   events: GameEvent[]
-  organizerUserId: string
 }
 
-export function OrganizerTrainingsPanel({events, organizerUserId}: OrganizerTrainingsPanelProps) {
+export function OrganizerTrainingsPanel({events}: OrganizerTrainingsPanelProps) {
   const [filter, setFilter] = useState<OrganizerEventFilter>('all')
 
-  const mine = useMemo(
-    () =>
-      events
-        .filter((event) => event.organizerUserId === organizerUserId)
-        .slice()
-        .sort((a, b) => b.startsAt.localeCompare(a.startsAt)),
-    [events, organizerUserId],
-  )
-
-  const counts = useMemo(() => countOrganizerStatuses(mine), [mine])
-  const filtered = useMemo(() => filterOrganizerEvents(mine, filter), [mine, filter])
+  const counts = useMemo(() => countOrganizerStatuses(events), [events])
+  const filtered = useMemo(() => filterOrganizerEvents(events, filter), [events, filter])
 
   return (
     <IceCard padding="m" data-testid={testId('events', 'organizer', 'card')}>
@@ -81,7 +75,7 @@ export function OrganizerTrainingsPanel({events, organizerUserId}: OrganizerTrai
               data-testid={testId('events', 'organizer', 'btn', 'filter', item)}
             >
               {ORGANIZER_FILTER_LABELS[item]}
-              {item !== 'all' ? ` (${counts[item]})` : ` (${mine.length})`}
+              {item !== 'all' ? ` (${counts[item]})` : ` (${events.length})`}
             </HockeyButton>
           ))}
         </div>
@@ -166,7 +160,7 @@ export function OrganizerTrainingsPanel({events, organizerUserId}: OrganizerTrai
                         </Link>
                       ) : null}
                       <Link
-                        to={routes.eventsCreate}
+                        to={eventCopyCreatePath(event)}
                         data-testid={testId('events', 'organizer', 'link', 'copy', event.id)}
                       >
                         <HockeyButton

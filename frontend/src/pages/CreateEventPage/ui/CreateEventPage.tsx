@@ -11,9 +11,18 @@ import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 export function CreateEventPage() {
-  const {canOrganizeEvents} = useSessionAccess()
+  const {canOrganizeEvents, isLoading} = useSessionAccess()
+
+  if (isLoading) {
+    return (
+      <div data-testid={testId('events', 'create-page', 'loader', 'session')}>
+        <ScoreboardLoader label="Проверка сессии…" />
+      </div>
+    )
+  }
 
   if (!canOrganizeEvents) {
     return (

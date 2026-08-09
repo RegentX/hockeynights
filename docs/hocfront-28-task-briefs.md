@@ -215,8 +215,9 @@
 - шаги: основное → место → формат → состав → деньги → доступ → публикация;
 - draft;
 - subscription gate без технических терминов;
-- goalie request как опциональный шаг;
-- edit route `/events/trainings/:id/edit` (можно stub).
+- goalie request как опциональный шаг (на публикации);
+- edit route `/events/trainings/:id/edit`;
+- «Создать похожую» через `?copyFrom=`.
 
 ### Acceptance
 

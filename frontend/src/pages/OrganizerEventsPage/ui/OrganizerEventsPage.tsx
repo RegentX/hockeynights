@@ -13,10 +13,11 @@ import {useSessionAccess} from '@/features/access'
 import {CalendarShell} from '@/features/calendar'
 import {
   countOrganizerStatuses,
-  isUpcomingEvent,
   OrganizerAgreementsPanel,
+  OrganizerProfilePanel,
   OrganizerRegistrationsPanel,
   OrganizerTrainingsPanel,
+  sortOrganizerEvents,
 } from '@/features/events'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
@@ -28,34 +29,42 @@ import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 type CabinetTab = 'trainings' | 'agreements' | 'calendar' | 'registrations' | 'profile'
 
 export function OrganizerEventsPage() {
-  const {userId, session, canOrganizeEvents} = useSessionAccess()
-  const [tab, setTab] = useState<CabinetTab>('agreements')
+  const {userId, session, canOrganizeEvents, isLoading: sessionLoading} = useSessionAccess()
+  const [tab, setTab] = useState<CabinetTab>('trainings')
   const {
     data: events = [],
-    isLoading,
+    isLoading: eventsLoading,
     isError,
     refetch,
-  } = useQuery({queryKey: ['events'], queryFn: fetchEvents})
+  } = useQuery({
+    queryKey: ['events'],
+    queryFn: fetchEvents,
+    enabled: Boolean(userId) && canOrganizeEvents,
+  })
 
   const mine = useMemo(
     () =>
-      events
-        .filter(
+      sortOrganizerEvents(
+        events.filter(
           (event) =>
+            Boolean(userId) &&
             event.organizerUserId === userId &&
             (event.type === 'training' || event.type === 'game'),
-        )
-        .slice()
-        .sort((a, b) => {
-          const aUp = isUpcomingEvent(a.startsAt) ? 0 : 1
-          const bUp = isUpcomingEvent(b.startsAt) ? 0 : 1
-          if (aUp !== bUp) return aUp - bUp
-          return a.startsAt.localeCompare(b.startsAt)
-        }),
+        ),
+      ),
     [events, userId],
   )
 
   const counts = useMemo(() => countOrganizerStatuses(mine), [mine])
+  const isLoading = sessionLoading || eventsLoading
+
+  if (sessionLoading) {
+    return (
+      <div data-testid={testId('events', 'organizer-page', 'loader', 'session')}>
+        <ScoreboardLoader label="Проверка сессии…" />
+      </div>
+    )
+  }
 
   if (!canOrganizeEvents) {
     return (
@@ -100,7 +109,7 @@ export function OrganizerEventsPage() {
             Кабинет организатора тренировок
           </Text>
           <Text color="secondary" data-testid={testId('events', 'organizer-page', 'text', 'hint')}>
-            Ведение набора: статусы, участники и профиль организатора.
+            Тренировки, договорённости по льду, календарь, участники и профиль организатора.
           </Text>
           <Text color="secondary" data-testid={testId('events', 'organizer-page', 'text', 'stats')}>
             Всего {mine.length} · набор {counts.open} · заполнены {counts.full} · черновики{' '}
@@ -191,9 +200,7 @@ export function OrganizerEventsPage() {
         />
       ) : (
         <>
-          {tab === 'trainings' ? (
-            <OrganizerTrainingsPanel events={mine} organizerUserId={userId} />
-          ) : null}
+          {tab === 'trainings' ? <OrganizerTrainingsPanel events={mine} /> : null}
 
           {tab === 'agreements' ? <OrganizerAgreementsPanel /> : null}
 
@@ -206,41 +213,11 @@ export function OrganizerEventsPage() {
           {tab === 'registrations' ? <OrganizerRegistrationsPanel events={mine} /> : null}
 
           {tab === 'profile' ? (
-            <IceCard
-              padding="m"
-              data-testid={testId('events', 'organizer-page', 'panel', 'profile')}
-            >
-              <div className="hockey-stack hockey-stack--gap-8">
-                <Text
-                  variant="subheader-2"
-                  data-testid={testId('events', 'organizer-page', 'text', 'profile-title')}
-                >
-                  Профиль организатора
-                </Text>
-                <Text data-testid={testId('events', 'organizer-page', 'text', 'profile-name')}>
-                  {session?.user.displayName ?? 'Организатор'}
-                </Text>
-                <Text
-                  color="secondary"
-                  data-testid={testId('events', 'organizer-page', 'text', 'profile-hint')}
-                >
-                  Публичные тренировки потребуют активной подписки (gate на экране создания).
-                  Приватные клубные — через кабинет клуба.
-                </Text>
-                <Link
-                  to={routes.profile}
-                  data-testid={testId('events', 'organizer-page', 'link', 'profile')}
-                >
-                  <HockeyButton
-                    view="outlined"
-                    size="s"
-                    data-testid={testId('events', 'organizer-page', 'btn', 'profile')}
-                  >
-                    Открыть профиль игрока
-                  </HockeyButton>
-                </Link>
-              </div>
-            </IceCard>
+            <OrganizerProfilePanel
+              events={mine}
+              displayName={session?.user.displayName ?? 'Организатор'}
+              userId={userId}
+            />
           ) : null}
         </>
       )}

@@ -26,7 +26,7 @@ export {
   formatEventWeekdayDate,
   registrationStatusLabel,
 } from './lib/eventCardMeta'
-export {eventDetailsPath, eventEditPath} from './lib/eventDetailsPath'
+export {eventCopyCreatePath, eventDetailsPath, eventEditPath} from './lib/eventDetailsPath'
 export {
   ACCESS_LABELS,
   ACCESS_SCOPE_FILTER_OPTIONS,
@@ -66,6 +66,7 @@ export {
   type OrganizerEventStatus,
   type OrganizerRegistrationRow,
   resolveOrganizerEventStatus,
+  sortOrganizerEvents,
 } from './lib/organizerWorkspace'
 export {isTeamRsvpConfirmed, teamRsvpStatusLabel} from './lib/teamRsvpStatus'
 export {
@@ -79,6 +80,7 @@ export {EventCard} from './ui/EventCard'
 export {EventCreateForm} from './ui/EventCreateForm'
 export {EventRsvpBoard} from './ui/EventRsvpBoard'
 export {OrganizerAgreementsPanel} from './ui/OrganizerAgreementsPanel'
+export {OrganizerProfilePanel} from './ui/OrganizerProfilePanel'
 export {OrganizerRegistrationsPanel} from './ui/OrganizerRegistrationsPanel'
 export {OrganizerTrainingsPanel} from './ui/OrganizerTrainingsPanel'
 export {RosterNeedsWidget} from './ui/RosterNeedsWidget'

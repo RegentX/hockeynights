@@ -82,6 +82,16 @@ export function filterOrganizerEvents(
   return events.filter((event) => resolveOrganizerEventStatus(event, now) === filter)
 }
 
+/** Ближайшие сверху, прошедшие внизу; внутри группы — по startsAt ↑. */
+export function sortOrganizerEvents(events: GameEvent[], now: Date = new Date()): GameEvent[] {
+  return events.slice().sort((a, b) => {
+    const aUp = isUpcomingEvent(a.startsAt, now) ? 0 : 1
+    const bUp = isUpcomingEvent(b.startsAt, now) ? 0 : 1
+    if (aUp !== bUp) return aUp - bUp
+    return a.startsAt.localeCompare(b.startsAt)
+  })
+}
+
 export function countOrganizerStatuses(
   events: GameEvent[],
   now: Date = new Date(),

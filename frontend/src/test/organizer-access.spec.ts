@@ -80,4 +80,12 @@ describe('ORG-1 training organizer access', () => {
     expect(canOrganizeEvents(clubAdmin.user.roles)).toBe(true)
     expect(getPersonaHomePath(clubAdmin)).not.toBe(routes.eventsOrganizer)
   })
+
+  it('partner personas do not inherit training organizer role', () => {
+    for (const id of ['league-partner', 'shop-partner', 'arena-partner']) {
+      const preset = PERSONA_PRESETS.find((item) => item.id === id)!
+      expect(hasTrainingOrganizerRole(preset.payload.roles)).toBe(false)
+      expect(canOrganizeEvents(preset.payload.roles)).toBe(false)
+    }
+  })
 })

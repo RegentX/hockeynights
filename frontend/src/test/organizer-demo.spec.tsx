@@ -47,11 +47,6 @@ describe('ORG-6 organizer training demo', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('events-organizer-page-page')).toBeInTheDocument()
-      expect(screen.getByTestId('events-agreements-panel')).toBeInTheDocument()
-    })
-
-    await user.click(screen.getByTestId('events-organizer-page-btn-tab-trainings'))
-    await waitFor(() => {
       expect(screen.getByTestId('events-organizer-text-status-event-007')).toHaveTextContent(
         'Черновик',
       )
@@ -100,7 +95,7 @@ describe('ORG-6 organizer training demo', () => {
     })
     await user.type(screen.getByLabelText('Название'), 'ORG6 клубная тренировка')
 
-    for (let i = 0; i < 4; i += 1) {
+    for (let i = 0; i < 6; i += 1) {
       await user.click(screen.getByTestId('events-create-form-btn-next'))
     }
 

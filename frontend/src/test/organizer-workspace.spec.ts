@@ -7,6 +7,7 @@ import {
   eventFillPercent,
   filterOrganizerEvents,
   resolveOrganizerEventStatus,
+  sortOrganizerEvents,
 } from '@/features/events/lib/organizerWorkspace'
 
 function makeEvent(overrides: Partial<GameEvent> = {}): GameEvent {
@@ -75,5 +76,26 @@ describe('organizerWorkspace', () => {
       past: 1,
       cancelled: 0,
     })
+  })
+
+  it('sorts upcoming first then by startsAt ascending', () => {
+    const events = [
+      makeEvent({
+        id: 'past',
+        startsAt: '2026-07-01T10:00:00+03:00',
+        endsAt: '2026-07-01T11:00:00+03:00',
+      }),
+      makeEvent({
+        id: 'later',
+        startsAt: '2026-08-22T20:00:00+03:00',
+        endsAt: '2026-08-22T21:00:00+03:00',
+      }),
+      makeEvent({
+        id: 'soon',
+        startsAt: '2026-08-20T18:00:00+03:00',
+        endsAt: '2026-08-20T19:00:00+03:00',
+      }),
+    ]
+    expect(sortOrganizerEvents(events, now).map((e) => e.id)).toEqual(['soon', 'later', 'past'])
   })
 })
