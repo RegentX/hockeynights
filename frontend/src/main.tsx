@@ -18,7 +18,13 @@ import {getApiMode} from '@/shared/config/apiMode'
  */
 async function bootstrap() {
   if (getApiMode() === 'mock') {
-    await startMockApi()
+    try {
+      await startMockApi()
+    } catch (error) {
+      // Не блокируем рендер: приложение поднимется и покажет внятные
+      // ошибки загрузки вместо белого экрана.
+      console.error('[mock-api] Не удалось запустить mock API:', error)
+    }
   }
 
   createRoot(document.getElementById('root')!).render(

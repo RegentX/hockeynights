@@ -43,7 +43,12 @@ export function ExternalBookingButton({
 
   return (
     <>
-      <HockeyButton size={size} onClick={() => setOpen(true)} data-testid={btnTestId}>
+      <HockeyButton
+        view="outlined"
+        size={size}
+        onClick={() => setOpen(true)}
+        data-testid={btnTestId}
+      >
         {label}
       </HockeyButton>
       <MockIceBookingModal open={open} onClose={() => setOpen(false)} arena={arena} slot={slot} />

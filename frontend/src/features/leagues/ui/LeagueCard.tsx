@@ -1,17 +1,18 @@
 /**
  * SPEC-FR-7.1.1, SPEC-FR-7.1.2, SPEC-FR-7.1.3, SPEC-FR-7.2.2
  * SPEC-UI-1.3, SPEC-UI-2.7
+ * HOCFRONT-34A — кликабельная карточка (hitbox + интерактивы поверх, без nested role=button)
  */
 
 import {Label, Text} from '@gravity-ui/uikit'
 import {useState} from 'react'
 
 import type {League} from '@/entities/league'
+import {SKILL_LEVEL_LABELS} from '@/features/events'
 import {FavoriteButton} from '@/features/favorites'
 import {MockLeaguePortalModal} from '@/features/leagues/ui/MockLeaguePortalModal'
 import {testId} from '@/shared/testing/testId'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 
@@ -19,8 +20,8 @@ import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 export interface LeagueCardProps {
   /** @spec SPEC-FR-7.1.2 */
   league: League
-  /** @spec SPEC-FR-7.2.1 */
-  onSelect?: (leagueId: string) => void
+  /** HOCFRONT-34A — открыть отдельную страницу лиги (клик по всей карточке) */
+  onOpenDetails?: (leagueId: string) => void
   /** @spec SPEC-UI-2.7 */
   selected?: boolean
 }
@@ -29,71 +30,99 @@ export interface LeagueCardProps {
  * @spec SPEC-FR-7.1.2 - Карточка лиги
  * @spec SPEC-FR-7.1.3 - Mock-портал сайта лиги
  */
-export function LeagueCard({league, onSelect, selected = false}: LeagueCardProps) {
+export function LeagueCard({league, onOpenDetails, selected = false}: LeagueCardProps) {
   const [portalOpen, setPortalOpen] = useState(false)
+
+  const handleSelect = onOpenDetails ? () => onOpenDetails(league.id) : undefined
+  const levelLabel = league.level ? (SKILL_LEVEL_LABELS[league.level] ?? league.level) : undefined
 
   return (
     <>
-      <div data-testid={testId('leagues', 'card', 'card', league.id)}>
-        <IceCard padding="m" className={selected ? 'ice-card--selected' : undefined}>
-          <div className="hockey-stack hockey-stack--gap-8">
-            <div className="hockey-row hockey-row--gap-8 hockey-row--between">
-              <Text
-                variant="header-2"
-                className="hockey-entity-title--compact"
-                data-testid={testId('leagues', 'card', 'text', 'name', league.id)}
-              >
-                {league.name}
-              </Text>
-              <div className="hockey-row hockey-row--gap-8">
-                <FavoriteButton type="league" entityId={league.id} title={league.name} />
-                <div data-testid={testId('leagues', 'card', 'badge', 'profile', league.id)}>
-                  <EntityProfileBadge kind="league" />
-                </div>
+      <IceCard
+        padding="m"
+        className={[
+          'league-card',
+          selected ? 'ice-card--selected' : '',
+          handleSelect ? 'league-card--clickable' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        onClick={handleSelect}
+        data-testid={testId('leagues', 'card', 'card', league.id)}
+      >
+        {handleSelect && (
+          <button
+            type="button"
+            className="league-card__hitbox"
+            onClick={(e) => {
+              e.stopPropagation()
+              handleSelect()
+            }}
+            aria-label={`Открыть лигу ${league.name}`}
+            aria-pressed={selected}
+            data-testid={testId('leagues', 'card', 'btn', 'open', league.id)}
+          />
+        )}
+        <div className="league-card__content hockey-stack hockey-stack--gap-8">
+          <div className="hockey-row hockey-row--gap-8 hockey-row--between hockey-row--align-start">
+            <Text
+              variant="header-2"
+              className="hockey-entity-title--compact"
+              data-testid={testId('leagues', 'card', 'text', 'name', league.id)}
+            >
+              {league.name}
+            </Text>
+            <div
+              className="league-meta-chips"
+              data-testid={testId('leagues', 'card', 'panel', 'chips', league.id)}
+            >
+              <FavoriteButton
+                type="league"
+                entityId={league.id}
+                title={league.name}
+                className="league-meta-chip league-meta-chip--favorite"
+              />
+              <div data-testid={testId('leagues', 'card', 'badge', 'profile', league.id)}>
+                <EntityProfileBadge kind="league" />
               </div>
             </div>
-            <Text
-              color="secondary"
-              data-testid={testId('leagues', 'card', 'text', 'region', league.id)}
-            >
-              {league.region}
-            </Text>
-            {league.level && (
-              <Label size="s" data-testid={testId('leagues', 'card', 'badge', 'level', league.id)}>
-                {league.level}
-              </Label>
-            )}
-            <Label
-              theme="warning"
-              size="s"
-              data-testid={testId('leagues', 'card', 'badge', 'integration', league.id)}
-            >
-              Интеграция: {league.integrationStatus}
-            </Label>
-            <div data-testid={testId('leagues', 'card', 'badge', 'source', league.id)}>
-              <SourceMetaBadge sourceMeta={league.sourceMeta} />
-            </div>
-            {league.websiteUrl && (
-              <HockeyButton
-                view="outlined"
-                onClick={() => setPortalOpen(true)}
-                data-testid={testId('leagues', 'card', 'btn', 'portal', league.id)}
-              >
-                Сайт лиги (mock)
-              </HockeyButton>
-            )}
-            {onSelect && (
-              <HockeyButton
-                view={selected ? 'action' : 'outlined'}
-                onClick={() => onSelect(league.id)}
-                data-testid={testId('leagues', 'card', 'btn', 'select', league.id)}
-              >
-                {selected ? '● Таблица и расписание' : 'Таблица и расписание'}
-              </HockeyButton>
-            )}
           </div>
-        </IceCard>
-      </div>
+          <Text
+            color="secondary"
+            data-testid={testId('leagues', 'card', 'text', 'region', league.id)}
+          >
+            {league.region}
+          </Text>
+          {levelLabel && (
+            <span data-testid={testId('leagues', 'card', 'badge', 'level', league.id)}>
+              <Label size="s">{levelLabel}</Label>
+            </span>
+          )}
+          <Label
+            theme="warning"
+            size="s"
+            data-testid={testId('leagues', 'card', 'badge', 'integration', league.id)}
+          >
+            Интеграция: {league.integrationStatus}
+          </Label>
+          <div data-testid={testId('leagues', 'card', 'badge', 'source', league.id)}>
+            <SourceMetaBadge sourceMeta={league.sourceMeta} />
+          </div>
+          {league.websiteUrl && (
+            <button
+              type="button"
+              className="league-card__site-link"
+              onClick={(e) => {
+                e.stopPropagation()
+                setPortalOpen(true)
+              }}
+              data-testid={testId('leagues', 'card', 'btn', 'portal', league.id)}
+            >
+              Сайт лиги (mock)
+            </button>
+          )}
+        </div>
+      </IceCard>
       <MockLeaguePortalModal
         open={portalOpen}
         onClose={() => setPortalOpen(false)}

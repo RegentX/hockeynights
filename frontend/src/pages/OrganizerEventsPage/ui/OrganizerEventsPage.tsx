@@ -1,48 +1,70 @@
 /**
- * HOCFRONT-28A — кабинет организатора (отдельный маршрут)
+ * HOCFRONT-28A/F — кабинет организатора тренировок
+ * ORG-2/3 — статусы, табы, регистрации, профиль
  */
 
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 import {Link} from 'react-router'
 
 import {fetchEvents} from '@/entities/event'
 import {useSessionAccess} from '@/features/access'
-import {isUpcomingEvent, OrganizerTrainingsPanel} from '@/features/events'
+import {CalendarShell} from '@/features/calendar'
+import {
+  countOrganizerStatuses,
+  OrganizerAgreementsPanel,
+  OrganizerProfilePanel,
+  OrganizerRegistrationsPanel,
+  OrganizerTrainingsPanel,
+  sortOrganizerEvents,
+} from '@/features/events'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
-import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
+type CabinetTab = 'trainings' | 'agreements' | 'calendar' | 'registrations' | 'profile'
+
 export function OrganizerEventsPage() {
-  const {userId, canOrganizeEvents} = useSessionAccess()
+  const {userId, session, canOrganizeEvents, isLoading: sessionLoading} = useSessionAccess()
+  const [tab, setTab] = useState<CabinetTab>('trainings')
   const {
     data: events = [],
-    isLoading,
+    isLoading: eventsLoading,
     isError,
     refetch,
-  } = useQuery({queryKey: ['events'], queryFn: fetchEvents})
+  } = useQuery({
+    queryKey: ['events'],
+    queryFn: fetchEvents,
+    enabled: Boolean(userId) && canOrganizeEvents,
+  })
 
-  const organizerCatalog = useMemo(
+  const mine = useMemo(
     () =>
-      events
-        .filter(
+      sortOrganizerEvents(
+        events.filter(
           (event) =>
+            Boolean(userId) &&
             event.organizerUserId === userId &&
             (event.type === 'training' || event.type === 'game'),
-        )
-        .slice()
-        .sort((a, b) => {
-          const aUp = isUpcomingEvent(a.startsAt) ? 0 : 1
-          const bUp = isUpcomingEvent(b.startsAt) ? 0 : 1
-          if (aUp !== bUp) return aUp - bUp
-          return a.startsAt.localeCompare(b.startsAt)
-        }),
+        ),
+      ),
     [events, userId],
   )
+
+  const counts = useMemo(() => countOrganizerStatuses(mine), [mine])
+  const isLoading = sessionLoading || eventsLoading
+
+  if (sessionLoading) {
+    return (
+      <div data-testid={testId('events', 'organizer-page', 'loader', 'session')}>
+        <ScoreboardLoader label="Проверка сессии…" />
+      </div>
+    )
+  }
 
   if (!canOrganizeEvents) {
     return (
@@ -52,8 +74,8 @@ export function OrganizerEventsPage() {
       >
         <IceCard padding="m">
           <Text data-testid={testId('events', 'organizer-page', 'text', 'denied')}>
-            Кабинет организатора доступен капитану, тренеру, организатору, админу клуба или
-            администратору.
+            Кабинет организатора тренировок доступен организатору, админу клуба, капитану, тренеру
+            или администратору.
           </Text>
           <Link
             to={routes.events}
@@ -84,10 +106,14 @@ export function OrganizerEventsPage() {
             variant="header-1"
             data-testid={testId('events', 'organizer-page', 'text', 'title')}
           >
-            Мои тренировки
+            Кабинет организатора тренировок
           </Text>
           <Text color="secondary" data-testid={testId('events', 'organizer-page', 'text', 'hint')}>
-            Созданные вами игры и тренировки: статусы набора и быстрые действия.
+            Тренировки, договорённости по льду, календарь, участники и профиль организатора.
+          </Text>
+          <Text color="secondary" data-testid={testId('events', 'organizer-page', 'text', 'stats')}>
+            Всего {mine.length} · набор {counts.open} · заполнены {counts.full} · черновики{' '}
+            {counts.draft}
           </Text>
         </div>
         <div className="hockey-row hockey-row--gap-8">
@@ -115,29 +141,85 @@ export function OrganizerEventsPage() {
         </div>
       </div>
 
+      <div
+        className="hockey-row hockey-row--gap-8 hockey-row--wrap"
+        data-testid={testId('events', 'organizer-page', 'panel', 'tabs')}
+      >
+        <HockeyButton
+          view={tab === 'trainings' ? 'action' : 'outlined'}
+          size="s"
+          onClick={() => setTab('trainings')}
+          data-testid={testId('events', 'organizer-page', 'btn', 'tab-trainings')}
+        >
+          Тренировки
+        </HockeyButton>
+        <HockeyButton
+          view={tab === 'agreements' ? 'action' : 'outlined'}
+          size="s"
+          onClick={() => setTab('agreements')}
+          data-testid={testId('events', 'organizer-page', 'btn', 'tab-agreements')}
+        >
+          Договорённости
+        </HockeyButton>
+        <HockeyButton
+          view={tab === 'calendar' ? 'action' : 'outlined'}
+          size="s"
+          onClick={() => setTab('calendar')}
+          data-testid={testId('events', 'organizer-page', 'btn', 'tab-calendar')}
+        >
+          Календарь
+        </HockeyButton>
+        <HockeyButton
+          view={tab === 'registrations' ? 'action' : 'outlined'}
+          size="s"
+          onClick={() => setTab('registrations')}
+          data-testid={testId('events', 'organizer-page', 'btn', 'tab-registrations')}
+        >
+          Участники
+        </HockeyButton>
+        <HockeyButton
+          view={tab === 'profile' ? 'action' : 'outlined'}
+          size="s"
+          onClick={() => setTab('profile')}
+          data-testid={testId('events', 'organizer-page', 'btn', 'tab-profile')}
+        >
+          Профиль
+        </HockeyButton>
+      </div>
+
       {isLoading ? (
         <div data-testid={testId('events', 'organizer-page', 'loader')}>
           <ScoreboardLoader label="Загрузка…" />
         </div>
       ) : isError ? (
-        <div data-testid={testId('events', 'organizer-page', 'error')}>
-          <EmptyNetState
-            title="Не удалось загрузить тренировки"
-            copy="Проверь соединение и попробуй ещё раз."
-            action={
-              <HockeyButton
-                view="outlined"
-                size="s"
-                onClick={() => void refetch()}
-                data-testid={testId('events', 'organizer-page', 'btn', 'retry')}
-              >
-                Повторить
-              </HockeyButton>
-            }
-          />
-        </div>
+        <QueryErrorState
+          title="Не удалось загрузить тренировки"
+          onRetry={() => void refetch()}
+          testIdPrefix="events"
+          data-testid={testId('events', 'organizer-page', 'error')}
+        />
       ) : (
-        <OrganizerTrainingsPanel events={organizerCatalog} organizerUserId={userId} />
+        <>
+          {tab === 'trainings' ? <OrganizerTrainingsPanel events={mine} /> : null}
+
+          {tab === 'agreements' ? <OrganizerAgreementsPanel /> : null}
+
+          {tab === 'calendar' ? (
+            <div data-testid={testId('events', 'organizer-page', 'panel', 'calendar')}>
+              <CalendarShell title="Календарь организатора" />
+            </div>
+          ) : null}
+
+          {tab === 'registrations' ? <OrganizerRegistrationsPanel events={mine} /> : null}
+
+          {tab === 'profile' ? (
+            <OrganizerProfilePanel
+              events={mine}
+              displayName={session?.user.displayName ?? 'Организатор'}
+              userId={userId}
+            />
+          ) : null}
+        </>
       )}
     </div>
   )

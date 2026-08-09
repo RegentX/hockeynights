@@ -6,7 +6,7 @@ import type {UserRole} from '@/shared/types/common'
 
 /** @spec SPEC-FR-1.3.7, SPEC-FR-1.3.9 - Привязка к партнёрской сущности */
 export interface PartnerMembership {
-  kind: 'league' | 'shop' | 'club'
+  kind: 'league' | 'shop' | 'club' | 'arena'
   entityId: string
   entityName: string
 }

@@ -27,7 +27,7 @@ export function extractApiErrorMessage(errorText: string): string | undefined {
  * Человекочитаемое сообщение из Error API-клиента или fallback.
  * Совместимо с:
  * - уже распарсенным текстом из `apiRequest`
- * - форматом `API METHOD path failed: status {json}`
+ * - форматом `API METHOD path failed: status {json|text}`
  */
 export function parseApiErrorMessage(error: unknown, fallback: string): string {
   if (!(error instanceof Error)) return fallback
@@ -38,6 +38,13 @@ export function parseApiErrorMessage(error: unknown, fallback: string): string {
   const message = error.message.trim()
   if (message && !message.startsWith('API ')) {
     return message
+  }
+
+  // API METHOD path failed: STATUS <details>
+  const apiMatch = message.match(/^API \S+ \S+ failed: \d+\s+([\s\S]+)$/)
+  if (apiMatch?.[1]) {
+    const details = apiMatch[1].trim()
+    return extractApiErrorMessage(details) ?? (details || fallback)
   }
 
   return fallback

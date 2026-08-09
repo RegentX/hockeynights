@@ -14,6 +14,7 @@ import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
 import {PlayerCard} from '@/widgets/PlayerCard'
@@ -104,23 +105,12 @@ export function PlayersPage() {
       )}
 
       {isError && !isPending && (
-        <div data-testid={testId('players', 'players-page', 'error')}>
-          <EmptyNetState
-            title="Не удалось загрузить игроков"
-            copy="Проверь соединение и попробуй ещё раз."
-            testIdPrefix="players"
-            action={
-              <HockeyButton
-                view="outlined"
-                size="s"
-                onClick={() => void refetch()}
-                data-testid={testId('players', 'players-page', 'btn', 'retry')}
-              >
-                Повторить
-              </HockeyButton>
-            }
-          />
-        </div>
+        <QueryErrorState
+          title="Не удалось загрузить игроков"
+          onRetry={() => void refetch()}
+          testIdPrefix="players"
+          data-testid={testId('players', 'players-page', 'error')}
+        />
       )}
 
       {!isPending && !isError && players.length > 0 && (

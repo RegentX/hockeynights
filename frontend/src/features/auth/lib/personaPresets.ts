@@ -1,6 +1,7 @@
 /**
  * HOCFRONT-5 — карточки демо-ролей для mock-входа.
  * HOCFRONT-25 — персона club_admin
+ * EPIC-08 / ORG-1 — персона training_organizer
  */
 
 import type {OnboardingPayload} from '@/entities/user'
@@ -15,7 +16,7 @@ export interface PersonaPreset {
   payload: OnboardingPayload
 }
 
-const [leaguePartner, shopPartner, clubPartner] = DEMO_PARTNER_MEMBERSHIPS
+const [leaguePartner, shopPartner, clubPartner, arenaPartner] = DEMO_PARTNER_MEMBERSHIPS
 
 export const PERSONA_PRESETS: PersonaPreset[] = [
   {
@@ -52,11 +53,15 @@ export const PERSONA_PRESETS: PersonaPreset[] = [
   },
   {
     id: 'organizer',
-    title: 'Организатор',
-    description: 'События, календарь и организация игр',
-    destination: 'Обычный player workspace',
+    title: 'Организатор тренировок',
+    description: 'Кабинет: создание и ведение тренировок, участники, публичность',
+    destination: 'Кабинет организатора тренировок',
     icon: '📅',
-    payload: {displayName: 'Мария Организаторова', roles: ['organizer'], partnerMemberships: []},
+    payload: {
+      displayName: 'Мария Организаторова',
+      roles: ['training_organizer'],
+      partnerMemberships: [],
+    },
   },
   {
     id: 'club-admin',
@@ -78,7 +83,8 @@ export const PERSONA_PRESETS: PersonaPreset[] = [
     icon: '🏆',
     payload: {
       displayName: 'Партнёр лиги',
-      roles: ['organizer'],
+      // Партнёрский workspace без роли организатора тренировок
+      roles: [],
       partnerMemberships: [leaguePartner],
     },
   },
@@ -90,16 +96,32 @@ export const PERSONA_PRESETS: PersonaPreset[] = [
     icon: '🛍',
     payload: {
       displayName: 'Партнёр магазина',
-      roles: ['organizer'],
+      roles: [],
       partnerMemberships: [shopPartner],
+    },
+  },
+  {
+    id: 'arena-partner',
+    title: 'Представитель арены',
+    description: 'Кабинет ледовой арены: профиль, объявления, расписание и публичность',
+    destination: 'Кабинет ледовой арены',
+    icon: '🧊',
+    payload: {
+      displayName: 'Партнёр арены Ходынка',
+      roles: [],
+      partnerMemberships: [arenaPartner],
     },
   },
   {
     id: 'admin',
     title: 'Администратор',
-    description: 'Модерация, источники данных и admin prototype',
+    description: 'Модерация, источники данных, admin prototype и доступ к кабинету арены',
     destination: 'Admin prototype',
     icon: '⚙',
-    payload: {displayName: 'Админ демо', roles: ['admin'], partnerMemberships: []},
+    payload: {
+      displayName: 'Админ демо',
+      roles: ['admin'],
+      partnerMemberships: [arenaPartner],
+    },
   },
 ]

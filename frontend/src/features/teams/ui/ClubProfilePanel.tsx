@@ -362,7 +362,7 @@ export function ClubProfilePanel({team, onActiveSquadChange}: ClubProfilePanelPr
                 Домашняя арена
               </Text>
               <Link
-                to={`/arenas?arena=${team.homeArenaId}`}
+                to={`/arenas/${team.homeArenaId}`}
                 className="club-profile__link"
                 data-testid={testId('teams', 'club-profile-panel', 'link', 'arena', team.id)}
               >

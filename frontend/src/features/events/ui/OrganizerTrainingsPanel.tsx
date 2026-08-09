@@ -1,55 +1,89 @@
 /**
- * HOCFRONT-28 / TASK-05-06 — кабинет организатора
+ * HOCFRONT-28F / ORG-2-3 — список тренировок в кабинете организатора
  */
 
 import {Text} from '@gravity-ui/uikit'
+import {useMemo, useState} from 'react'
 import {Link} from 'react-router'
 
 import type {GameEvent} from '@/entities/event'
 import {countOpenSlots} from '@/features/events/lib/eventCardMeta'
-import {eventDetailsPath} from '@/features/events/lib/eventDetailsPath'
+import {
+  eventCopyCreatePath,
+  eventDetailsPath,
+  eventEditPath,
+} from '@/features/events/lib/eventDetailsPath'
 import {ACCESS_LABELS, EVENT_TYPE_LABELS} from '@/features/events/lib/eventLabels'
-import {isUpcomingEvent} from '@/features/events/lib/isUpcomingEvent'
-import {routes} from '@/shared/const/appRoutes'
+import {
+  countOrganizerStatuses,
+  eventDeficitSummary,
+  eventFillPercent,
+  filterOrganizerEvents,
+  ORGANIZER_FILTER_LABELS,
+  ORGANIZER_FILTERS,
+  ORGANIZER_STATUS_LABELS,
+  type OrganizerEventFilter,
+  resolveOrganizerEventStatus,
+} from '@/features/events/lib/organizerWorkspace'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 
 export interface OrganizerTrainingsPanelProps {
+  /** Уже отфильтрованные и отсортированные события организатора. */
   events: GameEvent[]
-  organizerUserId: string
 }
 
-function organizerStatusLabel(event: GameEvent): string {
-  const upcoming = isUpcomingEvent(event.startsAt)
-  if (!upcoming) return 'Прошедшая'
-  if (event.registrationStatus === 'full') return 'Набор закрыт'
-  return 'Набор открыт'
-}
+export function OrganizerTrainingsPanel({events}: OrganizerTrainingsPanelProps) {
+  const [filter, setFilter] = useState<OrganizerEventFilter>('all')
 
-export function OrganizerTrainingsPanel({events, organizerUserId}: OrganizerTrainingsPanelProps) {
-  const mine = events
-    .filter((event) => event.organizerUserId === organizerUserId)
-    .slice()
-    .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
+  const counts = useMemo(() => countOrganizerStatuses(events), [events])
+  const filtered = useMemo(() => filterOrganizerEvents(events, filter), [events, filter])
 
   return (
     <IceCard padding="m" data-testid={testId('events', 'organizer', 'card')}>
       <div className="hockey-stack hockey-stack--gap-12">
         <div>
           <Text variant="subheader-2" data-testid={testId('events', 'organizer', 'text', 'title')}>
-            Кабинет организатора
+            Мои тренировки и игры
           </Text>
           <Text color="secondary" data-testid={testId('events', 'organizer', 'text', 'hint')}>
-            Мои игры и тренировки: статусы и быстрые действия.
+            Статусы, заполненность состава и быстрые действия.
+          </Text>
+          <Text
+            color="secondary"
+            className="hockey-mt-4"
+            data-testid={testId('events', 'organizer', 'text', 'stats')}
+          >
+            Набор {counts.open} · заполнены {counts.full} · черновики {counts.draft} · прошедшие{' '}
+            {counts.past}
+            {counts.cancelled > 0 ? ` · отменены ${counts.cancelled}` : ''}
           </Text>
         </div>
 
-        {mine.length === 0 ? (
+        <div
+          className="hockey-row hockey-row--gap-8 hockey-row--wrap"
+          data-testid={testId('events', 'organizer', 'panel', 'filters')}
+        >
+          {ORGANIZER_FILTERS.map((item) => (
+            <HockeyButton
+              key={item}
+              view={filter === item ? 'action' : 'outlined'}
+              size="s"
+              onClick={() => setFilter(item)}
+              data-testid={testId('events', 'organizer', 'btn', 'filter', item)}
+            >
+              {ORGANIZER_FILTER_LABELS[item]}
+              {item !== 'all' ? ` (${counts[item]})` : ` (${events.length})`}
+            </HockeyButton>
+          ))}
+        </div>
+
+        {filtered.length === 0 ? (
           <EmptyNetState
-            title="Пока нет созданных событий"
-            copy="Создайте тренировку или игру на экране «Создать»."
+            title="Нет событий в этом фильтре"
+            copy="Создайте тренировку или смените фильтр."
             testIdPrefix="events"
             data-testid={testId('events', 'organizer', 'empty')}
           />
@@ -58,75 +92,86 @@ export function OrganizerTrainingsPanel({events, organizerUserId}: OrganizerTrai
             className="hockey-stack hockey-stack--gap-8"
             data-testid={testId('events', 'organizer', 'list')}
           >
-            {mine.map((event) => {
-              const start = new Date(event.startsAt)
+            {filtered.map((event) => {
+              const status = resolveOrganizerEventStatus(event)
               const href = eventDetailsPath(event)
               const access = event.accessScope ? ACCESS_LABELS[event.accessScope] : undefined
-              const seats = countOpenSlots(event)
-              const editHref =
-                event.type === 'training'
-                  ? `/events/trainings/${event.id}/edit`
-                  : routes.eventsCreate
+              const start = new Date(event.startsAt)
+              const fill = eventFillPercent(event)
+              const slots = countOpenSlots(event)
               return (
                 <div
                   key={event.id}
-                  className="hockey-row hockey-row--between hockey-row--align-center hockey-row--wrap"
+                  className="hockey-stack hockey-stack--gap-8"
                   data-testid={testId('events', 'organizer', 'row', event.id)}
                 >
-                  <div className="hockey-stack hockey-stack--gap-4">
-                    <Text data-testid={testId('events', 'organizer', 'text', 'name', event.id)}>
-                      {EVENT_TYPE_LABELS[event.type]} · {event.title}
-                    </Text>
-                    <Text
-                      color="secondary"
-                      data-testid={testId('events', 'organizer', 'text', 'meta', event.id)}
-                    >
-                      {start.toLocaleDateString('ru-RU')}{' '}
-                      {start.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}
-                      {access ? ` · ${access}` : ''}
-                      {` · ${organizerStatusLabel(event)}`}
-                      {` · свободно ${seats.open}/${seats.total}`}
-                    </Text>
-                  </div>
-                  <div className="hockey-row hockey-row--gap-8 hockey-row--wrap">
-                    <Link
-                      to={href}
-                      data-testid={testId('events', 'organizer', 'link', 'open', event.id)}
-                    >
-                      <HockeyButton
-                        view="outlined"
-                        size="s"
-                        data-testid={testId('events', 'organizer', 'btn', 'open', event.id)}
+                  <div className="hockey-row hockey-row--between hockey-row--align-start hockey-row--wrap">
+                    <div className="hockey-stack hockey-stack--gap-4">
+                      <Text data-testid={testId('events', 'organizer', 'text', 'name', event.id)}>
+                        {EVENT_TYPE_LABELS[event.type]} · {event.title}
+                      </Text>
+                      <Text
+                        color="secondary"
+                        data-testid={testId('events', 'organizer', 'text', 'meta', event.id)}
                       >
-                        Открыть
-                      </HockeyButton>
-                    </Link>
-                    {event.type === 'training' && (
+                        {start.toLocaleDateString('ru-RU')}{' '}
+                        {start.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}
+                        {access ? ` · ${access}` : ''}
+                        {' · '}
+                        <span
+                          data-testid={testId('events', 'organizer', 'text', 'status', event.id)}
+                        >
+                          {ORGANIZER_STATUS_LABELS[status]}
+                        </span>
+                      </Text>
+                      <Text
+                        color="secondary"
+                        data-testid={testId('events', 'organizer', 'text', 'fill', event.id)}
+                      >
+                        Заполнено {fill}% ({slots.total - slots.open}/{slots.total}) ·{' '}
+                        {eventDeficitSummary(event)}
+                      </Text>
+                    </div>
+                    <div className="hockey-row hockey-row--gap-8 hockey-row--wrap">
                       <Link
-                        to={editHref}
-                        data-testid={testId('events', 'organizer', 'link', 'edit', event.id)}
+                        to={href}
+                        data-testid={testId('events', 'organizer', 'link', 'open', event.id)}
+                      >
+                        <HockeyButton
+                          view="outlined"
+                          size="s"
+                          data-testid={testId('events', 'organizer', 'btn', 'open', event.id)}
+                        >
+                          Открыть
+                        </HockeyButton>
+                      </Link>
+                      {event.type === 'training' ? (
+                        <Link
+                          to={eventEditPath(event)}
+                          data-testid={testId('events', 'organizer', 'link', 'edit', event.id)}
+                        >
+                          <HockeyButton
+                            view="flat"
+                            size="s"
+                            data-testid={testId('events', 'organizer', 'btn', 'edit', event.id)}
+                          >
+                            Редактировать
+                          </HockeyButton>
+                        </Link>
+                      ) : null}
+                      <Link
+                        to={eventCopyCreatePath(event)}
+                        data-testid={testId('events', 'organizer', 'link', 'copy', event.id)}
                       >
                         <HockeyButton
                           view="flat"
                           size="s"
-                          data-testid={testId('events', 'organizer', 'btn', 'edit', event.id)}
+                          data-testid={testId('events', 'organizer', 'btn', 'copy', event.id)}
                         >
-                          Редактировать
+                          Создать похожую
                         </HockeyButton>
                       </Link>
-                    )}
-                    <Link
-                      to={routes.eventsCreate}
-                      data-testid={testId('events', 'organizer', 'link', 'copy', event.id)}
-                    >
-                      <HockeyButton
-                        view="flat"
-                        size="s"
-                        data-testid={testId('events', 'organizer', 'btn', 'copy', event.id)}
-                      >
-                        Создать ещё
-                      </HockeyButton>
-                    </Link>
+                    </div>
                   </div>
                 </div>
               )

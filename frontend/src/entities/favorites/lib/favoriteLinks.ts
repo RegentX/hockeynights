@@ -3,7 +3,7 @@
  */
 
 import type {FavoriteType} from '@/entities/favorites/model'
-import {routes} from '@/shared/const/appRoutes'
+import {arenaDetailsPath, routes} from '@/shared/const/appRoutes'
 
 export function buildFavoriteHref(type: FavoriteType, entityId: string): string {
   switch (type) {
@@ -14,7 +14,7 @@ export function buildFavoriteHref(type: FavoriteType, entityId: string): string 
     case 'training':
       return `/events/trainings/${entityId}`
     case 'arena':
-      return `${routes.arenas}?arenaId=${encodeURIComponent(entityId)}`
+      return arenaDetailsPath(entityId)
     case 'product':
       return `${routes.shops}?productId=${encodeURIComponent(entityId)}`
     case 'league':
@@ -34,7 +34,7 @@ export const FAVORITE_TYPE_LABELS: Record<FavoriteType, string> = {
   player: 'Игроки',
   team: 'Команды',
   training: 'Тренировки',
-  arena: 'Арены',
+  arena: 'Ледовые арены',
   product: 'Товары',
   league: 'Лиги',
 }

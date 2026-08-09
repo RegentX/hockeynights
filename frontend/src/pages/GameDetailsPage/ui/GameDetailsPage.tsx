@@ -136,7 +136,7 @@ export function GameDetailsPage() {
           <Text data-testid={testId('events', 'game-page', 'text', 'arena', event.id)}>
             Арена:{' '}
             <Link
-              to={`/arenas?arenaId=${event.arenaId}`}
+              to={`/arenas/${event.arenaId}`}
               data-testid={testId('events', 'game-page', 'link', 'arena', event.id)}
             >
               {event.arenaName ?? event.arenaId}

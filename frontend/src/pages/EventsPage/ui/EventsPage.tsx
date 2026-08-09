@@ -27,6 +27,7 @@ import {
   getUserClubIds,
   getUserTeamIds,
   isCatalogChipActive,
+  isPlayerCatalogEvent,
   isUpcomingEvent,
   matchesAccessScopeFilter,
   matchesCatalogDateFilters,
@@ -45,6 +46,7 @@ import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {HockeyRinkLoader} from '@/shared/ui/HockeyRinkLoader'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
 
 const MOCK_RESULTS_LOADER_MS = 3000
@@ -92,7 +94,9 @@ export function EventsPage() {
       events
         .filter(
           (event) =>
-            (event.type === 'training' || event.type === 'game') && isUpcomingEvent(event.startsAt),
+            (event.type === 'training' || event.type === 'game') &&
+            isPlayerCatalogEvent(event) &&
+            isUpcomingEvent(event.startsAt),
         )
         .slice()
         .sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
@@ -322,7 +326,7 @@ export function EventsPage() {
                   size="m"
                   data-testid={testId('events', 'page', 'btn', 'organizer')}
                 >
-                  Мои тренировки
+                  Кабинет организатора
                 </HockeyButton>
               </Link>
             </div>
@@ -608,22 +612,12 @@ export function EventsPage() {
       )}
 
       {isError && !isLoading && (
-        <div data-testid={testId('events', 'page', 'error')}>
-          <EmptyNetState
-            title="Не удалось загрузить события"
-            copy="Проверь соединение и попробуй ещё раз."
-            action={
-              <HockeyButton
-                view="outlined"
-                size="s"
-                onClick={() => void refetch()}
-                data-testid={testId('events', 'page', 'btn', 'retry')}
-              >
-                Повторить
-              </HockeyButton>
-            }
-          />
-        </div>
+        <QueryErrorState
+          title="Не удалось загрузить игры и тренировки"
+          onRetry={() => void refetch()}
+          testIdPrefix="events"
+          data-testid={testId('events', 'page', 'error')}
+        />
       )}
 
       {!isLoading &&

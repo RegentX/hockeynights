@@ -1,12 +1,15 @@
 /**
  * SPEC-FR-6.4.2, SPEC-FR-9.2.3
+ * HOCFRONT-32 — inbox заявок арены
  */
 
+import type {IceAgreement} from '@/entities/event'
 import type {
   CheckoutIntent,
   CreateCheckoutIntentPayload,
   CreateIceBookingPayload,
   IceBookingRequest,
+  UpdateIceBookingPayload,
 } from '@/entities/external-flow/model'
 import {apiRequest} from '@/shared/api/client'
 
@@ -15,6 +18,27 @@ import {apiRequest} from '@/shared/api/client'
  */
 export function submitIceBooking(payload: CreateIceBookingPayload): Promise<IceBookingRequest> {
   return apiRequest<IceBookingRequest>('/ice-booking-requests', {method: 'POST', body: payload})
+}
+
+/** Список заявок арены для кабинета партнёра */
+export function fetchArenaIceBookings(arenaId: string): Promise<IceBookingRequest[]> {
+  return apiRequest<IceBookingRequest[]>(`/arenas/${arenaId}/ice-booking-requests`)
+}
+
+/** Договорённости текущего организатора (пул для создания тренировок) */
+export function fetchMyIceAgreements(): Promise<IceAgreement[]> {
+  return apiRequest<IceAgreement[]>('/me/ice-agreements')
+}
+
+/** Смена статуса / привязка чата */
+export function updateIceBooking(
+  bookingId: string,
+  payload: UpdateIceBookingPayload,
+): Promise<IceBookingRequest> {
+  return apiRequest<IceBookingRequest>(`/ice-booking-requests/${bookingId}`, {
+    method: 'PATCH',
+    body: payload,
+  })
 }
 
 /**

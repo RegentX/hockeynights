@@ -193,8 +193,8 @@
 
 ### Acceptance
 
-- [ ] Каталог игрока не содержит organizer list
-- [ ] Organizer page показывает «мои» события и статусы
+- [x] Каталог игрока не содержит organizer list
+- [x] Organizer page показывает «мои» события и статусы
 
 ---
 
@@ -215,14 +215,15 @@
 - шаги: основное → место → формат → состав → деньги → доступ → публикация;
 - draft;
 - subscription gate без технических терминов;
-- goalie request как опциональный шаг;
-- edit route `/events/trainings/:id/edit` (можно stub).
+- goalie request как опциональный шаг (на публикации);
+- edit route `/events/trainings/:id/edit`;
+- «Создать похожую» через `?copyFrom=`.
 
 ### Acceptance
 
-- [ ] Публичная без подписки блокируется понятным paywall
-- [ ] Private club создаётся с бейджем «Только для клуба»
-- [ ] Wizard доступен с `/events/create`
+- [x] Публичная без подписки блокируется понятным paywall
+- [x] Private club создаётся с бейджем «Только для клуба»
+- [x] Wizard доступен с `/events/create`
 
 ---
 

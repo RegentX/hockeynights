@@ -8,7 +8,10 @@ import {BrowserRouter} from 'react-router'
 import {LoginLayout} from '@/app/LoginLayout'
 import {PersonaGate} from '@/app/PersonaGate'
 import {RequireAuth} from '@/app/RequireAuth'
+import {RequireOrganizerAccess} from '@/app/RequireOrganizerAccess'
 import {AdminDashboard} from '@/pages/AdminDashboard'
+import {ArenaDetailsPage} from '@/pages/ArenaDetailsPage'
+import {ArenaPartnerDashboard} from '@/pages/ArenaPartnerDashboard'
 import {ArenasPage} from '@/pages/ArenasPage'
 import {MockLoginPage} from '@/pages/auth'
 import {CalendarPage} from '@/pages/CalendarPage'
@@ -21,6 +24,7 @@ import {FeedbackPage} from '@/pages/FeedbackPage'
 import {GameDetailsPage} from '@/pages/GameDetailsPage'
 import {HighlightsPage} from '@/pages/HighlightsPage'
 import {IqTestsPage} from '@/pages/IqTestsPage'
+import {LeagueDetailsPage} from '@/pages/LeagueDetailsPage'
 import {LeaguePartnerDashboard} from '@/pages/LeaguePartnerDashboard'
 import {LeaguesPage} from '@/pages/LeaguesPage'
 import {MessengerPage} from '@/pages/MessengerPage'
@@ -82,15 +86,19 @@ export function AppRouter() {
               <Route path={routes.teamsCreate} element={<CreateTeamPage />} />
               <Route path={routes.teamProfile} element={<TeamProfilePage />} />
               <Route path={routes.events} element={<EventsPage />} />
-              <Route path={routes.eventsCreate} element={<CreateEventPage />} />
-              <Route path={routes.eventsOrganizer} element={<OrganizerEventsPage />} />
-              <Route path={routes.trainingEdit} element={<EditTrainingPage />} />
+              <Route element={<RequireOrganizerAccess />}>
+                <Route path={routes.eventsCreate} element={<CreateEventPage />} />
+                <Route path={routes.eventsOrganizer} element={<OrganizerEventsPage />} />
+                <Route path={routes.trainingEdit} element={<EditTrainingPage />} />
+              </Route>
               <Route path={routes.trainingDetails} element={<TrainingDetailsPage />} />
               <Route path={routes.gameDetails} element={<GameDetailsPage />} />
               <Route path={routes.calendar} element={<CalendarPage />} />
               <Route path={routes.sos} element={<SosPage />} />
               <Route path={routes.arenas} element={<ArenasPage />} />
+              <Route path={routes.arenaDetails} element={<ArenaDetailsPage />} />
               <Route path={routes.leagues} element={<LeaguesPage />} />
+              <Route path={routes.leagueDetails} element={<LeagueDetailsPage />} />
               <Route path={routes.feedback} element={<FeedbackPage />} />
               <Route path={routes.notifications} element={<NotificationsPage />} />
               <Route path={routes.messenger} element={<MessengerPage />} />
@@ -99,6 +107,7 @@ export function AppRouter() {
               <Route path={routes.partnerShop} element={<ShopPartnerDashboard />} />
               <Route path={routes.partnerLeague} element={<LeaguePartnerDashboard />} />
               <Route path={routes.partnerClub} element={<ClubPartnerDashboard />} />
+              <Route path={routes.partnerArena} element={<ArenaPartnerDashboard />} />
               <Route path={routes.iq} element={<IqTestsPage />} />
               <Route path={routes.radar} element={<Navigate to={routes.events} replace />} />
               <Route path={routes.highlights} element={<HighlightsPage />} />

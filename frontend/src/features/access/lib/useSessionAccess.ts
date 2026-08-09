@@ -1,13 +1,23 @@
 import {useQuery} from '@tanstack/react-query'
 
 import {fetchSession} from '@/entities/auth'
-import {canOrganizeEvents, isPlayerOnlySession} from '@/features/access/lib/sessionAccess'
+import {
+  canAccessOrganizerCabinet,
+  canOrganizeEvents,
+  hasTrainingOrganizerRole,
+} from '@/features/access/lib/organizerAccess'
+import {isPlayerOnlySession} from '@/features/access/lib/sessionAccess'
 import {shouldUsePartnerWorkspace} from '@/features/access/lib/sessionPersona'
 import {resolveTeamPermissions} from '@/features/access/lib/teamAccess'
 import type {TeamRole} from '@/shared/types/team'
 
 export function useSessionAccess() {
-  const {data: session, isLoading} = useQuery({
+  const {
+    data: session,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['session'],
     queryFn: fetchSession,
   })
@@ -19,11 +29,15 @@ export function useSessionAccess() {
   return {
     session,
     isLoading,
+    isError,
+    refetch,
     userId,
     roles,
     isPartnerWorkspace: shouldUsePartnerWorkspace(session),
     isPlayerOnly: isPlayerOnlySession(roles),
+    isTrainingOrganizer: hasTrainingOrganizerRole(roles),
     canOrganizeEvents: canOrganizeEvents(roles),
+    canAccessOrganizerCabinet: canAccessOrganizerCabinet(session),
     teamPermissions: (teamRole: TeamRole = 'player') => resolveTeamPermissions(roles, teamRole),
   }
 }

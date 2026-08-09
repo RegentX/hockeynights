@@ -17,11 +17,12 @@ import {canManageClubEntity, useSessionAccess} from '@/features/access'
 import {POSITION_LABELS, SKILL_LEVEL_LABELS} from '@/features/events'
 import {FavoriteButton} from '@/features/favorites'
 import {ContactStaffModal, STAFF_ROLE_LABELS, TeamCalendarSection} from '@/features/teams'
+import {isNotFoundError} from '@/shared/api/client'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
-import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 /** HOCFRONT-25 — публичная страница команды */
@@ -33,7 +34,7 @@ export function TeamProfilePage() {
   const {
     data: team,
     isLoading: teamLoading,
-    isError: isTeamError,
+    error: teamError,
     refetch: refetchTeam,
   } = useQuery({
     queryKey: ['team', teamId],
@@ -64,24 +65,15 @@ export function TeamProfilePage() {
     )
   }
 
-  if (isTeamError) {
+  // Сбой загрузки ≠ «команда не найдена»: предлагаем повторить
+  if (teamError && !isNotFoundError(teamError)) {
     return (
-      <div data-testid={testId('teams', 'profile', 'error')}>
-        <EmptyNetState
-          title="Не удалось загрузить команду"
-          copy="Проверь соединение и попробуй ещё раз."
-          action={
-            <HockeyButton
-              view="outlined"
-              size="s"
-              onClick={() => void refetchTeam()}
-              data-testid={testId('teams', 'profile', 'btn', 'retry')}
-            >
-              Повторить
-            </HockeyButton>
-          }
-        />
-      </div>
+      <QueryErrorState
+        title="Не удалось загрузить профиль команды"
+        onRetry={() => void refetchTeam()}
+        testIdPrefix="teams"
+        data-testid={testId('teams', 'profile', 'error')}
+      />
     )
   }
 

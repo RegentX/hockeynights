@@ -7,6 +7,7 @@ import {Text} from '@gravity-ui/uikit'
 import {Link, useLocation} from 'react-router'
 
 import {FAVORITE_TYPE_LABELS} from '@/entities/favorites'
+import {useSessionAccess} from '@/features/access'
 import {resolveFavoritesPageContext} from '@/features/favorites/lib/favoritesPageContext'
 import {useFavoritesQuery} from '@/features/favorites/model/useFavorites'
 import {routes} from '@/shared/const/appRoutes'
@@ -19,6 +20,7 @@ const PREVIEW_LIMIT = 6
 
 export function EntityFavoritesPanel() {
   const {pathname} = useLocation()
+  const {userId} = useSessionAccess()
   const context = resolveFavoritesPageContext(pathname)
   const {data: items = [], isLoading, isError} = useFavoritesQuery()
 
@@ -26,6 +28,7 @@ export function EntityFavoritesPanel() {
   const preview = scoped.slice(0, PREVIEW_LIMIT)
   const totalScoped = scoped.length
   const hasOtherFavorites = Boolean(context.type) && items.length > 0 && totalScoped === 0
+  const favoritesHref = `${routes.players}/${userId}#favorites`
 
   return (
     <IceCard padding="s" data-testid={testId('favorites', 'entity-panel')}>
@@ -46,10 +49,7 @@ export function EntityFavoritesPanel() {
             </span>
           )}
         </div>
-        <Link
-          to={`${routes.profile}?section=favorites`}
-          data-testid={testId('favorites', 'entity-panel', 'link', 'all')}
-        >
+        <Link to={favoritesHref} data-testid={testId('favorites', 'entity-panel', 'link', 'all')}>
           <HockeyButton
             view="flat"
             size="xs"

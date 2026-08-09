@@ -2,6 +2,7 @@
  * SPEC-FR-3.2.2, SPEC-FR-21.1.5
  */
 
+import {hasTrainingOrganizerRole} from '@/features/access/lib/organizerAccess'
 import {isPlayerOnlySession} from '@/features/access/lib/sessionAccess'
 import type {UserRole} from '@/shared/types/common'
 import type {TeamRole} from '@/shared/types/team'
@@ -52,7 +53,7 @@ export function resolveTeamPermissions(
   const isClubAdmin = sessionRoles.includes('club_admin')
   const isCaptain = sessionRoles.includes('captain')
   const isCoach = sessionRoles.includes('coach')
-  const isOrganizer = sessionRoles.includes('organizer')
+  const isOrganizer = hasTrainingOrganizerRole(sessionRoles)
   const rank = teamRank(teamRole)
 
   const canManageRoster = isAdmin || isClubAdmin || (isCaptain && rank >= TEAM_ROLE_RANK.team_admin)

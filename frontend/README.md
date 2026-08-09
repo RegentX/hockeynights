@@ -152,6 +152,7 @@ cd frontend && npm ci
 - `SPEC-FR-2.1.1` - `SPEC-FR-2.1.3` — mock auth/onboarding
 - `SPEC-FR-2.2.1` - `SPEC-FR-2.2.4` — Hockey ID
 - `SPEC-FR-2.3.1`, `SPEC-FR-2.3.2` — игроки и фильтры
+- `SPEC-FR-17.1.2` — галочка verified на карточке/странице игрока + фильтр verified-only
 - `SPEC-FR-6.1.1` - `SPEC-FR-6.3.2` — катки, RinkCard, слоты
 
 ### Этап 2
@@ -184,8 +185,9 @@ cd frontend && npm ci
 ## Маршруты
 
 - `/login` — onboarding
-- `/profile` — Hockey ID
+- `/profile` — Hockey ID (личный кабинет)
 - `/players` — игроки
+- `/players/:userId` — публичная страница игрока (календарь, команда, избранное)
 - `/teams` — команды и состав
 - `/events` — игры и тренировки
 - `/calendar` — календарь

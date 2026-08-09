@@ -18,6 +18,7 @@ import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
 
@@ -150,7 +151,7 @@ export function TeamsPage() {
           color="secondary"
           data-testid={testId('teams', 'teams-page', 'text', 'results-count')}
         >
-          {isLoading ? 'Загрузка…' : `Найдено: ${teams.length}`}
+          {isLoading ? 'Загрузка…' : isError ? 'Ошибка загрузки' : `Найдено: ${teams.length}`}
         </Text>
       </div>
 
@@ -162,21 +163,11 @@ export function TeamsPage() {
       )}
 
       {isError && !isLoading && (
-        <EmptyNetState
+        <QueryErrorState
           title="Не удалось загрузить команды"
-          copy="Проверь соединение и попробуй ещё раз."
+          onRetry={() => void refetch()}
           testIdPrefix="teams"
           data-testid={testId('teams', 'teams-page', 'error')}
-          action={
-            <HockeyButton
-              view="outlined"
-              size="s"
-              onClick={() => void refetch()}
-              data-testid={testId('teams', 'teams-page', 'btn', 'retry')}
-            >
-              Повторить
-            </HockeyButton>
-          }
         />
       )}
 

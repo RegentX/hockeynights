@@ -71,6 +71,7 @@ export function LeagueTeamApplicationForm({league}: LeagueTeamApplicationFormPro
   const isCaptain =
     session?.user.roles.includes('captain') ||
     session?.user.roles.includes('organizer') ||
+    session?.user.roles.includes('training_organizer') ||
     captainTeams.length > 0
 
   const submitMutation = useMutation({

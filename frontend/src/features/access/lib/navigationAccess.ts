@@ -3,11 +3,17 @@
  * HOCFRONT-17 / TASK-02-02 — rename, sync desktop↔mobile, notifications in top bar
  */
 
+import {hasTrainingOrganizerRole} from '@/features/access/lib/organizerAccess'
 import {
   getPrimaryPartnerPath,
   shouldUsePartnerWorkspace,
 } from '@/features/access/lib/sessionPersona'
-import {ARENAS_LABEL, EVENTS_LABEL, EVENTS_MOBILE_LABEL} from '@/shared/config/navigationLabels'
+import {
+  ARENAS_LABEL,
+  EVENTS_LABEL,
+  EVENTS_MOBILE_LABEL,
+  LEAGUES_LABEL,
+} from '@/shared/config/navigationLabels'
 import {routes} from '@/shared/const/appRoutes'
 import type {Session} from '@/shared/types/user'
 
@@ -43,7 +49,7 @@ export const PLAYER_NAV_ITEMS: NavItem[] = [
   {to: routes.teams, label: 'Команды', tier: 'active'},
   {to: routes.messenger, label: 'Мессенджер', tier: 'active'},
   {to: routes.arenas, label: ARENAS_LABEL, tier: 'active'},
-  {to: routes.leagues, label: 'Лиги', tier: 'active'},
+  {to: routes.leagues, label: LEAGUES_LABEL, tier: 'active'},
   {to: routes.shops, label: 'Маркет', tier: 'active'},
   {to: routes.calendar, label: 'Календарь', tier: 'active'},
   {to: routes.profile, label: 'Профиль', tier: 'active'},
@@ -104,7 +110,7 @@ function partnerCatalogItems(session: Session): NavItem[] {
   const memberships = session.user.partnerMemberships ?? []
   const items: NavItem[] = []
   if (memberships.some((m) => m.kind === 'league')) {
-    items.push({to: routes.leagues, label: 'Каталог лиг', tier: 'active'})
+    items.push({to: routes.leagues, label: LEAGUES_LABEL, tier: 'active'})
   }
   if (memberships.some((m) => m.kind === 'shop')) {
     items.push({to: routes.shops, label: 'Маркет', tier: 'active'})
@@ -115,6 +121,9 @@ function partnerCatalogItems(session: Session): NavItem[] {
     items.push({to: routes.shops, label: 'Маркет', tier: 'active'})
     items.push({to: routes.messenger, label: 'Мессенджер', tier: 'active'})
     items.push({to: routes.events, label: EVENTS_LABEL, tier: 'active'})
+  }
+  if (memberships.some((m) => m.kind === 'arena')) {
+    items.push({to: routes.arenas, label: 'Ледовые арены', tier: 'active'})
   }
   return items
 }
@@ -197,9 +206,25 @@ export function isMobileMorePathActive(pathname: string): boolean {
   return MOBILE_MORE_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))
 }
 
+/**
+ * Active-state для bottom nav.
+ * `/partner` — только exact match, иначе кабинет `/partner/arenas/:id`
+ * подсвечивает и «Кабинет», и «Партнёр».
+ */
+export function isMobileNavItemActive(pathname: string, itemTo: string): boolean {
+  if (itemTo === routes.partner) {
+    return pathname === routes.partner
+  }
+  return pathname === itemTo || pathname.startsWith(`${itemTo}/`)
+}
+
 export function getPersonaHomePath(session: Session): string {
   if (shouldUsePartnerWorkspace(session)) return getPrimaryPartnerPath(session)
   if (session.user.roles.includes('admin')) return routes.admin
+  // EPIC-08: самостоятельный организатор — сразу в кабинет тренировок
+  if (hasTrainingOrganizerRole(session.user.roles) && !session.user.roles.includes('club_admin')) {
+    return routes.eventsOrganizer
+  }
   // HOCFRONT-15/17: SOS / IQ / Highlight не являются home path в MVP
   return routes.profile
 }
@@ -257,6 +282,9 @@ export function getAllowedPathPrefixes(session: Session): string[] {
         routes.messenger,
         routes.calendar,
       )
+    }
+    if (memberships.some((m) => m.kind === 'arena')) {
+      prefixes.push(routes.arenas, routes.calendar, routes.messenger, routes.players, routes.teams)
     }
     return prefixes
   }

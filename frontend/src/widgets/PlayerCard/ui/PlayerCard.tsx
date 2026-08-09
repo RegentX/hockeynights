@@ -1,8 +1,9 @@
 /**
  * SPEC-FR-2.3.1, SPEC-FR-8.2.1, SPEC-FR-8.2.2
  * SPEC-UI-2.1, SPEC-UI-1.3, SPEC-UI-1.4
- * SPEC-FR-17.1.1, SPEC-FR-24.2.1, SPEC-FR-24.2.3
+ * SPEC-FR-17.1.1, SPEC-FR-17.1.2, SPEC-FR-24.2.1, SPEC-FR-24.2.3
  * HOCFRONT-19 — FavoriteButton на карточке игрока
+ * HOCFRONT-23 — verified badge
  */
 
 import {MapPin, Shield} from '@gravity-ui/icons'
@@ -13,6 +14,7 @@ import {Link} from 'react-router'
 import type {PlayerListItem} from '@/entities/profile'
 import {FavoriteButton} from '@/features/favorites'
 import {KarmaScore} from '@/features/karma'
+import {VerifiedBadge} from '@/features/players'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 import {PositionLabel} from '@/shared/ui/PositionLabel'
@@ -25,8 +27,6 @@ const SKILL_LABELS: Record<string, string> = {
   league: 'Лига',
   unknown: '—',
 }
-
-const VERIFIED_LABEL = 'Подтверждён'
 
 /** @spec SPEC-FR-2.3.1 - Props карточки игрока */
 export interface PlayerCardProps {
@@ -62,6 +62,7 @@ function CardNav({
 /**
  * @spec SPEC-UI-2.1 - Hockey card с номером, амплуа, karma, надёжностью
  * @spec SPEC-FR-2.3.1 - Карточка игрока
+ * @spec HOCFRONT-23 - Verified badge на карточке
  */
 export function PlayerCard({player, linkable = true}: PlayerCardProps) {
   const jerseyNumber = String(player.userId.replace(/\D/g, '').slice(-2) || '00').padStart(2, '0')
@@ -88,16 +89,6 @@ export function PlayerCard({player, linkable = true}: PlayerCardProps) {
         >
           {SKILL_LABELS[player.skillLevel] ?? player.skillLevel}
         </Text>
-        {isVerified && (
-          <span
-            className="hockey-player-card__verified"
-            data-testid={testId('players', 'player-card', 'badge', 'verified', player.userId)}
-            aria-label="Профиль подтверждён"
-            title="Профиль подтверждён"
-          >
-            {VERIFIED_LABEL}
-          </span>
-        )}
       </div>
 
       {player.teamName && (
@@ -120,16 +111,7 @@ export function PlayerCard({player, linkable = true}: PlayerCardProps) {
         <Icon data={MapPin} size={14} aria-hidden />
         <span className="hockey-sr-only">Город: </span>
         {player.city}
-        {player.district ? `, ${player.district}` : ''}
       </Text>
-      {player.metro && (
-        <Text
-          color="secondary"
-          data-testid={testId('players', 'player-card', 'text', 'metro', player.userId)}
-        >
-          м. {player.metro}
-        </Text>
-      )}
 
       <div>
         <Text
@@ -165,26 +147,36 @@ export function PlayerCard({player, linkable = true}: PlayerCardProps) {
         <div className="hockey-player-card__top">
           <CardNav linkable={linkable} to={profilePath} userId={player.userId}>
             <div className="hockey-player-card__top-left">
-              <PositionLabel
-                position={player.position}
-                testIdPrefix="players"
-                data-testid={testId('players', 'player-card', 'badge', 'position', player.userId)}
-              />
-              {isGoalie && (
-                <span
-                  className="hockey-player-card__goalie-badge"
-                  data-testid={testId('players', 'player-card', 'badge', 'sos', player.userId)}
+              <div className="hockey-player-card__badges">
+                <PositionLabel
+                  position={player.position}
+                  testIdPrefix="players"
+                  data-testid={testId('players', 'player-card', 'badge', 'position', player.userId)}
+                />
+                {isGoalie && (
+                  <span
+                    className="hockey-player-card__goalie-badge"
+                    data-testid={testId('players', 'player-card', 'badge', 'sos', player.userId)}
+                  >
+                    SOS
+                  </span>
+                )}
+              </div>
+              <div className="hockey-player-card__name-row">
+                <Text
+                  variant="header-2"
+                  className="hockey-text-mt-6 hockey-entity-title--compact"
+                  data-testid={testId('players', 'player-card', 'text', 'name', player.userId)}
                 >
-                  SOS
-                </span>
-              )}
-              <Text
-                variant="header-2"
-                className="hockey-text-mt-6 hockey-entity-title--compact"
-                data-testid={testId('players', 'player-card', 'text', 'name', player.userId)}
-              >
-                {player.displayName}
-              </Text>
+                  {player.displayName}
+                </Text>
+                <VerifiedBadge
+                  verified={isVerified}
+                  entityId={player.userId}
+                  className="hockey-player-card__verified"
+                  data-testid={testId('players', 'player-card', 'badge', 'verified', player.userId)}
+                />
+              </div>
             </div>
           </CardNav>
           <div className="hockey-player-card__top-right">

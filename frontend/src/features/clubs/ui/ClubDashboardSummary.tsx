@@ -133,20 +133,46 @@ export function ClubDashboardSummary({
             </div>
           </div>
         </div>
-        {publicTeamId && (
+        <div className="hockey-row hockey-row--gap-8 hockey-row--wrap">
           <Link
-            to={`/teams/${publicTeamId}`}
-            data-testid={testId('clubs', 'dashboard', 'link', 'public-team', club.id)}
+            to={routes.eventsOrganizer}
+            data-testid={testId('clubs', 'dashboard', 'link', 'organizer', club.id)}
+          >
+            <HockeyButton
+              view="action"
+              size="s"
+              data-testid={testId('clubs', 'dashboard', 'btn', 'organizer', club.id)}
+            >
+              Кабинет организатора
+            </HockeyButton>
+          </Link>
+          <Link
+            to={`${routes.eventsCreate}?access=private_club`}
+            data-testid={testId('clubs', 'dashboard', 'link', 'create-private', club.id)}
           >
             <HockeyButton
               view="outlined"
               size="s"
-              data-testid={testId('clubs', 'dashboard', 'btn', 'public-team', club.id)}
+              data-testid={testId('clubs', 'dashboard', 'btn', 'create-private', club.id)}
             >
-              Публичная страница
+              Открытая форма (только клуб)
             </HockeyButton>
           </Link>
-        )}
+          {publicTeamId ? (
+            <Link
+              to={`/teams/${publicTeamId}`}
+              data-testid={testId('clubs', 'dashboard', 'link', 'public-team', club.id)}
+            >
+              <HockeyButton
+                view="outlined"
+                size="s"
+                data-testid={testId('clubs', 'dashboard', 'btn', 'public-team', club.id)}
+              >
+                Публичная страница
+              </HockeyButton>
+            </Link>
+          ) : null}
+        </div>
       </section>
 
       <section

@@ -8,6 +8,7 @@ import {describe, expect, it} from 'vitest'
 
 import {
   HEADER_ONLY_NAV_PATHS,
+  isMobileNavItemActive,
   MVP_HIDDEN_NAV_PATHS,
   resolveMobileMoreNavItems,
   resolveMobileNavItems,
@@ -102,7 +103,7 @@ describe('HOCFRONT-17 nav rename and sync', () => {
     const mobile = resolveMobileNavItems(makeSession()).map((item) => item.to)
     const more = resolveMobileMoreNavItems(makeSession()).map((item) => item.to)
     const partner = resolvePartnerNavItems(
-      makeSession(['organizer'], [{kind: 'shop', entityId: 'shop-1', entityName: 'Shop'}]),
+      makeSession([], [{kind: 'shop', entityId: 'shop-1', entityName: 'Shop'}]),
     ).map((item) => item.to)
 
     expect(desktop).not.toContain(routes.notifications)
@@ -121,5 +122,13 @@ describe('HOCFRONT-17 nav rename and sync', () => {
       expect(mobile).not.toContain(hidden)
       expect(more).not.toContain(hidden)
     }
+  })
+
+  it('does not mark partner hub active on nested cabinet routes', () => {
+    const cabinetPath = '/partner/arenas/arena-001'
+    expect(isMobileNavItemActive(cabinetPath, cabinetPath)).toBe(true)
+    expect(isMobileNavItemActive(cabinetPath, routes.partner)).toBe(false)
+    expect(isMobileNavItemActive(routes.partner, routes.partner)).toBe(true)
+    expect(isMobileNavItemActive('/arenas/arena-001', routes.arenas)).toBe(true)
   })
 })

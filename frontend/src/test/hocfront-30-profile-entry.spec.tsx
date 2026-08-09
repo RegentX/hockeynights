@@ -87,9 +87,7 @@ describe('HOCFRONT-30 краткая инфа профиля', () => {
     expect(screen.getByTestId('profile-profile-summary-text-full-name')).toHaveTextContent(
       'Иван Петров',
     )
-    expect(screen.getByTestId('profile-profile-summary-text-location')).toHaveTextContent(
-      'Москва · САО · м. Динамо',
-    )
+    expect(screen.getByTestId('profile-profile-summary-text-location')).toHaveTextContent('Москва')
     expect(screen.getByTestId('profile-profile-summary-text-events-count')).toHaveTextContent('2')
     expect(screen.getByTestId('profile-profile-summary-text-events-label')).toHaveTextContent(
       'игр подтверждено',

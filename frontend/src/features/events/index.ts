@@ -26,7 +26,7 @@ export {
   formatEventWeekdayDate,
   registrationStatusLabel,
 } from './lib/eventCardMeta'
-export {eventDetailsPath} from './lib/eventDetailsPath'
+export {eventCopyCreatePath, eventDetailsPath, eventEditPath} from './lib/eventDetailsPath'
 export {
   ACCESS_LABELS,
   ACCESS_SCOPE_FILTER_OPTIONS,
@@ -38,12 +38,36 @@ export {
   TRAINING_FORMAT_FILTER_OPTIONS,
   TRAINING_FORMAT_LABELS,
 } from './lib/eventLabels'
+export {
+  agreementCreatePath,
+  agreementToCalendarEvent,
+  bookingToIceAgreement,
+  formatAgreementInterval,
+  isAgreementReadyForTraining,
+  resolveIceAgreementPoolStatus,
+} from './lib/iceAgreements'
 export {isUpcomingEvent} from './lib/isUpcomingEvent'
 export {
   hasOrganizerPublishAccess,
   isMockPaidPeriod,
   MOCK_PAID_UNTIL_ISO,
 } from './lib/organizerSubscription'
+export {
+  collectOrganizerRegistrations,
+  countOrganizerStatuses,
+  eventDeficitSummary,
+  eventFillPercent,
+  filterOrganizerEvents,
+  isPlayerCatalogEvent,
+  ORGANIZER_FILTER_LABELS,
+  ORGANIZER_FILTERS,
+  ORGANIZER_STATUS_LABELS,
+  type OrganizerEventFilter,
+  type OrganizerEventStatus,
+  type OrganizerRegistrationRow,
+  resolveOrganizerEventStatus,
+  sortOrganizerEvents,
+} from './lib/organizerWorkspace'
 export {isTeamRsvpConfirmed, teamRsvpStatusLabel} from './lib/teamRsvpStatus'
 export {
   canViewTraining,
@@ -55,6 +79,9 @@ export {AttendanceControl} from './ui/AttendanceControl'
 export {EventCard} from './ui/EventCard'
 export {EventCreateForm} from './ui/EventCreateForm'
 export {EventRsvpBoard} from './ui/EventRsvpBoard'
+export {OrganizerAgreementsPanel} from './ui/OrganizerAgreementsPanel'
+export {OrganizerProfilePanel} from './ui/OrganizerProfilePanel'
+export {OrganizerRegistrationsPanel} from './ui/OrganizerRegistrationsPanel'
 export {OrganizerTrainingsPanel} from './ui/OrganizerTrainingsPanel'
 export {RosterNeedsWidget} from './ui/RosterNeedsWidget'
 export {TrainingRegistrationControl} from './ui/TrainingRegistrationControl'
