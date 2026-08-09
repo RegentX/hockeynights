@@ -2,6 +2,7 @@
  * SPEC-FR-1.2.2, SPEC-FR-12.1.1
  */
 
+import {AppErrorBoundary} from '@/app/AppErrorBoundary'
 import {AppRouter} from '@/app/providers/AppRouter'
 import {QueryProvider} from '@/app/providers/QueryProvider'
 import {ThemeProvider} from '@/app/providers/ThemeProvider'
@@ -13,9 +14,11 @@ import {ThemeProvider} from '@/app/providers/ThemeProvider'
 export function App() {
   return (
     <ThemeProvider>
-      <QueryProvider>
-        <AppRouter />
-      </QueryProvider>
+      <AppErrorBoundary>
+        <QueryProvider>
+          <AppRouter />
+        </QueryProvider>
+      </AppErrorBoundary>
     </ThemeProvider>
   )
 }
