@@ -2,16 +2,17 @@
  * SPEC-FR-6.4.2, SPEC-FR-6.2.2
  */
 
-import {Button, Text, TextArea, TextInput} from '@gravity-ui/uikit'
-import {useMutation, useQuery} from '@tanstack/react-query'
+import {Text, TextArea, TextInput} from '@gravity-ui/uikit'
+import {useMutation} from '@tanstack/react-query'
 import {useState} from 'react'
 
 import type {IceSlot} from '@/entities/arena'
 import type {Arena} from '@/entities/arena'
-import {fetchSession} from '@/entities/auth'
 import type {IceBookingRequest} from '@/entities/external-flow'
 import {submitIceBooking} from '@/entities/external-flow'
+import {useSessionAccess} from '@/features/access'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {MockExternalFlowDialog} from '@/shared/ui/MockExternalFlowDialog'
 
 /** @spec SPEC-FR-6.4.2 - Props mock-бронирования */
@@ -34,7 +35,7 @@ export function MockIceBookingModal({open, onClose, arena, slot}: MockIceBooking
   const [phone, setPhone] = useState('+7 (999) 000-00-00')
   const [comment, setComment] = useState('')
   const [result, setResult] = useState<IceBookingRequest | null>(null)
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {userId} = useSessionAccess()
 
   const mutation = useMutation({
     mutationFn: submitIceBooking,
@@ -53,7 +54,7 @@ export function MockIceBookingModal({open, onClose, arena, slot}: MockIceBooking
       slotId: slot?.id,
       contactPhone: phone,
       comment: comment || undefined,
-      organizerUserId: session?.user.id,
+      organizerUserId: userId || undefined,
       purpose: slot ? 'Бронь слота' : 'Заявка на лёд',
       headcount: 'уточняется',
     })
@@ -70,30 +71,28 @@ export function MockIceBookingModal({open, onClose, arena, slot}: MockIceBooking
       externalUrl={externalUrl}
       footer={
         result ? (
-          <Button
-            view="action"
+          <HockeyButton
             onClick={handleClose}
             data-testid={testId('arenas', 'ice-booking', 'modal', 'btn', 'done')}
           >
             Готово
-          </Button>
+          </HockeyButton>
         ) : (
           <>
-            <Button
+            <HockeyButton
               view="flat"
               onClick={handleClose}
               data-testid={testId('arenas', 'ice-booking', 'modal', 'btn', 'cancel')}
             >
               Отмена
-            </Button>
-            <Button
-              view="action"
+            </HockeyButton>
+            <HockeyButton
               loading={mutation.isPending}
               onClick={handleSubmit}
               data-testid={testId('arenas', 'ice-booking', 'modal', 'btn', 'submit')}
             >
               Отправить заявку
-            </Button>
+            </HockeyButton>
           </>
         )
       }

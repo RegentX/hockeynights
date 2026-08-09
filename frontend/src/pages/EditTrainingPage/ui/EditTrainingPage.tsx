@@ -9,11 +9,13 @@ import {Link, useParams} from 'react-router'
 import {fetchEventById} from '@/entities/event'
 import {useSessionAccess} from '@/features/access'
 import {EventCreateForm, eventDetailsPath} from '@/features/events'
+import {isNotFoundError} from '@/shared/api/client'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 export function EditTrainingPage() {
@@ -22,7 +24,8 @@ export function EditTrainingPage() {
   const {
     data: event,
     isLoading,
-    isError,
+    error,
+    refetch,
   } = useQuery({
     queryKey: ['event', eventId],
     queryFn: () => fetchEventById(eventId),
@@ -59,7 +62,18 @@ export function EditTrainingPage() {
     )
   }
 
-  if (isError || !event || event.type !== 'training') {
+  if (error && !isNotFoundError(error)) {
+    return (
+      <QueryErrorState
+        title="Не удалось загрузить тренировку"
+        onRetry={() => void refetch()}
+        testIdPrefix="events"
+        data-testid={testId('events', 'edit-page', 'error')}
+      />
+    )
+  }
+
+  if (!event || event.type !== 'training') {
     return (
       <div data-testid={testId('events', 'edit-page', 'empty')}>
         <EmptyNetState title="Тренировка не найдена" copy="Вернитесь к списку «Мои тренировки»." />

@@ -17,11 +17,13 @@ import {
   TrainingRegistrationControl,
 } from '@/features/events'
 import {TeamRsvpResponseControl} from '@/features/radar'
+import {isNotFoundError} from '@/shared/api/client'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 export function GameDetailsPage() {
@@ -30,7 +32,8 @@ export function GameDetailsPage() {
   const {
     data: event,
     isLoading,
-    isError,
+    error,
+    refetch,
   } = useQuery({
     queryKey: ['event', eventId],
     queryFn: () => fetchEventById(eventId),
@@ -54,7 +57,18 @@ export function GameDetailsPage() {
     )
   }
 
-  if (isError || !event || event.type !== 'game') {
+  if (error && !isNotFoundError(error)) {
+    return (
+      <QueryErrorState
+        title="Не удалось загрузить игру"
+        onRetry={() => void refetch()}
+        testIdPrefix="events"
+        data-testid={testId('events', 'game-page', 'error')}
+      />
+    )
+  }
+
+  if (!event || event.type !== 'game') {
     return (
       <div data-testid={testId('events', 'game-page', 'empty')}>
         <EmptyNetState

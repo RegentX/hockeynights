@@ -12,8 +12,9 @@ import type {MarketplaceFilters, MarketplaceSort} from '@/entities/shop'
 import {fetchMarketplaceFeed} from '@/entities/shop'
 import {MarketplaceProductCard, MarketplaceShopStrip} from '@/features/shops'
 import {testId} from '@/shared/testing/testId'
-import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {PageHeader} from '@/shared/ui/PageHeader'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const SORT_OPTIONS = [
@@ -86,13 +87,12 @@ export function MarketplacePage() {
       data-testid={testId('shops', 'marketplace', 'page')}
     >
       <div className="marketplace__hero">
-        <Text variant="header-1" data-testid={testId('shops', 'marketplace', 'text', 'title')}>
-          Маркет экипировки
-        </Text>
-        <Text color="secondary" data-testid={testId('shops', 'marketplace', 'text', 'subtitle')}>
-          Лента товаров от партнёрских магазинов — как маркетплейс, с приоритетом для продвигаемых
-          продавцов.
-        </Text>
+        <PageHeader
+          title="Маркет экипировки"
+          subtitle="Лента товаров от партнёрских магазинов — как маркетплейс, с приоритетом для продвигаемых продавцов."
+          testIdPrefix="shops"
+          testIdSection="marketplace"
+        />
       </div>
 
       <MarketplaceShopStrip
@@ -195,23 +195,13 @@ export function MarketplacePage() {
           <ScoreboardLoader label="Загрузка маркетплейса" />
         </div>
       ) : isError ? (
-        <div data-testid={testId('shops', 'marketplace', 'error')}>
-          <EmptyNetState
-            title="Не удалось загрузить маркетплейс"
-            copy="Проверь соединение и попробуй ещё раз."
-            testIdPrefix="shops"
-            action={
-              <HockeyButton
-                view="outlined"
-                size="s"
-                onClick={() => void refetch()}
-                data-testid={testId('shops', 'marketplace', 'btn', 'retry')}
-              >
-                Повторить
-              </HockeyButton>
-            }
-          />
-        </div>
+        <QueryErrorState
+          title="Не удалось загрузить маркетплейс"
+          copy="Проверь соединение и попробуй ещё раз."
+          onRetry={() => void refetch()}
+          testIdPrefix="shops"
+          data-testid={testId('shops', 'marketplace', 'error')}
+        />
       ) : listings.length === 0 ? (
         <div className="marketplace__empty" data-testid={testId('shops', 'marketplace', 'empty')}>
           <Text

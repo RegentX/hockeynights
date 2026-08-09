@@ -21,6 +21,7 @@ import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {PageHeader} from '@/shared/ui/PageHeader'
 import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
@@ -133,25 +134,17 @@ export function ShopPartnerDashboard() {
       className="partner-dashboard hockey-stack hockey-stack--gap-16"
       data-testid={testId('shops', shopId, 'dashboard', 'page')}
     >
-      <div className="partner-dashboard__header hockey-row hockey-row--between">
-        <div>
-          <Text
-            variant="header-1"
-            data-testid={testId('shops', shopId, 'dashboard', 'text', 'title')}
-          >
-            Кабинет магазина
-          </Text>
-          <Text
-            color="secondary"
-            data-testid={testId('shops', shopId, 'dashboard', 'text', 'name')}
-          >
-            {shop.name}
-          </Text>
-        </div>
-        <span data-testid={testId('shops', shopId, 'dashboard', 'badge', 'profile')}>
-          <EntityProfileBadge kind="shop" />
-        </span>
-      </div>
+      <PageHeader
+        title="Кабинет магазина"
+        subtitle={shop.name}
+        testIdPrefix="shops"
+        testIdSection="dashboard"
+        actions={
+          <span data-testid={testId('shops', shopId, 'dashboard', 'badge', 'profile')}>
+            <EntityProfileBadge kind="shop" />
+          </span>
+        }
+      />
 
       <div
         className="partner-dashboard__tabs"

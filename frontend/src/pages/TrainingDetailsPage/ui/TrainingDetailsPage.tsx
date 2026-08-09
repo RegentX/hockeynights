@@ -20,12 +20,14 @@ import {
   TRAINING_FORMAT_LABELS,
   TrainingRegistrationControl,
 } from '@/features/events'
+import {isNotFoundError} from '@/shared/api/client'
 import {LAUNCH_REGION} from '@/shared/config/geo'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 export function TrainingDetailsPage() {
@@ -34,7 +36,8 @@ export function TrainingDetailsPage() {
   const {
     data: event,
     isLoading,
-    isError,
+    error,
+    refetch,
   } = useQuery({
     queryKey: ['event', eventId],
     queryFn: () => fetchEventById(eventId),
@@ -61,7 +64,18 @@ export function TrainingDetailsPage() {
     )
   }
 
-  if (isError || !event || event.type !== 'training') {
+  if (error && !isNotFoundError(error)) {
+    return (
+      <QueryErrorState
+        title="Не удалось загрузить тренировку"
+        onRetry={() => void refetch()}
+        testIdPrefix="events"
+        data-testid={testId('events', 'training-page', 'error')}
+      />
+    )
+  }
+
+  if (!event || event.type !== 'training') {
     return (
       <div data-testid={testId('events', 'training-page', 'empty')}>
         <EmptyNetState

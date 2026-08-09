@@ -17,9 +17,13 @@ import {
   ClubProfileEditForm,
 } from '@/features/clubs'
 import {AddTeamMember, TeamCalendarSection, TeamLineupStudio, TeamRoster} from '@/features/teams'
+import {isNotFoundError} from '@/shared/api/client'
 import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {PageHeader} from '@/shared/ui/PageHeader'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const TAB_LABELS: Record<ClubPartnerTab, string> = {
@@ -39,7 +43,8 @@ export function ClubPartnerDashboard() {
   const {
     data: club,
     isLoading,
-    isError: isClubError,
+    error: clubError,
+    refetch: refetchClub,
   } = useQuery({
     queryKey: ['club', clubId],
     queryFn: () => fetchClub(clubId),
@@ -105,27 +110,33 @@ export function ClubPartnerDashboard() {
     )
   }
 
-  if (isClubError || !club) {
+  if (clubError && !isNotFoundError(clubError)) {
     return (
-      <div data-testid={testId('clubs', 'partner', 'panel', 'not-found')}>
-        <IceCard padding="m">
-          <Text data-testid={testId('clubs', 'partner', 'text', 'not-found')}>
-            Клуб не найден или недоступен.
-          </Text>
-          <Link
-            to="/partner"
-            className="hockey-mt-12"
-            data-testid={testId('clubs', 'partner', 'link', 'hub')}
+      <QueryErrorState
+        title="Не удалось загрузить кабинет клуба"
+        onRetry={() => void refetchClub()}
+        testIdPrefix="clubs"
+        data-testid={testId('clubs', 'partner', 'error')}
+      />
+    )
+  }
+
+  if (!club) {
+    return (
+      <div
+        className="hockey-stack hockey-stack--gap-12"
+        data-testid={testId('clubs', 'partner', 'panel', 'not-found')}
+      >
+        <EmptyNetState title="Клуб не найден" copy="Вернитесь к списку кабинетов." />
+        <Link to="/partner" data-testid={testId('clubs', 'partner', 'link', 'hub')}>
+          <HockeyButton
+            view="outlined"
+            size="s"
+            data-testid={testId('clubs', 'partner', 'btn', 'hub')}
           >
-            <HockeyButton
-              view="outlined"
-              size="s"
-              data-testid={testId('clubs', 'partner', 'btn', 'hub')}
-            >
-              К кабинетам
-            </HockeyButton>
-          </Link>
-        </IceCard>
+            К кабинетам
+          </HockeyButton>
+        </Link>
       </div>
     )
   }
@@ -160,32 +171,23 @@ export function ClubPartnerDashboard() {
       className="partner-dashboard club-cabinet hockey-stack hockey-stack--gap-16"
       data-testid={testId('clubs', 'partner', 'page', clubId)}
     >
-      <div className="club-cabinet__header">
-        <div className="club-cabinet__header-copy">
-          <Text
-            variant="header-1"
-            className="variable-font-header"
-            data-testid={testId('clubs', 'partner', 'text', 'title', clubId)}
-          >
-            Кабинет клуба
-          </Text>
-          <Text
-            color="secondary"
-            data-testid={testId('clubs', 'partner', 'text', 'subtitle', clubId)}
-          >
-            {club.name} · управление составом, штабом и приватными тренировками
-          </Text>
-        </div>
-        <Link to="/partner" data-testid={testId('clubs', 'partner', 'link', 'back', clubId)}>
-          <HockeyButton
-            view="flat"
-            size="s"
-            data-testid={testId('clubs', 'partner', 'btn', 'back', clubId)}
-          >
-            ← Все кабинеты
-          </HockeyButton>
-        </Link>
-      </div>
+      <PageHeader
+        title="Кабинет клуба"
+        subtitle={`${club.name} · управление составом, штабом и приватными тренировками`}
+        testIdPrefix="clubs"
+        testIdSection="partner"
+        actions={
+          <Link to="/partner" data-testid={testId('clubs', 'partner', 'link', 'back', clubId)}>
+            <HockeyButton
+              view="flat"
+              size="s"
+              data-testid={testId('clubs', 'partner', 'btn', 'back', clubId)}
+            >
+              ← Все кабинеты
+            </HockeyButton>
+          </Link>
+        }
+      />
 
       <div className="club-cabinet__tabs" data-testid={testId('clubs', 'partner', 'nav', clubId)}>
         {(Object.keys(TAB_LABELS) as ClubPartnerTab[]).map((tabKey) => (

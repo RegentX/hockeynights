@@ -18,6 +18,7 @@ import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {PageHeader} from '@/shared/ui/PageHeader'
 import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
@@ -75,34 +76,28 @@ export function TeamsPage() {
       className="hockey-stack hockey-stack--gap-20"
       data-testid={testId('teams', 'teams-page', 'page')}
     >
-      <div className="hockey-row hockey-row--between">
-        <div className="hockey-stack hockey-stack--gap-8">
-          <Text
-            variant="header-1"
-            className="variable-font-header"
-            data-testid={testId('teams', 'teams-page', 'text', 'title')}
-          >
-            Команды
-          </Text>
-          <Text color="secondary" data-testid={testId('teams', 'teams-page', 'text', 'subtitle')}>
-            Лента публичных команд: поиск, фильтры, профиль и чат в мессенджере.
-          </Text>
-        </div>
-        {canCreateTeam && (
-          <Link
-            to={routes.teamsCreate}
-            data-testid={testId('teams', 'teams-page', 'link', 'create')}
-          >
-            <HockeyButton
-              view="outlined"
-              size="s"
-              data-testid={testId('teams', 'teams-page', 'btn', 'create')}
+      <PageHeader
+        title="Команды"
+        subtitle="Лента публичных команд: поиск, фильтры, профиль и чат в мессенджере."
+        testIdPrefix="teams"
+        testIdSection="teams-page"
+        actions={
+          canCreateTeam ? (
+            <Link
+              to={routes.teamsCreate}
+              data-testid={testId('teams', 'teams-page', 'link', 'create')}
             >
-              Создать команду
-            </HockeyButton>
-          </Link>
-        )}
-      </div>
+              <HockeyButton
+                view="outlined"
+                size="s"
+                data-testid={testId('teams', 'teams-page', 'btn', 'create')}
+              >
+                Создать команду
+              </HockeyButton>
+            </Link>
+          ) : undefined
+        }
+      />
 
       <IceCard padding="m" data-testid={testId('teams', 'teams-page', 'card', 'search')}>
         <TextInput

@@ -12,8 +12,8 @@ import {useSessionAccess} from '@/features/access'
 import {IqAttemptFlow, IqLeaderboard, IqTestCard} from '@/features/iq'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {PageHeader} from '@/shared/ui/PageHeader'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 /**
@@ -99,22 +99,13 @@ export function IqTestsPage() {
                 </div>
               )}
               {testsError && !testsLoading && (
-                <div data-testid={testId('iq', 'page', 'error', 'tests')}>
-                  <EmptyNetState
-                    title="Не удалось загрузить тесты"
-                    copy="Проверь соединение и попробуй ещё раз."
-                    action={
-                      <HockeyButton
-                        view="outlined"
-                        size="s"
-                        onClick={() => void refetchTests()}
-                        data-testid={testId('iq', 'page', 'btn', 'retry')}
-                      >
-                        Повторить
-                      </HockeyButton>
-                    }
-                  />
-                </div>
+                <QueryErrorState
+                  title="Не удалось загрузить тесты"
+                  copy="Проверь соединение и попробуй ещё раз."
+                  onRetry={() => void refetchTests()}
+                  testIdPrefix="iq"
+                  data-testid={testId('iq', 'page', 'error', 'tests')}
+                />
               )}
               {!testsLoading && !testsError && tests.length === 0 && (
                 <div data-testid={testId('iq', 'page', 'empty', 'tests')}>
