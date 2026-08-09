@@ -32,11 +32,15 @@ export function OrganizerEventsPage() {
         .filter(
           (event) =>
             event.organizerUserId === userId &&
-            (event.type === 'training' || event.type === 'game') &&
-            isUpcomingEvent(event.startsAt),
+            (event.type === 'training' || event.type === 'game'),
         )
         .slice()
-        .sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
+        .sort((a, b) => {
+          const aUp = isUpcomingEvent(a.startsAt) ? 0 : 1
+          const bUp = isUpcomingEvent(b.startsAt) ? 0 : 1
+          if (aUp !== bUp) return aUp - bUp
+          return a.startsAt.localeCompare(b.startsAt)
+        }),
     [events, userId],
   )
 
@@ -48,7 +52,8 @@ export function OrganizerEventsPage() {
       >
         <IceCard padding="m">
           <Text data-testid={testId('events', 'organizer-page', 'text', 'denied')}>
-            Кабинет организатора доступен капитану, тренеру, организатору или администратору.
+            Кабинет организатора доступен капитану, тренеру, организатору, админу клуба или
+            администратору.
           </Text>
           <Link
             to={routes.events}
@@ -82,7 +87,7 @@ export function OrganizerEventsPage() {
             Мои тренировки
           </Text>
           <Text color="secondary" data-testid={testId('events', 'organizer-page', 'text', 'hint')}>
-            Созданные вами будущие игры и тренировки.
+            Созданные вами игры и тренировки: статусы набора и быстрые действия.
           </Text>
         </div>
         <div className="hockey-row hockey-row--gap-8">

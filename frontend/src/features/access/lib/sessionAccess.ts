@@ -4,9 +4,9 @@
 
 import type {UserRole} from '@/shared/types/common'
 
-const ORGANIZER_ROLES: UserRole[] = ['captain', 'coach', 'organizer', 'admin']
+const ORGANIZER_ROLES: UserRole[] = ['captain', 'coach', 'organizer', 'club_admin', 'admin']
 
-/** Капитан, тренер, организатор — могут создавать события */
+/** Капитан, тренер, организатор, админ клуба — могут создавать события */
 export function canOrganizeEvents(roles: UserRole[]): boolean {
   return roles.some((role) => ORGANIZER_ROLES.includes(role))
 }

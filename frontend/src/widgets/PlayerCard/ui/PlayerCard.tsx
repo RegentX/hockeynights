@@ -120,16 +120,7 @@ export function PlayerCard({player, linkable = true}: PlayerCardProps) {
         <Icon data={MapPin} size={14} aria-hidden />
         <span className="hockey-sr-only">Город: </span>
         {player.city}
-        {player.district ? `, ${player.district}` : ''}
       </Text>
-      {player.metro && (
-        <Text
-          color="secondary"
-          data-testid={testId('players', 'player-card', 'text', 'metro', player.userId)}
-        >
-          м. {player.metro}
-        </Text>
-      )}
 
       <div>
         <Text

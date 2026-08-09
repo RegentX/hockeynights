@@ -23,7 +23,8 @@ export function CreateEventPage() {
       >
         <IceCard padding="m">
           <Text data-testid={testId('events', 'create-page', 'text', 'denied')}>
-            Создавать игры и тренировки могут капитан, тренер, организатор или администратор.
+            Создавать игры и тренировки могут капитан, тренер, организатор, админ клуба или
+            администратор.
           </Text>
           <Link
             to={routes.events}

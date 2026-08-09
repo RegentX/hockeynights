@@ -152,7 +152,7 @@ export function MockIceBookingModal({open, onClose, arena, slot}: MockIceBooking
                 color="secondary"
                 data-testid={testId('arenas', 'ice-booking', 'modal', 'text', 'general-request')}
               >
-                Общая заявка на аренду льда без привязки к слоту
+                Общая заявка на лёд без привязки к слоту
               </Text>
             )}
             <TextInput

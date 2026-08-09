@@ -97,7 +97,7 @@ export const PERSONA_PRESETS: PersonaPreset[] = [
   {
     id: 'arena-partner',
     title: 'Представитель арены',
-    description: 'Кабинет ледовой арены: профиль и объявления льда',
+    description: 'Кабинет ледовой арены: профиль, объявления, расписание и публичность',
     destination: 'Кабинет ледовой арены',
     icon: '🧊',
     payload: {
@@ -109,9 +109,13 @@ export const PERSONA_PRESETS: PersonaPreset[] = [
   {
     id: 'admin',
     title: 'Администратор',
-    description: 'Модерация, источники данных и admin prototype',
+    description: 'Модерация, источники данных, admin prototype и доступ к кабинету арены',
     destination: 'Admin prototype',
     icon: '⚙',
-    payload: {displayName: 'Админ демо', roles: ['admin'], partnerMemberships: []},
+    payload: {
+      displayName: 'Админ демо',
+      roles: ['admin'],
+      partnerMemberships: [arenaPartner],
+    },
   },
 ]

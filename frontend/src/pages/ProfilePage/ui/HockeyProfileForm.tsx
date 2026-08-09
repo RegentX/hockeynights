@@ -27,9 +27,9 @@ import {
 } from '@/entities/profile'
 import {getPrimaryPartnerPath, shouldUsePartnerWorkspace} from '@/features/access'
 import {CalendarScopePreview} from '@/features/calendar'
-import {ProfileFavoritesSection} from '@/features/favorites'
 import {KarmaHint} from '@/features/karma'
 import {CoachProfilePanel, ProfileSummaryCard} from '@/features/profile'
+import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
@@ -79,7 +79,7 @@ const SUBSCRIPTION_PLAN_OPTIONS = [
   },
 ]
 
-type ProfileHubSection = 'about' | 'favorites' | 'settings' | 'privacy' | 'subscription'
+type ProfileHubSection = 'about' | 'settings' | 'privacy' | 'subscription'
 
 function ProfileHubTabs({
   section,
@@ -99,13 +99,6 @@ function ProfileHubTabs({
         data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'about')}
       >
         О себе
-      </Button>
-      <Button
-        view={section === 'favorites' ? 'action' : 'outlined'}
-        onClick={() => onSelect('favorites')}
-        data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'favorites')}
-      >
-        Избранное
       </Button>
       <Button
         view={section === 'settings' ? 'action' : 'outlined'}
@@ -657,18 +650,6 @@ function ProfileAboutSection({
                 onUpdate={(v) => updateField('city', v)}
                 data-testid={testId('profile', 'profile-about-section', 'field', 'city')}
               />
-              <TextInput
-                label="Район"
-                value={form.district ?? ''}
-                onUpdate={(v) => updateField('district', v)}
-                data-testid={testId('profile', 'profile-about-section', 'field', 'district')}
-              />
-              <TextInput
-                label="Метро"
-                value={form.metro ?? ''}
-                onUpdate={(v) => updateField('metro', v)}
-                data-testid={testId('profile', 'profile-about-section', 'field', 'metro')}
-              />
 
               <Select
                 label="Амплуа"
@@ -1142,10 +1123,7 @@ function HockeyProfileHub({
   const [searchParams, setSearchParams] = useSearchParams()
   const sectionParam = searchParams.get('section')
   const activeSection: ProfileHubSection =
-    sectionParam === 'favorites' ||
-    sectionParam === 'settings' ||
-    sectionParam === 'privacy' ||
-    sectionParam === 'subscription'
+    sectionParam === 'settings' || sectionParam === 'privacy' || sectionParam === 'subscription'
       ? sectionParam
       : 'about'
 
@@ -1194,6 +1172,11 @@ function HockeyProfileHub({
     },
   })
 
+  // HOCFRONT-22 — избранное перенесено на публичную страницу игрока
+  if (sectionParam === 'favorites') {
+    return <Navigate to={`${routes.players}/${profile.userId}#favorites`} replace />
+  }
+
   const sectionContent =
     activeSection === 'about' ? (
       <ProfileAboutSection
@@ -1205,8 +1188,6 @@ function HockeyProfileHub({
         isSaving={saveProfileMutation.isPending}
         isVerifying={verifyMutation.isPending}
       />
-    ) : activeSection === 'favorites' ? (
-      <ProfileFavoritesSection />
     ) : activeSection === 'settings' ? (
       <ProfileSettingsSection
         settings={settings}

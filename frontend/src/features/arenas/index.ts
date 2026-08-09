@@ -16,6 +16,7 @@ export {
   MapResizeFix,
   MoscowInitialView,
 } from './ui/ArenaMapControls'
+export {ArenaSchedulePanel} from './ui/ArenaSchedulePanel'
 export {ExternalBookingButton} from './ui/ExternalBookingButton'
 export {IceSlotsList} from './ui/IceSlotsList'
 export {MockIceBookingModal} from './ui/MockIceBookingModal'

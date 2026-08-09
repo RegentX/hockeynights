@@ -1,15 +1,21 @@
 /**
  * SPEC-FR-24.1.2, SPEC-FR-24.1.3, SPEC-FR-2.3.3
+ * HOCFRONT-22 — публичная страница игрока `/players/:userId`
  */
 
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {Link, useParams} from 'react-router'
 
+import {fetchSession} from '@/entities/auth'
 import {fetchPublicPlayer} from '@/entities/profile'
-import {CalendarScopePreview} from '@/features/calendar'
+import {CalendarShell} from '@/features/calendar'
+import {ProfileFavoritesSection} from '@/features/favorites'
+import {PlayerPublicInfoSection, PlayerTeamsSection} from '@/features/players'
 import {isNotFoundError} from '@/shared/api/client'
+import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {QueryErrorState} from '@/shared/ui/QueryErrorState'
@@ -18,16 +24,23 @@ import {PlayerCard} from '@/widgets/PlayerCard'
 
 /**
  * @spec SPEC-FR-24.1.3 - Публичный просмотр Hockey ID с учётом приватности
+ * @spec HOCFRONT-22 - Публичная инфа, команда, избранное, календарь внутри страницы
  */
 export function PublicPlayerProfilePage() {
   const {userId = ''} = useParams()
+  const {data: session, isLoading: isSessionLoading} = useQuery({
+    queryKey: ['session'],
+    queryFn: fetchSession,
+  })
   const {data, isLoading, error, refetch} = useQuery({
     queryKey: ['player-public', userId],
     queryFn: () => fetchPublicPlayer(userId),
     enabled: Boolean(userId),
   })
 
-  if (isLoading) {
+  const isOwnProfile = Boolean(session?.user.id && session.user.id === userId)
+
+  if (isLoading || isSessionLoading) {
     return (
       <ScoreboardLoader
         label="Загрузка профиля"
@@ -58,7 +71,7 @@ export function PublicPlayerProfilePage() {
           Игрок не найден или профиль скрыт.
         </Text>
         <Link
-          to="/players"
+          to={routes.players}
           data-testid={testId('players', 'public-player-profile', 'link', 'back')}
         >
           <HockeyButton
@@ -92,7 +105,7 @@ export function PublicPlayerProfilePage() {
           Игрок ограничил видимость Hockey ID.
         </Text>
         <Link
-          to="/players"
+          to={routes.players}
           data-testid={testId('players', 'public-player-profile', 'link', 'back-hidden')}
         >
           <HockeyButton
@@ -112,11 +125,11 @@ export function PublicPlayerProfilePage() {
   return (
     <div
       className="hockey-stack hockey-stack--gap-16 public-player-profile"
-      data-testid={testId('players', 'public-player-profile', 'page')}
+      data-testid={testId('players', 'public-player-profile', 'page', player.userId)}
     >
       <div className="public-player-profile__header">
         <Link
-          to="/players"
+          to={routes.players}
           data-testid={testId('players', 'public-player-profile', 'link', 'catalog')}
         >
           <HockeyButton
@@ -131,7 +144,7 @@ export function PublicPlayerProfilePage() {
           variant="header-1"
           data-testid={testId('players', 'public-player-profile', 'text', 'title')}
         >
-          Hockey ID
+          Страница игрока
         </Text>
       </div>
 
@@ -140,130 +153,82 @@ export function PublicPlayerProfilePage() {
         data-testid={testId('players', 'public-player-profile', 'panel', 'grid')}
       >
         <PlayerCard player={player} linkable={false} />
-
-        <IceCard
-          padding="m"
-          data-testid={testId('players', 'public-player-profile', 'card', 'about')}
-        >
-          <div className="hockey-stack hockey-stack--gap-12">
-            <Text
-              variant="subheader-2"
-              data-testid={testId('players', 'public-player-profile', 'text', 'about-title')}
-            >
-              О игроке
-            </Text>
-            {player.bio ? (
-              <Text data-testid={testId('players', 'public-player-profile', 'text', 'bio')}>
-                {player.bio}
-              </Text>
-            ) : (
-              <Text
-                color="secondary"
-                data-testid={testId('players', 'public-player-profile', 'text', 'bio-empty')}
-              >
-                Описание не заполнено.
-              </Text>
-            )}
-
-            {data.contactsVisible ? (
-              <Text
-                color="secondary"
-                data-testid={testId('players', 'public-player-profile', 'text', 'contacts-visible')}
-              >
-                Контакты доступны по согласию игрока (mock).
-              </Text>
-            ) : (
-              <Text
-                color="secondary"
-                data-testid={testId('players', 'public-player-profile', 'text', 'contacts-hidden')}
-              >
-                Контакты скрыты настройками приватности.
-              </Text>
-            )}
-
-            {data.participationHistoryVisible &&
-              data.participationHistory &&
-              data.participationHistory.length > 0 && (
-                <div
-                  className="hockey-stack hockey-stack--gap-8"
-                  data-testid={testId('players', 'public-player-profile', 'panel', 'history')}
-                >
-                  <Text
-                    variant="subheader-2"
-                    data-testid={testId(
-                      'players',
-                      'public-player-profile',
-                      'text',
-                      'history-title',
-                    )}
-                  >
-                    История участия
-                  </Text>
-                  <ul
-                    className="profile-hub__history"
-                    data-testid={testId('players', 'public-player-profile', 'list', 'history')}
-                  >
-                    {data.participationHistory.map((record) => (
-                      <li
-                        key={record.eventId}
-                        className="profile-hub__history-item"
-                        data-testid={testId(
-                          'players',
-                          'public-player-profile',
-                          'item',
-                          'history',
-                          record.eventId,
-                        )}
-                      >
-                        <div>
-                          <Text
-                            variant="subheader-2"
-                            data-testid={testId(
-                              'players',
-                              'public-player-profile',
-                              'text',
-                              'history-event',
-                              record.eventId,
-                            )}
-                          >
-                            {record.eventTitle}
-                          </Text>
-                          <Text
-                            color="secondary"
-                            data-testid={testId(
-                              'players',
-                              'public-player-profile',
-                              'text',
-                              'history-date',
-                              record.eventId,
-                            )}
-                          >
-                            {new Date(record.eventDate).toLocaleDateString('ru-RU')}
-                            {record.teamName ? ` · ${record.teamName}` : ''}
-                          </Text>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-          </div>
-        </IceCard>
+        <PlayerPublicInfoSection
+          player={player}
+          contactsVisible={data.contactsVisible}
+          participationHistoryVisible={data.participationHistoryVisible}
+          participationHistory={data.participationHistory}
+        />
       </div>
 
-      <IceCard
-        padding="m"
-        data-testid={testId('players', 'public-player-profile', 'card', 'calendar')}
+      <section data-testid={testId('players', 'public-player-profile', 'section', 'team')}>
+        <PlayerTeamsSection playerId={player.userId} fallbackTeamName={player.teamName} />
+      </section>
+
+      <section
+        id="favorites"
+        data-testid={testId('players', 'public-player-profile', 'section', 'favorites')}
       >
-        <CalendarScopePreview
-          scope="player"
-          scopeId={userId}
-          title="График игрока"
-          hidden={!data.calendarVisible}
-          hiddenCopy="Игрок скрыл календарь в настройках приватности."
-          testIdPrefix="players"
-        />
-      </IceCard>
+        {isOwnProfile ? (
+          <ProfileFavoritesSection />
+        ) : (
+          <IceCard
+            padding="m"
+            data-testid={testId('players', 'public-player-profile', 'card', 'favorites-private')}
+          >
+            <Text
+              variant="subheader-2"
+              data-testid={testId(
+                'players',
+                'public-player-profile',
+                'text',
+                'favorites-private-title',
+              )}
+            >
+              Избранное
+            </Text>
+            <Text
+              color="secondary"
+              className="hockey-mt-8"
+              data-testid={testId(
+                'players',
+                'public-player-profile',
+                'text',
+                'favorites-private-copy',
+              )}
+            >
+              Список избранного виден только владельцу страницы. Добавить игрока в своё избранное
+              можно кнопкой на карточке.
+            </Text>
+          </IceCard>
+        )}
+      </section>
+
+      <section
+        id="calendar"
+        data-testid={testId('players', 'public-player-profile', 'section', 'calendar')}
+      >
+        <IceCard
+          padding="m"
+          data-testid={testId('players', 'public-player-profile', 'card', 'calendar')}
+        >
+          {data.calendarVisible ? (
+            <CalendarShell
+              title="Календарь игрока"
+              compact
+              forcedScope={{scope: 'player', scopeId: userId}}
+              showActions={false}
+            />
+          ) : (
+            <div data-testid={testId('players', 'public-player-profile', 'empty', 'calendar')}>
+              <EmptyNetState
+                title="Календарь недоступен"
+                copy="Игрок скрыл календарь в настройках приватности."
+              />
+            </div>
+          )}
+        </IceCard>
+      </section>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 /**
  * SPEC-FR-6.1.1, SPEC-FR-6.1.2, SPEC-FR-6.2.1, SPEC-FR-6.3.1
- * HOCFRONT-32 — city filter, listings, cabinet PATCH
+ * HOCFRONT-32 — city filter, listings, cabinet PATCH, schedule
  */
 
 import {http, HttpResponse} from 'msw'
@@ -8,16 +8,28 @@ import {http, HttpResponse} from 'msw'
 import type {
   ArenaCityRegion,
   CreateIceListingPayload,
+  CreateIceSlotPayload,
   UpdateArenaPayload,
   UpdateIceListingPayload,
+  UpdateIceSlotPayload,
 } from '@/entities/arena'
 import {resolveArenaCityRegion} from '@/entities/arena'
-import {arenaHasFreeSlots, mockArenas, mockIceSlots, updateMockArena} from '@/mocks/data/arenas'
+import {
+  arenaHasFreeSlots,
+  createMockIceSlot,
+  getMockIceSlots,
+  mockArenas,
+  mockIceSlots,
+  updateMockArena,
+  updateMockIceSlot,
+} from '@/mocks/data/arenas'
 import {
   createMockIceListing,
   getMockIceListings,
+  mockIceListings,
   updateMockIceListing,
 } from '@/mocks/data/iceListings'
+import {canManagePartnerEntity} from '@/mocks/data/partners'
 import {mockUser} from '@/mocks/data/session'
 
 /** @spec SPEC-FR-6.1.2 - Handlers арен и слотов */
@@ -74,8 +86,12 @@ export const arenaHandlers = [
   }),
 
   http.patch('/mock-api/v1/arenas/:arenaId', async ({params, request}) => {
+    const arenaId = params.arenaId as string
+    if (!canManagePartnerEntity('arena', arenaId)) {
+      return HttpResponse.json({message: 'Forbidden'}, {status: 403})
+    }
     const body = (await request.json()) as UpdateArenaPayload
-    const updated = updateMockArena(params.arenaId as string, body)
+    const updated = updateMockArena(arenaId, body)
     if (!updated) {
       return HttpResponse.json({message: 'Arena not found'}, {status: 404})
     }
@@ -83,8 +99,41 @@ export const arenaHandlers = [
   }),
 
   http.get('/mock-api/v1/arenas/:arenaId/slots', ({params}) => {
-    const slots = mockIceSlots.filter((s) => s.arenaId === params.arenaId)
+    const slots = getMockIceSlots(params.arenaId as string)
     return HttpResponse.json(slots)
+  }),
+
+  http.post('/mock-api/v1/ice-slots', async ({request}) => {
+    const body = (await request.json()) as CreateIceSlotPayload
+    if (!body.arenaId || !body.startsAt || !body.endsAt) {
+      return HttpResponse.json({message: 'Invalid slot payload'}, {status: 400})
+    }
+    if (!canManagePartnerEntity('arena', body.arenaId)) {
+      return HttpResponse.json({message: 'Forbidden'}, {status: 403})
+    }
+    const start = new Date(body.startsAt)
+    const end = new Date(body.endsAt)
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end <= start) {
+      return HttpResponse.json({message: 'Invalid slot time range'}, {status: 400})
+    }
+    const slot = createMockIceSlot(body)
+    return HttpResponse.json(slot, {status: 201})
+  }),
+
+  http.patch('/mock-api/v1/ice-slots/:slotId', async ({params, request}) => {
+    const existing = mockIceSlots.find((slot) => slot.id === params.slotId)
+    if (!existing) {
+      return HttpResponse.json({message: 'Slot not found'}, {status: 404})
+    }
+    if (!canManagePartnerEntity('arena', existing.arenaId)) {
+      return HttpResponse.json({message: 'Forbidden'}, {status: 403})
+    }
+    const body = (await request.json()) as UpdateIceSlotPayload
+    const updated = updateMockIceSlot(params.slotId as string, body)
+    if (!updated) {
+      return HttpResponse.json({message: 'Slot not found'}, {status: 404})
+    }
+    return HttpResponse.json(updated)
   }),
 
   http.get('/mock-api/v1/arenas/:arenaId/listings', ({params, request}) => {
@@ -112,11 +161,21 @@ export const arenaHandlers = [
     if (!body.arenaId || !body.title?.trim() || !body.startsAt || !body.endsAt) {
       return HttpResponse.json({message: 'Invalid listing payload'}, {status: 400})
     }
+    if (!canManagePartnerEntity('arena', body.arenaId)) {
+      return HttpResponse.json({message: 'Forbidden'}, {status: 403})
+    }
     const listing = createMockIceListing(body, mockUser.id)
     return HttpResponse.json(listing, {status: 201})
   }),
 
   http.patch('/mock-api/v1/ice-listings/:listingId', async ({params, request}) => {
+    const existing = mockIceListings.find((item) => item.id === params.listingId)
+    if (!existing) {
+      return HttpResponse.json({message: 'Listing not found'}, {status: 404})
+    }
+    if (!canManagePartnerEntity('arena', existing.arenaId)) {
+      return HttpResponse.json({message: 'Forbidden'}, {status: 403})
+    }
     const body = (await request.json()) as UpdateIceListingPayload
     const updated = updateMockIceListing(params.listingId as string, body)
     if (!updated) {
