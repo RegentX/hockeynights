@@ -1,5 +1,5 @@
 /**
- * HOCFRONT-28G / ORG-4 — stub редактирования тренировки
+ * HOCFRONT-28G / ORG-4 — редактирование тренировки
  */
 
 import {Text} from '@gravity-ui/uikit'
@@ -8,7 +8,7 @@ import {Link, useParams} from 'react-router'
 
 import {fetchEventById} from '@/entities/event'
 import {useSessionAccess} from '@/features/access'
-import {eventDetailsPath} from '@/features/events'
+import {EventCreateForm, eventDetailsPath} from '@/features/events'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
@@ -18,7 +18,7 @@ import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 export function EditTrainingPage() {
   const {eventId = ''} = useParams()
-  const {userId, canOrganizeEvents} = useSessionAccess()
+  const {userId, canOrganizeEvents, roles} = useSessionAccess()
   const {
     data: event,
     isLoading,
@@ -32,10 +32,11 @@ export function EditTrainingPage() {
   if (!canOrganizeEvents) {
     return (
       <div data-testid={testId('events', 'edit-page', 'page', 'denied')}>
-        <EmptyNetState
-          title="Нет доступа"
-          copy="Редактирование доступно организатору тренировок."
-        />
+        <IceCard padding="m">
+          <Text data-testid={testId('events', 'edit-page', 'text', 'denied')}>
+            Редактирование доступно организатору тренировок, админам клуба и администратору.
+          </Text>
+        </IceCard>
       </div>
     )
   }
@@ -43,15 +44,15 @@ export function EditTrainingPage() {
   if (isLoading) {
     return (
       <div data-testid={testId('events', 'edit-page', 'loader')}>
-        <ScoreboardLoader label="Загрузка…" />
+        <ScoreboardLoader label="Загрузка тренировки..." />
       </div>
     )
   }
 
-  if (isError || !event) {
+  if (isError || !event || event.type !== 'training') {
     return (
       <div data-testid={testId('events', 'edit-page', 'empty')}>
-        <EmptyNetState title="Событие не найдено" copy="Вернитесь в кабинет организатора." />
+        <EmptyNetState title="Тренировка не найдена" copy="Вернитесь к списку «Мои тренировки»." />
         <Link
           to={routes.eventsOrganizer}
           data-testid={testId('events', 'edit-page', 'link', 'cabinet-empty')}
@@ -64,12 +65,24 @@ export function EditTrainingPage() {
     )
   }
 
-  const canEdit = event.organizerUserId === userId || canOrganizeEvents
+  const canEdit =
+    event.organizerUserId === userId || roles.includes('admin') || roles.includes('club_admin')
+
+  if (!canEdit) {
+    return (
+      <div data-testid={testId('events', 'edit-page', 'error', 'access-denied')}>
+        <EmptyNetState
+          title="Нет прав на редактирование"
+          copy="Редактировать может только организатор этой тренировки."
+        />
+      </div>
+    )
+  }
 
   return (
     <div
       className="hockey-stack hockey-stack--gap-16"
-      data-testid={testId('events', 'edit-page', 'page', eventId)}
+      data-testid={testId('events', 'edit-page', 'page', event.id)}
     >
       <div className="hockey-row hockey-row--between hockey-row--align-center hockey-row--wrap">
         <Text variant="header-1" data-testid={testId('events', 'edit-page', 'text', 'title')}>
@@ -90,42 +103,20 @@ export function EditTrainingPage() {
           </Link>
           <Link
             to={routes.eventsOrganizer}
-            data-testid={testId('events', 'edit-page', 'link', 'cabinet')}
+            data-testid={testId('events', 'edit-page', 'link', 'back')}
           >
             <HockeyButton
               view="flat"
               size="m"
-              data-testid={testId('events', 'edit-page', 'btn', 'cabinet')}
+              data-testid={testId('events', 'edit-page', 'btn', 'back')}
             >
-              В кабинет
+              К моим тренировкам
             </HockeyButton>
           </Link>
         </div>
       </div>
-
-      <IceCard padding="m" data-testid={testId('events', 'edit-page', 'panel', 'stub')}>
-        <div className="hockey-stack hockey-stack--gap-8">
-          <Text data-testid={testId('events', 'edit-page', 'text', 'event-title')}>
-            {event.title}
-          </Text>
-          <Text color="secondary" data-testid={testId('events', 'edit-page', 'text', 'stub')}>
-            {canEdit
-              ? 'Полное редактирование полей — следующий шаг. Сейчас можно открыть карточку или создать похожую тренировку заново.'
-              : 'Редактировать может только организатор этого события.'}
-          </Text>
-          <Link
-            to={routes.eventsCreate}
-            data-testid={testId('events', 'edit-page', 'link', 'create')}
-          >
-            <HockeyButton
-              view="action"
-              size="s"
-              data-testid={testId('events', 'edit-page', 'btn', 'create')}
-            >
-              Создать похожую
-            </HockeyButton>
-          </Link>
-        </div>
+      <IceCard padding="m" data-testid={testId('events', 'edit-page', 'card', 'form')}>
+        <EventCreateForm mode="edit" initialEvent={event} />
       </IceCard>
     </div>
   )

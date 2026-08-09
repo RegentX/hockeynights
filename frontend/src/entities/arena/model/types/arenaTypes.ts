@@ -46,6 +46,9 @@ export interface Arena {
   visible?: boolean
 }
 
+/** @spec SPEC-FR-6.3.1 - Статус слота льда */
+export type IceSlotStatus = 'free' | 'booked' | 'unknown'
+
 /** @spec SPEC-FR-6.3.1 - Слот льда */
 export interface IceSlot {
   /** @spec SPEC-FR-6.3.1 */
@@ -59,11 +62,30 @@ export interface IceSlot {
   /** @spec SPEC-FR-6.3.1 */
   price?: number
   /** @spec SPEC-FR-6.3.1 */
-  status: 'free' | 'booked' | 'unknown'
+  status: IceSlotStatus
   /** @spec SPEC-FR-6.2.2 */
   bookingUrl?: string
   /** @spec SPEC-FR-6.3.2 */
   sourceMeta: SourceMeta
+}
+
+/** HOCFRONT-32 — создать слот из кабинета арены */
+export interface CreateIceSlotPayload {
+  arenaId: string
+  startsAt: string
+  endsAt: string
+  price?: number
+  status?: IceSlotStatus
+  bookingUrl?: string
+}
+
+/** HOCFRONT-32 — обновить слот из кабинета арены */
+export interface UpdateIceSlotPayload {
+  startsAt?: string
+  endsAt?: string
+  price?: number
+  status?: IceSlotStatus
+  bookingUrl?: string
 }
 
 /** HOCFRONT-32A — регион города для фильтра каталога */

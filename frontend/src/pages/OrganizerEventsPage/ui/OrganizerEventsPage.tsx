@@ -13,6 +13,7 @@ import {useSessionAccess} from '@/features/access'
 import {CalendarShell} from '@/features/calendar'
 import {
   countOrganizerStatuses,
+  isUpcomingEvent,
   OrganizerAgreementsPanel,
   OrganizerRegistrationsPanel,
   OrganizerTrainingsPanel,
@@ -32,10 +33,19 @@ export function OrganizerEventsPage() {
 
   const mine = useMemo(
     () =>
-      events.filter(
-        (event) =>
-          event.organizerUserId === userId && (event.type === 'training' || event.type === 'game'),
-      ),
+      events
+        .filter(
+          (event) =>
+            event.organizerUserId === userId &&
+            (event.type === 'training' || event.type === 'game'),
+        )
+        .slice()
+        .sort((a, b) => {
+          const aUp = isUpcomingEvent(a.startsAt) ? 0 : 1
+          const bUp = isUpcomingEvent(b.startsAt) ? 0 : 1
+          if (aUp !== bUp) return aUp - bUp
+          return a.startsAt.localeCompare(b.startsAt)
+        }),
     [events, userId],
   )
 

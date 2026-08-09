@@ -86,6 +86,7 @@ export function AppRouter() {
               <Route path={routes.events} element={<EventsPage />} />
               <Route path={routes.eventsCreate} element={<CreateEventPage />} />
               <Route path={routes.eventsOrganizer} element={<OrganizerEventsPage />} />
+              <Route path={routes.trainingEdit} element={<EditTrainingPage />} />
               <Route path={routes.trainingDetails} element={<TrainingDetailsPage />} />
               <Route path={routes.trainingEdit} element={<EditTrainingPage />} />
               <Route path={routes.gameDetails} element={<GameDetailsPage />} />

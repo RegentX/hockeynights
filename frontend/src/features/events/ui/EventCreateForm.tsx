@@ -1,6 +1,7 @@
 /**
  * SPEC-FR-4.1.1, SPEC-FR-4.1.2
- * HOCFRONT-28G / ORG-4 — пошаговое создание: draft, paywall, private_club, goalie
+ * HOCFRONT-28G / ORG-4 — пошаговое создание: draft, paywall, private_club, goalie, ICE
+ * HOCFRONT-28 — edit mode + organizerSubscription
  */
 
 import {Select, Text, TextInput} from '@gravity-ui/uikit'
@@ -11,14 +12,16 @@ import {Link, useSearchParams} from 'react-router'
 import {fetchArenas} from '@/entities/arena'
 import {sendGoalieRequestsForEvent} from '@/entities/calendar'
 import type {EventType, SkillLevel} from '@/entities/common'
-import {createEvent, type GameEvent} from '@/entities/event'
+import {createEvent, type CreateEventPayload, type GameEvent, updateEvent} from '@/entities/event'
 import {fetchMyIceAgreements} from '@/entities/external-flow'
 import {fetchProfileSettings} from '@/entities/profile'
 import {fetchTeams} from '@/entities/team'
+import {useSessionAccess} from '@/features/access'
 import {
   formatAgreementInterval,
   isAgreementReadyForTraining,
 } from '@/features/events/lib/iceAgreements'
+import {hasOrganizerPublishAccess} from '@/features/events/lib/organizerSubscription'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -87,13 +90,26 @@ function isoToLocal(iso: string): string {
   return toLocalInputValue(d)
 }
 
+function slotsFromEvent(event: GameEvent): string {
+  const total = event.requiredSlots.reduce((acc, slot) => acc + slot.count, 0)
+  return String(total || 12)
+}
+
+export interface EventCreateFormProps {
+  mode?: 'create' | 'edit'
+  initialEvent?: GameEvent
+  onSuccess?: (event: GameEvent) => void
+}
+
 /**
- * @spec SPEC-FR-4.1.1 - Форма создания игры/тренировки
+ * @spec SPEC-FR-4.1.1 - Форма создания/редактирования игры/тренировки
  * @spec TASK-05-07 / 05-09 / 05-10 / HOCFRONT-28G / ICE
  */
-export function EventCreateForm() {
+export function EventCreateForm({mode = 'create', initialEvent, onSuccess}: EventCreateFormProps) {
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams()
+  const {session} = useSessionAccess()
+  const isEdit = mode === 'edit' && Boolean(initialEvent)
   const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
   const {data: arenas = []} = useQuery({queryKey: ['arenas'], queryFn: () => fetchArenas()})
   const {data: agreements = []} = useQuery({
@@ -110,55 +126,97 @@ export function EventCreateForm() {
     [agreements],
   )
 
-  const initialAgreementId = searchParams.get('agreementId')
-  const initialBookingId = searchParams.get('bookingId')
-  const initialArenaId = searchParams.get('arenaId')
+  const initialAgreementId = searchParams.get('agreementId') ?? initialEvent?.iceAgreementId ?? null
+  const initialBookingId = searchParams.get('bookingId') ?? initialEvent?.iceBookingId ?? null
+  const initialArenaId = searchParams.get('arenaId') ?? initialEvent?.arenaId ?? null
   const initialStarts = searchParams.get('startsAt')
   const initialEnds = searchParams.get('endsAt')
 
   const [step, setStep] = useState<WizardStep>(() =>
-    initialAgreementId || initialArenaId ? 'place' : 'basics',
+    !isEdit && (initialAgreementId || initialArenaId) ? 'place' : 'basics',
   )
-  const [type, setType] = useState<EventType>('training')
-  const [title, setTitle] = useState('')
+  const [type, setType] = useState<EventType>(initialEvent?.type ?? 'training')
+  const [title, setTitle] = useState(initialEvent?.title ?? '')
   const [placeMode, setPlaceMode] = useState<'agreement' | 'manual'>(() =>
     initialAgreementId || initialBookingId ? 'agreement' : 'manual',
   )
   const [selectedAgreementId, setSelectedAgreementId] = useState<string | null>(initialAgreementId)
   const [iceBookingId, setIceBookingId] = useState<string | null>(initialBookingId)
   const [iceAgreementId, setIceAgreementId] = useState<string | null>(initialAgreementId)
-  const [startsLocal, setStartsLocal] = useState(() =>
-    initialStarts ? isoToLocal(initialStarts) : defaultStart(),
-  )
-  const [endsLocal, setEndsLocal] = useState(() =>
-    initialEnds
-      ? isoToLocal(initialEnds)
-      : defaultEnd(initialStarts ? isoToLocal(initialStarts) : defaultStart()),
-  )
+  const [startsLocal, setStartsLocal] = useState(() => {
+    if (initialEvent) return toLocalInputValue(new Date(initialEvent.startsAt))
+    if (initialStarts) return isoToLocal(initialStarts)
+    return defaultStart()
+  })
+  const [endsLocal, setEndsLocal] = useState(() => {
+    if (initialEvent) return toLocalInputValue(new Date(initialEvent.endsAt))
+    if (initialEnds) return isoToLocal(initialEnds)
+    return defaultEnd(initialStarts ? isoToLocal(initialStarts) : defaultStart())
+  })
   const [arenaIdOverride, setArenaIdOverride] = useState<string | null>(initialArenaId)
   const resolvedArenaId = arenaIdOverride ?? arenas[0]?.id ?? ''
-  const [teamId, setTeamId] = useState<string | undefined>(teams[0]?.id)
-  const [skillLevel, setSkillLevel] = useState<SkillLevel>('amateur')
-  const [pricePerPlayer, setPricePerPlayer] = useState('1500')
-  const [slotsTotal, setSlotsTotal] = useState('12')
-  const [accessScope, setAccessScope] = useState<NonNullable<GameEvent['accessScope']>>(() =>
-    initialAccessFromSearch(searchParams.get('access')),
+  const [teamId, setTeamId] = useState<string | undefined>(initialEvent?.teamId ?? teams[0]?.id)
+  const [clubId, setClubId] = useState<string | undefined>(initialEvent?.clubId)
+  const [skillLevel, setSkillLevel] = useState<SkillLevel>(
+    initialEvent?.requiredSkillLevel ?? 'amateur',
   )
-  const [trainingFormat, setTrainingFormat] =
-    useState<NonNullable<GameEvent['trainingFormat']>>('training')
+  const [pricePerPlayer, setPricePerPlayer] = useState(String(initialEvent?.pricePerPlayer ?? 1500))
+  const [slotsTotal, setSlotsTotal] = useState(() =>
+    initialEvent ? slotsFromEvent(initialEvent) : '12',
+  )
+  const [accessScope, setAccessScope] = useState<NonNullable<GameEvent['accessScope']>>(() => {
+    if (initialEvent?.accessScope === 'club_only') return 'private_club'
+    if (initialEvent?.accessScope) {
+      if (
+        initialEvent.accessScope === 'public_open' ||
+        initialEvent.accessScope === 'private_club' ||
+        initialEvent.accessScope === 'limited'
+      ) {
+        return initialEvent.accessScope
+      }
+    }
+    return initialAccessFromSearch(searchParams.get('access'))
+  })
+  const [trainingFormat, setTrainingFormat] = useState<NonNullable<GameEvent['trainingFormat']>>(
+    initialEvent?.trainingFormat ?? 'training',
+  )
   const [goalieRequestSent, setGoalieRequestSent] = useState(false)
   const [pendingGoalieNotify, setPendingGoalieNotify] = useState(false)
-  const [createdEventId, setCreatedEventId] = useState<string | null>(null)
-  const [createdAccessScope, setCreatedAccessScope] = useState<GameEvent['accessScope']>()
-  const [createdLifecycle, setCreatedLifecycle] = useState<GameEvent['lifecycleStatus']>()
+  const [createdEventId, setCreatedEventId] = useState<string | null>(initialEvent?.id ?? null)
+  const [createdAccessScope, setCreatedAccessScope] = useState<GameEvent['accessScope']>(
+    initialEvent?.accessScope,
+  )
+  const [createdLifecycle, setCreatedLifecycle] = useState<GameEvent['lifecycleStatus']>(
+    initialEvent?.lifecycleStatus,
+  )
   const [gateError, setGateError] = useState<string | null>(null)
   const [goalieNotifyCount, setGoalieNotifyCount] = useState<number | null>(null)
   const [placeError, setPlaceError] = useState<string | null>(null)
 
-  const hasPaidSubscription = useMemo(() => {
-    const plan = settings?.subscription.planId
-    return plan === 'player_plus' || plan === 'team_pro'
-  }, [settings?.subscription.planId])
+  const hasPaidSubscription = useMemo(
+    () => hasOrganizerPublishAccess(settings?.subscription.planId),
+    [settings?.subscription.planId],
+  )
+
+  const clubOptions = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const membership of session?.user.partnerMemberships ?? []) {
+      if (membership.kind === 'club') {
+        map.set(membership.entityId, membership.entityName)
+      }
+    }
+    for (const team of teams) {
+      if (team.clubId && !map.has(team.clubId)) {
+        map.set(team.clubId, `Клуб команды «${team.name}»`)
+      }
+    }
+    if (!map.has('club-001')) {
+      map.set('club-001', 'ХК Медведи')
+    }
+    return [...map.entries()].map(([value, content]) => ({value, content}))
+  }, [session?.user.partnerMemberships, teams])
+
+  const resolvedClubId = clubId ?? clubOptions[0]?.value
 
   const stepIndex = STEPS.findIndex((item) => item.id === step)
 
@@ -173,9 +231,15 @@ export function EventCreateForm() {
   })
 
   const mutation = useMutation({
-    mutationFn: createEvent,
+    mutationFn: async (payload: CreateEventPayload) => {
+      if (isEdit && initialEvent) {
+        return updateEvent(initialEvent.id, payload)
+      }
+      return createEvent(payload)
+    },
     onSuccess: (event) => {
       void queryClient.invalidateQueries({queryKey: ['events']})
+      void queryClient.invalidateQueries({queryKey: ['event', event.id]})
       void queryClient.invalidateQueries({queryKey: ['calendar']})
       void queryClient.invalidateQueries({queryKey: ['calendar-shell']})
       void queryClient.invalidateQueries({queryKey: ['my-ice-agreements']})
@@ -183,27 +247,38 @@ export function EventCreateForm() {
       setCreatedEventId(event.id)
       setCreatedAccessScope(event.accessScope)
       setCreatedLifecycle(event.lifecycleStatus)
-      setTitle('')
+      if (!isEdit) setTitle('')
       setStep('publish')
       const shouldNotifyGoalies =
-        pendingGoalieNotify && event.type === 'training' && event.lifecycleStatus !== 'draft'
+        pendingGoalieNotify &&
+        event.type === 'training' &&
+        (isEdit || event.lifecycleStatus !== 'draft')
       setPendingGoalieNotify(false)
       if (shouldNotifyGoalies) {
         goalieMutation.mutate(event.id)
-      } else {
+      } else if (!isEdit) {
         setGoalieRequestSent(false)
         setGoalieNotifyCount(null)
       }
+      onSuccess?.(event)
     },
   })
 
-  function buildPayload(lifecycleStatus: NonNullable<GameEvent['lifecycleStatus']>) {
+  function buildPayload(
+    lifecycleStatus: NonNullable<GameEvent['lifecycleStatus']>,
+  ): CreateEventPayload | null {
+    if (type === 'training' && accessScope === 'private_club' && !resolvedClubId) {
+      setGateError('Выберите клуб-организатор для тренировки «Только для клуба».')
+      return null
+    }
+
     const startsAt = new Date(startsLocal)
     const endsAt = new Date(endsLocal)
     const total = Math.max(1, Number(slotsTotal) || 12)
     const goalieCount = Math.min(2, Math.max(1, Math.floor(total / 8)))
     const defenseCount = Math.floor((total - goalieCount) / 2)
     const forwardCount = total - goalieCount - defenseCount
+    const isPrivate = accessScope === 'private_club' && type === 'training'
 
     return {
       type,
@@ -218,12 +293,9 @@ export function EventCreateForm() {
         {position: 'defense' as const, count: defenseCount, filledCount: 0},
         {position: 'forward' as const, count: forwardCount, filledCount: 0},
       ],
-      pricePerPlayer:
-        accessScope === 'private_club' && type === 'training'
-          ? 0
-          : Number(pricePerPlayer) || undefined,
+      pricePerPlayer: isPrivate ? 0 : Number(pricePerPlayer) || undefined,
       accessScope: type === 'training' ? accessScope : ('public' as const),
-      clubId: type === 'training' && accessScope === 'private_club' ? 'club-001' : undefined,
+      clubId: isPrivate ? resolvedClubId : undefined,
       trainingFormat: type === 'training' ? trainingFormat : undefined,
       lifecycleStatus,
       iceBookingId: iceBookingId ?? undefined,
@@ -286,14 +358,19 @@ export function EventCreateForm() {
 
     if (type === 'training' && accessScope === 'public_open' && !hasPaidSubscription) {
       setGateError(
-        'Открытая публикация для всех пока недоступна на текущем тарифе. Сохраните черновик или выберите «Только для клуба».',
+        'Публичная тренировка доступна только с активной подпиской. Оформите Player Plus / Team Pro или выберите «Только для клуба».',
       )
       setStep('publish')
       return
     }
 
     setGateError(null)
-    mutation.mutate(buildPayload('published'))
+    const payload = buildPayload('published')
+    if (!payload) {
+      setStep('access')
+      return
+    }
+    mutation.mutate(payload)
   }
 
   function handleSaveDraft() {
@@ -307,7 +384,12 @@ export function EventCreateForm() {
       return
     }
     setGateError(null)
-    mutation.mutate(buildPayload('draft'))
+    const payload = buildPayload('draft')
+    if (!payload) {
+      setStep('access')
+      return
+    }
+    mutation.mutate(payload)
   }
 
   const arenaOptions = arenas.map((a) => ({value: a.id, content: a.name}))
@@ -322,7 +404,9 @@ export function EventCreateForm() {
       data-testid={testId('events', 'create-form', 'panel')}
     >
       <Text variant="subheader-2" data-testid={testId('events', 'create-form', 'text', 'title')}>
-        Создание: шаг {stepIndex + 1} из {STEPS.length} — {STEPS[stepIndex]?.label}
+        {isEdit
+          ? 'Редактировать тренировку'
+          : `Создание: шаг ${stepIndex + 1} из ${STEPS.length} — ${STEPS[stepIndex]?.label}`}
       </Text>
 
       <div
@@ -351,7 +435,7 @@ export function EventCreateForm() {
             value={title}
             onUpdate={(value) => {
               setTitle(value)
-              if (createdEventId) setCreatedEventId(null)
+              if (createdEventId && !isEdit) setCreatedEventId(null)
             }}
             data-testid={testId('events', 'create-form', 'field', 'title')}
           />
@@ -362,9 +446,10 @@ export function EventCreateForm() {
               const next = v[0] as EventType
               setType(next)
               if (next !== 'training') setPendingGoalieNotify(false)
-              if (createdEventId) setCreatedEventId(null)
+              if (createdEventId && !isEdit) setCreatedEventId(null)
             }}
             options={TYPE_OPTIONS}
+            disabled={isEdit}
             data-testid={testId('events', 'create-form', 'select', 'type')}
           />
         </>
@@ -505,7 +590,12 @@ export function EventCreateForm() {
             <Select
               label="Команда"
               value={teamId ? [teamId] : []}
-              onUpdate={(v) => setTeamId(v[0] || undefined)}
+              onUpdate={(v) => {
+                const nextTeamId = v[0] || undefined
+                setTeamId(nextTeamId)
+                const teamClubId = teams.find((team) => team.id === nextTeamId)?.clubId
+                if (teamClubId) setClubId(teamClubId)
+              }}
               options={teamOptions}
               data-testid={testId('events', 'create-form', 'select', 'team')}
             />
@@ -568,12 +658,22 @@ export function EventCreateForm() {
             </Text>
           )}
           {isPrivateClub ? (
-            <Text
-              color="positive"
-              data-testid={testId('events', 'create-form', 'text', 'private-badge')}
-            >
-              Бейдж: Только для клуба — в общем поиске не показывается, для членов клуба бесплатно.
-            </Text>
+            <>
+              <Select
+                label="Клуб-организатор"
+                value={resolvedClubId ? [resolvedClubId] : []}
+                onUpdate={(v) => setClubId(v[0])}
+                options={clubOptions}
+                data-testid={testId('events', 'create-form', 'select', 'club')}
+              />
+              <Text
+                color="positive"
+                data-testid={testId('events', 'create-form', 'text', 'private-badge')}
+              >
+                Бейдж: Только для клуба — в общем поиске не показывается, для членов клуба
+                бесплатно.
+              </Text>
+            </>
           ) : null}
           <TextInput
             label="Цена за игрока (₽)"
@@ -607,10 +707,11 @@ export function EventCreateForm() {
                 size="s"
                 loading={goalieMutation.isPending}
                 onClick={() => {
-                  if (createdEventId && title.trim()) {
+                  if (createdEventId && (isEdit || title.trim())) {
                     goalieMutation.mutate(createdEventId)
                     return
                   }
+                  if (isEdit) return
                   setCreatedEventId(null)
                   setPendingGoalieNotify((prev) => !prev)
                 }}
@@ -647,9 +748,11 @@ export function EventCreateForm() {
                 color="positive"
                 data-testid={testId('events', 'create-form', 'text', 'success')}
               >
-                {createdLifecycle === 'draft'
-                  ? 'Черновик сохранён в кабинете организатора.'
-                  : 'Событие опубликовано.'}
+                {isEdit
+                  ? 'Изменения сохранены.'
+                  : createdLifecycle === 'draft'
+                    ? 'Черновик сохранён в кабинете организатора.'
+                    : 'Событие опубликовано.'}
                 {createdAccessScope === 'private_club' ? ' Бейдж: Только для клуба.' : ''}
               </Text>
               <Link
@@ -699,17 +802,33 @@ export function EventCreateForm() {
               onClick={handlePublish}
               data-testid={testId('events', 'create-form', 'btn', 'submit')}
             >
-              Опубликовать
+              {isEdit ? 'Сохранить' : 'Опубликовать'}
             </HockeyButton>
-            <HockeyButton
-              view="outlined"
-              size="m"
-              loading={mutation.isPending}
-              onClick={handleSaveDraft}
-              data-testid={testId('events', 'create-form', 'btn', 'draft')}
-            >
-              Сохранить черновик
-            </HockeyButton>
+            {!isEdit ? (
+              <HockeyButton
+                view="outlined"
+                size="m"
+                loading={mutation.isPending}
+                onClick={handleSaveDraft}
+                data-testid={testId('events', 'create-form', 'btn', 'draft')}
+              >
+                Сохранить черновик
+              </HockeyButton>
+            ) : null}
+            {!isEdit ? (
+              <Link
+                to={routes.profile}
+                data-testid={testId('events', 'create-form', 'link', 'upgrade')}
+              >
+                <HockeyButton
+                  view="flat"
+                  size="m"
+                  data-testid={testId('events', 'create-form', 'btn', 'upgrade')}
+                >
+                  Тарифы в профиле
+                </HockeyButton>
+              </Link>
+            ) : null}
           </>
         )}
       </div>

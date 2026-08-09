@@ -1,5 +1,5 @@
 /**
- * HOCFRONT-32D/E — кабинет ледовой арены: профиль + объявления
+ * HOCFRONT-32D/E — кабинет ледовой арены: профиль, объявления, расписание, публичность
  */
 
 import {Switch, Text, TextInput} from '@gravity-ui/uikit'
@@ -18,7 +18,7 @@ import {
 } from '@/entities/arena'
 import {fetchSession} from '@/entities/auth'
 import {canManageArena} from '@/features/access'
-import {ArenaBookingsPanel} from '@/features/arenas'
+import {ArenaBookingsPanel, ArenaSchedulePanel} from '@/features/arenas'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
@@ -26,7 +26,7 @@ import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
-type CabinetTab = 'bookings' | 'listings' | 'profile'
+type CabinetTab = 'bookings' | 'schedule' | 'listings' | 'profile'
 type ListingFilter = 'all' | IceListingStatus
 
 function toLocalInputValue(iso: string): string {
@@ -414,6 +414,14 @@ export function ArenaPartnerDashboard() {
           Заявки
         </HockeyButton>
         <HockeyButton
+          view={tab === 'schedule' ? 'action' : 'outlined'}
+          size="s"
+          onClick={() => setTab('schedule')}
+          data-testid={testId('arenas', 'partner', 'tab', 'schedule')}
+        >
+          Расписание
+        </HockeyButton>
+        <HockeyButton
           view={tab === 'listings' ? 'action' : 'outlined'}
           size="s"
           onClick={() => setTab('listings')}
@@ -434,6 +442,12 @@ export function ArenaPartnerDashboard() {
       {tab === 'bookings' && (
         <IceCard padding="m">
           <ArenaBookingsPanel arenaId={arenaId} />
+        </IceCard>
+      )}
+
+      {tab === 'schedule' && (
+        <IceCard padding="m">
+          <ArenaSchedulePanel arenaId={arenaId} />
         </IceCard>
       )}
 
@@ -801,19 +815,21 @@ export function ArenaPartnerDashboard() {
                           ? ` · ${listing.priceRub.toLocaleString('ru-RU')} ₽`
                           : ''}
                       </Text>
-                      <Text
-                        color="secondary"
-                        data-testid={testId(
-                          'arenas',
-                          'partner',
-                          'text',
-                          'listing-status',
-                          listing.id,
-                        )}
-                      >
-                        {STATUS_LABELS[listing.status]}
-                        {listing.contactPhone ? ` · ${listing.contactPhone}` : ''}
-                      </Text>
+                      {listing.contactPhone && (
+                        <Text
+                          color="secondary"
+                          data-testid={testId(
+                            'arenas',
+                            'partner',
+                            'text',
+                            'listing-contact',
+                            listing.id,
+                          )}
+                        >
+                          {listing.contactPhone}
+                          {listing.contactNote ? ` · ${listing.contactNote}` : ''}
+                        </Text>
+                      )}
                     </div>
                     <div className="hockey-row hockey-row--gap-8 hockey-row--wrap">
                       <HockeyButton

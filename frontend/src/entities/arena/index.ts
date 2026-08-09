@@ -1,5 +1,6 @@
 export {
   createIceListing,
+  createIceSlot,
   fetchArena,
   fetchArenaListings,
   fetchArenas,
@@ -7,6 +8,7 @@ export {
   fetchPublishedIceListings,
   updateArena,
   updateIceListing,
+  updateIceSlot,
 } from './api/arenasApi'
 export {formatArenaAmenities, formatArenaAmenity} from './lib/arenaAmenities'
 export {ARENA_CITY_REGION_LABELS, resolveArenaCityRegion} from './lib/arenaCityRegion'

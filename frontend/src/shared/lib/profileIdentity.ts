@@ -12,18 +12,10 @@ export function getProfileInitials(fullName: string): string {
   return parts || '🏒'
 }
 
-/** Короткая гео-строка профиля: «Москва · САО · м. Динамо». */
-export function formatProfileLocation({
-  city,
-  district,
-  metro,
-}: {
-  city?: string
-  district?: string
-  metro?: string
-}): string {
-  return [city, district, metro ? `м. ${metro}` : '']
-    .map((part) => part?.trim())
-    .filter(Boolean)
-    .join(' · ')
+/**
+ * Короткая гео-строка профиля: только город.
+ * HOCFRONT-22 — район и метро убраны с публичной страницы игрока и краткой карточки.
+ */
+export function formatProfileLocation({city}: {city?: string}): string {
+  return city?.trim() ?? ''
 }

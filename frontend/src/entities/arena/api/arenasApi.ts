@@ -7,10 +7,12 @@ import type {
   Arena,
   ArenaFilters,
   CreateIceListingPayload,
+  CreateIceSlotPayload,
   IceListing,
   IceSlot,
   UpdateArenaPayload,
   UpdateIceListingPayload,
+  UpdateIceSlotPayload,
 } from '@/entities/arena/model'
 import {apiRequest} from '@/shared/api/client'
 
@@ -78,4 +80,14 @@ export function updateIceListing(
   payload: UpdateIceListingPayload,
 ): Promise<IceListing> {
   return apiRequest<IceListing>(`/ice-listings/${listingId}`, {method: 'PATCH', body: payload})
+}
+
+/** HOCFRONT-32 — создать слот расписания */
+export function createIceSlot(payload: CreateIceSlotPayload): Promise<IceSlot> {
+  return apiRequest<IceSlot>('/ice-slots', {method: 'POST', body: payload})
+}
+
+/** HOCFRONT-32 — обновить слот расписания */
+export function updateIceSlot(slotId: string, payload: UpdateIceSlotPayload): Promise<IceSlot> {
+  return apiRequest<IceSlot>(`/ice-slots/${slotId}`, {method: 'PATCH', body: payload})
 }

@@ -1,5 +1,5 @@
 /**
- * HOCFRONT-28G / ORG-4-5 — wizard create, edit stub, club entry
+ * HOCFRONT-28G / ORG-4-5 — wizard create, edit form, club entry
  */
 
 import {screen, waitFor} from '@testing-library/react'
@@ -14,7 +14,7 @@ import {routes} from '@/shared/const/appRoutes'
 import {clearTestStorage} from '@/test/clearTestStorage'
 import {renderWithProviders} from '@/test/render'
 
-describe('HOCFRONT-28G create wizard / edit stub', () => {
+describe('HOCFRONT-28G create wizard / edit form', () => {
   beforeEach(() => {
     clearTestStorage()
     selectMockPersona('organizer')
@@ -68,7 +68,7 @@ describe('HOCFRONT-28G create wizard / edit stub', () => {
     })
   })
 
-  it('opens edit stub for training', async () => {
+  it('opens edit form for training', async () => {
     renderWithProviders(
       <Routes>
         <Route path={routes.trainingEdit} element={<EditTrainingPage />} />
@@ -78,7 +78,8 @@ describe('HOCFRONT-28G create wizard / edit stub', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('events-edit-page-page-event-002')).toBeInTheDocument()
-      expect(screen.getByTestId('events-edit-page-text-stub')).toBeInTheDocument()
+      expect(screen.getByTestId('events-edit-page-card-form')).toBeInTheDocument()
+      expect(screen.getByTestId('events-create-form-panel')).toBeInTheDocument()
     })
   })
 })

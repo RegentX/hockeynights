@@ -48,6 +48,11 @@ export {
 } from './lib/iceAgreements'
 export {isUpcomingEvent} from './lib/isUpcomingEvent'
 export {
+  hasOrganizerPublishAccess,
+  isMockPaidPeriod,
+  MOCK_PAID_UNTIL_ISO,
+} from './lib/organizerSubscription'
+export {
   collectOrganizerRegistrations,
   countOrganizerStatuses,
   eventDeficitSummary,
@@ -63,7 +68,12 @@ export {
   resolveOrganizerEventStatus,
 } from './lib/organizerWorkspace'
 export {isTeamRsvpConfirmed, teamRsvpStatusLabel} from './lib/teamRsvpStatus'
-export {canViewTraining, getUserTeamIds, resolveTrainingUserName} from './lib/trainingAccess'
+export {
+  canViewTraining,
+  getUserClubIds,
+  getUserTeamIds,
+  resolveTrainingUserName,
+} from './lib/trainingAccess'
 export {AttendanceControl} from './ui/AttendanceControl'
 export {EventCard} from './ui/EventCard'
 export {EventCreateForm} from './ui/EventCreateForm'

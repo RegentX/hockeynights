@@ -3,8 +3,16 @@
  */
 
 import type {AttendanceStatus} from '@/entities/common'
-import type {CreateEventPayload, GameEvent, RosterStatus} from '@/entities/event'
+import type {
+  CreateEventPayload,
+  GameEvent,
+  RosterStatus,
+  UpdateEventPayload,
+} from '@/entities/event'
 import {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event'
+import {canViewTraining, getUserClubIds, getUserTeamIds} from '@/features/events/lib/trainingAccess'
+import {mockUser} from '@/mocks/data/session'
+import {mockTeams} from '@/mocks/data/teams'
 
 export {LEAGUE_SATURDAY_EVENT_ID} from '@/entities/event'
 
@@ -157,7 +165,7 @@ function buildSeedEvents(): GameEvent[] {
         {position: 'goalie', count: 1, filledCount: 0},
         {position: 'forward', count: 8, filledCount: 1},
       ],
-      pricePerPlayer: 900,
+      pricePerPlayer: 0,
       trainingFormat: 'training',
       district: 'ЦАО',
       registrationStatus: 'open',
@@ -303,16 +311,59 @@ export function resetMockEvents(): void {
   mockEvents = buildSeedEvents()
 }
 
+function resolveArenaName(arenaId: string, fallback?: string): string {
+  if (fallback) return fallback
+  if (arenaId === 'arena-001') return 'Ледовый дворец на Ходынке'
+  if (arenaId === 'arena-003') return 'СК «Крылья Советов»'
+  return 'Каток «Лужники»'
+}
+
+function totalSlotCount(event: GameEvent): number {
+  return event.requiredSlots.reduce((acc, slot) => acc + slot.count, 0)
+}
+
+/** Синхронизирует filledCount / registrationStatus с confirmed (going). */
+export function syncMockRegistrationCapacity(event: GameEvent): void {
+  const goingCount = event.participation.filter((item) => item.status === 'going').length
+  let remaining = goingCount
+  event.requiredSlots = event.requiredSlots.map((slot) => {
+    const filledCount = Math.min(slot.count, remaining)
+    remaining -= filledCount
+    return {...slot, filledCount}
+  })
+  const total = totalSlotCount(event)
+  event.registrationStatus = total > 0 && goingCount >= total ? 'full' : 'open'
+}
+
+function promoteWaitlistIfPossible(event: GameEvent): void {
+  const total = totalSlotCount(event)
+  let goingCount = event.participation.filter((item) => item.status === 'going').length
+  if (goingCount >= total) return
+
+  const waitlisted = event.participation
+    .filter((item) => item.status === 'maybe')
+    .slice()
+    .sort((a, b) => a.updatedAt.localeCompare(b.updatedAt))
+
+  for (const candidate of waitlisted) {
+    if (goingCount >= total) break
+    candidate.status = 'going'
+    candidate.updatedAt = new Date().toISOString()
+    goingCount += 1
+  }
+}
+
 /**
  * @spec SPEC-FR-4.1.1 - Создать событие
  */
 export function createMockEvent(payload: CreateEventPayload): GameEvent {
+  const isPrivateClub = payload.accessScope === 'private_club'
   const event: GameEvent = {
     id: `event-${Date.now()}`,
     ...payload,
-    arenaName: payload.arenaId === 'arena-001' ? 'Ледовый дворец на Ходынке' : 'Каток «Лужники»',
-    organizerUserId: 'user-001',
-    organizerDisplayName: 'Иван Петров',
+    arenaName: resolveArenaName(payload.arenaId),
+    organizerUserId: mockUser.id,
+    organizerDisplayName: mockUser.displayName,
     organizerPhone: '+7 (999) 100-11-22',
     accessScope: payload.accessScope ?? 'public',
     trainingFormat: payload.trainingFormat,
@@ -322,10 +373,57 @@ export function createMockEvent(payload: CreateEventPayload): GameEvent {
     clubId: payload.clubId,
     iceBookingId: payload.iceBookingId,
     iceAgreementId: payload.iceAgreementId,
+    pricePerPlayer: isPrivateClub ? 0 : payload.pricePerPlayer,
     participation: [],
   }
   mockEvents = [...mockEvents, event]
   return event
+}
+
+/** HOCFRONT-28G — обновить событие */
+export function updateMockEvent(
+  eventId: string,
+  payload: UpdateEventPayload,
+): GameEvent | undefined {
+  const eventIndex = mockEvents.findIndex((item) => item.id === eventId)
+  if (eventIndex === -1) return undefined
+
+  const current = mockEvents[eventIndex]
+  const nextAccess = payload.accessScope ?? current.accessScope
+  const isPrivateClub = nextAccess === 'private_club'
+  const next: GameEvent = {
+    ...current,
+    ...payload,
+    arenaName: payload.arenaId
+      ? resolveArenaName(payload.arenaId, current.arenaName)
+      : current.arenaName,
+    pricePerPlayer: isPrivateClub ? 0 : (payload.pricePerPlayer ?? current.pricePerPlayer),
+    clubId: isPrivateClub ? (payload.clubId ?? current.clubId) : payload.clubId,
+    participation: current.participation,
+  }
+  syncMockRegistrationCapacity(next)
+  mockEvents[eventIndex] = next
+  return next
+}
+
+/** Каталог с серверным фильтром private_club / limited. */
+export function listVisibleMockEvents(): GameEvent[] {
+  const userId = mockUser.id
+  const userTeamIds = getUserTeamIds(mockTeams, userId)
+  const userClubIds = getUserClubIds(mockTeams, userId)
+  const partnerClubIds = (mockUser.partnerMemberships ?? [])
+    .filter((membership) => membership.kind === 'club')
+    .map((membership) => membership.entityId)
+  const allClubIds = [...new Set([...userClubIds, ...partnerClubIds])]
+  const isAdmin = mockUser.roles.includes('admin')
+
+  return mockEvents.filter((event) =>
+    canViewTraining(event, userId, userTeamIds, {
+      isAdmin,
+      canManageClub: Boolean(event.clubId && partnerClubIds.includes(event.clubId)),
+      userClubIds: allClubIds,
+    }),
+  )
 }
 
 /**
@@ -340,19 +438,29 @@ export function updateMockAttendance(
   const eventIndex = mockEvents.findIndex((e) => e.id === eventId)
   if (eventIndex === -1) return undefined
 
-  const event = mockEvents[eventIndex]
+  const event = {
+    ...mockEvents[eventIndex],
+    participation: [...mockEvents[eventIndex].participation],
+  }
   const existing = event.participation.find((p) => p.userId === userId)
+  const previousStatus = existing?.status
   const updatedAt = new Date().toISOString()
 
   if (existing) {
     existing.status = status
     existing.updatedAt = updatedAt
+    existing.displayName = displayName || existing.displayName
   } else {
     event.participation.push({eventId, userId, displayName, status, updatedAt})
   }
 
-  mockEvents[eventIndex] = {...event}
-  return mockEvents[eventIndex]
+  if (previousStatus === 'going' && status !== 'going') {
+    promoteWaitlistIfPossible(event)
+  }
+
+  syncMockRegistrationCapacity(event)
+  mockEvents[eventIndex] = event
+  return event
 }
 
 /**

@@ -10,6 +10,9 @@ import {canManageClubEntity, useSessionAccess} from '@/features/access'
 import {
   ACCESS_LABELS,
   canViewTraining,
+  countOpenSlots,
+  formatEventPriceRub,
+  getUserClubIds,
   getUserTeamIds,
   POSITION_LABELS,
   resolveTrainingUserName,
@@ -17,6 +20,8 @@ import {
   TRAINING_FORMAT_LABELS,
   TrainingRegistrationControl,
 } from '@/features/events'
+import {LAUNCH_REGION} from '@/shared/config/geo'
+import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -25,7 +30,7 @@ import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 export function TrainingDetailsPage() {
   const {eventId = ''} = useParams()
-  const {userId, roles, session} = useSessionAccess()
+  const {userId, roles, session, canOrganizeEvents} = useSessionAccess()
   const {
     data: event,
     isLoading,
@@ -42,6 +47,7 @@ export function TrainingDetailsPage() {
   })
 
   const userTeamIds = useMemo(() => getUserTeamIds(teams, userId), [teams, userId])
+  const userClubIds = useMemo(() => getUserClubIds(teams, userId), [teams, userId])
   const playerNames = useMemo(
     () => Object.fromEntries(players.map((player) => [player.userId, player.displayName])),
     [players],
@@ -67,11 +73,15 @@ export function TrainingDetailsPage() {
   }
 
   const canManageClub = canManageClubEntity(session, event.clubId)
+  const partnerClubIds = (session?.user.partnerMemberships ?? [])
+    .filter((membership) => membership.kind === 'club')
+    .map((membership) => membership.entityId)
 
   if (
     !canViewTraining(event, userId, userTeamIds, {
       isAdmin: roles.includes('admin'),
       canManageClub,
+      userClubIds: [...new Set([...userClubIds, ...partnerClubIds])],
     })
   ) {
     return (
@@ -100,14 +110,15 @@ export function TrainingDetailsPage() {
   const end = new Date(event.endsAt)
   const accessLabel = event.accessScope ? ACCESS_LABELS[event.accessScope] : 'Тип доступа не задан'
   const organizerName = resolveTrainingUserName(event.organizerUserId, event, playerNames)
-  const contactPhone = event.organizerPhone ?? '+7 (900) 000-00-00'
+  const contactPhone = event.organizerPhone
   const currentStatus = event.participation.find((item) => item.userId === userId)?.status
-  const requiredTotal = event.requiredSlots.reduce((acc, slot) => acc + slot.count, 0)
-  const filledTotal = event.requiredSlots.reduce((acc, slot) => acc + slot.filledCount, 0)
-  const fillPercent = requiredTotal > 0 ? Math.round((filledTotal / requiredTotal) * 100) : 0
+  const seats = countOpenSlots(event)
   const allowedUsers = event.allowedUserIds?.map((allowedUserId) =>
     resolveTrainingUserName(allowedUserId, event, playerNames),
   )
+  const canEdit =
+    canOrganizeEvents &&
+    (event.organizerUserId === userId || roles.includes('admin') || roles.includes('club_admin'))
 
   return (
     <div
@@ -121,18 +132,34 @@ export function TrainingDetailsPage() {
         >
           {event.title}
         </Text>
-        <Link
-          to="/events"
-          data-testid={testId('events', 'training-page', 'link', 'back', event.id)}
-        >
-          <HockeyButton
-            view="flat"
-            size="m"
-            data-testid={testId('events', 'training-page', 'btn', 'back', event.id)}
+        <div className="hockey-row hockey-row--gap-8 hockey-row--wrap">
+          {canEdit && (
+            <Link
+              to={`/events/trainings/${event.id}/edit`}
+              data-testid={testId('events', 'training-page', 'link', 'edit', event.id)}
+            >
+              <HockeyButton
+                view="outlined"
+                size="m"
+                data-testid={testId('events', 'training-page', 'btn', 'edit', event.id)}
+              >
+                Редактировать
+              </HockeyButton>
+            </Link>
+          )}
+          <Link
+            to={routes.events}
+            data-testid={testId('events', 'training-page', 'link', 'back', event.id)}
           >
-            К списку тренировок
-          </HockeyButton>
-        </Link>
+            <HockeyButton
+              view="flat"
+              size="m"
+              data-testid={testId('events', 'training-page', 'btn', 'back', event.id)}
+            >
+              К списку тренировок
+            </HockeyButton>
+          </Link>
+        </div>
       </div>
 
       <IceCard padding="m">
@@ -140,7 +167,10 @@ export function TrainingDetailsPage() {
           className="hockey-stack hockey-stack--gap-10"
           data-testid={testId('events', 'training-page', 'panel', 'meta', event.id)}
         >
-          <Text data-testid={testId('events', 'training-page', 'text', 'access', event.id)}>
+          <Text
+            variant="subheader-2"
+            data-testid={testId('events', 'training-page', 'text', 'access', event.id)}
+          >
             {accessLabel}
           </Text>
           <Text data-testid={testId('events', 'training-page', 'text', 'schedule', event.id)}>
@@ -159,10 +189,10 @@ export function TrainingDetailsPage() {
             </Link>
           </Text>
           <Text data-testid={testId('events', 'training-page', 'text', 'price', event.id)}>
-            Цена: {event.pricePerPlayer ? `${event.pricePerPlayer} RUB` : 'По договоренности'}
+            Стоимость: {formatEventPriceRub(event.pricePerPlayer)}
           </Text>
-          <Text data-testid={testId('events', 'training-page', 'text', 'fill', event.id)}>
-            Заполненность: {filledTotal}/{requiredTotal} ({fillPercent}%)
+          <Text data-testid={testId('events', 'training-page', 'text', 'seats', event.id)}>
+            Свободные места: {seats.open} из {seats.total}
           </Text>
           <Text
             data-testid={testId('events', 'training-page', 'text', 'registration-status', event.id)}
@@ -170,14 +200,13 @@ export function TrainingDetailsPage() {
             Статус набора:{' '}
             {event.registrationStatus === 'full' ? 'Состав укомплектован' : 'Открыт для записи'}
           </Text>
-          {event.district && (
-            <Text
-              color="secondary"
-              data-testid={testId('events', 'training-page', 'text', 'district', event.id)}
-            >
-              Округ: {event.district}
-            </Text>
-          )}
+          <Text
+            color="secondary"
+            data-testid={testId('events', 'training-page', 'text', 'region', event.id)}
+          >
+            Регион: {LAUNCH_REGION}
+            {event.district ? ` · ${event.district}` : ''}
+          </Text>
           {event.trainingFormat && (
             <Text
               color="secondary"
@@ -266,19 +295,21 @@ export function TrainingDetailsPage() {
                 Связаться в мессенджере
               </HockeyButton>
             </Link>
-            <a
-              href={`tel:${contactPhone.replace(/[^\d+]/g, '')}`}
-              className="training-details__contact-action"
-              data-testid={testId('events', 'training-page', 'link', 'phone', event.id)}
-            >
-              <HockeyButton
-                view="outlined"
-                size="m"
-                data-testid={testId('events', 'training-page', 'btn', 'phone', event.id)}
+            {contactPhone ? (
+              <a
+                href={`tel:${contactPhone.replace(/[^\d+]/g, '')}`}
+                className="training-details__contact-action"
+                data-testid={testId('events', 'training-page', 'link', 'phone', event.id)}
               >
-                {contactPhone}
-              </HockeyButton>
-            </a>
+                <HockeyButton
+                  view="outlined"
+                  size="m"
+                  data-testid={testId('events', 'training-page', 'btn', 'phone', event.id)}
+                >
+                  {contactPhone}
+                </HockeyButton>
+              </a>
+            ) : null}
             <HockeyButton
               view="action"
               size="m"

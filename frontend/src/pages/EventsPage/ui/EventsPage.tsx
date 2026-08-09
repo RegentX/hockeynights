@@ -24,6 +24,7 @@ import {
   DEFAULT_CATALOG_FILTERS,
   EventCard,
   eventNeedsGoalie,
+  getUserClubIds,
   getUserTeamIds,
   isCatalogChipActive,
   isPlayerCatalogEvent,
@@ -38,6 +39,7 @@ import {
 } from '@/features/events'
 import {LeagueGameRsvp, TeamRsvpList} from '@/features/radar'
 import {getApiMode} from '@/shared/config/apiMode'
+import {LAUNCH_REGION} from '@/shared/config/geo'
 import {EVENTS_LABEL} from '@/shared/config/navigationLabels'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
@@ -110,6 +112,7 @@ export function EventsPage() {
   }, [])
 
   const userTeamIds = useMemo(() => getUserTeamIds(teams, userId), [teams, userId])
+  const userClubIds = useMemo(() => getUserClubIds(teams, userId), [teams, userId])
   const isAdmin = roles.includes('admin')
   const clubMembershipIds = useMemo(
     () =>
@@ -119,6 +122,10 @@ export function EventsPage() {
           .map((membership) => membership.entityId),
       ),
     [session?.user.partnerMemberships],
+  )
+  const allUserClubIds = useMemo(
+    () => [...new Set([...userClubIds, ...clubMembershipIds])],
+    [userClubIds, clubMembershipIds],
   )
 
   const formatOptions = [...TRAINING_FORMAT_FILTER_OPTIONS]
@@ -188,6 +195,7 @@ export function EventsPage() {
       canViewTraining(item, userId, userTeamIds, {
         isAdmin,
         canManageClub: Boolean(item.clubId && clubMembershipIds.has(item.clubId)),
+        userClubIds: allUserClubIds,
       }),
     )
     .filter((item) => {
@@ -281,6 +289,9 @@ export function EventsPage() {
             </Text>
             <Text color="secondary" data-testid={testId('events', 'page', 'text', 'subtitle')}>
               Найдите будущую тренировку или игру и запишитесь. Создание — отдельным экраном.
+            </Text>
+            <Text color="secondary" data-testid={testId('events', 'page', 'text', 'geoblock')}>
+              Геоблок MVP: {LAUNCH_REGION}
             </Text>
           </div>
           {canOrganizeEvents && (

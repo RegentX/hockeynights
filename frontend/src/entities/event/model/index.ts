@@ -6,6 +6,7 @@ export type {
   GameEvent,
   RequiredSlot,
   RosterStatus,
+  UpdateEventPayload,
 } from './types/eventTypes'
 export type {IceAgreement, IceAgreementPoolStatus} from './types/iceAgreementTypes'
 export {ICE_AGREEMENT_POOL_LABELS} from './types/iceAgreementTypes'

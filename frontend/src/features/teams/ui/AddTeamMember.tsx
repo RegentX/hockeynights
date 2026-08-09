@@ -201,7 +201,6 @@ export function AddTeamMember({teamId}: AddTeamMemberProps) {
               >
                 {player.position} · {player.skillLevel}
                 {player.city ? ` · ${player.city}` : ''}
-                {player.district ? `, ${player.district}` : ''}
               </Text>
             </div>
             <HockeyButton
