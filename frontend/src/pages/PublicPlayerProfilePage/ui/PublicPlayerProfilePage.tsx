@@ -1,6 +1,7 @@
 /**
- * SPEC-FR-24.1.2, SPEC-FR-24.1.3, SPEC-FR-2.3.3
+ * SPEC-FR-24.1.2, SPEC-FR-24.1.3, SPEC-FR-2.3.3, SPEC-FR-17.1.2
  * HOCFRONT-22 — публичная страница игрока `/players/:userId`
+ * HOCFRONT-23 — verified badge на странице игрока
  */
 
 import {Text} from '@gravity-ui/uikit'
@@ -23,6 +24,7 @@ import {PlayerCard} from '@/widgets/PlayerCard'
 /**
  * @spec SPEC-FR-24.1.3 - Публичный просмотр Hockey ID с учётом приватности
  * @spec HOCFRONT-22 - Публичная инфа, команда, избранное, календарь внутри страницы
+ * @spec HOCFRONT-23 - Verified badge на странице игрока
  */
 export function PublicPlayerProfilePage() {
   const {userId = ''} = useParams()

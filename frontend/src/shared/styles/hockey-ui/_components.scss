@@ -159,7 +159,6 @@
 
 .hockey-player-card__goalie-badge {
   display: inline-block;
-  margin-top: 6px;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -204,6 +203,21 @@
   min-width: 0;
 }
 
+.hockey-player-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.hockey-player-card__name-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
 .hockey-player-card__top-right {
   display: flex;
   align-items: center;
@@ -241,6 +255,7 @@
   gap: 8px;
 }
 
+.hockey-verified-badge,
 .hockey-player-card__verified {
   display: inline-flex;
   align-items: center;
@@ -254,6 +269,16 @@
   color: #36b37e;
   border: 1px solid rgba(54, 179, 126, 0.35);
   background: rgba(54, 179, 126, 0.1);
+  line-height: 1.2;
+}
+
+.hockey-verified-badge__icon {
+  flex-shrink: 0;
+  color: #36b37e;
+}
+
+.hockey-verified-badge__label {
+  white-space: nowrap;
 }
 
 .player-favorite {
