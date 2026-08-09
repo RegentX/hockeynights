@@ -1,6 +1,7 @@
 /**
  * HOCFRONT-5 — карточки демо-ролей для mock-входа.
  * HOCFRONT-25 — персона club_admin
+ * EPIC-08 / ORG-1 — персона training_organizer
  */
 
 import type {OnboardingPayload} from '@/entities/user'
@@ -52,11 +53,15 @@ export const PERSONA_PRESETS: PersonaPreset[] = [
   },
   {
     id: 'organizer',
-    title: 'Организатор',
-    description: 'События, календарь и организация игр',
-    destination: 'Обычный player workspace',
+    title: 'Организатор тренировок',
+    description: 'Кабинет: создание и ведение тренировок, участники, публичность',
+    destination: 'Кабинет организатора тренировок',
     icon: '📅',
-    payload: {displayName: 'Мария Организаторова', roles: ['organizer'], partnerMemberships: []},
+    payload: {
+      displayName: 'Мария Организаторова',
+      roles: ['training_organizer'],
+      partnerMemberships: [],
+    },
   },
   {
     id: 'club-admin',

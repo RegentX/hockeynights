@@ -1,38 +1,43 @@
 /**
- * HOCFRONT-28A — кабинет организатора (отдельный маршрут)
+ * HOCFRONT-28A/F — кабинет организатора тренировок
+ * ORG-2/3 — статусы, табы, регистрации, профиль
  */
 
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 import {Link} from 'react-router'
 
 import {fetchEvents} from '@/entities/event'
 import {useSessionAccess} from '@/features/access'
-import {isUpcomingEvent, OrganizerTrainingsPanel} from '@/features/events'
+import {
+  countOrganizerStatuses,
+  OrganizerRegistrationsPanel,
+  OrganizerTrainingsPanel,
+} from '@/features/events'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
+type CabinetTab = 'trainings' | 'registrations' | 'profile'
+
 export function OrganizerEventsPage() {
-  const {userId, canOrganizeEvents} = useSessionAccess()
+  const {userId, session, canOrganizeEvents} = useSessionAccess()
+  const [tab, setTab] = useState<CabinetTab>('trainings')
   const {data: events = [], isLoading} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
 
-  const organizerCatalog = useMemo(
+  const mine = useMemo(
     () =>
-      events
-        .filter(
-          (event) =>
-            event.organizerUserId === userId &&
-            (event.type === 'training' || event.type === 'game') &&
-            isUpcomingEvent(event.startsAt),
-        )
-        .slice()
-        .sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
+      events.filter(
+        (event) =>
+          event.organizerUserId === userId && (event.type === 'training' || event.type === 'game'),
+      ),
     [events, userId],
   )
+
+  const counts = useMemo(() => countOrganizerStatuses(mine), [mine])
 
   if (!canOrganizeEvents) {
     return (
@@ -42,7 +47,8 @@ export function OrganizerEventsPage() {
       >
         <IceCard padding="m">
           <Text data-testid={testId('events', 'organizer-page', 'text', 'denied')}>
-            Кабинет организатора доступен капитану, тренеру, организатору или администратору.
+            Кабинет организатора тренировок доступен организатору, админу клуба, капитану, тренеру
+            или администратору.
           </Text>
           <Link
             to={routes.events}
@@ -73,10 +79,14 @@ export function OrganizerEventsPage() {
             variant="header-1"
             data-testid={testId('events', 'organizer-page', 'text', 'title')}
           >
-            Мои тренировки
+            Кабинет организатора тренировок
           </Text>
           <Text color="secondary" data-testid={testId('events', 'organizer-page', 'text', 'hint')}>
-            Созданные вами будущие игры и тренировки.
+            Ведение набора: статусы, участники и профиль организатора.
+          </Text>
+          <Text color="secondary" data-testid={testId('events', 'organizer-page', 'text', 'stats')}>
+            Всего {mine.length} · набор {counts.open} · заполнены {counts.full} · черновики{' '}
+            {counts.draft}
           </Text>
         </div>
         <div className="hockey-row hockey-row--gap-8">
@@ -104,13 +114,82 @@ export function OrganizerEventsPage() {
         </div>
       </div>
 
+      <div
+        className="hockey-row hockey-row--gap-8 hockey-row--wrap"
+        data-testid={testId('events', 'organizer-page', 'panel', 'tabs')}
+      >
+        <HockeyButton
+          view={tab === 'trainings' ? 'action' : 'outlined'}
+          size="s"
+          onClick={() => setTab('trainings')}
+          data-testid={testId('events', 'organizer-page', 'btn', 'tab-trainings')}
+        >
+          Тренировки
+        </HockeyButton>
+        <HockeyButton
+          view={tab === 'registrations' ? 'action' : 'outlined'}
+          size="s"
+          onClick={() => setTab('registrations')}
+          data-testid={testId('events', 'organizer-page', 'btn', 'tab-registrations')}
+        >
+          Участники
+        </HockeyButton>
+        <HockeyButton
+          view={tab === 'profile' ? 'action' : 'outlined'}
+          size="s"
+          onClick={() => setTab('profile')}
+          data-testid={testId('events', 'organizer-page', 'btn', 'tab-profile')}
+        >
+          Профиль
+        </HockeyButton>
+      </div>
+
       {isLoading ? (
         <div data-testid={testId('events', 'organizer-page', 'loader')}>
           <ScoreboardLoader label="Загрузка…" />
         </div>
-      ) : (
-        <OrganizerTrainingsPanel events={organizerCatalog} organizerUserId={userId} />
-      )}
+      ) : null}
+
+      {!isLoading && tab === 'trainings' ? (
+        <OrganizerTrainingsPanel events={mine} organizerUserId={userId} />
+      ) : null}
+
+      {!isLoading && tab === 'registrations' ? <OrganizerRegistrationsPanel events={mine} /> : null}
+
+      {!isLoading && tab === 'profile' ? (
+        <IceCard padding="m" data-testid={testId('events', 'organizer-page', 'panel', 'profile')}>
+          <div className="hockey-stack hockey-stack--gap-8">
+            <Text
+              variant="subheader-2"
+              data-testid={testId('events', 'organizer-page', 'text', 'profile-title')}
+            >
+              Профиль организатора
+            </Text>
+            <Text data-testid={testId('events', 'organizer-page', 'text', 'profile-name')}>
+              {session?.user.displayName ?? 'Организатор'}
+            </Text>
+            <Text
+              color="secondary"
+              data-testid={testId('events', 'organizer-page', 'text', 'profile-hint')}
+            >
+              Публичные тренировки потребуют активной подписки (gate на экране создания). Приватные
+              клубные — через кабинет клуба.
+            </Text>
+            <Link
+              to={routes.profile}
+              data-testid={testId('events', 'organizer-page', 'link', 'profile')}
+            >
+              <HockeyButton
+                view="outlined"
+                size="s"
+                data-testid={testId('events', 'organizer-page', 'btn', 'profile')}
+              >
+                Открыть профиль игрока
+              </HockeyButton>
+            </Link>
+          </div>
+        </IceCard>
+      ) : null}
     </div>
   )
 }

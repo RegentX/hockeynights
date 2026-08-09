@@ -26,7 +26,7 @@ export {
   formatEventWeekdayDate,
   registrationStatusLabel,
 } from './lib/eventCardMeta'
-export {eventDetailsPath} from './lib/eventDetailsPath'
+export {eventDetailsPath, eventEditPath} from './lib/eventDetailsPath'
 export {
   ACCESS_LABELS,
   ACCESS_SCOPE_FILTER_OPTIONS,
@@ -39,12 +39,28 @@ export {
   TRAINING_FORMAT_LABELS,
 } from './lib/eventLabels'
 export {isUpcomingEvent} from './lib/isUpcomingEvent'
+export {
+  collectOrganizerRegistrations,
+  countOrganizerStatuses,
+  eventDeficitSummary,
+  eventFillPercent,
+  filterOrganizerEvents,
+  isPlayerCatalogEvent,
+  ORGANIZER_FILTER_LABELS,
+  ORGANIZER_FILTERS,
+  ORGANIZER_STATUS_LABELS,
+  type OrganizerEventFilter,
+  type OrganizerEventStatus,
+  type OrganizerRegistrationRow,
+  resolveOrganizerEventStatus,
+} from './lib/organizerWorkspace'
 export {isTeamRsvpConfirmed, teamRsvpStatusLabel} from './lib/teamRsvpStatus'
 export {canViewTraining, getUserTeamIds, resolveTrainingUserName} from './lib/trainingAccess'
 export {AttendanceControl} from './ui/AttendanceControl'
 export {EventCard} from './ui/EventCard'
 export {EventCreateForm} from './ui/EventCreateForm'
 export {EventRsvpBoard} from './ui/EventRsvpBoard'
+export {OrganizerRegistrationsPanel} from './ui/OrganizerRegistrationsPanel'
 export {OrganizerTrainingsPanel} from './ui/OrganizerTrainingsPanel'
 export {RosterNeedsWidget} from './ui/RosterNeedsWidget'
 export {TrainingRegistrationControl} from './ui/TrainingRegistrationControl'

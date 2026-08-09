@@ -19,6 +19,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
   goalie: 'Вратарь',
   captain: 'Капитан',
   organizer: 'Организатор',
+  training_organizer: 'Организатор тренировок',
   coach: 'Тренер',
   club_admin: 'Админ клуба',
   admin: 'Админ',

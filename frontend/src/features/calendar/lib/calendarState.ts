@@ -74,6 +74,8 @@ export function defaultLensFromRoles(roles: string[], personaId?: string): Calen
   if (
     personaId === 'organizer' ||
     roles.includes('organizer') ||
+    roles.includes('training_organizer') ||
+    roles.includes('club_admin') ||
     roles.includes('captain') ||
     roles.includes('coach') ||
     roles.includes('admin')

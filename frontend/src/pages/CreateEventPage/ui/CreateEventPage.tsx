@@ -23,7 +23,8 @@ export function CreateEventPage() {
       >
         <IceCard padding="m">
           <Text data-testid={testId('events', 'create-page', 'text', 'denied')}>
-            Создавать игры и тренировки могут капитан, тренер, организатор или администратор.
+            Создавать игры и тренировки могут организатор тренировок, админ клуба, капитан, тренер
+            или администратор.
           </Text>
           <Link
             to={routes.events}
@@ -52,15 +53,29 @@ export function CreateEventPage() {
         <Text variant="header-1" data-testid={testId('events', 'create-page', 'text', 'title')}>
           Создать игру или тренировку
         </Text>
-        <Link to={routes.events} data-testid={testId('events', 'create-page', 'link', 'back')}>
-          <HockeyButton
-            view="flat"
-            size="m"
-            data-testid={testId('events', 'create-page', 'btn', 'back')}
+        <div className="hockey-row hockey-row--gap-8">
+          <Link
+            to={routes.eventsOrganizer}
+            data-testid={testId('events', 'create-page', 'link', 'cabinet')}
           >
-            К каталогу
-          </HockeyButton>
-        </Link>
+            <HockeyButton
+              view="outlined"
+              size="m"
+              data-testid={testId('events', 'create-page', 'btn', 'cabinet')}
+            >
+              Кабинет
+            </HockeyButton>
+          </Link>
+          <Link to={routes.events} data-testid={testId('events', 'create-page', 'link', 'back')}>
+            <HockeyButton
+              view="flat"
+              size="m"
+              data-testid={testId('events', 'create-page', 'btn', 'back')}
+            >
+              К каталогу
+            </HockeyButton>
+          </Link>
+        </div>
       </div>
       <IceCard padding="m" data-testid={testId('events', 'create-page', 'card', 'form')}>
         <EventCreateForm />

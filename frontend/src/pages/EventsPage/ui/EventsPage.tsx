@@ -26,6 +26,7 @@ import {
   eventNeedsGoalie,
   getUserTeamIds,
   isCatalogChipActive,
+  isPlayerCatalogEvent,
   isUpcomingEvent,
   matchesAccessScopeFilter,
   matchesCatalogDateFilters,
@@ -85,7 +86,9 @@ export function EventsPage() {
       events
         .filter(
           (event) =>
-            (event.type === 'training' || event.type === 'game') && isUpcomingEvent(event.startsAt),
+            (event.type === 'training' || event.type === 'game') &&
+            isPlayerCatalogEvent(event) &&
+            isUpcomingEvent(event.startsAt),
         )
         .slice()
         .sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
@@ -306,7 +309,7 @@ export function EventsPage() {
                   size="m"
                   data-testid={testId('events', 'page', 'btn', 'organizer')}
                 >
-                  Мои тренировки
+                  Кабинет организатора
                 </HockeyButton>
               </Link>
             </div>

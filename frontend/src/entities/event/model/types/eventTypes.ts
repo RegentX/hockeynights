@@ -60,6 +60,11 @@ export interface GameEvent {
   district?: string
   /** Статус набора */
   registrationStatus?: 'open' | 'full'
+  /**
+   * HOCFRONT-28F / ORG-2 — жизненный цикл в кабинете организатора.
+   * По умолчанию (если нет поля) считаем published.
+   */
+  lifecycleStatus?: 'draft' | 'published' | 'cancelled'
   /** Модель доступа к тренировке */
   accessScope?: 'club_only' | 'limited' | 'public' | 'private_club' | 'public_open'
   /** Список пользователей, допущенных к limited-тренировке */
@@ -101,6 +106,8 @@ export interface CreateEventPayload {
   clubId?: string
   trainingFormat?: GameEvent['trainingFormat']
   district?: string
+  /** HOCFRONT-28G — черновик vs публикация */
+  lifecycleStatus?: GameEvent['lifecycleStatus']
 }
 
 /** @spec SPEC-FR-4.3.1 - Статус дефицита состава */
