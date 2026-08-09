@@ -255,15 +255,13 @@ describe('TASK-QA-02 UI smoke', () => {
     resetMockHighlightsState()
   })
 
-  /** @spec SPEC-FR-7.1.2, SPEC-UI-2.7 */
-  it('LeaguesPage loads league cards and standings board', async () => {
+  /** @spec SPEC-FR-7.1.1, SPEC-FR-7.1.2 — каталог; таблица/расписание переехали на /leagues/:id, см. hocfront-34-leagues.spec.tsx */
+  it('LeaguesPage loads league catalog cards', async () => {
     renderWithProviders(<LeaguesPage />)
     await waitFor(() => {
-      expect(screen.getByText('Любительские лиги')).toBeInTheDocument()
+      expect(screen.getByText('Лиги')).toBeInTheDocument()
       expect(screen.getAllByText(/Ночная Хоккейная Лига|НХЛ/i).length).toBeGreaterThan(0)
       expect(screen.getAllByText('Профиль лиги').length).toBeGreaterThan(0)
-      expect(screen.getByRole('table', {name: /Турнирная таблица/i})).toBeInTheDocument()
-      expect(screen.getAllByText('Медведи САО').length).toBeGreaterThan(0)
     })
   })
 

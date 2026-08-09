@@ -38,7 +38,10 @@ export function LeaguePartnerDashboard() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
 
   const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
-  const {data: leagues = [], isLoading} = useQuery({queryKey: ['leagues'], queryFn: fetchLeagues})
+  const {data: leagues = [], isLoading} = useQuery({
+    queryKey: ['leagues'],
+    queryFn: () => fetchLeagues(),
+  })
   const league = leagues.find((item) => item.id === leagueId)
   const [draft, setDraft] = useState<Partial<League>>({})
 

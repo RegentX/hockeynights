@@ -7,6 +7,7 @@ import type {
   LeagueAnalytics,
   LeagueApplicationPayload,
   LeagueDivision,
+  LeagueFilters,
   LeaguePost,
   LeagueScheduleImportResult,
   LeagueScheduleItem,
@@ -18,9 +19,17 @@ import {apiRequest} from '@/shared/api/client'
 
 /**
  * @spec SPEC-FR-7.1.1 - Список лиг
+ * HOCFRONT-34A - краткие фильтры каталога (поиск, регион, уровень, набор)
  */
-export function fetchLeagues(): Promise<League[]> {
-  return apiRequest<League[]>('/leagues')
+export function fetchLeagues(filters: LeagueFilters = {}): Promise<League[]> {
+  const params = new URLSearchParams()
+  if (filters.query) params.set('q', filters.query)
+  if (filters.region) params.set('region', filters.region)
+  if (filters.level) params.set('level', filters.level)
+  if (filters.recruitingStatus) params.set('recruitingStatus', filters.recruitingStatus)
+
+  const query = params.toString()
+  return apiRequest<League[]>(`/leagues${query ? `?${query}` : ''}`)
 }
 
 /**

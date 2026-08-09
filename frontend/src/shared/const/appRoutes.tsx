@@ -3,6 +3,11 @@ export function arenaDetailsPath(arenaId: string): string {
   return `/arenas/${encodeURIComponent(arenaId)}`
 }
 
+/** HOCFRONT-34A — отдельная страница лиги */
+export function leagueDetailsPath(leagueId: string): string {
+  return `/leagues/${encodeURIComponent(leagueId)}`
+}
+
 export const routes = {
   home: '/',
   login: '/login',
@@ -24,6 +29,7 @@ export const routes = {
   arenas: '/arenas',
   arenaDetails: '/arenas/:arenaId',
   leagues: '/leagues',
+  leagueDetails: '/leagues/:leagueId',
   feedback: '/feedback',
   notifications: '/notifications',
   messenger: '/messenger',

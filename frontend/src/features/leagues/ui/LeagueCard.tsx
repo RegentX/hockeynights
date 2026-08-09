@@ -19,8 +19,8 @@ import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 export interface LeagueCardProps {
   /** @spec SPEC-FR-7.1.2 */
   league: League
-  /** @spec SPEC-FR-7.2.1 */
-  onSelect?: (leagueId: string) => void
+  /** HOCFRONT-34A — открыть отдельную страницу лиги */
+  onOpenDetails?: (leagueId: string) => void
   /** @spec SPEC-UI-2.7 */
   selected?: boolean
 }
@@ -29,7 +29,7 @@ export interface LeagueCardProps {
  * @spec SPEC-FR-7.1.2 - Карточка лиги
  * @spec SPEC-FR-7.1.3 - Mock-портал сайта лиги
  */
-export function LeagueCard({league, onSelect, selected = false}: LeagueCardProps) {
+export function LeagueCard({league, onOpenDetails, selected = false}: LeagueCardProps) {
   const [portalOpen, setPortalOpen] = useState(false)
 
   return (
@@ -37,7 +37,7 @@ export function LeagueCard({league, onSelect, selected = false}: LeagueCardProps
       <div data-testid={testId('leagues', 'card', 'card', league.id)}>
         <IceCard padding="m" className={selected ? 'ice-card--selected' : undefined}>
           <div className="hockey-stack hockey-stack--gap-8">
-            <div className="hockey-row hockey-row--gap-8 hockey-row--between">
+            <div className="hockey-row hockey-row--gap-8 hockey-row--between hockey-row--align-start">
               <Text
                 variant="header-2"
                 className="hockey-entity-title--compact"
@@ -45,8 +45,16 @@ export function LeagueCard({league, onSelect, selected = false}: LeagueCardProps
               >
                 {league.name}
               </Text>
-              <div className="hockey-row hockey-row--gap-8">
-                <FavoriteButton type="league" entityId={league.id} title={league.name} />
+              <div
+                className="league-meta-chips"
+                data-testid={testId('leagues', 'card', 'panel', 'chips', league.id)}
+              >
+                <FavoriteButton
+                  type="league"
+                  entityId={league.id}
+                  title={league.name}
+                  className="league-meta-chip league-meta-chip--favorite"
+                />
                 <div data-testid={testId('leagues', 'card', 'badge', 'profile', league.id)}>
                   <EntityProfileBadge kind="league" />
                 </div>
@@ -82,13 +90,13 @@ export function LeagueCard({league, onSelect, selected = false}: LeagueCardProps
                 Сайт лиги (mock)
               </HockeyButton>
             )}
-            {onSelect && (
+            {onOpenDetails && (
               <HockeyButton
                 view={selected ? 'action' : 'outlined'}
-                onClick={() => onSelect(league.id)}
-                data-testid={testId('leagues', 'card', 'btn', 'select', league.id)}
+                onClick={() => onOpenDetails(league.id)}
+                data-testid={testId('leagues', 'card', 'btn', 'open', league.id)}
               >
-                {selected ? '● Таблица и расписание' : 'Таблица и расписание'}
+                Профиль, таблица и расписание
               </HockeyButton>
             )}
           </div>

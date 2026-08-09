@@ -33,7 +33,7 @@ const SKILL_OPTIONS: Array<{value: '' | SkillLevel; content: string}> = [
  * @spec SPEC-FR-3.1.1 - Фильтры: лига, игрок, город, уровень (поиск — отдельно на странице)
  */
 export function TeamFilters({filters, onChange, onReset, isFiltered}: TeamFiltersProps) {
-  const {data: leagues = []} = useQuery({queryKey: ['leagues'], queryFn: fetchLeagues})
+  const {data: leagues = []} = useQuery({queryKey: ['leagues'], queryFn: () => fetchLeagues()})
   const {data: players = []} = useQuery({queryKey: ['players'], queryFn: () => fetchPlayers()})
 
   const leagueOptions = useMemo(

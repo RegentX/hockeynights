@@ -7,7 +7,12 @@ import {
   getPrimaryPartnerPath,
   shouldUsePartnerWorkspace,
 } from '@/features/access/lib/sessionPersona'
-import {ARENAS_LABEL, EVENTS_LABEL, EVENTS_MOBILE_LABEL} from '@/shared/config/navigationLabels'
+import {
+  ARENAS_LABEL,
+  EVENTS_LABEL,
+  EVENTS_MOBILE_LABEL,
+  LEAGUES_LABEL,
+} from '@/shared/config/navigationLabels'
 import {routes} from '@/shared/const/appRoutes'
 import type {Session} from '@/shared/types/user'
 
@@ -43,7 +48,7 @@ export const PLAYER_NAV_ITEMS: NavItem[] = [
   {to: routes.teams, label: 'Команды', tier: 'active'},
   {to: routes.messenger, label: 'Мессенджер', tier: 'active'},
   {to: routes.arenas, label: ARENAS_LABEL, tier: 'active'},
-  {to: routes.leagues, label: 'Лиги', tier: 'active'},
+  {to: routes.leagues, label: LEAGUES_LABEL, tier: 'active'},
   {to: routes.shops, label: 'Маркет', tier: 'active'},
   {to: routes.calendar, label: 'Календарь', tier: 'active'},
   {to: routes.profile, label: 'Профиль', tier: 'active'},
@@ -104,7 +109,7 @@ function partnerCatalogItems(session: Session): NavItem[] {
   const memberships = session.user.partnerMemberships ?? []
   const items: NavItem[] = []
   if (memberships.some((m) => m.kind === 'league')) {
-    items.push({to: routes.leagues, label: 'Каталог лиг', tier: 'active'})
+    items.push({to: routes.leagues, label: LEAGUES_LABEL, tier: 'active'})
   }
   if (memberships.some((m) => m.kind === 'shop')) {
     items.push({to: routes.shops, label: 'Маркет', tier: 'active'})
