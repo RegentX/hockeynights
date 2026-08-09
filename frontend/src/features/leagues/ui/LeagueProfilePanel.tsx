@@ -10,6 +10,7 @@ import {Link} from 'react-router'
 import {fetchSession} from '@/entities/auth'
 import type {League} from '@/entities/league'
 import {fetchLeaguePosts} from '@/entities/league'
+import {SKILL_LEVEL_LABELS} from '@/features/events'
 import {FavoriteButton} from '@/features/favorites'
 import {LeagueTeamApplicationForm} from '@/features/leagues/ui/LeagueTeamApplicationForm'
 import {MockLeaguePortalModal} from '@/features/leagues/ui/MockLeaguePortalModal'
@@ -99,7 +100,7 @@ export function LeagueProfilePanel({league}: LeagueProfilePanelProps) {
                 Уровень
               </Text>
               <Text data-testid={testId('leagues', 'profile', 'text', 'level', league.id)}>
-                {league.level || 'Любительский'}
+                {league.level ? (SKILL_LEVEL_LABELS[league.level] ?? league.level) : 'Не указан'}
               </Text>
             </div>
           </div>

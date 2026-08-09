@@ -1022,16 +1022,41 @@
   );
 }
 
-/* HOCFRONT-34A — кликабельная карточка лиги (как rink-card--clickable) */
+/* HOCFRONT-34A — кликабельная карточка лиги: hitbox + интерактивы поверх */
 .league-card {
   display: flex;
   flex-direction: column;
   height: 100%;
   box-sizing: border-box;
+  position: relative;
 
-  &__footer {
-    margin-top: auto;
-    padding-top: 4px;
+  &__hitbox {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: inherit;
+
+    &:focus-visible {
+      outline: 2px solid var(--hockey-line-blue);
+      outline-offset: 2px;
+    }
+  }
+
+  &__content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    pointer-events: none;
+  }
+
+  &__content .league-meta-chips,
+  &__content .league-card__site-link {
+    pointer-events: auto;
   }
 
   &__site-link {
@@ -1061,11 +1086,6 @@
   &:hover {
     border-color: var(--hockey-line-blue);
     transform: translateY(-2px);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--hockey-line-blue);
-    outline-offset: 2px;
   }
 }
 

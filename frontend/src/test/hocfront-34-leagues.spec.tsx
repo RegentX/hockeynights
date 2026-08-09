@@ -64,6 +64,21 @@ describe('HOCFRONT-34 Leagues reform', () => {
     })
   })
 
+  it('redirects legacy ?leagueId= deep-link to /leagues/:leagueId', async () => {
+    renderWithProviders(
+      <Routes>
+        <Route path={routes.leagues} element={<LeaguesPage />} />
+        <Route path={routes.leagueDetails} element={<LeagueDetailsPage />} />
+      </Routes>,
+      {routerProps: {initialEntries: ['/leagues?leagueId=league-002']}},
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('leagues-details-page-league-002')).toBeInTheDocument()
+      expect(screen.getByTestId('leagues-profile-panel-league-002')).toBeInTheDocument()
+    })
+  })
+
   it('shows an empty state when filters match nothing, with a reset action', async () => {
     renderWithProviders(
       <Routes>
@@ -151,6 +166,38 @@ describe('HOCFRONT-34 Leagues reform', () => {
       expect(screen.getByTestId('leagues-my-league-card-league-001')).toBeInTheDocument()
       expect(screen.getAllByText(/Медведи САО/).length).toBeGreaterThan(0)
       expect(screen.getByTestId('leagues-my-league-text-rank-league-001')).toBeInTheDocument()
+      expect(screen.getByTestId('leagues-my-league-text-next-match-league-001')).toBeInTheDocument()
+    })
+  })
+
+  it('shows localized skill level on league cards', async () => {
+    renderWithProviders(
+      <Routes>
+        <Route path={routes.leagues} element={<LeaguesPage />} />
+      </Routes>,
+      {routerProps: {initialEntries: ['/leagues']}},
+    )
+
+    await screen.findByTestId('leagues-card-card-league-001')
+    expect(screen.getByTestId('leagues-card-badge-level-league-001')).toHaveTextContent('Любитель')
+    expect(screen.getByTestId('leagues-card-badge-level-league-004')).toHaveTextContent('Дебютант')
+  })
+
+  it('ignores invalid filter values from the URL', async () => {
+    renderWithProviders(
+      <Routes>
+        <Route path={routes.leagues} element={<LeaguesPage />} />
+      </Routes>,
+      {
+        routerProps: {
+          initialEntries: ['/leagues?level=not-a-level&recruitingStatus=maybe&region=mars'],
+        },
+      },
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('leagues-card-card-league-001')).toBeInTheDocument()
+      expect(screen.getByTestId('leagues-card-card-league-004')).toBeInTheDocument()
     })
   })
 })

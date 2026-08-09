@@ -1,18 +1,18 @@
 /**
  * SPEC-FR-7.1.1, SPEC-FR-7.1.2, SPEC-FR-7.1.3, SPEC-FR-7.2.2
  * SPEC-UI-1.3, SPEC-UI-2.7
- * HOCFRONT-34A — кликабельная карточка (как RinkCard), сайт — неброской ссылкой
+ * HOCFRONT-34A — кликабельная карточка (hitbox + интерактивы поверх, без nested role=button)
  */
 
 import {Label, Text} from '@gravity-ui/uikit'
 import {useState} from 'react'
 
 import type {League} from '@/entities/league'
+import {SKILL_LEVEL_LABELS} from '@/features/events'
 import {FavoriteButton} from '@/features/favorites'
 import {MockLeaguePortalModal} from '@/features/leagues/ui/MockLeaguePortalModal'
 import {testId} from '@/shared/testing/testId'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
-import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 
@@ -34,13 +34,7 @@ export function LeagueCard({league, onOpenDetails, selected = false}: LeagueCard
   const [portalOpen, setPortalOpen] = useState(false)
 
   const handleSelect = onOpenDetails ? () => onOpenDetails(league.id) : undefined
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (!handleSelect) return
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      handleSelect()
-    }
-  }
+  const levelLabel = league.level ? (SKILL_LEVEL_LABELS[league.level] ?? league.level) : undefined
 
   return (
     <>
@@ -53,14 +47,23 @@ export function LeagueCard({league, onOpenDetails, selected = false}: LeagueCard
         ]
           .filter(Boolean)
           .join(' ')}
-        role={handleSelect ? 'button' : undefined}
-        tabIndex={handleSelect ? 0 : undefined}
-        aria-pressed={handleSelect ? selected : undefined}
         onClick={handleSelect}
-        onKeyDown={handleSelect ? handleKeyDown : undefined}
         data-testid={testId('leagues', 'card', 'card', league.id)}
       >
-        <div className="hockey-stack hockey-stack--gap-8">
+        {handleSelect && (
+          <button
+            type="button"
+            className="league-card__hitbox"
+            onClick={(e) => {
+              e.stopPropagation()
+              handleSelect()
+            }}
+            aria-label={`Открыть лигу ${league.name}`}
+            aria-pressed={selected}
+            data-testid={testId('leagues', 'card', 'btn', 'open', league.id)}
+          />
+        )}
+        <div className="league-card__content hockey-stack hockey-stack--gap-8">
           <div className="hockey-row hockey-row--gap-8 hockey-row--between hockey-row--align-start">
             <Text
               variant="header-2"
@@ -90,10 +93,10 @@ export function LeagueCard({league, onOpenDetails, selected = false}: LeagueCard
           >
             {league.region}
           </Text>
-          {league.level && (
-            <Label size="s" data-testid={testId('leagues', 'card', 'badge', 'level', league.id)}>
-              {league.level}
-            </Label>
+          {levelLabel && (
+            <span data-testid={testId('leagues', 'card', 'badge', 'level', league.id)}>
+              <Label size="s">{levelLabel}</Label>
+            </span>
           )}
           <Label
             theme="warning"
@@ -117,22 +120,6 @@ export function LeagueCard({league, onOpenDetails, selected = false}: LeagueCard
             >
               Сайт лиги (mock)
             </button>
-          )}
-
-          {handleSelect && (
-            <div className="league-card__footer">
-              <HockeyButton
-                view="outlined"
-                size="s"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleSelect()
-                }}
-                data-testid={testId('leagues', 'card', 'btn', 'open', league.id)}
-              >
-                {selected ? 'Открыто' : 'Подробнее'}
-              </HockeyButton>
-            </div>
           )}
         </div>
       </IceCard>

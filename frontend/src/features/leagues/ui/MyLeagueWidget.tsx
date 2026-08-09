@@ -4,11 +4,13 @@
 
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
+import {useState} from 'react'
 import {Link} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {fetchLeague, fetchLeagueSchedule, fetchLeagueStandings} from '@/entities/league'
 import {fetchTeams} from '@/entities/team'
+import {normalizeLeagueTeamName} from '@/features/leagues/lib/leagueCatalogFilters'
 import {leagueDetailsPath} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -20,6 +22,7 @@ import {ScoreboardText} from '@/shared/ui/ScoreboardText'
  * привязанная к лиге (`Team.leagueId`, @spec SPEC-FR-24.4.2).
  */
 export function MyLeagueWidget() {
+  const [nowMs] = useState(() => Date.now())
   const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
   const userId = session?.user.id
 
@@ -29,7 +32,10 @@ export function MyLeagueWidget() {
     enabled: Boolean(userId),
   })
 
-  const myTeam = teams.find((team) => team.leagueId)
+  const linkedTeams = teams.filter((team) => team.leagueId)
+  // Если команд несколько — берём первую с leagueId; сопоставление таблицы/матчей — по нормализованному имени.
+  const myTeam = linkedTeams[0]
+  const teamKey = myTeam ? normalizeLeagueTeamName(myTeam.name) : ''
 
   const {data: league} = useQuery({
     queryKey: ['league', myTeam?.leagueId],
@@ -52,16 +58,17 @@ export function MyLeagueWidget() {
   if (!myTeam || !league) return null
 
   const ranked = [...standings].sort((a, b) => b.points - a.points)
-  const rankIndex = ranked.findIndex((row) => row.teamName === myTeam.name)
+  const rankIndex = ranked.findIndex((row) => normalizeLeagueTeamName(row.teamName) === teamKey)
   const myStanding = rankIndex >= 0 ? ranked[rankIndex] : undefined
 
   const nextMatch = schedule
-    .filter(
-      (item) =>
-        item.status !== 'completed' &&
-        item.status !== 'cancelled' &&
-        (item.homeTeam === myTeam.name || item.awayTeam === myTeam.name),
-    )
+    .filter((item) => {
+      if (item.status === 'completed' || item.status === 'cancelled') return false
+      if (new Date(item.startsAt).getTime() < nowMs) return false
+      const home = normalizeLeagueTeamName(item.homeTeam)
+      const away = normalizeLeagueTeamName(item.awayTeam)
+      return home === teamKey || away === teamKey
+    })
     .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())[0]
 
   return (

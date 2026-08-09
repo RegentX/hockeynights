@@ -4,10 +4,11 @@
 
 import {Magnifier} from '@gravity-ui/icons'
 import {Icon, Select, Text, TextInput} from '@gravity-ui/uikit'
-import {useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 
 import type {SkillLevel} from '@/entities/common'
 import type {LeagueFilters as LeagueFiltersType} from '@/entities/league'
+import {SKILL_LEVEL_LABELS} from '@/features/events'
 import {
   countActiveLeagueFilters,
   isLeagueCatalogChipActive,
@@ -23,12 +24,14 @@ export interface LeagueFiltersProps {
   onReset?: () => void
 }
 
+const SEARCH_DEBOUNCE_MS = 300
+
 const LEVEL_OPTIONS: Array<{value: '' | SkillLevel; content: string}> = [
   {value: '', content: 'Любой уровень'},
-  {value: 'beginner', content: 'Дебютант'},
-  {value: 'amateur', content: 'Любитель'},
-  {value: 'advanced', content: 'Продвинутый'},
-  {value: 'league', content: 'Лига'},
+  {value: 'beginner', content: SKILL_LEVEL_LABELS.beginner},
+  {value: 'amateur', content: SKILL_LEVEL_LABELS.amateur},
+  {value: 'advanced', content: SKILL_LEVEL_LABELS.advanced},
+  {value: 'league', content: SKILL_LEVEL_LABELS.league},
 ]
 
 const RECRUITING_OPTIONS: Array<{
@@ -46,9 +49,35 @@ const RECRUITING_OPTIONS: Array<{
  */
 export function LeagueFilters({filters, onChange, onReset}: LeagueFiltersProps) {
   const [advancedOpen, setAdvancedOpen] = useState(false)
+  const [searchDraft, setSearchDraft] = useState(filters.query ?? '')
+  const [syncedQuery, setSyncedQuery] = useState(filters.query)
   const activeCount = countActiveLeagueFilters(filters)
+  const filtersRef = useRef(filters)
+  const onChangeRef = useRef(onChange)
+
+  // Синхронизация черновика с URL при внешнем сбросе/смене query (без effect → setState).
+  if (filters.query !== syncedQuery) {
+    setSyncedQuery(filters.query)
+    setSearchDraft(filters.query ?? '')
+  }
 
   const patch = (partial: Partial<LeagueFiltersType>) => onChange({...filters, ...partial})
+
+  useEffect(() => {
+    filtersRef.current = filters
+    onChangeRef.current = onChange
+  })
+
+  useEffect(() => {
+    const nextQuery = searchDraft.trim() || undefined
+    if ((filtersRef.current.query ?? undefined) === nextQuery) return
+
+    const timer = window.setTimeout(() => {
+      onChangeRef.current({...filtersRef.current, query: nextQuery})
+    }, SEARCH_DEBOUNCE_MS)
+
+    return () => window.clearTimeout(timer)
+  }, [searchDraft])
 
   return (
     <div
@@ -66,8 +95,8 @@ export function LeagueFilters({filters, onChange, onReset}: LeagueFiltersProps) 
           <TextInput
             size="m"
             placeholder="Название лиги…"
-            value={filters.query ?? ''}
-            onUpdate={(value) => patch({query: value.trim() ? value : undefined})}
+            value={searchDraft}
+            onUpdate={setSearchDraft}
             hasClear
             startContent={
               <span className="arenas-catalog__search-icon" aria-hidden>

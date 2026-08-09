@@ -10,13 +10,16 @@ import {useEffect} from 'react'
 import {useNavigate, useSearchParams} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
-import type {
-  League,
-  LeagueFilters as LeagueFiltersType,
-  LeagueRegionFilter,
-} from '@/entities/league'
+import type {League, LeagueFilters as LeagueFiltersType} from '@/entities/league'
 import {fetchLeagues} from '@/entities/league'
-import {LeagueCard, LeagueFilters, MyLeagueWidget} from '@/features/leagues'
+import {
+  countActiveLeagueFilters,
+  LeagueCard,
+  LeagueFilters,
+  MyLeagueWidget,
+  parseLeagueFiltersFromSearchParams,
+  writeLeagueFiltersToSearchParams,
+} from '@/features/leagues'
 import {PartnerAccessHint, PartnerCabinetBanner} from '@/features/partners'
 import {LEAGUES_PAGE_TITLE} from '@/shared/config/navigationLabels'
 import {leagueDetailsPath} from '@/shared/const/appRoutes'
@@ -30,30 +33,6 @@ import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const EMPTY_FILTERS: LeagueFiltersType = {}
 
-function hasActiveFilters(filters: LeagueFiltersType): boolean {
-  return Object.values(filters).some((v) => v !== undefined && v !== '')
-}
-
-function filtersFromSearchParams(params: URLSearchParams): LeagueFiltersType {
-  const region = params.get('region')
-  return {
-    query: params.get('q') || undefined,
-    region: region === 'moscow' || region === 'russia' ? (region as LeagueRegionFilter) : undefined,
-    level: (params.get('level') as LeagueFiltersType['level']) || undefined,
-    recruitingStatus:
-      (params.get('recruitingStatus') as LeagueFiltersType['recruitingStatus']) || undefined,
-  }
-}
-
-function writeFiltersToSearchParams(filters: LeagueFiltersType): URLSearchParams {
-  const next = new URLSearchParams()
-  if (filters.query) next.set('q', filters.query)
-  if (filters.region) next.set('region', filters.region)
-  if (filters.level) next.set('level', filters.level)
-  if (filters.recruitingStatus) next.set('recruitingStatus', filters.recruitingStatus)
-  return next
-}
-
 /**
  * @spec SPEC-UI-2.7 - Табло турнирной таблицы
  * @spec SPEC-FR-7.1.1 - Страница списка лиг
@@ -64,7 +43,7 @@ export function LeaguesPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const legacyLeagueId = searchParams.get('leagueId')
 
-  const filters = filtersFromSearchParams(searchParams)
+  const filters = parseLeagueFiltersFromSearchParams(searchParams)
 
   // Старые ссылки ?leagueId= → полноценная страница лиги
   useEffect(() => {
@@ -88,14 +67,14 @@ export function LeaguesPage() {
   })
 
   const applyFilters = (nextFilters: LeagueFiltersType) => {
-    setSearchParams(writeFiltersToSearchParams(nextFilters), {replace: true})
+    setSearchParams(writeLeagueFiltersToSearchParams(nextFilters), {replace: true})
   }
 
   const handleResetFilters = () => applyFilters(EMPTY_FILTERS)
 
   const openLeague = (id: string) => navigate(leagueDetailsPath(id))
 
-  const isFiltered = hasActiveFilters(filters)
+  const isFiltered = countActiveLeagueFilters(filters) > 0
   const showLayout = !isPending && !isError && !legacyLeagueId
   const showEmpty = showLayout && leagues.length === 0
 
@@ -114,8 +93,8 @@ export function LeaguesPage() {
       </div>
 
       <Text color="secondary" data-testid={testId('leagues', 'page', 'text', 'subtitle')}>
-        Любительские лиги Москвы и России. Данные могут быть mock, manual, imported или external —
-        смотрите бейдж источника.
+        Лиги Москвы и России. Данные могут быть mock, manual, imported или external — смотрите бейдж
+        источника.
       </Text>
 
       <MyLeagueWidget />
