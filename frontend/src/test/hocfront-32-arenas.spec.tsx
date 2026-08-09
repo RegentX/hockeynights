@@ -7,9 +7,12 @@ import userEvent from '@testing-library/user-event'
 import {Route, Routes} from 'react-router'
 import {beforeEach, describe, expect, it} from 'vitest'
 
+import {createIceListing, createIceSlot} from '@/entities/arena'
 import {canManageArena} from '@/features/access'
+import {mockIceSlots, resetMockIceSlots} from '@/mocks/data/arenas'
 import {mockIceBookings, resetMockIceBookings} from '@/mocks/data/external-flows'
 import {mockIceListings, resetMockIceListings} from '@/mocks/data/iceListings'
+import {canManagePartnerEntity} from '@/mocks/data/partners'
 import {completeOnboarding, selectMockPersona} from '@/mocks/data/session'
 import {ArenaDetailsPage} from '@/pages/ArenaDetailsPage'
 import {ArenaPartnerDashboard} from '@/pages/ArenaPartnerDashboard'
@@ -23,6 +26,7 @@ describe('HOCFRONT-32 Arenas reform', () => {
     clearTestStorage()
     resetMockIceListings()
     resetMockIceBookings()
+    resetMockIceSlots()
   })
 
   it('filters catalog by city region Москва / Подмосковье via URL', async () => {
@@ -102,7 +106,7 @@ describe('HOCFRONT-32 Arenas reform', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId('arenas-partner-text-listing-status-listing-002'),
+        screen.getByTestId('arenas-partner-badge-listing-status-listing-002'),
       ).toHaveTextContent('Опубликовано')
     })
   })
@@ -186,5 +190,79 @@ describe('HOCFRONT-32 Arenas reform', () => {
         screen.getByTestId('arenas-partner-bookings-badge-status-booking-seed-001'),
       ).toHaveTextContent('Подтверждено')
     })
+  })
+
+  it('allows partner to manage schedule slots in cabinet', async () => {
+    const user = userEvent.setup()
+    selectMockPersona('arena-partner')
+    const beforeCount = mockIceSlots.filter((slot) => slot.arenaId === 'arena-001').length
+
+    renderWithProviders(
+      <Routes>
+        <Route path={routes.partnerArena} element={<ArenaPartnerDashboard />} />
+      </Routes>,
+      {routerProps: {initialEntries: ['/partner/arenas/arena-001']}},
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('arenas-partner-tab-schedule')).toBeInTheDocument()
+    })
+    await user.click(screen.getByTestId('arenas-partner-tab-schedule'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('arenas-partner-panel-schedule')).toBeInTheDocument()
+      expect(screen.getByTestId('arenas-partner-btn-create-slot')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByTestId('arenas-partner-btn-create-slot'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('arenas-partner-text-slot-success')).toBeInTheDocument()
+      expect(mockIceSlots.filter((slot) => slot.arenaId === 'arena-001').length).toBe(
+        beforeCount + 1,
+      )
+    })
+  })
+
+  it('allows admin persona to open arena cabinet via membership', async () => {
+    const session = selectMockPersona('admin')
+    expect(canManageArena(session, 'arena-001')).toBe(true)
+    expect(canManagePartnerEntity('arena', 'arena-001')).toBe(true)
+
+    renderWithProviders(
+      <Routes>
+        <Route path={routes.partnerArena} element={<ArenaPartnerDashboard />} />
+      </Routes>,
+      {routerProps: {initialEntries: ['/partner/arenas/arena-001']}},
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('arenas-partner-page-arena-001')).toBeInTheDocument()
+      expect(screen.getByTestId('arenas-partner-tab-schedule')).toBeInTheDocument()
+      expect(screen.getByTestId('arenas-partner-tab-profile')).toBeInTheDocument()
+    })
+  })
+
+  it('rejects listing and slot mutations without arena membership', async () => {
+    completeOnboarding('Игрок', ['player'], [])
+    expect(canManagePartnerEntity('arena', 'arena-001')).toBe(false)
+
+    await expect(
+      createIceListing({
+        arenaId: 'arena-001',
+        title: 'Чужое объявление',
+        startsAt: new Date('2026-08-21T20:00:00+03:00').toISOString(),
+        endsAt: new Date('2026-08-21T21:30:00+03:00').toISOString(),
+        status: 'published',
+      }),
+    ).rejects.toThrow()
+
+    await expect(
+      createIceSlot({
+        arenaId: 'arena-001',
+        startsAt: new Date('2026-08-21T20:00:00+03:00').toISOString(),
+        endsAt: new Date('2026-08-21T21:30:00+03:00').toISOString(),
+      }),
+    ).rejects.toThrow()
   })
 })

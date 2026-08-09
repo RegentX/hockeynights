@@ -3,7 +3,10 @@ export type {
   ArenaBookingMode,
   ArenaCityRegion,
   ArenaFilters,
+  CreateIceSlotPayload,
   IceSlot,
+  IceSlotStatus,
+  UpdateIceSlotPayload,
 } from './types/arenaTypes'
 export type {
   CreateIceListingPayload,
