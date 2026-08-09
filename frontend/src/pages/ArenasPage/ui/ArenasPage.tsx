@@ -29,6 +29,7 @@ import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
 
@@ -224,17 +225,12 @@ export function ArenasPage() {
       )}
 
       {isError && !isPending && (
-        <div data-testid={testId('arenas', 'page', 'error')}>
-          <EmptyNetState
-            title="Не удалось загрузить ледовые арены"
-            copy="Проверь соединение и попробуй ещё раз."
-            action={
-              <HockeyButton view="outlined" size="s" onClick={() => refetch()}>
-                Повторить
-              </HockeyButton>
-            }
-          />
-        </div>
+        <QueryErrorState
+          title="Не удалось загрузить ледовые арены"
+          onRetry={() => refetch()}
+          testIdPrefix="arenas"
+          data-testid={testId('arenas', 'page', 'error')}
+        />
       )}
 
       {showEmpty && (

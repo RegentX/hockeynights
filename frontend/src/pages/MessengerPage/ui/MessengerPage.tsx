@@ -33,6 +33,7 @@ import {
 } from '@/entities/messenger'
 import {ChatBubble} from '@/features/messenger'
 import {testId} from '@/shared/testing/testId'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 
 const MOBILE_BREAKPOINT = '(max-width: 768px)'
 
@@ -50,7 +51,11 @@ export function MessengerPage() {
   const queryClient = useQueryClient()
   const [searchParams, setSearchParams] = useSearchParams()
   const chatIdFromUrl = searchParams.get('chatId')
-  const {data: chats = []} = useQuery({
+  const {
+    data: chats = [],
+    isError: chatsError,
+    refetch: refetchChats,
+  } = useQuery({
     queryKey: ['messenger-chats'],
     queryFn: fetchChats,
   })
@@ -575,6 +580,14 @@ export function MessengerPage() {
             </div>
           )}
         </div>
+        {chatsError && (
+          <QueryErrorState
+            title="Не удалось загрузить чаты"
+            onRetry={() => refetchChats()}
+            testIdPrefix="messenger"
+            data-testid={testId('messenger', 'page', 'error', 'chats')}
+          />
+        )}
         <div className="chat-list" data-testid={testId('messenger', 'page', 'list', 'chats')}>
           {sortedChats.map((chat) => (
             <div

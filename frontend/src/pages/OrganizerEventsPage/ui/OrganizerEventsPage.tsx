@@ -14,11 +14,17 @@ import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 export function OrganizerEventsPage() {
   const {userId, canOrganizeEvents} = useSessionAccess()
-  const {data: events = [], isLoading} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
+  const {
+    data: events = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({queryKey: ['events'], queryFn: fetchEvents})
 
   const organizerCatalog = useMemo(
     () =>
@@ -113,6 +119,13 @@ export function OrganizerEventsPage() {
         <div data-testid={testId('events', 'organizer-page', 'loader')}>
           <ScoreboardLoader label="Загрузка…" />
         </div>
+      ) : isError ? (
+        <QueryErrorState
+          title="Не удалось загрузить тренировки"
+          onRetry={() => refetch()}
+          testIdPrefix="events"
+          data-testid={testId('events', 'organizer-page', 'error')}
+        />
       ) : (
         <OrganizerTrainingsPanel events={organizerCatalog} organizerUserId={userId} />
       )}

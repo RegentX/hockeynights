@@ -11,6 +11,8 @@ import type {
   LeagueStanding,
   LeagueTeamApplication,
 } from '@/entities/league'
+import type {LeagueRegionFilter} from '@/entities/league'
+import {resolveLeagueRegion} from '@/entities/league'
 import {
   addMockLeagueApplication,
   addMockLeaguePost,
@@ -36,11 +38,37 @@ import {canManagePartnerEntity} from '@/mocks/data/partners'
 import {mockSession} from '@/mocks/data/session'
 import {canManageTeamAsCaptain} from '@/mocks/data/teams'
 
-/** @spec SPEC-FR-7.1.1 - Handlers лиг */
+/**
+ * @spec SPEC-FR-7.1.1 - Handlers лиг
+ * HOCFRONT-34A - краткие фильтры каталога (поиск, регион, уровень, набор)
+ */
 export const leagueHandlers = [
-  http.get('/mock-api/v1/leagues', () => {
-    const visible = mockLeagues.filter((l) => l.visible !== false)
-    return HttpResponse.json(visible)
+  http.get('/mock-api/v1/leagues', ({request}) => {
+    const url = new URL(request.url)
+    const query = url.searchParams.get('q')?.trim().toLowerCase()
+    const region = url.searchParams.get('region') as LeagueRegionFilter | null
+    const level = url.searchParams.get('level')
+    const recruitingStatus = url.searchParams.get('recruitingStatus')
+
+    let result = mockLeagues.filter((l) => l.visible !== false)
+
+    if (query) {
+      result = result.filter((l) => {
+        const haystack = [l.name, l.region, l.description].filter(Boolean).join(' ').toLowerCase()
+        return haystack.includes(query)
+      })
+    }
+    if (region === 'moscow' || region === 'russia') {
+      result = result.filter((l) => resolveLeagueRegion(l.region) === region)
+    }
+    if (level) {
+      result = result.filter((l) => l.level === level)
+    }
+    if (recruitingStatus) {
+      result = result.filter((l) => l.recruitingStatus === recruitingStatus)
+    }
+
+    return HttpResponse.json(result)
   }),
 
   http.get('/mock-api/v1/leagues/:leagueId', ({params}) => {

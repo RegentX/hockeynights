@@ -18,4 +18,5 @@ export {
   updateLeagueScheduleItem,
   updateLeagueStanding,
 } from './api/leaguesApi'
+export {LEAGUE_REGION_LABELS, resolveLeagueRegion} from './lib/leagueRegion'
 export * from './model'

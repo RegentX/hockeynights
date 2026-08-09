@@ -11,6 +11,7 @@ import {partnerCabinetLabel, partnerCabinetPath} from '@/shared/const/partnerRou
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 
 const CABINET_FEATURES: Record<string, string[]> = {
   league: ['Профиль лиги', 'Заявки команд', 'Расписание и таблица', 'Публикации', 'Аналитика'],
@@ -27,8 +28,20 @@ const CABINET_FEATURES: Record<string, string[]> = {
 
 /** @spec SPEC-FR-24.5.3 - Хаб партнёрских кабинетов */
 export function PartnerHubPage() {
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {data: session, isError, refetch} = useQuery({queryKey: ['session'], queryFn: fetchSession})
   const memberships = session?.user.partnerMemberships ?? []
+
+  // Без этой ветки сбой запроса выглядел бы как «у вас нет кабинетов»
+  if (isError) {
+    return (
+      <QueryErrorState
+        title="Не удалось загрузить партнёрские кабинеты"
+        onRetry={() => refetch()}
+        testIdPrefix="partners"
+        data-testid={testId('partners', 'hub', 'error')}
+      />
+    )
+  }
 
   if (memberships.length === 0) {
     return (

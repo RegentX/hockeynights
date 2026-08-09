@@ -24,7 +24,7 @@ import {ScoreboardText} from '@/shared/ui/ScoreboardText'
  */
 export function SideBoard() {
   const {data: events = []} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
-  const {data: leagues = []} = useQuery({queryKey: ['leagues'], queryFn: fetchLeagues})
+  const {data: leagues = []} = useQuery({queryKey: ['leagues'], queryFn: () => fetchLeagues()})
   const featuredLeague = leagues[0]
   const {data: standings = []} = useQuery({
     queryKey: ['league-standings', featuredLeague?.id],

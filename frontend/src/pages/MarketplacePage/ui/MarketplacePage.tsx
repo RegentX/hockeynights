@@ -12,6 +12,7 @@ import type {MarketplaceFilters, MarketplaceSort} from '@/entities/shop'
 import {fetchMarketplaceFeed} from '@/entities/shop'
 import {MarketplaceProductCard, MarketplaceShopStrip} from '@/features/shops'
 import {testId} from '@/shared/testing/testId'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const SORT_OPTIONS = [
@@ -53,7 +54,7 @@ export function MarketplacePage() {
     scrollOnNextProductRef.current = true
   }, [productIdFromUrl])
 
-  const {data, isLoading, isFetching} = useQuery({
+  const {data, isLoading, isFetching, isError, refetch} = useQuery({
     queryKey: ['marketplace', filters],
     queryFn: () => fetchMarketplaceFeed(filters),
   })
@@ -192,6 +193,13 @@ export function MarketplacePage() {
         <div data-testid={testId('shops', 'marketplace', 'loader')}>
           <ScoreboardLoader label="Загрузка маркетплейса" />
         </div>
+      ) : isError ? (
+        <QueryErrorState
+          title="Не удалось загрузить маркетплейс"
+          onRetry={() => refetch()}
+          testIdPrefix="shops"
+          data-testid={testId('shops', 'marketplace', 'error')}
+        />
       ) : listings.length === 0 ? (
         <div className="marketplace__empty" data-testid={testId('shops', 'marketplace', 'empty')}>
           <Text

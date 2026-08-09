@@ -640,7 +640,8 @@
   }
 }
 
-.arenas-catalog__search-icon {
+.arenas-catalog__search-icon,
+.league-filters__search-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -999,6 +1000,118 @@
   color: #7eb8e0;
   border-color: rgba(91, 159, 212, 0.45);
   background: rgba(91, 159, 212, 0.12);
+}
+
+/* HOCFRONT-34A — единый стиль чипов на карточке/деталке лиги: ♥ + профиль + уровень */
+.league-meta-chips {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.league-meta-chip {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--hockey-card-border);
+  background: color-mix(
+    in srgb,
+    var(--hockey-glass-bg, rgba(255, 255, 255, 0.04)) 100%,
+    transparent
+  );
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--hockey-text-muted, var(--g-color-text-secondary));
+}
+
+.league-meta-chip--favorite.favorite-btn {
+  width: 26px;
+  min-width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 999px;
+  background: color-mix(
+    in srgb,
+    var(--hockey-glass-bg, rgba(255, 255, 255, 0.04)) 100%,
+    transparent
+  );
+}
+
+/* HOCFRONT-34A — кликабельная карточка лиги: hitbox + интерактивы поверх */
+.league-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+
+  &__hitbox {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: inherit;
+
+    &:focus-visible {
+      outline: 2px solid var(--hockey-line-blue);
+      outline-offset: 2px;
+    }
+  }
+
+  &__content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    pointer-events: none;
+  }
+
+  &__content .league-meta-chips,
+  &__content .league-card__site-link {
+    pointer-events: auto;
+  }
+
+  &__site-link {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--hockey-text-muted, var(--g-color-text-secondary));
+    font-size: 12px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--hockey-line-blue);
+    }
+  }
+}
+
+.league-card--clickable {
+  cursor: pointer;
+  transition:
+    border-color var(--hockey-motion-fast) var(--hockey-motion-ease),
+    box-shadow var(--hockey-motion-fast) var(--hockey-motion-ease),
+    transform var(--hockey-motion-fast) var(--hockey-motion-ease);
+
+  &:hover {
+    border-color: var(--hockey-line-blue);
+    transform: translateY(-2px);
+  }
 }
 
 .arena-detail {

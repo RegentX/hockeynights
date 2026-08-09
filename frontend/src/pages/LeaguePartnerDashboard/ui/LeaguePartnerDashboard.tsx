@@ -17,9 +17,11 @@ import {
   LeagueScheduleManager,
 } from '@/features/leagues'
 import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const RECRUITING_OPTIONS = [
@@ -38,7 +40,15 @@ export function LeaguePartnerDashboard() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
 
   const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
-  const {data: leagues = [], isLoading} = useQuery({queryKey: ['leagues'], queryFn: fetchLeagues})
+  const {
+    data: leagues = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ['leagues'],
+    queryFn: () => fetchLeagues(),
+  })
   const league = leagues.find((item) => item.id === leagueId)
   const [draft, setDraft] = useState<Partial<League>>({})
 
@@ -57,10 +67,41 @@ export function LeaguePartnerDashboard() {
     },
   })
 
-  if (isLoading || !league) {
+  if (isLoading) {
     return (
       <div data-testid={testId('leagues', 'partner', 'loader')}>
         <ScoreboardLoader label="Загрузка кабинета лиги" />
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <QueryErrorState
+        title="Не удалось загрузить кабинет лиги"
+        onRetry={() => refetch()}
+        testIdPrefix="leagues"
+        data-testid={testId('leagues', 'partner', 'error')}
+      />
+    )
+  }
+
+  if (!league) {
+    return (
+      <div
+        className="hockey-stack hockey-stack--gap-12"
+        data-testid={testId('leagues', 'partner', 'empty')}
+      >
+        <EmptyNetState title="Лига не найдена" copy="Возможно, ссылка устарела или лига скрыта." />
+        <Link to="/leagues" data-testid={testId('leagues', 'partner', 'link', 'back-empty')}>
+          <HockeyButton
+            view="flat"
+            size="m"
+            data-testid={testId('leagues', 'partner', 'btn', 'back-empty')}
+          >
+            К каталогу лиг
+          </HockeyButton>
+        </Link>
       </div>
     )
   }

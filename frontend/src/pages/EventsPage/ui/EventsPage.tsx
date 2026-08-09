@@ -45,6 +45,7 @@ import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {HockeyRinkLoader} from '@/shared/ui/HockeyRinkLoader'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
 
 const MOCK_RESULTS_LOADER_MS = 3000
@@ -74,7 +75,12 @@ const TAB_TITLES: Record<CatalogTab, string> = {
  * @spec HOCFRONT-28C - chips + URLSearchParams
  */
 export function EventsPage() {
-  const {data: events = [], isLoading} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
+  const {
+    data: events = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({queryKey: ['events'], queryFn: fetchEvents})
   const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
   const {userId, roles, session, canOrganizeEvents} = useSessionAccess()
   const canSeeDeclineDetails =
@@ -602,14 +608,27 @@ export function EventsPage() {
         </div>
       )}
 
-      {!isLoading && !isResultsLoading && !isDemoLoaderVisible && upcomingCatalog.length === 0 && (
-        <div data-testid={testId('events', 'page', 'empty', 'upcoming')}>
-          <EmptyNetState
-            title="Событий пока нет"
-            copy="Ближайшие игры и тренировки появятся здесь."
-          />
-        </div>
+      {isError && !isLoading && (
+        <QueryErrorState
+          title="Не удалось загрузить игры и тренировки"
+          onRetry={() => refetch()}
+          testIdPrefix="events"
+          data-testid={testId('events', 'page', 'error')}
+        />
       )}
+
+      {!isError &&
+        !isLoading &&
+        !isResultsLoading &&
+        !isDemoLoaderVisible &&
+        upcomingCatalog.length === 0 && (
+          <div data-testid={testId('events', 'page', 'empty', 'upcoming')}>
+            <EmptyNetState
+              title="Событий пока нет"
+              copy="Ближайшие игры и тренировки появятся здесь."
+            />
+          </div>
+        )}
 
       {!isLoading && !isResultsLoading && !isDemoLoaderVisible && filteredCatalog.length > 0 && (
         <div

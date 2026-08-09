@@ -13,11 +13,13 @@ import {fetchPublicPlayer} from '@/entities/profile'
 import {CalendarShell} from '@/features/calendar'
 import {ProfileFavoritesSection} from '@/features/favorites'
 import {PlayerPublicInfoSection, PlayerTeamsSection} from '@/features/players'
+import {isNotFoundError} from '@/shared/api/client'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {PlayerCard} from '@/widgets/PlayerCard'
 
@@ -32,7 +34,7 @@ export function PublicPlayerProfilePage() {
     queryKey: ['session'],
     queryFn: fetchSession,
   })
-  const {data, isLoading, error} = useQuery({
+  const {data, isLoading, error, refetch} = useQuery({
     queryKey: ['player-public', userId],
     queryFn: () => fetchPublicPlayer(userId),
     enabled: Boolean(userId),
@@ -49,6 +51,18 @@ export function PublicPlayerProfilePage() {
       />
     )
   }
+  // Сбой загрузки — это не «профиль скрыт»: даём повторить, а не уводим в каталог
+  if (error && !isNotFoundError(error)) {
+    return (
+      <QueryErrorState
+        title="Не удалось загрузить профиль игрока"
+        onRetry={() => refetch()}
+        testIdPrefix="players"
+        data-testid={testId('players', 'public-player-profile', 'error')}
+      />
+    )
+  }
+
   if (error || !data) {
     return (
       <IceCard
