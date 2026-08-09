@@ -8,7 +8,9 @@ import {useMemo, useState} from 'react'
 import {useSearchParams} from 'react-router'
 
 import type {AttendanceStatus, EventType} from '@/entities/common'
+import {fetchMyIceAgreements} from '@/entities/external-flow'
 import {useSessionAccess} from '@/features/access'
+import {agreementToCalendarEvent} from '@/features/events'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -75,10 +77,26 @@ export function CalendarShell({
     queryFn: () => loadCalendarEvents(state),
   })
 
-  const events = useMemo(
-    () => filterCalendarEvents(rawEvents, state, userId),
-    [rawEvents, state, userId],
-  )
+  const showIceMarkers = !compact && state.scope === 'me' && state.lens === 'organizer'
+  const {data: iceAgreements = []} = useQuery({
+    queryKey: ['my-ice-agreements'],
+    queryFn: fetchMyIceAgreements,
+    enabled: showIceMarkers,
+  })
+
+  const events = useMemo(() => {
+    const markers = showIceMarkers
+      ? iceAgreements
+          .map((item) => agreementToCalendarEvent(item, userId))
+          .filter((item): item is NonNullable<typeof item> => Boolean(item))
+      : []
+    const known = new Set(rawEvents.map((event) => event.id))
+    const merged = [...rawEvents]
+    for (const marker of markers) {
+      if (!known.has(marker.id)) merged.push(marker)
+    }
+    return filterCalendarEvents(merged, state, userId)
+  }, [rawEvents, state, userId, showIceMarkers, iceAgreements])
 
   function patchState(patch: Partial<CalendarUiState>) {
     const next: CalendarUiState = {

@@ -18,7 +18,12 @@ export {
   resolvePlayerNavItems,
   splitNavItemsByTier,
 } from './lib/navigationAccess'
-export {canOrganizeEvents, isPlayerOnlySession} from './lib/sessionAccess'
+export {
+  canAccessOrganizerCabinet,
+  canOrganizeEvents,
+  hasTrainingOrganizerRole,
+} from './lib/organizerAccess'
+export {isPlayerOnlySession} from './lib/sessionAccess'
 export {
   describeSessionPersona,
   getPrimaryPartnerPath,

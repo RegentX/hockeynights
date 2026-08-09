@@ -103,7 +103,7 @@ describe('HOCFRONT-17 nav rename and sync', () => {
     const mobile = resolveMobileNavItems(makeSession()).map((item) => item.to)
     const more = resolveMobileMoreNavItems(makeSession()).map((item) => item.to)
     const partner = resolvePartnerNavItems(
-      makeSession(['organizer'], [{kind: 'shop', entityId: 'shop-1', entityName: 'Shop'}]),
+      makeSession([], [{kind: 'shop', entityId: 'shop-1', entityName: 'Shop'}]),
     ).map((item) => item.to)
 
     expect(desktop).not.toContain(routes.notifications)

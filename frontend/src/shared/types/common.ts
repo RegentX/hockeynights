@@ -8,7 +8,8 @@ export type UserRole =
   | 'player' // SPEC-FR-1.3.1
   | 'goalie' // SPEC-FR-1.3.2
   | 'captain' // SPEC-FR-1.3.3
-  | 'organizer' // SPEC-FR-1.3.4
+  | 'organizer' // SPEC-FR-1.3.4 — legacy alias для training_organizer
+  | 'training_organizer' // CEO EPIC-08 / TASK-01-03
   | 'coach' // SPEC-FR-1.3.6
   | 'club_admin' // HOCFRONT-25 / EPIC-06
   | 'admin' // SPEC-FR-1.3.5

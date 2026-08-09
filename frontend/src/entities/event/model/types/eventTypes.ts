@@ -60,6 +60,11 @@ export interface GameEvent {
   district?: string
   /** Статус набора */
   registrationStatus?: 'open' | 'full'
+  /**
+   * HOCFRONT-28F / ORG-2 — жизненный цикл в кабинете организатора.
+   * По умолчанию (если нет поля) считаем published.
+   */
+  lifecycleStatus?: 'draft' | 'published' | 'cancelled'
   /** Модель доступа к тренировке */
   accessScope?: 'club_only' | 'limited' | 'public' | 'private_club' | 'public_open'
   /** Список пользователей, допущенных к limited-тренировке */
@@ -74,6 +79,9 @@ export interface GameEvent {
   hasTeamRsvp?: boolean
   /** HOCFRONT-25 — клуб-владелец private_club тренировки */
   clubId?: string
+  /** ICE — привязка к договорённости / брони льда */
+  iceBookingId?: string
+  iceAgreementId?: string
 }
 
 /** @spec SPEC-FR-4.1.1 - Payload создания события */
@@ -101,6 +109,10 @@ export interface CreateEventPayload {
   clubId?: string
   trainingFormat?: GameEvent['trainingFormat']
   district?: string
+  /** HOCFRONT-28G — черновик vs публикация */
+  lifecycleStatus?: GameEvent['lifecycleStatus']
+  iceBookingId?: string
+  iceAgreementId?: string
 }
 
 /** HOCFRONT-28G — payload редактирования события */

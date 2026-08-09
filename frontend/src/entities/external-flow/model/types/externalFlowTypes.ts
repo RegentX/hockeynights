@@ -3,8 +3,9 @@
  * HOCFRONT-32 — inbox заявок арены + чат
  */
 
-/** Статусы заявки на лёд (кабинет арены) */
+/** Статусы заявки на лёд (кабинет арены / организатора) */
 export type IceBookingStatus =
+  | 'draft'
   | 'pending_review'
   | 'needs_info'
   | 'confirmed'
@@ -96,6 +97,9 @@ export interface IceBookingRequest {
   paymentDueAt?: string
   chatId?: string
   declineReason?: string
+  /** Интервал льда (для пула договорённостей организатора) */
+  startsAt?: string
+  endsAt?: string
 }
 
 /** @spec SPEC-FR-9.2.3 - Intent перехода к покупке */

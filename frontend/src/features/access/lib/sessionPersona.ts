@@ -2,6 +2,7 @@
  * SPEC-FR-1.3.7, SPEC-FR-24.5.3, SPEC-FR-24.7.3
  */
 
+import {hasTrainingOrganizerRole} from '@/features/access/lib/organizerAccess'
 import {routes} from '@/shared/const/appRoutes'
 import {partnerCabinetPath} from '@/shared/const/partnerRoutes'
 import type {UserRole} from '@/shared/types/common'
@@ -39,6 +40,6 @@ export function describeSessionPersona(session: Session): string {
   if (session.user.roles.includes('coach')) return 'Тренер'
   if (session.user.roles.includes('captain')) return 'Капитан'
   if (session.user.roles.includes('goalie')) return 'Вратарь'
-  if (session.user.roles.includes('organizer')) return 'Организатор'
+  if (hasTrainingOrganizerRole(session.user.roles)) return 'Организатор тренировок'
   return 'Игрок'
 }

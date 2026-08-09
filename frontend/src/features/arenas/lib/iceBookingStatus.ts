@@ -5,6 +5,7 @@
 import type {IceBookingStatus} from '@/entities/external-flow'
 
 export const ICE_BOOKING_STATUS_LABELS: Record<IceBookingStatus, string> = {
+  draft: 'Черновик',
   pending_review: 'На рассмотрении',
   needs_info: 'Нужны данные',
   confirmed: 'Подтверждено',
@@ -16,6 +17,22 @@ export const ICE_BOOKING_STATUS_LABELS: Record<IceBookingStatus, string> = {
   expired: 'Просрочено',
   mock_submitted: 'На рассмотрении',
   redirect_pending: 'На рассмотрении',
+}
+
+/** Лейблы с точки зрения организатора тренировок (кабинет заявок) */
+export const ORGANIZER_ICE_BOOKING_STATUS_LABELS: Record<IceBookingStatus, string> = {
+  draft: 'Черновик',
+  pending_review: 'Создана · на рассмотрении',
+  needs_info: 'Нужны данные',
+  confirmed: 'Принята арены',
+  awaiting_payment: 'Ждём оплату',
+  payment_received: 'Оплата переведена',
+  booked: 'Подтверждена · лёд забронирован',
+  declined: 'Отклонено',
+  cancelled: 'Отменено',
+  expired: 'Просрочено',
+  mock_submitted: 'Создана · на рассмотрении',
+  redirect_pending: 'Создана · на рассмотрении',
 }
 
 export type IceBookingInboxBucket = 'inbox' | 'work' | 'payment' | 'done' | 'archive'
@@ -30,6 +47,7 @@ export const ICE_BOOKING_BUCKET_LABELS: Record<IceBookingInboxBucket, string> = 
 
 export function iceBookingBucket(status: IceBookingStatus): IceBookingInboxBucket {
   switch (status) {
+    case 'draft':
     case 'pending_review':
     case 'mock_submitted':
     case 'redirect_pending':

@@ -16,12 +16,18 @@ import {
   getMockIceBookings,
   updateMockIceBooking,
 } from '@/mocks/data/external-flows'
+import {getMockIceAgreementsForUser} from '@/mocks/data/iceAgreements'
+import {mockUser} from '@/mocks/data/session'
 
 /** @spec SPEC-FR-6.4.2 - Handlers mock внешних сценариев */
 export const externalFlowHandlers = [
   http.get('/mock-api/v1/arenas/:arenaId/ice-booking-requests', ({params}) => {
     const bookings = getMockIceBookings(params.arenaId as string)
     return HttpResponse.json(bookings)
+  }),
+
+  http.get('/mock-api/v1/me/ice-agreements', () => {
+    return HttpResponse.json(getMockIceAgreementsForUser(mockUser.id))
   }),
 
   http.post('/mock-api/v1/ice-booking-requests', async ({request}) => {

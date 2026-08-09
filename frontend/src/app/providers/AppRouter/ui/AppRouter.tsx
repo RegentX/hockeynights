@@ -8,6 +8,7 @@ import {BrowserRouter} from 'react-router'
 import {LoginLayout} from '@/app/LoginLayout'
 import {PersonaGate} from '@/app/PersonaGate'
 import {RequireAuth} from '@/app/RequireAuth'
+import {RequireOrganizerAccess} from '@/app/RequireOrganizerAccess'
 import {AdminDashboard} from '@/pages/AdminDashboard'
 import {ArenaDetailsPage} from '@/pages/ArenaDetailsPage'
 import {ArenaPartnerDashboard} from '@/pages/ArenaPartnerDashboard'
@@ -85,9 +86,11 @@ export function AppRouter() {
               <Route path={routes.teamsCreate} element={<CreateTeamPage />} />
               <Route path={routes.teamProfile} element={<TeamProfilePage />} />
               <Route path={routes.events} element={<EventsPage />} />
-              <Route path={routes.eventsCreate} element={<CreateEventPage />} />
-              <Route path={routes.eventsOrganizer} element={<OrganizerEventsPage />} />
-              <Route path={routes.trainingEdit} element={<EditTrainingPage />} />
+              <Route element={<RequireOrganizerAccess />}>
+                <Route path={routes.eventsCreate} element={<CreateEventPage />} />
+                <Route path={routes.eventsOrganizer} element={<OrganizerEventsPage />} />
+                <Route path={routes.trainingEdit} element={<EditTrainingPage />} />
+              </Route>
               <Route path={routes.trainingDetails} element={<TrainingDetailsPage />} />
               <Route path={routes.gameDetails} element={<GameDetailsPage />} />
               <Route path={routes.calendar} element={<CalendarPage />} />

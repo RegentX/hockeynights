@@ -3,6 +3,7 @@
  * HOCFRONT-17 / TASK-02-02 — rename, sync desktop↔mobile, notifications in top bar
  */
 
+import {hasTrainingOrganizerRole} from '@/features/access/lib/organizerAccess'
 import {
   getPrimaryPartnerPath,
   shouldUsePartnerWorkspace,
@@ -220,6 +221,10 @@ export function isMobileNavItemActive(pathname: string, itemTo: string): boolean
 export function getPersonaHomePath(session: Session): string {
   if (shouldUsePartnerWorkspace(session)) return getPrimaryPartnerPath(session)
   if (session.user.roles.includes('admin')) return routes.admin
+  // EPIC-08: самостоятельный организатор — сразу в кабинет тренировок
+  if (hasTrainingOrganizerRole(session.user.roles) && !session.user.roles.includes('club_admin')) {
+    return routes.eventsOrganizer
+  }
   // HOCFRONT-15/17: SOS / IQ / Highlight не являются home path в MVP
   return routes.profile
 }

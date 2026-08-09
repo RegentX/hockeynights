@@ -1,5 +1,5 @@
 /**
- * HOCFRONT-28G — редактирование тренировки
+ * HOCFRONT-28G / ORG-4 — редактирование тренировки
  */
 
 import {Text} from '@gravity-ui/uikit'
@@ -8,7 +8,7 @@ import {Link, useParams} from 'react-router'
 
 import {fetchEventById} from '@/entities/event'
 import {useSessionAccess} from '@/features/access'
-import {EventCreateForm} from '@/features/events'
+import {EventCreateForm, eventDetailsPath} from '@/features/events'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
@@ -18,7 +18,7 @@ import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 export function EditTrainingPage() {
   const {eventId = ''} = useParams()
-  const {userId, canOrganizeEvents, roles} = useSessionAccess()
+  const {userId, canOrganizeEvents, roles, isLoading: sessionLoading} = useSessionAccess()
   const {
     data: event,
     isLoading,
@@ -26,15 +26,25 @@ export function EditTrainingPage() {
   } = useQuery({
     queryKey: ['event', eventId],
     queryFn: () => fetchEventById(eventId),
-    enabled: Boolean(eventId),
+    enabled: Boolean(eventId) && !sessionLoading && canOrganizeEvents,
   })
+
+  if (sessionLoading) {
+    return (
+      <div data-testid={testId('events', 'edit-page', 'loader', 'session')}>
+        <ScoreboardLoader label="Проверка сессии…" />
+      </div>
+    )
+  }
 
   if (!canOrganizeEvents) {
     return (
       <div data-testid={testId('events', 'edit-page', 'page', 'denied')}>
         <IceCard padding="m">
           <Text data-testid={testId('events', 'edit-page', 'text', 'denied')}>
-            Редактирование доступно организаторам и админам клуба.
+            Раздел редактирования доступен организатору тренировок, админу клуба, капитану, тренеру
+            или администратору. Сохранять изменения может только организатор этой тренировки, админ
+            клуба или администратор.
           </Text>
         </IceCard>
       </div>
@@ -53,6 +63,14 @@ export function EditTrainingPage() {
     return (
       <div data-testid={testId('events', 'edit-page', 'empty')}>
         <EmptyNetState title="Тренировка не найдена" copy="Вернитесь к списку «Мои тренировки»." />
+        <Link
+          to={routes.eventsOrganizer}
+          data-testid={testId('events', 'edit-page', 'link', 'cabinet-empty')}
+        >
+          <HockeyButton view="flat" size="m">
+            В кабинет
+          </HockeyButton>
+        </Link>
       </div>
     )
   }
@@ -80,18 +98,32 @@ export function EditTrainingPage() {
         <Text variant="header-1" data-testid={testId('events', 'edit-page', 'text', 'title')}>
           Редактирование
         </Text>
-        <Link
-          to={routes.eventsOrganizer}
-          data-testid={testId('events', 'edit-page', 'link', 'back')}
-        >
-          <HockeyButton
-            view="flat"
-            size="m"
-            data-testid={testId('events', 'edit-page', 'btn', 'back')}
+        <div className="hockey-row hockey-row--gap-8">
+          <Link
+            to={eventDetailsPath(event)}
+            data-testid={testId('events', 'edit-page', 'link', 'details')}
           >
-            К моим тренировкам
-          </HockeyButton>
-        </Link>
+            <HockeyButton
+              view="outlined"
+              size="m"
+              data-testid={testId('events', 'edit-page', 'btn', 'details')}
+            >
+              К карточке
+            </HockeyButton>
+          </Link>
+          <Link
+            to={routes.eventsOrganizer}
+            data-testid={testId('events', 'edit-page', 'link', 'back')}
+          >
+            <HockeyButton
+              view="flat"
+              size="m"
+              data-testid={testId('events', 'edit-page', 'btn', 'back')}
+            >
+              К моим тренировкам
+            </HockeyButton>
+          </Link>
+        </div>
       </div>
       <IceCard padding="m" data-testid={testId('events', 'edit-page', 'card', 'form')}>
         <EventCreateForm mode="edit" initialEvent={event} />
