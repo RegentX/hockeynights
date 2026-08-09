@@ -3,6 +3,7 @@
  * HOCFRONT-32 — inbox заявок арены
  */
 
+import type {IceAgreement} from '@/entities/event'
 import type {
   CheckoutIntent,
   CreateCheckoutIntentPayload,
@@ -22,6 +23,11 @@ export function submitIceBooking(payload: CreateIceBookingPayload): Promise<IceB
 /** Список заявок арены для кабинета партнёра */
 export function fetchArenaIceBookings(arenaId: string): Promise<IceBookingRequest[]> {
   return apiRequest<IceBookingRequest[]>(`/arenas/${arenaId}/ice-booking-requests`)
+}
+
+/** Договорённости текущего организатора (пул для создания тренировок) */
+export function fetchMyIceAgreements(): Promise<IceAgreement[]> {
+  return apiRequest<IceAgreement[]>('/me/ice-agreements')
 }
 
 /** Смена статуса / привязка чата */

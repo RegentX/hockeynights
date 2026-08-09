@@ -320,6 +320,8 @@ export function createMockEvent(payload: CreateEventPayload): GameEvent {
     lifecycleStatus: payload.lifecycleStatus ?? 'published',
     district: payload.district ?? 'САО',
     clubId: payload.clubId,
+    iceBookingId: payload.iceBookingId,
+    iceAgreementId: payload.iceAgreementId,
     participation: [],
   }
   mockEvents = [...mockEvents, event]

@@ -10,8 +10,10 @@ import {Link} from 'react-router'
 
 import {fetchEvents} from '@/entities/event'
 import {useSessionAccess} from '@/features/access'
+import {CalendarShell} from '@/features/calendar'
 import {
   countOrganizerStatuses,
+  OrganizerAgreementsPanel,
   OrganizerRegistrationsPanel,
   OrganizerTrainingsPanel,
 } from '@/features/events'
@@ -21,11 +23,11 @@ import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
-type CabinetTab = 'trainings' | 'registrations' | 'profile'
+type CabinetTab = 'trainings' | 'agreements' | 'calendar' | 'registrations' | 'profile'
 
 export function OrganizerEventsPage() {
   const {userId, session, canOrganizeEvents} = useSessionAccess()
-  const [tab, setTab] = useState<CabinetTab>('trainings')
+  const [tab, setTab] = useState<CabinetTab>('agreements')
   const {data: events = [], isLoading} = useQuery({queryKey: ['events'], queryFn: fetchEvents})
 
   const mine = useMemo(
@@ -127,6 +129,22 @@ export function OrganizerEventsPage() {
           Тренировки
         </HockeyButton>
         <HockeyButton
+          view={tab === 'agreements' ? 'action' : 'outlined'}
+          size="s"
+          onClick={() => setTab('agreements')}
+          data-testid={testId('events', 'organizer-page', 'btn', 'tab-agreements')}
+        >
+          Договорённости
+        </HockeyButton>
+        <HockeyButton
+          view={tab === 'calendar' ? 'action' : 'outlined'}
+          size="s"
+          onClick={() => setTab('calendar')}
+          data-testid={testId('events', 'organizer-page', 'btn', 'tab-calendar')}
+        >
+          Календарь
+        </HockeyButton>
+        <HockeyButton
           view={tab === 'registrations' ? 'action' : 'outlined'}
           size="s"
           onClick={() => setTab('registrations')}
@@ -152,6 +170,14 @@ export function OrganizerEventsPage() {
 
       {!isLoading && tab === 'trainings' ? (
         <OrganizerTrainingsPanel events={mine} organizerUserId={userId} />
+      ) : null}
+
+      {!isLoading && tab === 'agreements' ? <OrganizerAgreementsPanel /> : null}
+
+      {!isLoading && tab === 'calendar' ? (
+        <div data-testid={testId('events', 'organizer-page', 'panel', 'calendar')}>
+          <CalendarShell title="Календарь организатора" />
+        </div>
       ) : null}
 
       {!isLoading && tab === 'registrations' ? <OrganizerRegistrationsPanel events={mine} /> : null}

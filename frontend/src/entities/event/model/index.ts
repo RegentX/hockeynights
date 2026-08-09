@@ -7,6 +7,8 @@ export type {
   RequiredSlot,
   RosterStatus,
 } from './types/eventTypes'
+export type {IceAgreement, IceAgreementPoolStatus} from './types/iceAgreementTypes'
+export {ICE_AGREEMENT_POOL_LABELS} from './types/iceAgreementTypes'
 export type {
   EventRsvpBoard,
   EventRsvpPlayer,

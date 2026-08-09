@@ -12,8 +12,13 @@ import {fetchArenas} from '@/entities/arena'
 import {sendGoalieRequestsForEvent} from '@/entities/calendar'
 import type {EventType, SkillLevel} from '@/entities/common'
 import {createEvent, type GameEvent} from '@/entities/event'
+import {fetchMyIceAgreements} from '@/entities/external-flow'
 import {fetchProfileSettings} from '@/entities/profile'
 import {fetchTeams} from '@/entities/team'
+import {
+  formatAgreementInterval,
+  isAgreementReadyForTraining,
+} from '@/features/events/lib/iceAgreements'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -70,25 +75,67 @@ function initialAccessFromSearch(raw: string | null): NonNullable<GameEvent['acc
   return 'public_open'
 }
 
+function defaultEnd(startLocal: string): string {
+  const d = new Date(startLocal)
+  if (Number.isNaN(d.getTime())) return ''
+  return toLocalInputValue(new Date(d.getTime() + 90 * 60 * 1000))
+}
+
+function isoToLocal(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  return toLocalInputValue(d)
+}
+
 /**
  * @spec SPEC-FR-4.1.1 - Форма создания игры/тренировки
- * @spec TASK-05-07 / 05-09 / 05-10 / HOCFRONT-28G
+ * @spec TASK-05-07 / 05-09 / 05-10 / HOCFRONT-28G / ICE
  */
 export function EventCreateForm() {
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams()
   const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
   const {data: arenas = []} = useQuery({queryKey: ['arenas'], queryFn: () => fetchArenas()})
+  const {data: agreements = []} = useQuery({
+    queryKey: ['my-ice-agreements'],
+    queryFn: fetchMyIceAgreements,
+  })
   const {data: settings} = useQuery({
     queryKey: ['profile-settings'],
     queryFn: fetchProfileSettings,
   })
 
-  const [step, setStep] = useState<WizardStep>('basics')
+  const readyAgreements = useMemo(
+    () => agreements.filter(isAgreementReadyForTraining),
+    [agreements],
+  )
+
+  const initialAgreementId = searchParams.get('agreementId')
+  const initialBookingId = searchParams.get('bookingId')
+  const initialArenaId = searchParams.get('arenaId')
+  const initialStarts = searchParams.get('startsAt')
+  const initialEnds = searchParams.get('endsAt')
+
+  const [step, setStep] = useState<WizardStep>(() =>
+    initialAgreementId || initialArenaId ? 'place' : 'basics',
+  )
   const [type, setType] = useState<EventType>('training')
   const [title, setTitle] = useState('')
-  const [startsLocal, setStartsLocal] = useState(defaultStart)
-  const [arenaIdOverride, setArenaIdOverride] = useState<string | null>(null)
+  const [placeMode, setPlaceMode] = useState<'agreement' | 'manual'>(() =>
+    initialAgreementId || initialBookingId ? 'agreement' : 'manual',
+  )
+  const [selectedAgreementId, setSelectedAgreementId] = useState<string | null>(initialAgreementId)
+  const [iceBookingId, setIceBookingId] = useState<string | null>(initialBookingId)
+  const [iceAgreementId, setIceAgreementId] = useState<string | null>(initialAgreementId)
+  const [startsLocal, setStartsLocal] = useState(() =>
+    initialStarts ? isoToLocal(initialStarts) : defaultStart(),
+  )
+  const [endsLocal, setEndsLocal] = useState(() =>
+    initialEnds
+      ? isoToLocal(initialEnds)
+      : defaultEnd(initialStarts ? isoToLocal(initialStarts) : defaultStart()),
+  )
+  const [arenaIdOverride, setArenaIdOverride] = useState<string | null>(initialArenaId)
   const resolvedArenaId = arenaIdOverride ?? arenas[0]?.id ?? ''
   const [teamId, setTeamId] = useState<string | undefined>(teams[0]?.id)
   const [skillLevel, setSkillLevel] = useState<SkillLevel>('amateur')
@@ -106,6 +153,7 @@ export function EventCreateForm() {
   const [createdLifecycle, setCreatedLifecycle] = useState<GameEvent['lifecycleStatus']>()
   const [gateError, setGateError] = useState<string | null>(null)
   const [goalieNotifyCount, setGoalieNotifyCount] = useState<number | null>(null)
+  const [placeError, setPlaceError] = useState<string | null>(null)
 
   const hasPaidSubscription = useMemo(() => {
     const plan = settings?.subscription.planId
@@ -130,6 +178,7 @@ export function EventCreateForm() {
       void queryClient.invalidateQueries({queryKey: ['events']})
       void queryClient.invalidateQueries({queryKey: ['calendar']})
       void queryClient.invalidateQueries({queryKey: ['calendar-shell']})
+      void queryClient.invalidateQueries({queryKey: ['my-ice-agreements']})
       setGateError(null)
       setCreatedEventId(event.id)
       setCreatedAccessScope(event.accessScope)
@@ -150,7 +199,7 @@ export function EventCreateForm() {
 
   function buildPayload(lifecycleStatus: NonNullable<GameEvent['lifecycleStatus']>) {
     const startsAt = new Date(startsLocal)
-    const endsAt = new Date(startsAt.getTime() + 90 * 60 * 1000)
+    const endsAt = new Date(endsLocal)
     const total = Math.max(1, Number(slotsTotal) || 12)
     const goalieCount = Math.min(2, Math.max(1, Math.floor(total / 8)))
     const defenseCount = Math.floor((total - goalieCount) / 2)
@@ -177,15 +226,36 @@ export function EventCreateForm() {
       clubId: type === 'training' && accessScope === 'private_club' ? 'club-001' : undefined,
       trainingFormat: type === 'training' ? trainingFormat : undefined,
       lifecycleStatus,
+      iceBookingId: iceBookingId ?? undefined,
+      iceAgreementId: iceAgreementId ?? undefined,
     }
   }
 
   function canProceedFrom(current: WizardStep): boolean {
-    if (current === 'basics') {
-      return Boolean(title.trim()) && !Number.isNaN(new Date(startsLocal).getTime())
+    if (current === 'basics') return Boolean(title.trim())
+    if (current === 'place') {
+      const startOk = !Number.isNaN(new Date(startsLocal).getTime())
+      const endOk = !Number.isNaN(new Date(endsLocal).getTime())
+      const intervalOk = startOk && endOk && new Date(endsLocal) > new Date(startsLocal)
+      if (placeMode === 'agreement') {
+        return Boolean(selectedAgreementId && resolvedArenaId && intervalOk)
+      }
+      return Boolean(resolvedArenaId && intervalOk)
     }
-    if (current === 'place') return Boolean(resolvedArenaId)
     return true
+  }
+
+  function applyAgreement(agreementId: string) {
+    const agreement = readyAgreements.find((item) => item.id === agreementId)
+    if (!agreement) return
+    setSelectedAgreementId(agreement.id)
+    setIceAgreementId(agreement.id)
+    setIceBookingId(agreement.bookingId)
+    setArenaIdOverride(agreement.arenaId)
+    setStartsLocal(isoToLocal(agreement.startsAt))
+    setEndsLocal(isoToLocal(agreement.endsAt))
+    setPlaceError(null)
+    setPlaceMode('agreement')
   }
 
   function goNext() {
@@ -200,12 +270,17 @@ export function EventCreateForm() {
   }
 
   function handlePublish() {
-    if (!title.trim() || !resolvedArenaId) {
+    if (!title.trim()) {
       setStep('basics')
       return
     }
-    if (Number.isNaN(new Date(startsLocal).getTime())) {
-      setStep('basics')
+    if (!canProceedFrom('place')) {
+      setPlaceError(
+        placeMode === 'agreement'
+          ? 'Выберите подтверждённую договорённость с интервалом льда.'
+          : 'Укажите арену и корректный интервал времени.',
+      )
+      setStep('place')
       return
     }
 
@@ -222,12 +297,13 @@ export function EventCreateForm() {
   }
 
   function handleSaveDraft() {
-    if (!title.trim() || !resolvedArenaId) {
+    if (!title.trim()) {
       setStep('basics')
       return
     }
-    if (Number.isNaN(new Date(startsLocal).getTime())) {
-      setStep('basics')
+    if (!canProceedFrom('place')) {
+      setPlaceError('Сначала выберите место и интервал.')
+      setStep('place')
       return
     }
     setGateError(null)
@@ -291,33 +367,140 @@ export function EventCreateForm() {
             options={TYPE_OPTIONS}
             data-testid={testId('events', 'create-form', 'select', 'type')}
           />
-          <div className="hockey-stack hockey-stack--gap-4">
-            <Text
-              variant="body-2"
-              data-testid={testId('events', 'create-form', 'text', 'starts-at-label')}
-            >
-              Дата и время старта
-            </Text>
-            <input
-              type="datetime-local"
-              className="g-text-input__control"
-              value={startsLocal}
-              onChange={(event) => setStartsLocal(event.target.value)}
-              data-testid={testId('events', 'create-form', 'field', 'starts-at')}
-            />
-          </div>
         </>
       ) : null}
 
       {step === 'place' ? (
         <>
-          <Select
-            label="Арена"
-            value={resolvedArenaId ? [resolvedArenaId] : []}
-            onUpdate={(v) => setArenaIdOverride(v[0])}
-            options={arenaOptions}
-            data-testid={testId('events', 'create-form', 'select', 'arena')}
-          />
+          <div
+            className="hockey-row hockey-row--gap-8 hockey-row--wrap"
+            data-testid={testId('events', 'create-form', 'panel', 'place-mode')}
+          >
+            <HockeyButton
+              view={placeMode === 'agreement' ? 'action' : 'outlined'}
+              size="s"
+              onClick={() => setPlaceMode('agreement')}
+              data-testid={testId('events', 'create-form', 'btn', 'place-agreement')}
+            >
+              Из договорённостей
+            </HockeyButton>
+            <HockeyButton
+              view={placeMode === 'manual' ? 'action' : 'outlined'}
+              size="s"
+              onClick={() => {
+                setPlaceMode('manual')
+                setSelectedAgreementId(null)
+                setIceAgreementId(null)
+                setIceBookingId(null)
+              }}
+              data-testid={testId('events', 'create-form', 'btn', 'place-manual')}
+            >
+              Вручную
+            </HockeyButton>
+          </div>
+
+          {placeMode === 'agreement' ? (
+            <div
+              className="hockey-stack hockey-stack--gap-8"
+              data-testid={testId('events', 'create-form', 'panel', 'agreements')}
+            >
+              {readyAgreements.length === 0 ? (
+                <Text
+                  color="secondary"
+                  data-testid={testId('events', 'create-form', 'text', 'agreements-empty')}
+                >
+                  Нет подтверждённых слотов. Запросите лёд у арены — после бронирования он появится
+                  здесь. Пока можно выбрать арену вручную.
+                </Text>
+              ) : (
+                readyAgreements.map((agreement) => (
+                  <HockeyButton
+                    key={agreement.id}
+                    view={selectedAgreementId === agreement.id ? 'action' : 'outlined'}
+                    size="m"
+                    onClick={() => applyAgreement(agreement.id)}
+                    data-testid={testId(
+                      'events',
+                      'create-form',
+                      'btn',
+                      'pick-agreement',
+                      agreement.id,
+                    )}
+                  >
+                    {agreement.arenaName} ·{' '}
+                    {formatAgreementInterval(agreement.startsAt, agreement.endsAt)}
+                  </HockeyButton>
+                ))
+              )}
+              <Link
+                to={routes.eventsOrganizer}
+                data-testid={testId('events', 'create-form', 'link', 'agreements-cabinet')}
+              >
+                <HockeyButton
+                  view="flat"
+                  size="s"
+                  data-testid={testId('events', 'create-form', 'btn', 'agreements-cabinet')}
+                >
+                  Кабинет: договорённости
+                </HockeyButton>
+              </Link>
+            </div>
+          ) : (
+            <>
+              <Select
+                label="Арена"
+                value={resolvedArenaId ? [resolvedArenaId] : []}
+                onUpdate={(v) => setArenaIdOverride(v[0])}
+                options={arenaOptions}
+                data-testid={testId('events', 'create-form', 'select', 'arena')}
+              />
+              <div className="hockey-stack hockey-stack--gap-4">
+                <Text
+                  variant="body-2"
+                  data-testid={testId('events', 'create-form', 'text', 'starts-at-label')}
+                >
+                  Начало
+                </Text>
+                <input
+                  type="datetime-local"
+                  className="g-text-input__control"
+                  value={startsLocal}
+                  onChange={(event) => {
+                    const value = event.target.value
+                    setStartsLocal(value)
+                    setEndsLocal(defaultEnd(value))
+                  }}
+                  data-testid={testId('events', 'create-form', 'field', 'starts-at')}
+                />
+              </div>
+              <div className="hockey-stack hockey-stack--gap-4">
+                <Text
+                  variant="body-2"
+                  data-testid={testId('events', 'create-form', 'text', 'ends-at-label')}
+                >
+                  Конец
+                </Text>
+                <input
+                  type="datetime-local"
+                  className="g-text-input__control"
+                  value={endsLocal}
+                  onChange={(event) => setEndsLocal(event.target.value)}
+                  data-testid={testId('events', 'create-form', 'field', 'ends-at')}
+                />
+              </div>
+            </>
+          )}
+
+          {placeMode === 'agreement' && selectedAgreementId ? (
+            <Text
+              color="secondary"
+              data-testid={testId('events', 'create-form', 'text', 'agreement-selected')}
+            >
+              Интервал зафиксирован договорённостью: {startsLocal.replace('T', ' ')} –{' '}
+              {endsLocal.slice(11, 16)}
+            </Text>
+          ) : null}
+
           {teamOptions.length > 0 ? (
             <Select
               label="Команда"
@@ -326,6 +509,12 @@ export function EventCreateForm() {
               options={teamOptions}
               data-testid={testId('events', 'create-form', 'select', 'team')}
             />
+          ) : null}
+
+          {placeError ? (
+            <Text color="danger" data-testid={testId('events', 'create-form', 'error', 'place')}>
+              {placeError}
+            </Text>
           ) : null}
         </>
       ) : null}

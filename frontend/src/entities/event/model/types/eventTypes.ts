@@ -79,6 +79,9 @@ export interface GameEvent {
   hasTeamRsvp?: boolean
   /** HOCFRONT-25 — клуб-владелец private_club тренировки */
   clubId?: string
+  /** ICE — привязка к договорённости / брони льда */
+  iceBookingId?: string
+  iceAgreementId?: string
 }
 
 /** @spec SPEC-FR-4.1.1 - Payload создания события */
@@ -108,6 +111,8 @@ export interface CreateEventPayload {
   district?: string
   /** HOCFRONT-28G — черновик vs публикация */
   lifecycleStatus?: GameEvent['lifecycleStatus']
+  iceBookingId?: string
+  iceAgreementId?: string
 }
 
 /** @spec SPEC-FR-4.3.1 - Статус дефицита состава */

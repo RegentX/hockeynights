@@ -94,6 +94,12 @@ export const mockChats: Chat[] = [
 
 export const mockChatUsers: ChatUser[] = [
   {userId: 'user-001', displayName: 'Иван Петров', position: 'forward', isOnline: true},
+  {
+    userId: 'user-arena-001',
+    displayName: 'Администратор Ходынки',
+    position: 'forward',
+    isOnline: true,
+  },
   ...mockPlayers.map((p) => ({
     userId: p.userId,
     displayName: p.displayName,
