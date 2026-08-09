@@ -1,6 +1,6 @@
 /**
  * SPEC-FR-24.1.2, SPEC-FR-24.1.3, SPEC-FR-2.3.3
- * HOCFRONT-22 — публичная страница игрока `/players/:id`
+ * HOCFRONT-22 — публичная страница игрока `/players/:userId`
  */
 
 import {Text} from '@gravity-ui/uikit'
@@ -9,11 +9,12 @@ import {Link, useParams} from 'react-router'
 
 import {fetchSession} from '@/entities/auth'
 import {fetchPublicPlayer} from '@/entities/profile'
-import {CalendarScopePreview} from '@/features/calendar'
+import {CalendarShell} from '@/features/calendar'
 import {ProfileFavoritesSection} from '@/features/favorites'
 import {PlayerPublicInfoSection, PlayerTeamsSection} from '@/features/players'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
@@ -25,7 +26,10 @@ import {PlayerCard} from '@/widgets/PlayerCard'
  */
 export function PublicPlayerProfilePage() {
   const {userId = ''} = useParams()
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {data: session, isLoading: isSessionLoading} = useQuery({
+    queryKey: ['session'],
+    queryFn: fetchSession,
+  })
   const {data, isLoading, error} = useQuery({
     queryKey: ['player-public', userId],
     queryFn: () => fetchPublicPlayer(userId),
@@ -34,7 +38,7 @@ export function PublicPlayerProfilePage() {
 
   const isOwnProfile = Boolean(session?.user.id && session.user.id === userId)
 
-  if (isLoading) {
+  if (isLoading || isSessionLoading) {
     return (
       <ScoreboardLoader
         label="Загрузка профиля"
@@ -147,7 +151,10 @@ export function PublicPlayerProfilePage() {
         <PlayerTeamsSection playerId={player.userId} fallbackTeamName={player.teamName} />
       </section>
 
-      <section data-testid={testId('players', 'public-player-profile', 'section', 'favorites')}>
+      <section
+        id="favorites"
+        data-testid={testId('players', 'public-player-profile', 'section', 'favorites')}
+      >
         {isOwnProfile ? (
           <ProfileFavoritesSection />
         ) : (
@@ -177,25 +184,35 @@ export function PublicPlayerProfilePage() {
               )}
             >
               Список избранного виден только владельцу страницы. Добавить игрока в своё избранное
-              можно кнопкой ♥ на карточке.
+              можно кнопкой на карточке.
             </Text>
           </IceCard>
         )}
       </section>
 
-      <section data-testid={testId('players', 'public-player-profile', 'section', 'calendar')}>
+      <section
+        id="calendar"
+        data-testid={testId('players', 'public-player-profile', 'section', 'calendar')}
+      >
         <IceCard
           padding="m"
           data-testid={testId('players', 'public-player-profile', 'card', 'calendar')}
         >
-          <CalendarScopePreview
-            scope="player"
-            scopeId={userId}
-            title="Календарь игрока"
-            hidden={!data.calendarVisible}
-            hiddenCopy="Игрок скрыл календарь в настройках приватности."
-            testIdPrefix="players"
-          />
+          {data.calendarVisible ? (
+            <CalendarShell
+              title="Календарь игрока"
+              compact
+              forcedScope={{scope: 'player', scopeId: userId}}
+              showActions={false}
+            />
+          ) : (
+            <div data-testid={testId('players', 'public-player-profile', 'empty', 'calendar')}>
+              <EmptyNetState
+                title="Календарь недоступен"
+                copy="Игрок скрыл календарь в настройках приватности."
+              />
+            </div>
+          )}
         </IceCard>
       </section>
     </div>

@@ -1,5 +1,5 @@
 /**
- * HOCFRONT-22 — публичная страница игрока `/players/:id`
+ * HOCFRONT-22 — публичная страница игрока `/players/:userId`
  */
 
 import {screen, waitFor} from '@testing-library/react'
@@ -61,9 +61,8 @@ describe('HOCFRONT-22 страница игрока', () => {
     ).toBeInTheDocument()
 
     expect(screen.getByTestId('players-public-player-profile-section-calendar')).toBeInTheDocument()
-    expect(screen.getByTestId('players-schedule-preview-text-title')).toHaveTextContent(
-      'Календарь игрока',
-    )
+    expect(screen.getByTestId('calendar-shell-page')).toBeInTheDocument()
+    expect(screen.getByTestId('calendar-shell-text-title')).toHaveTextContent('Календарь игрока')
   })
 
   it('на своей странице показывает полный список избранного', async () => {
@@ -72,6 +71,17 @@ describe('HOCFRONT-22 страница игрока', () => {
     await waitFor(() => {
       expect(screen.getByTestId('players-public-player-profile-page-user-001')).toBeInTheDocument()
     })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('favorites-profile-section-page')).toBeInTheDocument()
+    })
+    expect(
+      screen.queryByTestId('players-public-player-profile-card-favorites-private'),
+    ).not.toBeInTheDocument()
+  })
+
+  it('не показывает приватный плейсхолдер избранного на своей странице после загрузки', async () => {
+    renderPlayerPage('user-001')
 
     await waitFor(() => {
       expect(screen.getByTestId('favorites-profile-section-page')).toBeInTheDocument()

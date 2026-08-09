@@ -306,15 +306,13 @@ export function CalendarShell({
             onSelectDate={(date) => patchState({date})}
             onNavigateMonth={(date) => patchState({date})}
           />
-          {!compact && (
-            <CalendarAgenda
-              selectedDate={selectedDate}
-              events={events}
-              currentUserId={userId}
-              showActions={allowActions}
-              showOrganizerMeta={state.lens === 'organizer'}
-            />
-          )}
+          <CalendarAgenda
+            selectedDate={selectedDate}
+            events={events}
+            currentUserId={userId}
+            showActions={allowActions}
+            showOrganizerMeta={state.lens === 'organizer'}
+          />
         </div>
       )}
 
