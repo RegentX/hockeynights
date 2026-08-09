@@ -16,6 +16,7 @@ import {ArenaBookingPanel} from '@/features/arenas/ui/ArenaBookingPanel'
 import {ArenaListingsPanel} from '@/features/arenas/ui/ArenaListingsPanel'
 import {FavoriteButton} from '@/features/favorites'
 import {testId} from '@/shared/testing/testId'
+import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
@@ -52,6 +53,11 @@ export function ArenaDetailPanel({arena, slots, hasFreeSlot}: ArenaDetailPanelPr
               className="hockey-row hockey-row--gap-8 hockey-row--wrap hockey-row--align-center"
               data-testid={testId('arenas', 'detail', 'panel', 'chips', arena.id)}
             >
+              <EntityProfileBadge
+                kind="arena"
+                className="arena-meta-chip"
+                data-testid={testId('arenas', 'detail', 'badge', 'profile', arena.id)}
+              />
               <span
                 className={`arena-meta-chip arena-meta-chip--${arena.bookingMode === 'slot_calendar' ? 'slots' : 'portal'}`}
                 data-testid={testId('arenas', 'detail', 'badge', 'mode', arena.id)}

@@ -10,6 +10,7 @@ import type {Arena} from '@/entities/arena'
 import {formatArenaAmenities} from '@/entities/arena'
 import {FavoriteButton} from '@/features/favorites'
 import {testId} from '@/shared/testing/testId'
+import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
@@ -94,6 +95,11 @@ export const RinkCard = forwardRef<HTMLDivElement, RinkCardProps>(function RinkC
                 entityId={arena.id}
                 title={arena.name}
                 className="arena-meta-chip arena-meta-chip--favorite"
+              />
+              <EntityProfileBadge
+                kind="arena"
+                className="arena-meta-chip"
+                data-testid={testId('arenas', 'rink', 'badge', 'profile', arena.id)}
               />
               <span
                 className={`arena-meta-chip arena-meta-chip--${arena.bookingMode === 'slot_calendar' ? 'slots' : 'portal'}`}
