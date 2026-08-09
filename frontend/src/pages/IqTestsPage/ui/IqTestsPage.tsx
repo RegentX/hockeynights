@@ -12,6 +12,7 @@ import {fetchIqLeaderboard, fetchIqQuestions, fetchIqTests, submitIqAttempt} fro
 import {IqAttemptFlow, IqLeaderboard, IqTestCard} from '@/features/iq'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const MOCK_CURRENT_USER_ID = 'user-001'
@@ -24,7 +25,12 @@ export function IqTestsPage() {
   const [activeTest, setActiveTest] = useState<IqTest | null>(null)
   const [attemptResult, setAttemptResult] = useState<IqAttemptResult | null>(null)
 
-  const {data: tests = [], isLoading: testsLoading} = useQuery({
+  const {
+    data: tests = [],
+    isLoading: testsLoading,
+    isError: testsError,
+    refetch: refetchTests,
+  } = useQuery({
     queryKey: ['iq-tests'],
     queryFn: fetchIqTests,
   })
@@ -93,12 +99,20 @@ export function IqTestsPage() {
                   <ScoreboardLoader label="Загрузка тестов Hockey IQ" />
                 </div>
               )}
-              {!testsLoading && tests.length === 0 && (
+              {testsError && !testsLoading && (
+                <QueryErrorState
+                  title="Не удалось загрузить тесты Hockey IQ"
+                  onRetry={() => refetchTests()}
+                  testIdPrefix="iq"
+                  data-testid={testId('iq', 'page', 'error', 'tests')}
+                />
+              )}
+              {!testsLoading && !testsError && tests.length === 0 && (
                 <div data-testid={testId('iq', 'page', 'empty', 'tests')}>
                   <EmptyNetState title="Тесты не найдены" copy="Каталог Hockey IQ пока пуст." />
                 </div>
               )}
-              {!testsLoading && tests.length > 0 && (
+              {!testsLoading && !testsError && tests.length > 0 && (
                 <div className="iq-page__cards" data-testid={testId('iq', 'page', 'list', 'tests')}>
                   {tests.map((test) => (
                     <IqTestCard key={test.id} test={test} onStart={startTest} />

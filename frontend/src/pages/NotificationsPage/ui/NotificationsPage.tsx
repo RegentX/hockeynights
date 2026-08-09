@@ -7,13 +7,19 @@ import {useQuery} from '@tanstack/react-query'
 
 import {fetchNotifications} from '@/entities/notification'
 import {testId} from '@/shared/testing/testId'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {NotificationCenter} from '@/widgets/NotificationCenter'
 
 /**
  * @spec SPEC-FR-10.1.1 - Страница уведомлений
  */
 export function NotificationsPage() {
-  const {data: notifications = [], isLoading} = useQuery({
+  const {
+    data: notifications = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['notifications'],
     queryFn: fetchNotifications,
   })
@@ -39,7 +45,16 @@ export function NotificationsPage() {
       {isLoading && (
         <Text data-testid={testId('notifications', 'page', 'loader')}>Загрузка...</Text>
       )}
-      <NotificationCenter notifications={notifications} />
+      {isError && !isLoading ? (
+        <QueryErrorState
+          title="Не удалось загрузить уведомления"
+          onRetry={() => refetch()}
+          testIdPrefix="notifications"
+          data-testid={testId('notifications', 'page', 'error')}
+        />
+      ) : (
+        <NotificationCenter notifications={notifications} />
+      )}
     </div>
   )
 }

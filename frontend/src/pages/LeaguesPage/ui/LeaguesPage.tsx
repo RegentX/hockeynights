@@ -25,6 +25,7 @@ import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const EMPTY_FILTERS: LeagueFiltersType = {}
@@ -131,17 +132,12 @@ export function LeaguesPage() {
       )}
 
       {isError && !isPending && (
-        <div data-testid={testId('leagues', 'page', 'error')}>
-          <EmptyNetState
-            title="Не удалось загрузить лиги"
-            copy="Проверь соединение и попробуй ещё раз."
-            action={
-              <HockeyButton view="outlined" size="s" onClick={() => refetch()}>
-                Повторить
-              </HockeyButton>
-            }
-          />
-        </div>
+        <QueryErrorState
+          title="Не удалось загрузить лиги"
+          onRetry={() => refetch()}
+          testIdPrefix="leagues"
+          data-testid={testId('leagues', 'page', 'error')}
+        />
       )}
 
       {showEmpty && (

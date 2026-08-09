@@ -21,6 +21,7 @@ import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const RECRUITING_OPTIONS = [
@@ -76,22 +77,12 @@ export function LeaguePartnerDashboard() {
 
   if (isError) {
     return (
-      <div data-testid={testId('leagues', 'partner', 'error')}>
-        <EmptyNetState
-          title="Не удалось загрузить кабинет лиги"
-          copy="Проверьте соединение и попробуйте ещё раз."
-          action={
-            <HockeyButton
-              view="outlined"
-              size="s"
-              onClick={() => refetch()}
-              data-testid={testId('leagues', 'partner', 'btn', 'retry')}
-            >
-              Повторить
-            </HockeyButton>
-          }
-        />
-      </div>
+      <QueryErrorState
+        title="Не удалось загрузить кабинет лиги"
+        onRetry={() => refetch()}
+        testIdPrefix="leagues"
+        data-testid={testId('leagues', 'partner', 'error')}
+      />
     )
   }
 

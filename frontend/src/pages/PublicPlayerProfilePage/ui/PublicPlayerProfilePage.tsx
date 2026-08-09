@@ -8,9 +8,11 @@ import {Link, useParams} from 'react-router'
 
 import {fetchPublicPlayer} from '@/entities/profile'
 import {CalendarScopePreview} from '@/features/calendar'
+import {isNotFoundError} from '@/shared/api/client'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {PlayerCard} from '@/widgets/PlayerCard'
 
@@ -19,7 +21,7 @@ import {PlayerCard} from '@/widgets/PlayerCard'
  */
 export function PublicPlayerProfilePage() {
   const {userId = ''} = useParams()
-  const {data, isLoading, error} = useQuery({
+  const {data, isLoading, error, refetch} = useQuery({
     queryKey: ['player-public', userId],
     queryFn: () => fetchPublicPlayer(userId),
     enabled: Boolean(userId),
@@ -34,6 +36,18 @@ export function PublicPlayerProfilePage() {
       />
     )
   }
+  // Сбой загрузки — это не «профиль скрыт»: даём повторить, а не уводим в каталог
+  if (error && !isNotFoundError(error)) {
+    return (
+      <QueryErrorState
+        title="Не удалось загрузить профиль игрока"
+        onRetry={() => refetch()}
+        testIdPrefix="players"
+        data-testid={testId('players', 'public-player-profile', 'error')}
+      />
+    )
+  }
+
   if (error || !data) {
     return (
       <IceCard

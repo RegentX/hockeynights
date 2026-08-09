@@ -21,6 +21,7 @@ import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 type PartnerTab = 'profile' | 'products' | 'import' | 'promos' | 'analytics'
@@ -68,22 +69,12 @@ export function ShopPartnerDashboard() {
 
   if (isError) {
     return (
-      <div data-testid={testId('shops', shopId, 'dashboard', 'error')}>
-        <EmptyNetState
-          title="Не удалось загрузить кабинет магазина"
-          copy="Проверьте соединение и попробуйте ещё раз."
-          action={
-            <HockeyButton
-              view="outlined"
-              size="s"
-              onClick={() => refetch()}
-              data-testid={testId('shops', shopId, 'dashboard', 'btn', 'retry')}
-            >
-              Повторить
-            </HockeyButton>
-          }
-        />
-      </div>
+      <QueryErrorState
+        title="Не удалось загрузить кабинет магазина"
+        onRetry={() => refetch()}
+        testIdPrefix="shops"
+        data-testid={testId('shops', shopId, 'dashboard', 'error')}
+      />
     )
   }
 
