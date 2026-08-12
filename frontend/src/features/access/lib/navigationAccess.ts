@@ -43,16 +43,16 @@ const isHeaderOnlyNavPath = (path: string) =>
 /**
  * Единый источник пунктов для desktop left nav и mobile bottom nav.
  * Порядок совпадает; mobile берёт subset + короткие labels где заданы.
+ * Сейчас все пункты в incubating («Требует доработки»); профиль — только через header.
  */
 export const PLAYER_NAV_ITEMS: NavItem[] = [
-  {to: routes.events, label: EVENTS_LABEL, tier: 'active'},
-  {to: routes.teams, label: 'Команды', tier: 'active'},
-  {to: routes.messenger, label: 'Мессенджер', tier: 'active'},
-  {to: routes.arenas, label: ARENAS_LABEL, tier: 'active'},
-  {to: routes.leagues, label: LEAGUES_LABEL, tier: 'active'},
-  {to: routes.shops, label: 'Маркет', tier: 'active'},
-  {to: routes.calendar, label: 'Календарь', tier: 'active'},
-  {to: routes.profile, label: 'Профиль', tier: 'active'},
+  {to: routes.events, label: EVENTS_LABEL, tier: 'incubating'},
+  {to: routes.teams, label: 'Команды', tier: 'incubating'},
+  {to: routes.messenger, label: 'Мессенджер', tier: 'incubating'},
+  {to: routes.arenas, label: ARENAS_LABEL, tier: 'incubating'},
+  {to: routes.leagues, label: LEAGUES_LABEL, tier: 'incubating'},
+  {to: routes.shops, label: 'Маркет', tier: 'incubating'},
+  {to: routes.calendar, label: 'Календарь', tier: 'incubating'},
   {to: routes.players, label: 'Игроки', tier: 'incubating'},
   // SOS / IQ / Highlight — стратегический код, скрыты из MVP-навигации
   {to: routes.sos, label: 'SOS', tier: 'incubating'},
@@ -70,7 +70,6 @@ const NAV_ICONS: Record<string, string> = {
   [routes.leagues]: '🏆',
   [routes.shops]: '🛍',
   [routes.calendar]: '📅',
-  [routes.profile]: '⚙',
   [routes.players]: '👤',
   [routes.partner]: '📋',
 }
@@ -83,15 +82,16 @@ const MOBILE_SHORT_LABELS: Partial<Record<string, string>> = {
 /**
  * Mobile bottom nav — максимум 5 слотов: core + «Ещё».
  * Каталоги (арены / лиги / маркет) живут в sheet.
+ * Профиль открывается из header, не из bottom nav.
  */
 const MOBILE_PRIMARY_PATHS = [
   routes.events,
   routes.teams,
   routes.messenger,
-  routes.profile,
+  routes.calendar,
 ] as const
 
-const MOBILE_MORE_PATHS = [routes.arenas, routes.calendar, routes.leagues, routes.shops] as const
+const MOBILE_MORE_PATHS = [routes.arenas, routes.leagues, routes.shops, routes.players] as const
 
 /** @deprecated legacy flat list — для совместимости; bottom = primary + more */
 const MOBILE_PLAYER_PATHS = [...MOBILE_PRIMARY_PATHS, ...MOBILE_MORE_PATHS] as const
@@ -182,7 +182,7 @@ export function resolveMobileNavItems(
   const byPath = new Map(desktopItems.map((item) => [item.to, item]))
 
   return MOBILE_PRIMARY_PATHS.map((path) => byPath.get(path))
-    .filter((item): item is NavItem => item != null && item.tier === 'active')
+    .filter((item): item is NavItem => item != null)
     .map(toMobileItem)
 }
 
@@ -198,7 +198,7 @@ export function resolveMobileMoreNavItems(
   const byPath = new Map(desktopItems.map((item) => [item.to, item]))
 
   return MOBILE_MORE_PATHS.map((path) => byPath.get(path))
-    .filter((item): item is NavItem => item != null && item.tier === 'active')
+    .filter((item): item is NavItem => item != null)
     .map(toMobileItem)
 }
 

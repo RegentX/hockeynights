@@ -1,11 +1,18 @@
-/**
- * HOCFRONT-22 — секция публичной информации игрока (без района и метро).
- */
+import {Shield} from '@gravity-ui/icons'
+import {Icon, Text} from '@gravity-ui/uikit'
+import {useQuery} from '@tanstack/react-query'
+import {Link} from 'react-router'
 
-import {Text} from '@gravity-ui/uikit'
-
-import type {PlayerListItem, PublicPlayerView} from '@/entities/profile'
-import {POSITION_LABELS, SKILL_LEVEL_LABELS} from '@/features/events'
+import type {
+  PlayerListItem,
+  ProfileContacts,
+  ProfileFieldPrivacy,
+  PublicPlayerView,
+} from '@/entities/profile'
+import type {Team} from '@/entities/team'
+import {fetchTeams} from '@/entities/team'
+import {POSITION_LABELS} from '@/features/events'
+import {getPlayerLevelLabel} from '@/shared/lib/profileIdentity'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
 
@@ -14,10 +21,91 @@ export interface PlayerPublicInfoSectionProps {
   contactsVisible: boolean
   participationHistoryVisible: boolean
   participationHistory?: PublicPlayerView['participationHistory']
+  /** Owner hub: историю рисует expandable-блок снаружи */
+  hideHistory?: boolean
+  /** Какие поля можно показать (если не задано — все, как у владельца) */
+  visibleFields?: Partial<Record<keyof ProfileFieldPrivacy, boolean>>
+  /** Контакты, разрешённые зрителю */
+  visibleContacts?: ProfileContacts
+}
+
+function isVisible(
+  visibleFields: Partial<Record<keyof ProfileFieldPrivacy, boolean>> | undefined,
+  key: keyof ProfileFieldPrivacy,
+): boolean {
+  return visibleFields?.[key] !== false
+}
+
+function ContactsList({contacts, playerId}: {contacts: ProfileContacts; playerId: string}) {
+  const rows: Array<{label: string; value: string; key: string}> = []
+  if (contacts.phone) rows.push({label: 'Телефон', value: contacts.phone, key: 'phone'})
+  if (contacts.email) rows.push({label: 'Email', value: contacts.email, key: 'email'})
+  if (contacts.telegram) rows.push({label: 'Telegram', value: contacts.telegram, key: 'telegram'})
+  if (contacts.maxMessenger) {
+    rows.push({label: 'MAX', value: contacts.maxMessenger, key: 'max'})
+  }
+
+  return (
+    <ul
+      className="hockey-public-info__contacts"
+      data-testid={testId('players', 'public-info', 'list', 'contacts', playerId)}
+    >
+      {rows.map((row) => (
+        <li key={row.key} data-testid={testId('players', 'public-info', 'item', row.key, playerId)}>
+          <span className="hockey-public-info__contact-label">{row.label}: </span>
+          <span data-testid={testId('players', 'public-info', 'text', row.key, playerId)}>
+            {row.value}
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function TeamRow({
+  team,
+  jerseyNumber,
+  playerId,
+}: {
+  team: Pick<Team, 'id' | 'name' | 'logoUrl'>
+  jerseyNumber: string
+  playerId: string
+}) {
+  return (
+    <Link
+      to={`/teams/${team.id}`}
+      className="hockey-public-info__team hockey-public-info__team-link"
+      data-testid={testId('players', 'public-info', 'link', 'team', team.id)}
+      aria-label={`Команда ${team.name}`}
+    >
+      {team.logoUrl ? (
+        <img
+          src={team.logoUrl}
+          alt=""
+          className="hockey-public-info__team-logo"
+          data-testid={testId('players', 'public-info', 'img', 'team-logo', team.id)}
+        />
+      ) : (
+        <span
+          className="hockey-public-info__team-fallback"
+          aria-hidden
+          data-testid={testId('players', 'public-info', 'icon', 'team-fallback', team.id)}
+        >
+          <Icon data={Shield} size={18} />
+        </span>
+      )}
+      <span
+        className="hockey-public-info__team-name"
+        data-testid={testId('players', 'public-info', 'text', 'team', `${playerId}-${team.id}`)}
+      >
+        {team.name} (игровой номер: {jerseyNumber})
+      </span>
+    </Link>
+  )
 }
 
 /**
- * @spec HOCFRONT-22 — публичная информация: город, амплуа, био, история
+ * @spec HOCFRONT-22 — публичная информация: команды, амплуа, био, ачивки, история
  * Район и метро намеренно не показываются.
  */
 export function PlayerPublicInfoSection({
@@ -25,12 +113,44 @@ export function PlayerPublicInfoSection({
   contactsVisible,
   participationHistoryVisible,
   participationHistory,
+  hideHistory = false,
+  visibleFields,
+  visibleContacts,
 }: PlayerPublicInfoSectionProps) {
   const history = participationHistory ?? []
+  const showHistory = !hideHistory && participationHistoryVisible && history.length > 0
+  const jerseyNumber = String(player.userId.replace(/\D/g, '').slice(-2) || '00').padStart(2, '0')
+  const showTeams = isVisible(visibleFields, 'teams')
+  const contacts =
+    visibleContacts ??
+    (contactsVisible && isVisible(visibleFields, 'phone') ? player.contacts : undefined)
+  const hasContacts = Boolean(
+    contacts && (contacts.phone || contacts.email || contacts.telegram || contacts.maxMessenger),
+  )
+
+  const {data: teams = [], isLoading: isTeamsLoading} = useQuery({
+    queryKey: ['teams', 'by-player', player.userId],
+    queryFn: () => fetchTeams({playerId: player.userId}),
+    enabled: Boolean(player.userId) && showTeams,
+  })
+
+  const fallbackTeams: Array<Pick<Team, 'id' | 'name' | 'logoUrl'>> =
+    teams.length === 0 && player.teamName
+      ? [
+          {
+            id: player.teamIds?.[0] ?? `fallback-${player.userId}`,
+            name: player.teamName,
+            logoUrl: player.teamLogoUrl,
+          },
+        ]
+      : []
+
+  const displayTeams = teams.length > 0 ? teams : fallbackTeams
+  const teamsLabel = displayTeams.length > 1 ? 'Команды' : 'Команда'
 
   return (
     <IceCard padding="m" data-testid={testId('players', 'public-info', 'card', player.userId)}>
-      <div className="hockey-stack hockey-stack--gap-12">
+      <div className="hockey-stack hockey-stack--gap-16">
         <Text
           variant="subheader-2"
           data-testid={testId('players', 'public-info', 'text', 'title', player.userId)}
@@ -38,55 +158,240 @@ export function PlayerPublicInfoSection({
           Публичная информация
         </Text>
 
-        <Text data-testid={testId('players', 'public-info', 'text', 'role', player.userId)}>
-          {POSITION_LABELS[player.position] ?? player.position}
-          {' · '}
-          {SKILL_LEVEL_LABELS[player.skillLevel] ?? player.skillLevel}
-        </Text>
-
-        <Text
-          color="secondary"
-          data-testid={testId('players', 'public-info', 'text', 'city', player.userId)}
+        <dl
+          className="hockey-public-info__facts"
+          data-testid={testId('players', 'public-info', 'panel', 'facts', player.userId)}
         >
-          {player.city}
-        </Text>
+          {showTeams && (
+            <div data-testid={testId('players', 'public-info', 'panel', 'teams', player.userId)}>
+              <dt>{teamsLabel}</dt>
+              <dd>
+                {isTeamsLoading && displayTeams.length === 0 ? (
+                  <Text
+                    color="secondary"
+                    data-testid={testId(
+                      'players',
+                      'public-info',
+                      'text',
+                      'teams-loading',
+                      player.userId,
+                    )}
+                  >
+                    Загрузка команд…
+                  </Text>
+                ) : displayTeams.length > 0 ? (
+                  <ul
+                    className="hockey-public-info__teams"
+                    data-testid={testId('players', 'public-info', 'list', 'teams', player.userId)}
+                  >
+                    {displayTeams.map((team) => (
+                      <li key={team.id}>
+                        {team.id.startsWith('fallback-') ? (
+                          <div
+                            className="hockey-public-info__team"
+                            data-testid={testId(
+                              'players',
+                              'public-info',
+                              'panel',
+                              'team',
+                              player.userId,
+                            )}
+                          >
+                            {team.logoUrl ? (
+                              <img
+                                src={team.logoUrl}
+                                alt=""
+                                className="hockey-public-info__team-logo"
+                                data-testid={testId(
+                                  'players',
+                                  'public-info',
+                                  'img',
+                                  'team-logo',
+                                  player.userId,
+                                )}
+                              />
+                            ) : (
+                              <span className="hockey-public-info__team-fallback" aria-hidden>
+                                <Icon data={Shield} size={18} />
+                              </span>
+                            )}
+                            <span
+                              className="hockey-public-info__team-name"
+                              data-testid={testId(
+                                'players',
+                                'public-info',
+                                'text',
+                                'team',
+                                player.userId,
+                              )}
+                            >
+                              {team.name} (игровой номер: {jerseyNumber})
+                            </span>
+                          </div>
+                        ) : (
+                          <TeamRow
+                            team={team}
+                            jerseyNumber={jerseyNumber}
+                            playerId={player.userId}
+                          />
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <Text
+                    color="secondary"
+                    data-testid={testId(
+                      'players',
+                      'public-info',
+                      'text',
+                      'teams-empty',
+                      player.userId,
+                    )}
+                  >
+                    Не состоит в команде
+                  </Text>
+                )}
+              </dd>
+            </div>
+          )}
 
-        {player.bio ? (
-          <Text data-testid={testId('players', 'public-info', 'text', 'bio', player.userId)}>
-            {player.bio}
-          </Text>
-        ) : (
-          <Text
-            color="secondary"
-            data-testid={testId('players', 'public-info', 'text', 'bio-empty', player.userId)}
-          >
-            Описание не заполнено.
-          </Text>
-        )}
+          {isVisible(visibleFields, 'position') && (
+            <div>
+              <dt>Амплуа</dt>
+              <dd data-testid={testId('players', 'public-info', 'text', 'role', player.userId)}>
+                {POSITION_LABELS[player.position] ?? player.position}
+              </dd>
+            </div>
+          )}
 
-        {contactsVisible ? (
-          <Text
-            color="secondary"
-            data-testid={testId(
-              'players',
-              'public-info',
-              'text',
-              'contacts-visible',
-              player.userId,
+          {isVisible(visibleFields, 'skillLevel') && (
+            <div>
+              <dt>Уровень</dt>
+              <dd data-testid={testId('players', 'public-info', 'text', 'skill', player.userId)}>
+                {getPlayerLevelLabel(player)}
+              </dd>
+            </div>
+          )}
+
+          {isVisible(visibleFields, 'city') && (
+            <div>
+              <dt>Город</dt>
+              <dd data-testid={testId('players', 'public-info', 'text', 'city', player.userId)}>
+                {player.city}
+              </dd>
+            </div>
+          )}
+
+          {isVisible(visibleFields, 'bio') && (
+            <div>
+              <dt>О себе</dt>
+              <dd>
+                {player.bio ? (
+                  <Text
+                    data-testid={testId('players', 'public-info', 'text', 'bio', player.userId)}
+                  >
+                    {player.bio}
+                  </Text>
+                ) : (
+                  <Text
+                    color="secondary"
+                    data-testid={testId(
+                      'players',
+                      'public-info',
+                      'text',
+                      'bio-empty',
+                      player.userId,
+                    )}
+                  >
+                    Описание не заполнено.
+                  </Text>
+                )}
+              </dd>
+            </div>
+          )}
+
+          <div>
+            <dt>Контакты</dt>
+            <dd>
+              {hasContacts && contacts ? (
+                <ContactsList contacts={contacts} playerId={player.userId} />
+              ) : contactsVisible ? (
+                <Text
+                  color="secondary"
+                  data-testid={testId(
+                    'players',
+                    'public-info',
+                    'text',
+                    'contacts-visible',
+                    player.userId,
+                  )}
+                >
+                  Доступны по согласию игрока.
+                </Text>
+              ) : (
+                <Text
+                  color="secondary"
+                  data-testid={testId(
+                    'players',
+                    'public-info',
+                    'text',
+                    'contacts-hidden',
+                    player.userId,
+                  )}
+                >
+                  Скрыты настройками приватности.
+                </Text>
+              )}
+            </dd>
+          </div>
+
+          {isVisible(visibleFields, 'achievements') &&
+            player.achievements &&
+            player.achievements.length > 0 && (
+              <div
+                data-testid={testId(
+                  'players',
+                  'public-info',
+                  'panel',
+                  'achievements',
+                  player.userId,
+                )}
+              >
+                <dt>Микро-ачивки</dt>
+                <dd>
+                  <ul
+                    className="hockey-public-info__achievements"
+                    data-testid={testId(
+                      'players',
+                      'public-info',
+                      'list',
+                      'achievements',
+                      player.userId,
+                    )}
+                  >
+                    {player.achievements.map((ach) => (
+                      <li
+                        key={ach}
+                        className="hockey-public-info__achievement"
+                        data-testid={testId(
+                          'players',
+                          'public-info',
+                          'item',
+                          'achievement',
+                          `${player.userId}-${ach}`,
+                        )}
+                      >
+                        {ach}
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
             )}
-          >
-            Контакты доступны по согласию игрока (mock).
-          </Text>
-        ) : (
-          <Text
-            color="secondary"
-            data-testid={testId('players', 'public-info', 'text', 'contacts-hidden', player.userId)}
-          >
-            Контакты скрыты настройками приватности.
-          </Text>
-        )}
+        </dl>
 
-        {participationHistoryVisible && history.length > 0 && (
+        {showHistory && (
           <div
             className="hockey-stack hockey-stack--gap-8"
             data-testid={testId('players', 'public-info', 'panel', 'history', player.userId)}

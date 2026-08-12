@@ -36,20 +36,20 @@ export let mockClubs: Club[] = [
     staff: [
       {
         userId: 'user-005',
-        displayName: 'Михаил Орлов',
+        displayName: 'Орлов Михаил Викторович',
         role: 'head_coach',
         contactEmail: 'coach@medvedi.hockey',
         contactPhone: '+7 (999) 200-11-22',
       },
       {
         userId: 'user-006',
-        displayName: 'Артем Шестаков',
+        displayName: 'Шестаков Артём Денисович',
         role: 'assistant_coach',
         contactEmail: 'assist@medvedi.hockey',
       },
       {
         userId: 'user-007',
-        displayName: 'Елена Соколова',
+        displayName: 'Соколова Елена Андреевна',
         role: 'team_admin',
         contactEmail: 'admin@medvedi.hockey',
         contactPhone: '+7 (999) 200-33-44',

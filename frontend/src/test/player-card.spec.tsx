@@ -52,7 +52,7 @@ describe('HOCFRONT-21 PlayerCard', () => {
 
     expect(screen.getByTestId('players-player-card-badge-position-user-002')).toBeInTheDocument()
     expect(screen.getByTestId('players-player-card-text-skill-user-002')).toHaveTextContent(
-      'Продвинутый',
+      'Практик',
     )
     expect(screen.getByTestId('players-player-card-badge-verified-user-002')).toHaveTextContent(
       'Подтверждён',

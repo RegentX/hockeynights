@@ -39,6 +39,16 @@ $slot-green: #34d399;
   --hockey-font-display: 'Bebas Neue', 'Impact', sans-serif;
   --hockey-font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --hockey-font-scoreboard: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace;
+  /** Fallback до установки data-hockey-theme */
+  --hockey-accent: #{$line-red};
+  --hockey-text-primary: #1a1714;
+  /** Равномерный градиент display-заголовков (0% → 100%) */
+  --hockey-display-text-gradient: linear-gradient(
+    135deg,
+    var(--g-color-text-primary, var(--hockey-text-primary)) 0%,
+    var(--hockey-accent) 100%
+  );
+  --hockey-hero-text-gradient: linear-gradient(135deg, #fff 0%, var(--hockey-ice-glow) 100%);
   --hockey-rink-lines: repeating-linear-gradient(
     90deg,
     transparent 0,

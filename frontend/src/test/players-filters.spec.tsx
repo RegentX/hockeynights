@@ -65,7 +65,7 @@ describe('PlayersPage filters', () => {
     renderWithProviders(<PlayersPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Артур Лебедев')).toBeInTheDocument()
+      expect(screen.getByText('Лебедев Артур Олегович')).toBeInTheDocument()
     })
 
     const nameField = screen.getByLabelText('Имя')
@@ -73,8 +73,8 @@ describe('PlayersPage filters', () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText('Артур Лебедев')).toBeInTheDocument()
-        expect(screen.queryByText('Алексей Смирнов')).not.toBeInTheDocument()
+        expect(screen.getByText('Лебедев Артур Олегович')).toBeInTheDocument()
+        expect(screen.queryByText('Смирнов Алексей Дмитриевич')).not.toBeInTheDocument()
       },
       {timeout: 3000},
     )
@@ -85,8 +85,8 @@ describe('PlayersPage filters', () => {
     await user.click(resetButton)
 
     await waitFor(() => {
-      expect(screen.getByText('Алексей Смирнов')).toBeInTheDocument()
-      expect(screen.getByText('Артур Лебедев')).toBeInTheDocument()
+      expect(screen.getByText('Смирнов Алексей Дмитриевич')).toBeInTheDocument()
+      expect(screen.getByText('Лебедев Артур Олегович')).toBeInTheDocument()
     })
   })
 
@@ -95,16 +95,16 @@ describe('PlayersPage filters', () => {
     renderWithProviders(<PlayersPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Сергей Волков')).toBeInTheDocument()
+      expect(screen.getByText('Волков Сергей Николаевич')).toBeInTheDocument()
     })
 
     const verifiedCheckbox = screen.getByLabelText('Только подтверждённые')
     await user.click(verifiedCheckbox)
 
     await waitFor(() => {
-      expect(screen.queryByText('Сергей Волков')).not.toBeInTheDocument()
-      expect(screen.getByText('Алексей Смирнов')).toBeInTheDocument()
-      expect(screen.getByText('Артур Лебедев')).toBeInTheDocument()
+      expect(screen.queryByText('Волков Сергей Николаевич')).not.toBeInTheDocument()
+      expect(screen.getByText('Смирнов Алексей Дмитриевич')).toBeInTheDocument()
+      expect(screen.getByText('Лебедев Артур Олегович')).toBeInTheDocument()
     })
   })
 
@@ -113,7 +113,7 @@ describe('PlayersPage filters', () => {
     renderWithProviders(<PlayersPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Алексей Смирнов')).toBeInTheDocument()
+      expect(screen.getByText('Смирнов Алексей Дмитриевич')).toBeInTheDocument()
     })
 
     const verifiedCheckbox = screen.getByLabelText('Только подтверждённые')
@@ -138,16 +138,16 @@ describe('PlayersPage filters', () => {
     renderWithProviders(<PlayersPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Алексей Смирнов')).toBeInTheDocument()
+      expect(screen.getByText('Смирнов Алексей Дмитриевич')).toBeInTheDocument()
     })
 
     await selectOption('players-player-filters-select-team', 'Медведи САО')
 
     await waitFor(() => {
-      expect(screen.queryByText('Алексей Смирнов')).not.toBeInTheDocument()
-      expect(screen.queryByText('Артур Лебедев')).not.toBeInTheDocument()
-      expect(screen.getByText('Дмитрий Козлов')).toBeInTheDocument()
-      expect(screen.getByText('Сергей Волков')).toBeInTheDocument()
+      expect(screen.queryByText('Смирнов Алексей Дмитриевич')).not.toBeInTheDocument()
+      expect(screen.queryByText('Лебедев Артур Олегович')).not.toBeInTheDocument()
+      expect(screen.getByText('Козлов Дмитрий Александрович')).toBeInTheDocument()
+      expect(screen.getByText('Волков Сергей Николаевич')).toBeInTheDocument()
     })
   })
 
@@ -155,15 +155,15 @@ describe('PlayersPage filters', () => {
     renderWithProviders(<PlayersPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Артур Лебедев')).toBeInTheDocument()
+      expect(screen.getByText('Лебедев Артур Олегович')).toBeInTheDocument()
     })
 
     await selectOption('players-player-filters-select-city', 'Санкт-Петербург')
 
     await waitFor(() => {
-      expect(screen.getByText('Артур Лебедев')).toBeInTheDocument()
-      expect(screen.queryByText('Алексей Смирнов')).not.toBeInTheDocument()
-      expect(screen.queryByText('Дмитрий Козлов')).not.toBeInTheDocument()
+      expect(screen.getByText('Лебедев Артур Олегович')).toBeInTheDocument()
+      expect(screen.queryByText('Смирнов Алексей Дмитриевич')).not.toBeInTheDocument()
+      expect(screen.queryByText('Козлов Дмитрий Александрович')).not.toBeInTheDocument()
     })
   })
 
@@ -171,16 +171,16 @@ describe('PlayersPage filters', () => {
     renderWithProviders(<PlayersPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Алексей Смирнов')).toBeInTheDocument()
+      expect(screen.getByText('Смирнов Алексей Дмитриевич')).toBeInTheDocument()
     })
 
     await selectOption('players-player-filters-select-position', 'Вратарь')
-    await selectOption('players-player-filters-select-skill-level', 'Продвинутый')
+    await selectOption('players-player-filters-select-skill-level', 'Практик')
 
     await waitFor(() => {
-      expect(screen.getByText('Алексей Смирнов')).toBeInTheDocument()
-      expect(screen.queryByText('Никита Морозов')).not.toBeInTheDocument()
-      expect(screen.queryByText('Дмитрий Козлов')).not.toBeInTheDocument()
+      expect(screen.getByText('Смирнов Алексей Дмитриевич')).toBeInTheDocument()
+      expect(screen.queryByText('Морозов Никита Алексеевич')).not.toBeInTheDocument()
+      expect(screen.queryByText('Козлов Дмитрий Александрович')).not.toBeInTheDocument()
     })
   })
 
@@ -205,7 +205,7 @@ describe('PlayersPage filters', () => {
     renderWithProviders(<PlayersPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Алексей Смирнов')).toBeInTheDocument()
+      expect(screen.getByText('Смирнов Алексей Дмитриевич')).toBeInTheDocument()
     })
 
     server.use(
@@ -214,8 +214,8 @@ describe('PlayersPage filters', () => {
         return HttpResponse.json([
           {
             userId: 'user-006',
-            displayName: 'Артур Лебедев',
-            fullName: 'Артур Лебедев',
+            displayName: 'Лебедев Артур Олегович',
+            fullName: 'Лебедев Артур Олегович',
             city: 'Санкт-Петербург',
             position: 'forward',
             skillLevel: 'amateur',
@@ -238,15 +238,15 @@ describe('PlayersPage filters', () => {
         expect(screen.getByTestId('players-players-page-progress')).toHaveClass(
           'players-page__progress--active',
         )
-        expect(screen.getByText('Алексей Смирнов')).toBeInTheDocument()
+        expect(screen.getByText('Смирнов Алексей Дмитриевич')).toBeInTheDocument()
       },
       {timeout: 3000},
     )
 
     await waitFor(
       () => {
-        expect(screen.getByText('Артур Лебедев')).toBeInTheDocument()
-        expect(screen.queryByText('Алексей Смирнов')).not.toBeInTheDocument()
+        expect(screen.getByText('Лебедев Артур Олегович')).toBeInTheDocument()
+        expect(screen.queryByText('Смирнов Алексей Дмитриевич')).not.toBeInTheDocument()
       },
       {timeout: 3000},
     )

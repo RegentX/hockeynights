@@ -15,7 +15,7 @@ export interface KarmaHintProps {
 }
 
 /**
- * @spec SPEC-FR-8.2.2 - Пояснение, что karma — вспомогательный сигнал
+ * @spec SPEC-FR-8.2.2 - Пояснение, от чего зависит karma
  */
 export function KarmaHint({
   hint,
@@ -28,7 +28,8 @@ export function KarmaHint({
       variant="caption-2"
       data-testid={dataTestId ?? testId(testIdPrefix, 'karma-hint', 'text')}
     >
-      {hint ?? 'Karma — вспомогательный сигнал надёжности, не абсолютная оценка уровня игрока'}
+      {hint ??
+        'Карма растёт за участие в жизни сообщества: явка на тренировки и игры повышает её, неявка — снижает. Это сигнал надёжности, а не оценка уровня игры.'}
     </Text>
   )
 }

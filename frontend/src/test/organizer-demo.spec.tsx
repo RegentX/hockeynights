@@ -57,7 +57,7 @@ describe('ORG-6 organizer training demo', () => {
       expect(screen.getByTestId('events-organizer-regs-list')).toBeInTheDocument()
       expect(
         screen.getByTestId('events-organizer-regs-text-name-event-001-user-003'),
-      ).toHaveTextContent('Дмитрий Козлов')
+      ).toHaveTextContent('Козлов Дмитрий Александрович')
     })
   })
 

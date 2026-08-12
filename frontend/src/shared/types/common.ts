@@ -15,7 +15,17 @@ export type UserRole =
   | 'admin' // SPEC-FR-1.3.5
 
 /** @spec SPEC-FR-2.2.2 - Уровень мастерства */
-export type SkillLevel = 'beginner' | 'amateur' | 'advanced' | 'league' | 'unknown'
+export type SkillLevel =
+  | 'beginner'
+  | 'amateur'
+  | 'novice_theorist'
+  | 'theorist'
+  | 'confident_theorist'
+  | 'practitioner'
+  | 'master'
+  | 'advanced'
+  | 'league'
+  | 'unknown'
 
 /** @spec SPEC-FR-2.2.2 - Амплуа игрока */
 export type PlayerPosition = 'goalie' | 'defense' | 'forward' | 'any'

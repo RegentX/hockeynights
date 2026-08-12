@@ -204,6 +204,17 @@
     color: #fff;
     background: linear-gradient(145deg, var(--hockey-line-red), #a00400);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    font-family: var(--hockey-font-sans, inherit);
+    text-transform: none;
+  }
+
+  &__profile-photo {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
   }
 
   &__panel-controls {
@@ -1145,7 +1156,7 @@
     justify-content: space-between;
     gap: 12px;
     padding: 10px 12px;
-    border-radius: 12px;
+    border-radius: 16px;
     background: var(--hockey-glass-bg);
     border: 1px solid transparent;
   }

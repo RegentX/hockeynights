@@ -122,13 +122,16 @@
     margin: 0;
     font-family: var(--hockey-font-display);
     font-size: clamp(2.4rem, 5vw, 3.4rem);
-    line-height: 0.95;
+    line-height: 1.12;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    background: linear-gradient(135deg, #fff 30%, var(--hockey-ice-glow) 100%);
+    overflow: visible;
+    padding-block: 0.06em 0;
+    background-image: var(--hockey-hero-text-gradient);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    color: #fff;
   }
 
   &__hero-tagline {

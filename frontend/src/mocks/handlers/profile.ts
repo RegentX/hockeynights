@@ -12,6 +12,7 @@ import type {
   PrivacySettings,
   SubscriptionState,
 } from '@/entities/profile'
+import {normalizePrivacySettings} from '@/entities/profile'
 import {getMockFavorites, updateMockFavorites} from '@/mocks/data/favorites'
 import {
   buildPublicPlayerView,
@@ -68,7 +69,10 @@ export const profileHandlers = [
   }),
 
   http.get('/mock-api/v1/profile/settings', () => {
-    return HttpResponse.json(mockProfileSettings)
+    return HttpResponse.json({
+      ...mockProfileSettings,
+      privacy: normalizePrivacySettings(mockProfileSettings.privacy),
+    })
   }),
 
   http.patch('/mock-api/v1/profile/notification-preferences', async ({request}) => {

@@ -32,13 +32,13 @@ export function PageHeader({
 }: PageHeaderProps) {
   return (
     <div
-      className="hockey-row hockey-row--between"
+      className="hockey-row hockey-row--between page-header"
       data-testid={dataTestId ?? testId(testIdPrefix, testIdSection, 'header')}
     >
-      <div className="hockey-stack hockey-stack--gap-8">
+      <div className="hockey-stack hockey-stack--gap-8 page-header__copy">
         <Text
           variant="header-1"
-          className="variable-font-header"
+          className="variable-font-header page-header__title"
           data-testid={testId(testIdPrefix, testIdSection, 'text', 'title')}
         >
           {title}

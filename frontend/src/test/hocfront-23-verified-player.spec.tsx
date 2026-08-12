@@ -118,7 +118,7 @@ describe('HOCFRONT-23 verified player', () => {
     renderWithProviders(<PlayersPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Сергей Волков')).toBeInTheDocument()
+      expect(screen.getByText('Волков Сергей Николаевич')).toBeInTheDocument()
     })
 
     const verifiedFilter = screen.getByTestId('players-player-filters-checkbox-verified')
@@ -126,8 +126,8 @@ describe('HOCFRONT-23 verified player', () => {
     await user.click(screen.getByLabelText('Только подтверждённые'))
 
     await waitFor(() => {
-      expect(screen.queryByText('Сергей Волков')).not.toBeInTheDocument()
-      expect(screen.getByText('Алексей Смирнов')).toBeInTheDocument()
+      expect(screen.queryByText('Волков Сергей Николаевич')).not.toBeInTheDocument()
+      expect(screen.getByText('Смирнов Алексей Дмитриевич')).toBeInTheDocument()
     })
   })
 })

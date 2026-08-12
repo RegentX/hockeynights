@@ -19,7 +19,7 @@ export let mockTeams: Team[] = [
     description:
       'Регулярные тренировки по вторникам и субботам. Любительский состав клуба ХК Медведи.',
     shortDescription: 'Любительский состав · вт / сб',
-    logoUrl: '',
+    logoUrl: 'https://placehold.co/64x64/1a2f4a/ffffff?text=МС',
     memberIds: ['user-001', 'user-003', 'user-004', 'user-005', 'user-006'],
     leagueId: 'league-001',
     homeArenaId: 'arena-001',
@@ -34,6 +34,7 @@ export let mockTeams: Team[] = [
     ownerUserId: 'user-002',
     description: 'Соревновательная команда Южного округа. Игры по воскресеньям.',
     shortDescription: 'Продвинутый уровень · вс',
+    logoUrl: 'https://placehold.co/64x64/0d253f/ffffff?text=СЮ',
     memberIds: ['user-002', 'user-003'],
     leagueId: 'league-002',
     homeArenaId: 'arena-002',
@@ -47,6 +48,7 @@ export let mockTeams: Team[] = [
     ownerUserId: 'user-004',
     description: 'Набор новичков на вечерние тренировки у Финского залива.',
     shortDescription: 'Новички · вечерние льды',
+    logoUrl: 'https://placehold.co/64x64/163a5c/ffffff?text=БЛ',
     memberIds: ['user-004'],
     homeArenaId: 'arena-003',
   },
@@ -57,7 +59,7 @@ export let mockRoster: RosterMember[] = [
   {
     teamId: 'team-001',
     userId: 'user-001',
-    displayName: 'Иван Петров',
+    displayName: 'Петров Иван Сергеевич',
     position: 'forward',
     teamRole: 'owner',
     rosterStatus: 'active',
@@ -66,7 +68,7 @@ export let mockRoster: RosterMember[] = [
   {
     teamId: 'team-001',
     userId: 'user-003',
-    displayName: 'Дмитрий Козлов',
+    displayName: 'Козлов Дмитрий Александрович',
     position: 'defense',
     teamRole: 'player',
     rosterStatus: 'active',
@@ -75,7 +77,7 @@ export let mockRoster: RosterMember[] = [
   {
     teamId: 'team-001',
     userId: 'user-004',
-    displayName: 'Сергей Волков',
+    displayName: 'Волков Сергей Николаевич',
     position: 'forward',
     teamRole: 'player',
     rosterStatus: 'bench',
@@ -84,7 +86,7 @@ export let mockRoster: RosterMember[] = [
   {
     teamId: 'team-001',
     userId: 'user-005',
-    displayName: 'Михаил Орлов',
+    displayName: 'Орлов Михаил Викторович',
     position: 'defense',
     teamRole: 'coach',
     rosterStatus: 'active',
@@ -93,7 +95,7 @@ export let mockRoster: RosterMember[] = [
   {
     teamId: 'team-002',
     userId: 'user-002',
-    displayName: 'Алексей Смирнов',
+    displayName: 'Смирнов Алексей Дмитриевич',
     position: 'goalie',
     teamRole: 'owner',
     rosterStatus: 'active',
@@ -102,7 +104,7 @@ export let mockRoster: RosterMember[] = [
   {
     teamId: 'team-002',
     userId: 'user-003',
-    displayName: 'Дмитрий Козлов',
+    displayName: 'Козлов Дмитрий Александрович',
     position: 'defense',
     teamRole: 'player',
     rosterStatus: 'active',
@@ -111,7 +113,7 @@ export let mockRoster: RosterMember[] = [
   {
     teamId: 'team-003',
     userId: 'user-004',
-    displayName: 'Сергей Волков',
+    displayName: 'Волков Сергей Николаевич',
     position: 'forward',
     teamRole: 'owner',
     rosterStatus: 'active',
@@ -125,7 +127,7 @@ export let mockTeamInvites: TeamInvite[] = [
     id: 'invite-seed-received',
     teamId: 'team-001',
     userId: 'user-006',
-    displayName: 'Артём Белов',
+    displayName: 'Белов Артём Игоревич',
     invitedByUserId: 'user-001',
     status: 'received',
     createdAt: '2026-07-10T12:00:00Z',
@@ -135,7 +137,7 @@ export let mockTeamInvites: TeamInvite[] = [
     id: 'invite-seed-declined',
     teamId: 'team-001',
     userId: 'user-007',
-    displayName: 'Павел Новиков',
+    displayName: 'Новиков Павел Андреевич',
     invitedByUserId: 'user-001',
     status: 'declined',
     createdAt: '2026-07-08T09:00:00Z',
@@ -149,7 +151,7 @@ mockRoster = [
   {
     teamId: 'team-001',
     userId: 'user-006',
-    displayName: 'Артём Белов',
+    displayName: 'Белов Артём Игоревич',
     position: 'forward',
     teamRole: 'player',
     rosterStatus: 'invited',
@@ -158,7 +160,7 @@ mockRoster = [
   {
     teamId: 'team-001',
     userId: 'user-007',
-    displayName: 'Павел Новиков',
+    displayName: 'Новиков Павел Андреевич',
     position: 'goalie',
     teamRole: 'player',
     rosterStatus: 'declined',

@@ -31,7 +31,7 @@ describe('role switch flow', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Выберите демо-роль')).toBeInTheDocument()
-      expect(screen.getByText(/Сергей Капитанов/)).toBeInTheDocument()
+      expect(screen.getByText(/Капитанов Сергей Николаевич/)).toBeInTheDocument()
       expect(screen.getByTestId('auth-persona-btn-captain')).toHaveClass('persona-card--current')
     })
 
@@ -42,7 +42,7 @@ describe('role switch flow', () => {
     })
     expect(window.localStorage.getItem('hockey-mock-session')).toContain('"personaId":"player"')
     expect(window.localStorage.getItem('hockey-mock-session')).toContain(
-      '"displayName":"Иван Петров"',
+      '"displayName":"Петров Иван Сергеевич"',
     )
   })
 })

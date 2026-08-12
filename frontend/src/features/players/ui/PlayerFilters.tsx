@@ -32,9 +32,11 @@ const SKILL_OPTIONS = [
   {value: '', content: 'Все уровни'},
   {value: 'beginner', content: 'Дебютант'},
   {value: 'amateur', content: 'Любитель'},
-  {value: 'advanced', content: 'Продвинутый'},
-  {value: 'league', content: 'Лига'},
-  {value: 'unknown', content: 'Не указан'},
+  {value: 'novice_theorist', content: 'Начинающий теоретик'},
+  {value: 'theorist', content: 'Теоретик'},
+  {value: 'confident_theorist', content: 'Уверенный теоретик'},
+  {value: 'practitioner', content: 'Практик'},
+  {value: 'master', content: 'Мастер'},
 ]
 
 /** @spec HOCFRONT-20 - Props фильтров игроков */

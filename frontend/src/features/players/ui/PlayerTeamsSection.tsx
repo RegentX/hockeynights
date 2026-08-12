@@ -42,7 +42,7 @@ export function PlayerTeamsSection({playerId, fallbackTeamName}: PlayerTeamsSect
           variant="subheader-2"
           data-testid={testId('players', 'player-teams', 'text', 'title', playerId)}
         >
-          Команда
+          {teams.length > 1 ? 'Команды' : 'Команда'}
         </Text>
 
         {isLoading && (
