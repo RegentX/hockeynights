@@ -16,14 +16,16 @@ import {
   updateArena,
   updateIceListing,
 } from '@/entities/arena'
-import {fetchSession} from '@/entities/auth'
-import {canManageArena} from '@/features/access'
+import {canManageArena, useSessionAccess} from '@/features/access'
 import {ArenaBookingsPanel, ArenaSchedulePanel} from '@/features/arenas'
+import {isNotFoundError} from '@/shared/api/client'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {PageHeader} from '@/shared/ui/PageHeader'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 type CabinetTab = 'bookings' | 'schedule' | 'listings' | 'profile'
@@ -133,13 +135,14 @@ function validateListingForm(form: ListingFormState): string | null {
 export function ArenaPartnerDashboard() {
   const {arenaId = ''} = useParams()
   const queryClient = useQueryClient()
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {session} = useSessionAccess()
   const canManage = canManageArena(session, arenaId)
 
   const {
     data: arena,
     isLoading,
-    isError,
+    error,
+    refetch,
   } = useQuery({
     queryKey: ['arena', arenaId],
     queryFn: () => fetchArena(arenaId),
@@ -326,7 +329,18 @@ export function ArenaPartnerDashboard() {
     )
   }
 
-  if (isError || !arena) {
+  if (error && !isNotFoundError(error)) {
+    return (
+      <QueryErrorState
+        title="Не удалось загрузить кабинет арены"
+        onRetry={() => void refetch()}
+        testIdPrefix="arenas"
+        data-testid={testId('arenas', 'partner', 'error')}
+      />
+    )
+  }
+
+  if (!arena) {
     return (
       <div data-testid={testId('arenas', 'partner', 'empty')}>
         <EmptyNetState title="Арена не найдена" copy="Вернитесь к списку кабинетов." />
@@ -364,42 +378,37 @@ export function ArenaPartnerDashboard() {
       className="hockey-stack hockey-stack--gap-16"
       data-testid={testId('arenas', 'partner', 'page', arenaId)}
     >
-      <div className="hockey-row hockey-row--between hockey-row--align-center hockey-row--wrap">
-        <div className="hockey-stack hockey-stack--gap-4">
-          <Text color="secondary" data-testid={testId('arenas', 'partner', 'text', 'eyebrow')}>
-            Кабинет ледовой арены
-          </Text>
-          <Text variant="header-1" data-testid={testId('arenas', 'partner', 'text', 'title')}>
-            {arena.name}
-          </Text>
-          <Text color="secondary" data-testid={testId('arenas', 'partner', 'text', 'stats')}>
-            В каталоге: {counts.published} опубл. · {counts.draft} черн. · {counts.archived} снято
-          </Text>
-        </div>
-        <div className="hockey-row hockey-row--gap-8">
-          <Link
-            to={`/arenas/${arena.id}`}
-            data-testid={testId('arenas', 'partner', 'link', 'public', arenaId)}
-          >
-            <HockeyButton
-              view="outlined"
-              size="m"
-              data-testid={testId('arenas', 'partner', 'btn', 'public', arenaId)}
+      <PageHeader
+        title={arena.name}
+        subtitle={`Кабинет ледовой арены · В каталоге: ${counts.published} опубл. · ${counts.draft} черн. · ${counts.archived} снято`}
+        testIdPrefix="arenas"
+        testIdSection="partner"
+        actions={
+          <div className="hockey-row hockey-row--gap-8">
+            <Link
+              to={`/arenas/${arena.id}`}
+              data-testid={testId('arenas', 'partner', 'link', 'public', arenaId)}
             >
-              Как видит игрок
-            </HockeyButton>
-          </Link>
-          <Link to={routes.partner} data-testid={testId('arenas', 'partner', 'link', 'back')}>
-            <HockeyButton
-              view="flat"
-              size="m"
-              data-testid={testId('arenas', 'partner', 'btn', 'back')}
-            >
-              Все кабинеты
-            </HockeyButton>
-          </Link>
-        </div>
-      </div>
+              <HockeyButton
+                view="outlined"
+                size="m"
+                data-testid={testId('arenas', 'partner', 'btn', 'public', arenaId)}
+              >
+                Как видит игрок
+              </HockeyButton>
+            </Link>
+            <Link to={routes.partner} data-testid={testId('arenas', 'partner', 'link', 'back')}>
+              <HockeyButton
+                view="flat"
+                size="m"
+                data-testid={testId('arenas', 'partner', 'btn', 'back')}
+              >
+                Все кабинеты
+              </HockeyButton>
+            </Link>
+          </div>
+        }
+      />
 
       <div
         className="partner-dashboard__tabs"
@@ -751,12 +760,9 @@ export function ArenaPartnerDashboard() {
                 data-testid={testId('arenas', 'partner', 'list', 'listings')}
               >
                 {listingsLoading && (
-                  <Text
-                    color="secondary"
-                    data-testid={testId('arenas', 'partner', 'loader', 'listings')}
-                  >
-                    Загрузка объявлений...
-                  </Text>
+                  <div data-testid={testId('arenas', 'partner', 'loader', 'listings')}>
+                    <ScoreboardLoader label="Загрузка объявлений..." />
+                  </div>
                 )}
                 {!listingsLoading && filteredListings.length === 0 && (
                   <Text

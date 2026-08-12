@@ -12,18 +12,25 @@ import {resolveTeamPermissions} from '@/features/access/lib/teamAccess'
 import type {TeamRole} from '@/shared/types/team'
 
 export function useSessionAccess() {
-  const {data: session, isLoading} = useQuery({
+  const {
+    data: session,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['session'],
     queryFn: fetchSession,
   })
 
   const roles = session?.user.roles ?? []
-  // Пустая строка до загрузки сессии — страницы не должны фильтровать «мои» по mock id.
+  /** Пустая строка до загрузки сессии — не подставляем demo userId. */
   const userId = session?.user.id ?? ''
 
   return {
     session,
     isLoading,
+    isError,
+    refetch,
     userId,
     roles,
     isPartnerWorkspace: shouldUsePartnerWorkspace(session),

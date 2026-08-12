@@ -8,12 +8,14 @@ import {Link, useParams} from 'react-router'
 
 import {arenaHasFreeSlots, fetchArena, fetchArenaSlots} from '@/entities/arena'
 import {ArenaDetailPanel} from '@/features/arenas'
+import {isNotFoundError} from '@/shared/api/client'
 import {ARENAS_LABEL} from '@/shared/config/navigationLabels'
 import {routes} from '@/shared/const/appRoutes'
 import {useDocumentTitle} from '@/shared/hooks/useDocumentTitle'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 export function ArenaDetailsPage() {
@@ -21,7 +23,8 @@ export function ArenaDetailsPage() {
   const {
     data: arena,
     isLoading,
-    isError,
+    error,
+    refetch,
   } = useQuery({
     queryKey: ['arena', arenaId],
     queryFn: () => fetchArena(arenaId),
@@ -43,7 +46,18 @@ export function ArenaDetailsPage() {
     )
   }
 
-  if (isError || !arena) {
+  if (error && !isNotFoundError(error)) {
+    return (
+      <QueryErrorState
+        title="Не удалось загрузить арену"
+        onRetry={() => void refetch()}
+        testIdPrefix="arenas"
+        data-testid={testId('arenas', 'details', 'error')}
+      />
+    )
+  }
+
+  if (!arena) {
     return (
       <div
         className="hockey-stack hockey-stack--gap-12"

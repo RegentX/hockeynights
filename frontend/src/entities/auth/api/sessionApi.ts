@@ -5,6 +5,7 @@
 import type {AuthLoginResponse, SelectPersonaPayload} from '@/entities/auth/model'
 import type {OnboardingPayload, Session} from '@/entities/user'
 import {apiRequest} from '@/shared/api/client'
+import {parseApiErrorMessage} from '@/shared/api/parseApiError'
 
 export interface LoginPayload {
   email: string
@@ -15,18 +16,6 @@ export interface RegisterPayload {
   displayName: string
   email: string
   password: string
-}
-
-function parseApiErrorMessage(error: unknown, fallback: string): string {
-  if (!(error instanceof Error)) return fallback
-  const jsonMatch = error.message.match(/\{[\s\S]*\}/)
-  if (!jsonMatch) return fallback
-  try {
-    const body = JSON.parse(jsonMatch[0]) as {message?: string}
-    return body.message?.trim() || fallback
-  } catch {
-    return fallback
-  }
 }
 
 /**

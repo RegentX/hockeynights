@@ -2,11 +2,12 @@
  * SPEC-FR-24.7.5
  */
 
-import {Button, Text} from '@gravity-ui/uikit'
+import {Text} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
 import {fetchShopCatalogState, importShopCatalog} from '@/entities/shop'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 const STATUS_LABELS: Record<string, string> = {
   synced: 'Синхронизирован',
@@ -71,7 +72,7 @@ export function ShopCatalogImportPanel({shopId}: ShopCatalogImportPanelProps) {
         className="partner-dashboard__tabs"
         data-testid={testId('shops', shopId, 'import', 'nav')}
       >
-        <Button
+        <HockeyButton
           size="s"
           view="outlined"
           loading={importMutation.isPending && importMutation.variables === 'feed'}
@@ -79,8 +80,8 @@ export function ShopCatalogImportPanel({shopId}: ShopCatalogImportPanelProps) {
           onClick={() => importMutation.mutate('feed')}
         >
           Импорт feed
-        </Button>
-        <Button
+        </HockeyButton>
+        <HockeyButton
           size="s"
           view="outlined"
           loading={importMutation.isPending && importMutation.variables === 'api'}
@@ -88,8 +89,8 @@ export function ShopCatalogImportPanel({shopId}: ShopCatalogImportPanelProps) {
           onClick={() => importMutation.mutate('api')}
         >
           Импорт API
-        </Button>
-        <Button
+        </HockeyButton>
+        <HockeyButton
           size="s"
           view="outlined"
           loading={importMutation.isPending && importMutation.variables === 'csv'}
@@ -97,7 +98,7 @@ export function ShopCatalogImportPanel({shopId}: ShopCatalogImportPanelProps) {
           onClick={() => importMutation.mutate('csv')}
         >
           Импорт CSV
-        </Button>
+        </HockeyButton>
       </div>
 
       {importMutation.data && (

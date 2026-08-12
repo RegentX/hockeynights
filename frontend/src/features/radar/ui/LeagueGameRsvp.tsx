@@ -6,9 +6,13 @@ import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 
 import {fetchEventRsvp} from '@/entities/event'
+import {useSessionAccess} from '@/features/access'
 import {TeamRsvpResponseControl} from '@/features/radar/ui/TeamRsvpResponseControl'
 import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {ScoreboardText} from '@/shared/ui/ScoreboardText'
 
 export interface LeagueGameRsvpProps {
@@ -16,13 +20,37 @@ export interface LeagueGameRsvpProps {
   currentUserId?: string
 }
 
-export function LeagueGameRsvp({eventId, currentUserId = 'user-001'}: LeagueGameRsvpProps) {
-  const {data: board, isLoading} = useQuery({
+export function LeagueGameRsvp({eventId, currentUserId}: LeagueGameRsvpProps) {
+  const {userId: sessionUserId} = useSessionAccess()
+  const resolvedUserId = currentUserId || sessionUserId
+  const {
+    data: board,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['event-rsvp', eventId],
     queryFn: () => fetchEventRsvp(eventId),
   })
 
-  if (isLoading || !board) return null
+  if (isLoading) {
+    return <ScoreboardLoader label="Загрузка RSVP" testIdPrefix="radar" />
+  }
+
+  if (isError || !board) {
+    return (
+      <EmptyNetState
+        title="Не удалось загрузить RSVP"
+        copy="Проверь соединение и попробуй ещё раз."
+        testIdPrefix="radar"
+        action={
+          <HockeyButton view="outlined" size="s" onClick={() => void refetch()}>
+            Повторить
+          </HockeyButton>
+        }
+      />
+    )
+  }
 
   const start = new Date(board.startsAt)
   const dateTimeLabel = start.toLocaleString('ru-RU', {
@@ -76,7 +104,7 @@ export function LeagueGameRsvp({eventId, currentUserId = 'user-001'}: LeagueGame
           className="league-game-rsvp__actions"
           data-testid={testId('radar', 'league-rsvp', 'panel', 'cta', eventId)}
         >
-          <TeamRsvpResponseControl eventId={eventId} currentUserId={currentUserId} />
+          <TeamRsvpResponseControl eventId={eventId} currentUserId={resolvedUserId} />
         </div>
       </div>
     </IceCard>

@@ -3,7 +3,7 @@
  * SPEC-FR-22.1.1, SPEC-FR-22.1.2, SPEC-UI-2.3
  */
 
-import {Button, Text, TextInput} from '@gravity-ui/uikit'
+import {Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
 import {Link} from 'react-router'
@@ -18,6 +18,7 @@ import {AddTeamMember} from '@/features/teams/ui/AddTeamMember'
 import {TeamRoster} from '@/features/teams/ui/TeamRoster'
 import {TrainingLineupBoard} from '@/features/teams/ui/TrainingLineupBoard'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 export interface TeamControlCenterProps {
   team: Team
@@ -121,14 +122,14 @@ export function TeamControlCenter({
         </Text>
       )}
       {activeSquad && (
-        <Button
+        <HockeyButton
           view={squadOnly ? 'action' : 'outlined'}
           size="s"
           onClick={() => setSquadOnly((v) => !v)}
           data-testid={testId('teams', 'team-control-center', 'btn', 'squad-filter', team.id)}
         >
           {squadOnly ? 'Показываю только активный состав' : 'Фильтр: только активный состав'}
-        </Button>
+        </HockeyButton>
       )}
 
       <div
@@ -227,7 +228,7 @@ export function TeamControlCenter({
                   to="/messenger"
                   data-testid={testId('teams', 'team-control-center', 'link', 'chat', chat.id)}
                 >
-                  <Button
+                  <HockeyButton
                     size="s"
                     view="outlined"
                     data-testid={testId(
@@ -239,7 +240,7 @@ export function TeamControlCenter({
                     )}
                   >
                     Открыть
-                  </Button>
+                  </HockeyButton>
                 </Link>
               </div>
             ))
@@ -283,7 +284,7 @@ export function TeamControlCenter({
               }
               data-testid={testId('teams', 'team-control-center', 'field', 'channel-tag', team.id)}
             />
-            <Button
+            <HockeyButton
               view="action"
               disabled={!newChannelTitle.trim()}
               loading={createTeamChannelMutation.isPending}
@@ -297,7 +298,7 @@ export function TeamControlCenter({
               data-testid={testId('teams', 'team-control-center', 'btn', 'create-channel', team.id)}
             >
               Создать канал
-            </Button>
+            </HockeyButton>
           </div>
         )}
 
@@ -324,7 +325,7 @@ export function TeamControlCenter({
               placeholder="Например: Сбор на тренировку"
               data-testid={testId('teams', 'team-control-center', 'field', 'chat-title', team.id)}
             />
-            <Button
+            <HockeyButton
               view="outlined"
               disabled={!newChatTitle.trim()}
               loading={createTeamChannelMutation.isPending}
@@ -337,8 +338,8 @@ export function TeamControlCenter({
               data-testid={testId('teams', 'team-control-center', 'btn', 'create-chat', team.id)}
             >
               Создать чат
-            </Button>
-            <Button
+            </HockeyButton>
+            <HockeyButton
               size="s"
               view="outlined"
               onClick={() =>
@@ -357,7 +358,7 @@ export function TeamControlCenter({
               )}
             >
               Быстро создать канал штаба
-            </Button>
+            </HockeyButton>
           </div>
         )}
       </div>

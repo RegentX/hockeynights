@@ -3,7 +3,6 @@
  * SPEC-UI-6.3, SPEC-UI-6.4
  */
 
-import {Text} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
 
@@ -15,15 +14,14 @@ import {
   fetchHighlight,
   fetchHighlights,
 } from '@/entities/highlight'
+import {useSessionAccess} from '@/features/access'
 import {HighlightCard, HighlightUploadForm, HighlightVideoBoard} from '@/features/highlights'
 import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {IceCard} from '@/shared/ui/IceCard'
-import {QueryErrorState} from '@/shared/ui/QueryErrorState'
+import {PageHeader} from '@/shared/ui/PageHeader'
+import {QueryState} from '@/shared/ui/QueryState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
-
-const MOCK_CURRENT_USER_ID = 'user-001'
-const MOCK_CURRENT_USER_NAME = 'Иван Петров'
 
 /**
  * @spec SPEC-FR-14.1.1 - Страница Highlight Analysis
@@ -31,13 +29,15 @@ const MOCK_CURRENT_USER_NAME = 'Иван Петров'
  */
 export function HighlightsPage() {
   const queryClient = useQueryClient()
+  const {userId, session} = useSessionAccess()
+  const authorDisplayName = session?.user.displayName ?? 'Игрок'
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const {
     data: highlights = [],
     isLoading: listLoading,
     isError: listError,
-    refetch: refetchList,
+    refetch: refetchHighlights,
   } = useQuery({
     queryKey: ['highlights'],
     queryFn: fetchHighlights,
@@ -67,7 +67,7 @@ export function HighlightsPage() {
     }) =>
       addHighlightAnnotation(activeId!, {
         ...payload,
-        authorUserId: MOCK_CURRENT_USER_ID,
+        authorUserId: userId,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['highlight', activeId]})
@@ -78,8 +78,8 @@ export function HighlightsPage() {
     mutationFn: (payload: {tag: 'tip' | 'mistake' | 'good_play'; text: string}) =>
       addHighlightComment(activeId!, {
         ...payload,
-        authorUserId: MOCK_CURRENT_USER_ID,
-        authorDisplayName: MOCK_CURRENT_USER_NAME,
+        authorUserId: userId,
+        authorDisplayName,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['highlight', activeId]})
@@ -90,33 +90,27 @@ export function HighlightsPage() {
     setSelectedId(highlight.id)
   }
 
-  if (listLoading) {
+  if (listLoading || listError) {
     return (
-      <div data-testid={testId('highlights', 'page', 'loader')}>
-        <ScoreboardLoader label="Загружаем моменты…" />
-      </div>
-    )
-  }
-
-  if (listError) {
-    return (
-      <QueryErrorState
-        title="Не удалось загрузить моменты"
-        onRetry={() => refetchList()}
+      <QueryState
+        isLoading={listLoading}
+        isError={listError}
+        loadingLabel="Загружаем моменты…"
+        errorTitle="Не удалось загрузить моменты"
+        errorCopy="Проверь соединение и попробуй ещё раз."
+        onRetry={() => void refetchHighlights()}
         testIdPrefix="highlights"
-        data-testid={testId('highlights', 'page', 'error')}
       />
     )
   }
 
   return (
     <div className="highlights-page" data-testid={testId('highlights', 'page', 'page')}>
-      <Text variant="header-1" data-testid={testId('highlights', 'page', 'text', 'title')}>
-        Highlight Analysis
-      </Text>
-      <Text color="secondary" data-testid={testId('highlights', 'page', 'text', 'subtitle')}>
-        Разбор коротких моментов с игры — mock-загрузка, разметка и комментарии команды.
-      </Text>
+      <PageHeader
+        title="Highlight Analysis"
+        subtitle="Разбор коротких моментов с игры — mock-загрузка, разметка и комментарии команды."
+        testIdPrefix="highlights"
+      />
 
       <div
         className="highlights-page__layout"

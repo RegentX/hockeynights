@@ -2,12 +2,11 @@
  * SPEC-FR-24.5.4
  */
 
-import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
+import {Select, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
 import {Link} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import type {League} from '@/entities/league'
 import {
   fetchLeagueDivisions,
@@ -16,6 +15,7 @@ import {
   submitLeagueApplication,
 } from '@/entities/league'
 import {fetchTeams} from '@/entities/team'
+import {useSessionAccess} from '@/features/access'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 
@@ -37,7 +37,7 @@ export function LeagueTeamApplicationForm({league}: LeagueTeamApplicationFormPro
   const [divisionId, setDivisionId] = useState<string | undefined>()
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
 
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {session} = useSessionAccess()
   const {data: teams = []} = useQuery({queryKey: ['teams'], queryFn: () => fetchTeams()})
   const {data: seasons = []} = useQuery({
     queryKey: ['league-seasons', league.id],
@@ -215,7 +215,7 @@ export function LeagueTeamApplicationForm({league}: LeagueTeamApplicationFormPro
         data-testid={testId('leagues', 'application', 'field', 'email', league.id)}
       />
 
-      <Button
+      <HockeyButton
         view="action"
         size="s"
         disabled={!contactEmail.trim()}
@@ -224,7 +224,7 @@ export function LeagueTeamApplicationForm({league}: LeagueTeamApplicationFormPro
         data-testid={testId('leagues', 'application', 'btn', 'submit', league.id)}
       >
         Отправить заявку
-      </Button>
+      </HockeyButton>
 
       {statusMessage && (
         <Text

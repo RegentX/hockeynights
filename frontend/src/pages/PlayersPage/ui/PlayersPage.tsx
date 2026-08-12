@@ -4,7 +4,6 @@
  * HOCFRONT-20
  */
 
-import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
 
@@ -14,6 +13,7 @@ import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'
+import {PageHeader} from '@/shared/ui/PageHeader'
 import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
@@ -66,13 +66,7 @@ export function PlayersPage() {
         aria-hidden
         data-testid={testId('players', 'players-page', 'progress')}
       />
-      <Text
-        variant="header-1"
-        className="variable-font-header"
-        data-testid={testId('players', 'players-page', 'text', 'title')}
-      >
-        Игроки
-      </Text>
+      <PageHeader title="Игроки" testIdPrefix="players" testIdSection="players-page" />
       <PlayerFilters
         filters={filters}
         onChange={setFilters}
@@ -107,7 +101,7 @@ export function PlayersPage() {
       {isError && !isPending && (
         <QueryErrorState
           title="Не удалось загрузить игроков"
-          onRetry={() => refetch()}
+          onRetry={() => void refetch()}
           testIdPrefix="players"
           data-testid={testId('players', 'players-page', 'error')}
         />

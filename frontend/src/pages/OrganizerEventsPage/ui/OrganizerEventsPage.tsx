@@ -23,6 +23,7 @@ import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {PageHeader} from '@/shared/ui/PageHeader'
 import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
@@ -100,45 +101,45 @@ export function OrganizerEventsPage() {
       className="hockey-stack hockey-stack--gap-16"
       data-testid={testId('events', 'organizer-page', 'page')}
     >
-      <div className="hockey-row hockey-row--between hockey-row--align-center hockey-row--wrap">
-        <div className="hockey-stack hockey-stack--gap-4">
-          <Text
-            variant="header-1"
-            data-testid={testId('events', 'organizer-page', 'text', 'title')}
-          >
-            Кабинет организатора тренировок
-          </Text>
-          <Text color="secondary" data-testid={testId('events', 'organizer-page', 'text', 'hint')}>
-            Тренировки, договорённости по льду, календарь, участники и профиль организатора.
-          </Text>
-          <Text color="secondary" data-testid={testId('events', 'organizer-page', 'text', 'stats')}>
-            Всего {mine.length} · набор {counts.open} · заполнены {counts.full} · черновики{' '}
-            {counts.draft}
-          </Text>
-        </div>
-        <div className="hockey-row hockey-row--gap-8">
-          <Link
-            to={routes.eventsCreate}
-            data-testid={testId('events', 'organizer-page', 'link', 'create')}
-          >
-            <HockeyButton
-              view="action"
-              size="m"
-              data-testid={testId('events', 'organizer-page', 'btn', 'create')}
-            >
-              Создать
-            </HockeyButton>
-          </Link>
-          <Link to={routes.events} data-testid={testId('events', 'organizer-page', 'link', 'back')}>
-            <HockeyButton
-              view="flat"
-              size="m"
-              data-testid={testId('events', 'organizer-page', 'btn', 'back')}
-            >
-              К каталогу
-            </HockeyButton>
-          </Link>
-        </div>
+      <div className="hockey-stack hockey-stack--gap-4">
+        <PageHeader
+          title="Кабинет организатора тренировок"
+          subtitle="Тренировки, договорённости по льду, календарь, участники и профиль организатора."
+          testIdPrefix="events"
+          testIdSection="organizer-page"
+          actions={
+            <div className="hockey-row hockey-row--gap-8">
+              <Link
+                to={routes.eventsCreate}
+                data-testid={testId('events', 'organizer-page', 'link', 'create')}
+              >
+                <HockeyButton
+                  view="action"
+                  size="m"
+                  data-testid={testId('events', 'organizer-page', 'btn', 'create')}
+                >
+                  Создать
+                </HockeyButton>
+              </Link>
+              <Link
+                to={routes.events}
+                data-testid={testId('events', 'organizer-page', 'link', 'back')}
+              >
+                <HockeyButton
+                  view="flat"
+                  size="m"
+                  data-testid={testId('events', 'organizer-page', 'btn', 'back')}
+                >
+                  К каталогу
+                </HockeyButton>
+              </Link>
+            </div>
+          }
+        />
+        <Text color="secondary" data-testid={testId('events', 'organizer-page', 'text', 'stats')}>
+          Всего {mine.length} · набор {counts.open} · заполнены {counts.full} · черновики{' '}
+          {counts.draft}
+        </Text>
       </div>
 
       <div
@@ -194,7 +195,7 @@ export function OrganizerEventsPage() {
       ) : isError ? (
         <QueryErrorState
           title="Не удалось загрузить тренировки"
-          onRetry={() => refetch()}
+          onRetry={() => void refetch()}
           testIdPrefix="events"
           data-testid={testId('events', 'organizer-page', 'error')}
         />

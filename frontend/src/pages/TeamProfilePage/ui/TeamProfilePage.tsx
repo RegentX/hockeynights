@@ -7,14 +7,13 @@ import {useQuery} from '@tanstack/react-query'
 import {useState} from 'react'
 import {Link, useParams} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import {
   fetchTeam,
   fetchTeamCalendarEvents,
   fetchTeamClubProfile,
   fetchTeamRoster,
 } from '@/entities/team'
-import {canManageClubEntity} from '@/features/access'
+import {canManageClubEntity, useSessionAccess} from '@/features/access'
 import {POSITION_LABELS, SKILL_LEVEL_LABELS} from '@/features/events'
 import {FavoriteButton} from '@/features/favorites'
 import {ContactStaffModal, STAFF_ROLE_LABELS, TeamCalendarSection} from '@/features/teams'
@@ -31,7 +30,7 @@ export function TeamProfilePage() {
   const {teamId = ''} = useParams()
   const [contactOpen, setContactOpen] = useState(false)
 
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {session} = useSessionAccess()
   const {
     data: team,
     isLoading: teamLoading,
@@ -71,7 +70,7 @@ export function TeamProfilePage() {
     return (
       <QueryErrorState
         title="Не удалось загрузить профиль команды"
-        onRetry={() => refetchTeam()}
+        onRetry={() => void refetchTeam()}
         testIdPrefix="teams"
         data-testid={testId('teams', 'profile', 'error')}
       />

@@ -7,9 +7,9 @@ import {useQuery} from '@tanstack/react-query'
 import {useState} from 'react'
 import {Link} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import {fetchLeague, fetchLeagueSchedule, fetchLeagueStandings} from '@/entities/league'
 import {fetchTeams} from '@/entities/team'
+import {useSessionAccess} from '@/features/access'
 import {normalizeLeagueTeamName} from '@/features/leagues/lib/leagueCatalogFilters'
 import {leagueDetailsPath} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
@@ -23,8 +23,7 @@ import {ScoreboardText} from '@/shared/ui/ScoreboardText'
  */
 export function MyLeagueWidget() {
   const [nowMs] = useState(() => Date.now())
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
-  const userId = session?.user.id
+  const {userId} = useSessionAccess()
 
   const {data: teams = []} = useQuery({
     queryKey: ['teams', {playerId: userId}],

@@ -12,6 +12,8 @@ import type {MarketplaceFilters, MarketplaceSort} from '@/entities/shop'
 import {fetchMarketplaceFeed} from '@/entities/shop'
 import {MarketplaceProductCard, MarketplaceShopStrip} from '@/features/shops'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {PageHeader} from '@/shared/ui/PageHeader'
 import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
@@ -85,13 +87,12 @@ export function MarketplacePage() {
       data-testid={testId('shops', 'marketplace', 'page')}
     >
       <div className="marketplace__hero">
-        <Text variant="header-1" data-testid={testId('shops', 'marketplace', 'text', 'title')}>
-          Маркет экипировки
-        </Text>
-        <Text color="secondary" data-testid={testId('shops', 'marketplace', 'text', 'subtitle')}>
-          Лента товаров от партнёрских магазинов — как маркетплейс, с приоритетом для продвигаемых
-          продавцов.
-        </Text>
+        <PageHeader
+          title="Маркет экипировки"
+          subtitle="Лента товаров от партнёрских магазинов — как маркетплейс, с приоритетом для продвигаемых продавцов."
+          testIdPrefix="shops"
+          testIdSection="marketplace"
+        />
       </div>
 
       <MarketplaceShopStrip
@@ -178,14 +179,14 @@ export function MarketplacePage() {
           {isFetching ? 'Обновляем ленту…' : `${listings.length} товаров`}
         </Text>
         {filters.shopId && (
-          <Button
+          <HockeyButton
             view="outlined"
             size="s"
             data-testid={testId('shops', 'marketplace', 'btn', 'clear-shop-filter')}
             onClick={() => patchFilters({shopId: undefined})}
           >
             Сбросить фильтр магазина
-          </Button>
+          </HockeyButton>
         )}
       </div>
 
@@ -196,7 +197,8 @@ export function MarketplacePage() {
       ) : isError ? (
         <QueryErrorState
           title="Не удалось загрузить маркетплейс"
-          onRetry={() => refetch()}
+          copy="Проверь соединение и попробуй ещё раз."
+          onRetry={() => void refetch()}
           testIdPrefix="shops"
           data-testid={testId('shops', 'marketplace', 'error')}
         />

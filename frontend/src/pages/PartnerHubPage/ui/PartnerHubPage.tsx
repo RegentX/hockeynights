@@ -3,14 +3,14 @@
  */
 
 import {Text} from '@gravity-ui/uikit'
-import {useQuery} from '@tanstack/react-query'
 import {Link} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
+import {useSessionAccess} from '@/features/access'
 import {partnerCabinetLabel, partnerCabinetPath} from '@/shared/const/partnerRoutes'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {PageHeader} from '@/shared/ui/PageHeader'
 import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 
 const CABINET_FEATURES: Record<string, string[]> = {
@@ -28,7 +28,7 @@ const CABINET_FEATURES: Record<string, string[]> = {
 
 /** @spec SPEC-FR-24.5.3 - Хаб партнёрских кабинетов */
 export function PartnerHubPage() {
-  const {data: session, isError, refetch} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {session, isError, refetch} = useSessionAccess()
   const memberships = session?.user.partnerMemberships ?? []
 
   // Без этой ветки сбой запроса выглядел бы как «у вас нет кабинетов»
@@ -50,13 +50,12 @@ export function PartnerHubPage() {
           className="partner-hub hockey-stack hockey-stack--gap-12"
           data-testid={testId('partners', 'hub', 'page', 'empty')}
         >
-          <Text variant="header-1" data-testid={testId('partners', 'hub', 'text', 'title')}>
-            Партнёрские кабинеты
-          </Text>
-          <Text color="secondary" data-testid={testId('partners', 'hub', 'text', 'empty-hint')}>
-            Кабинеты лиги, магазина, клуба и ледовой арены доступны после mock-входа с ролью
-            представителя партнёра.
-          </Text>
+          <PageHeader
+            title="Партнёрские кабинеты"
+            subtitle="Кабинеты лиги, магазина, клуба и ледовой арены доступны после mock-входа с ролью представителя партнёра."
+            testIdPrefix="partners"
+            testIdSection="hub"
+          />
           <Link to="/" data-testid={testId('partners', 'hub', 'link', 'login')}>
             <HockeyButton view="action" data-testid={testId('partners', 'hub', 'btn', 'login')}>
               Перейти к входу
@@ -72,13 +71,12 @@ export function PartnerHubPage() {
       className="partner-hub hockey-stack hockey-stack--gap-16"
       data-testid={testId('partners', 'hub', 'page')}
     >
-      <Text variant="header-1" data-testid={testId('partners', 'hub', 'text', 'title')}>
-        Партнёрские кабинеты
-      </Text>
-      <Text color="secondary" data-testid={testId('partners', 'hub', 'text', 'subtitle')}>
-        Управление профилем, контентом и операционкой внутри HockeyNights — без перехода только на
-        внешний сайт.
-      </Text>
+      <PageHeader
+        title="Партнёрские кабинеты"
+        subtitle="Управление профилем, контентом и операционкой внутри HockeyNights — без перехода только на внешний сайт."
+        testIdPrefix="partners"
+        testIdSection="hub"
+      />
 
       <div
         className="hockey-grid hockey-grid--cards-300"

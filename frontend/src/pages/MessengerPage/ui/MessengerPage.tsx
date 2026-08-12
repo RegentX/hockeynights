@@ -4,7 +4,7 @@
  */
 
 import {PaperPlane} from '@gravity-ui/icons'
-import {Button, Icon, Switch, Text, TextInput} from '@gravity-ui/uikit'
+import {Icon, Switch, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useEffect, useMemo, useState} from 'react'
 import {useSearchParams} from 'react-router'
@@ -33,7 +33,10 @@ import {
 } from '@/entities/messenger'
 import {ChatBubble} from '@/features/messenger'
 import {testId} from '@/shared/testing/testId'
-import {QueryErrorState} from '@/shared/ui/QueryErrorState'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {QueryState} from '@/shared/ui/QueryState'
+import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
 const MOBILE_BREAKPOINT = '(max-width: 768px)'
 
@@ -53,7 +56,8 @@ export function MessengerPage() {
   const chatIdFromUrl = searchParams.get('chatId')
   const {
     data: chats = [],
-    isError: chatsError,
+    isLoading: isLoadingChats,
+    isError: isChatsError,
     refetch: refetchChats,
   } = useQuery({
     queryKey: ['messenger-chats'],
@@ -213,7 +217,12 @@ export function MessengerPage() {
       ? selectedTopicId
       : (topics[0]?.id ?? null)
 
-  const {data: messages = [], isLoading: isLoadingMessages} = useQuery({
+  const {
+    data: messages = [],
+    isLoading: isLoadingMessages,
+    isError: isMessagesError,
+    refetch: refetchMessages,
+  } = useQuery({
     queryKey: ['messenger-messages', activeChatId, activeTopicId],
     queryFn: () => fetchChatMessagesByTopic(activeChatId!, activeTopicId ?? undefined),
     enabled: Boolean(activeChatId),
@@ -374,6 +383,22 @@ export function MessengerPage() {
     return 'Сообщений пока нет'
   }
 
+  if (isLoadingChats || isChatsError) {
+    return (
+      <div className={layoutClass} data-testid={testId('messenger', 'page', 'page')}>
+        <QueryState
+          isLoading={isLoadingChats}
+          isError={isChatsError}
+          loadingLabel="Загрузка чатов"
+          errorTitle="Не удалось загрузить чаты"
+          errorCopy="Проверь соединение и попробуй ещё раз."
+          onRetry={() => void refetchChats()}
+          testIdPrefix="messenger"
+        />
+      </div>
+    )
+  }
+
   return (
     <div className={layoutClass} data-testid={testId('messenger', 'page', 'page')}>
       <div
@@ -391,38 +416,38 @@ export function MessengerPage() {
             className="messenger-toolbar"
             data-testid={testId('messenger', 'page', 'nav', 'toolbar')}
           >
-            <Button
+            <HockeyButton
               size="s"
               view={filterMode === 'all' ? 'action' : 'outlined'}
               onClick={() => setFilterMode('all')}
               data-testid={testId('messenger', 'page', 'btn', 'filter-all')}
             >
               Все
-            </Button>
-            <Button
+            </HockeyButton>
+            <HockeyButton
               size="s"
               view={filterMode === 'pinned' ? 'action' : 'outlined'}
               onClick={() => setFilterMode('pinned')}
               data-testid={testId('messenger', 'page', 'btn', 'filter-pinned')}
             >
               Важные
-            </Button>
-            <Button
+            </HockeyButton>
+            <HockeyButton
               size="s"
               view={composerMode === 'channel' ? 'action' : 'outlined'}
               onClick={() => setComposerMode((prev) => (prev === 'channel' ? 'none' : 'channel'))}
               data-testid={testId('messenger', 'page', 'btn', 'new-channel')}
             >
               Новый канал
-            </Button>
-            <Button
+            </HockeyButton>
+            <HockeyButton
               size="s"
               view={composerMode === 'chat' ? 'action' : 'outlined'}
               onClick={() => setComposerMode((prev) => (prev === 'chat' ? 'none' : 'chat'))}
               data-testid={testId('messenger', 'page', 'btn', 'new-chat')}
             >
               Новый чат
-            </Button>
+            </HockeyButton>
           </div>
           {composerMode !== 'none' && (
             <div
@@ -485,7 +510,7 @@ export function MessengerPage() {
                   ))}
                 </div>
               )}
-              <Button
+              <HockeyButton
                 size="s"
                 view="action"
                 loading={createEntityMutation.isPending}
@@ -493,7 +518,7 @@ export function MessengerPage() {
                 data-testid={testId('messenger', 'page', 'btn', 'create-entity')}
               >
                 Создать
-              </Button>
+              </HockeyButton>
             </div>
           )}
           <TextInput
@@ -580,14 +605,6 @@ export function MessengerPage() {
             </div>
           )}
         </div>
-        {chatsError && (
-          <QueryErrorState
-            title="Не удалось загрузить чаты"
-            onRetry={() => refetchChats()}
-            testIdPrefix="messenger"
-            data-testid={testId('messenger', 'page', 'error', 'chats')}
-          />
-        )}
         <div className="chat-list" data-testid={testId('messenger', 'page', 'list', 'chats')}>
           {sortedChats.map((chat) => (
             <div
@@ -697,7 +714,7 @@ export function MessengerPage() {
                   className="messenger-header__actions"
                   data-testid={testId('messenger', 'page', 'nav', 'header-actions')}
                 >
-                  <Button
+                  <HockeyButton
                     size="s"
                     view={selectedChat.isPinned ? 'action' : 'outlined'}
                     onClick={() => handleToggleChatPin(selectedChat.id)}
@@ -705,17 +722,17 @@ export function MessengerPage() {
                     data-testid={testId('messenger', 'page', 'btn', 'toggle-pin', selectedChat.id)}
                   >
                     {selectedChat.isPinned ? 'Открепить' : 'Закрепить'}
-                  </Button>
-                  <Button
+                  </HockeyButton>
+                  <HockeyButton
                     size="s"
                     view={showTopicComposer ? 'action' : 'outlined'}
                     onClick={() => setShowTopicComposer((prev) => !prev)}
                     data-testid={testId('messenger', 'page', 'btn', 'new-topic', selectedChat.id)}
                   >
                     Новая тема
-                  </Button>
+                  </HockeyButton>
                   {isChannelChat && (
-                    <Button
+                    <HockeyButton
                       size="s"
                       view={showChannelSettings ? 'action' : 'outlined'}
                       onClick={() => setShowChannelSettings((prev) => !prev)}
@@ -728,7 +745,7 @@ export function MessengerPage() {
                       )}
                     >
                       Настройки канала
-                    </Button>
+                    </HockeyButton>
                   )}
                 </div>
               )}
@@ -835,7 +852,7 @@ export function MessengerPage() {
                     ))}
                   </div>
                 )}
-                <Button
+                <HockeyButton
                   size="s"
                   view="action"
                   loading={createTopicMutation.isPending}
@@ -843,7 +860,7 @@ export function MessengerPage() {
                   data-testid={testId('messenger', 'page', 'btn', 'create-topic')}
                 >
                   Создать тему
-                </Button>
+                </HockeyButton>
               </div>
             )}
             {showChannelSettingsPanel && channelSettings && (
@@ -1131,13 +1148,27 @@ export function MessengerPage() {
               data-testid={testId('messenger', 'page', 'feed', 'messages')}
             >
               {isLoadingMessages && messages.length === 0 ? (
-                <Text
-                  variant="body-2"
-                  color="secondary"
-                  data-testid={testId('messenger', 'page', 'loader', 'messages')}
-                >
-                  Загрузка сообщений...
-                </Text>
+                <div data-testid={testId('messenger', 'page', 'loader', 'messages')}>
+                  <ScoreboardLoader label="Загрузка сообщений" testIdPrefix="messenger" />
+                </div>
+              ) : isMessagesError && messages.length === 0 ? (
+                <div data-testid={testId('messenger', 'page', 'error', 'messages')}>
+                  <EmptyNetState
+                    title="Не удалось загрузить сообщения"
+                    copy="Проверь соединение и попробуй ещё раз."
+                    testIdPrefix="messenger"
+                    action={
+                      <HockeyButton
+                        view="outlined"
+                        size="s"
+                        onClick={() => void refetchMessages()}
+                        data-testid={testId('messenger', 'page', 'btn', 'retry-messages')}
+                      >
+                        Повторить
+                      </HockeyButton>
+                    }
+                  />
+                </div>
               ) : messages.length === 0 ? (
                 <Text
                   variant="body-2"
@@ -1177,13 +1208,13 @@ export function MessengerPage() {
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                 data-testid={testId('messenger', 'page', 'field', 'message-input')}
               />
-              <Button
+              <HockeyButton
                 view="action"
                 onClick={handleSendMessage}
                 data-testid={testId('messenger', 'page', 'btn', 'send')}
               >
                 <Icon data={PaperPlane} />
-              </Button>
+              </HockeyButton>
             </div>
           </>
         ) : (

@@ -274,9 +274,12 @@ export function CalendarShell({
                           : state.scope === 'club'
                             ? [{value: 'club-001', content: 'Клуб Медведи'}]
                             : [
-                                {value: 'user-001', content: 'Иван Петров'},
+                                {
+                                  value: userId,
+                                  content: session?.user.displayName ?? 'Я',
+                                },
                                 {value: 'user-003', content: 'Дмитрий Козлов'},
-                              ]
+                              ].filter((option) => Boolean(option.value))
                       }
                       width={200}
                       data-testid={testId('calendar', 'shell', 'select', 'scope-id')}

@@ -2,11 +2,10 @@
  * SPEC-FR-8.1.1, SPEC-FR-8.1.2, SPEC-FR-8.2.2
  */
 
-import {Text} from '@gravity-ui/uikit'
-
 import {PostGameFeedbackForm} from '@/features/feedback'
 import {KarmaHint} from '@/features/karma'
 import {testId} from '@/shared/testing/testId'
+import {PageHeader} from '@/shared/ui/PageHeader'
 
 /**
  * @spec SPEC-FR-8.1.1 - Страница feedback
@@ -14,12 +13,14 @@ import {testId} from '@/shared/testing/testId'
 export function FeedbackPage() {
   return (
     <div
-      className="hockey-stack hockey-stack--gap-16"
+      className="hockey-stack hockey-stack--gap-20"
       data-testid={testId('feedback', 'page', 'page')}
     >
-      <Text variant="header-1" data-testid={testId('feedback', 'page', 'text', 'title')}>
-        Feedback после игры
-      </Text>
+      <PageHeader
+        title="Feedback после игры"
+        subtitle="Оцени явку, уровень и поведение участников — это влияет на karma."
+        testIdPrefix="feedback"
+      />
       <div data-testid={testId('feedback', 'page', 'panel', 'karma-hint')}>
         <KarmaHint />
       </div>

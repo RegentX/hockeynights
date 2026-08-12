@@ -7,9 +7,9 @@ import {useQuery} from '@tanstack/react-query'
 import {useState} from 'react'
 import {Link} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import type {League} from '@/entities/league'
 import {fetchLeaguePosts} from '@/entities/league'
+import {useSessionAccess} from '@/features/access'
 import {SKILL_LEVEL_LABELS} from '@/features/events'
 import {FavoriteButton} from '@/features/favorites'
 import {LeagueTeamApplicationForm} from '@/features/leagues/ui/LeagueTeamApplicationForm'
@@ -28,7 +28,7 @@ export interface LeagueProfilePanelProps {
  */
 export function LeagueProfilePanel({league}: LeagueProfilePanelProps) {
   const [portalOpen, setPortalOpen] = useState(false)
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {session} = useSessionAccess()
   const canManagePartner =
     session?.user.roles.includes('admin') ||
     session?.user.partnerMemberships?.some((m) => m.kind === 'league' && m.entityId === league.id)

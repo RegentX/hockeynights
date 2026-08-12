@@ -8,6 +8,7 @@ import {useState} from 'react'
 
 import type {EventRsvpStatus} from '@/entities/event'
 import {fetchEventRsvp, updateEventRsvp} from '@/entities/event'
+import {useSessionAccess} from '@/features/access'
 import {DeclineReasonField} from '@/features/radar/ui/DeclineReasonField'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -34,10 +35,12 @@ const STATUS_COLORS: Record<EventRsvpStatus, 'positive' | 'danger' | 'warning'> 
 
 export function TeamRsvpResponseControl({
   eventId,
-  currentUserId = 'user-001',
+  currentUserId,
   hideStatus = false,
 }: TeamRsvpResponseControlProps) {
   const queryClient = useQueryClient()
+  const {userId: sessionUserId} = useSessionAccess()
+  const resolvedUserId = currentUserId || sessionUserId
   const [showDeclineReason, setShowDeclineReason] = useState(false)
 
   const {data: board, isLoading} = useQuery({
@@ -72,7 +75,7 @@ export function TeamRsvpResponseControl({
 
   if (!board) return null
 
-  const me = board.players.find((player) => player.userId === currentUserId)
+  const me = board.players.find((player) => player.userId === resolvedUserId)
   const myStatus = me?.status ?? 'pending'
 
   function confirmAttendance() {

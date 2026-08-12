@@ -4,14 +4,13 @@
  * HOCFRONT-34A — каталог: поиск/фильтры, карточка → /leagues/:leagueId
  */
 
-import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useEffect} from 'react'
 import {useNavigate, useSearchParams} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import type {League, LeagueFilters as LeagueFiltersType} from '@/entities/league'
 import {fetchLeagues} from '@/entities/league'
+import {useSessionAccess} from '@/features/access'
 import {
   countActiveLeagueFilters,
   LeagueCard,
@@ -28,6 +27,7 @@ import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'
+import {PageHeader} from '@/shared/ui/PageHeader'
 import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
@@ -51,7 +51,7 @@ export function LeaguesPage() {
     navigate(leagueDetailsPath(legacyLeagueId), {replace: true})
   }, [legacyLeagueId, navigate])
 
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {session} = useSessionAccess()
   const leagueMembership = session?.user.partnerMemberships?.find((m) => m.kind === 'league')
 
   const {
@@ -80,9 +80,11 @@ export function LeaguesPage() {
 
   return (
     <div className="hockey-stack hockey-stack--gap-20" data-testid={testId('leagues', 'page')}>
-      <Text variant="header-1" data-testid={testId('leagues', 'page', 'text', 'title')}>
-        {LEAGUES_PAGE_TITLE}
-      </Text>
+      <PageHeader
+        title={LEAGUES_PAGE_TITLE}
+        subtitle="Лиги Москвы и России. Данные могут быть mock, manual, imported или external — смотрите бейдж источника."
+        testIdPrefix="leagues"
+      />
 
       <div data-testid={testId('leagues', 'page', 'panel', 'partner-access')}>
         {leagueMembership ? (
@@ -91,11 +93,6 @@ export function LeaguesPage() {
           <PartnerAccessHint kind="league" />
         )}
       </div>
-
-      <Text color="secondary" data-testid={testId('leagues', 'page', 'text', 'subtitle')}>
-        Лиги Москвы и России. Данные могут быть mock, manual, imported или external — смотрите бейдж
-        источника.
-      </Text>
 
       <MyLeagueWidget />
 
@@ -113,7 +110,7 @@ export function LeaguesPage() {
       {isError && !isPending && (
         <QueryErrorState
           title="Не удалось загрузить лиги"
-          onRetry={() => refetch()}
+          onRetry={() => void refetch()}
           testIdPrefix="leagues"
           data-testid={testId('leagues', 'page', 'error')}
         />

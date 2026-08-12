@@ -2,13 +2,15 @@
  * SPEC-FR-11.1.1
  */
 
-import {Button, Card, Select, Text, TextInput} from '@gravity-ui/uikit'
+import {Select, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
 
 import type {AdminEntityType} from '@/entities/admin'
 import {createAdminEntity} from '@/entities/admin'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {IceCard} from '@/shared/ui/IceCard'
 
 const ENTITY_OPTIONS = [
   {value: 'arena', content: 'Арена'},
@@ -44,9 +46,9 @@ export function AdminEntityForm() {
   }
 
   return (
-    <Card
-      view="filled"
-      className="hockey-panel hockey-form-shell hockey-form-shell--480"
+    <IceCard
+      padding="m"
+      className="hockey-form-shell hockey-form-shell--480"
       data-testid={testId('admin', 'entity-form', 'form')}
     >
       <div className="hockey-stack hockey-stack--gap-12">
@@ -78,15 +80,14 @@ export function AdminEntityForm() {
           onUpdate={setWebsiteUrl}
           data-testid={testId('admin', 'entity-form', 'field', 'website')}
         />
-        <Button
-          view="action"
+        <HockeyButton
           loading={mutation.isPending}
           data-testid={testId('admin', 'entity-form', 'btn', 'create')}
           onClick={handleSubmit}
         >
           Создать
-        </Button>
+        </HockeyButton>
       </div>
-    </Card>
+    </IceCard>
   )
 }

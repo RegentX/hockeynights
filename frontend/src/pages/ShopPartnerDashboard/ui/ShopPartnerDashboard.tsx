@@ -2,14 +2,14 @@
  * SPEC-FR-24.7.3, SPEC-FR-24.7.4
  */
 
-import {Button, Text, TextInput} from '@gravity-ui/uikit'
+import {Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
 import {Link, useParams} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import type {Shop} from '@/entities/shop'
 import {fetchShops, updateShopPartnerProfile} from '@/entities/shop'
+import {useSessionAccess} from '@/features/access'
 import {
   ShopAnalyticsPanel,
   ShopCatalogImportPanel,
@@ -21,6 +21,7 @@ import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {EntityProfileBadge} from '@/shared/ui/EntityProfileBadge'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {PageHeader} from '@/shared/ui/PageHeader'
 import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
@@ -33,7 +34,7 @@ export function ShopPartnerDashboard() {
   const [tab, setTab] = useState<PartnerTab>('products')
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
 
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {session} = useSessionAccess()
   const {
     data: shops = [],
     isLoading,
@@ -133,70 +134,62 @@ export function ShopPartnerDashboard() {
       className="partner-dashboard hockey-stack hockey-stack--gap-16"
       data-testid={testId('shops', shopId, 'dashboard', 'page')}
     >
-      <div className="partner-dashboard__header hockey-row hockey-row--between">
-        <div>
-          <Text
-            variant="header-1"
-            data-testid={testId('shops', shopId, 'dashboard', 'text', 'title')}
-          >
-            Кабинет магазина
-          </Text>
-          <Text
-            color="secondary"
-            data-testid={testId('shops', shopId, 'dashboard', 'text', 'name')}
-          >
-            {shop.name}
-          </Text>
-        </div>
-        <span data-testid={testId('shops', shopId, 'dashboard', 'badge', 'profile')}>
-          <EntityProfileBadge kind="shop" />
-        </span>
-      </div>
+      <PageHeader
+        title="Кабинет магазина"
+        subtitle={shop.name}
+        testIdPrefix="shops"
+        testIdSection="dashboard"
+        actions={
+          <span data-testid={testId('shops', shopId, 'dashboard', 'badge', 'profile')}>
+            <EntityProfileBadge kind="shop" />
+          </span>
+        }
+      />
 
       <div
         className="partner-dashboard__tabs"
         data-testid={testId('shops', shopId, 'dashboard', 'nav')}
       >
-        <Button
+        <HockeyButton
           view={tab === 'profile' ? 'action' : 'outlined'}
           size="s"
           data-testid={testId('shops', shopId, 'dashboard', 'tab', 'profile')}
           onClick={() => setTab('profile')}
         >
           О магазине
-        </Button>
-        <Button
+        </HockeyButton>
+        <HockeyButton
           view={tab === 'products' ? 'action' : 'outlined'}
           size="s"
           data-testid={testId('shops', shopId, 'dashboard', 'tab', 'products')}
           onClick={() => setTab('products')}
         >
           Товары
-        </Button>
-        <Button
+        </HockeyButton>
+        <HockeyButton
           view={tab === 'import' ? 'action' : 'outlined'}
           size="s"
           data-testid={testId('shops', shopId, 'dashboard', 'tab', 'import')}
           onClick={() => setTab('import')}
         >
           Импорт
-        </Button>
-        <Button
+        </HockeyButton>
+        <HockeyButton
           view={tab === 'promos' ? 'action' : 'outlined'}
           size="s"
           data-testid={testId('shops', shopId, 'dashboard', 'tab', 'promos')}
           onClick={() => setTab('promos')}
         >
           Промо
-        </Button>
-        <Button
+        </HockeyButton>
+        <HockeyButton
           view={tab === 'analytics' ? 'action' : 'outlined'}
           size="s"
           data-testid={testId('shops', shopId, 'dashboard', 'tab', 'analytics')}
           onClick={() => setTab('analytics')}
         >
           Аналитика
-        </Button>
+        </HockeyButton>
       </div>
 
       {tab === 'profile' && (
@@ -247,14 +240,14 @@ export function ShopPartnerDashboard() {
             >
               Статус модерации: {form.moderationStatus ?? 'draft'}
             </Text>
-            <Button
+            <HockeyButton
               view="action"
               loading={saveMutation.isPending}
               data-testid={testId('shops', shopId, 'dashboard', 'btn', 'save-profile')}
               onClick={() => saveMutation.mutate(draft)}
             >
               Сохранить профиль
-            </Button>
+            </HockeyButton>
             {statusMessage && (
               <Text
                 color="secondary"

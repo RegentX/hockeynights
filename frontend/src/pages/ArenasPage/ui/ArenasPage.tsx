@@ -29,6 +29,7 @@ import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'
+import {PageHeader} from '@/shared/ui/PageHeader'
 import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
@@ -192,17 +193,12 @@ export function ArenasPage() {
         data-testid={testId('arenas', 'page', 'progress')}
       />
       <ScrollReveal direction="down">
-        <div className="arenas-page__intro hockey-stack hockey-stack--gap-4">
-          <Text
-            variant="header-1"
-            className="variable-font-header"
-            data-testid={testId('arenas', 'page', 'text', 'title')}
-          >
-            {ARENAS_PAGE_TITLE}
-          </Text>
-          <Text color="secondary" data-testid={testId('arenas', 'page', 'text', 'subtitle')}>
-            Найдите площадку рядом: список, карта и свободные слоты.
-          </Text>
+        <div className="arenas-page__intro">
+          <PageHeader
+            title={ARENAS_PAGE_TITLE}
+            subtitle="Найдите площадку рядом: список, карта и свободные слоты."
+            testIdPrefix="arenas"
+          />
         </div>
       </ScrollReveal>
 

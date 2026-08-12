@@ -7,7 +7,8 @@ import {useQuery} from '@tanstack/react-query'
 
 import {fetchNotifications} from '@/entities/notification'
 import {testId} from '@/shared/testing/testId'
-import {QueryErrorState} from '@/shared/ui/QueryErrorState'
+import {PageHeader} from '@/shared/ui/PageHeader'
+import {QueryState} from '@/shared/ui/QueryState'
 import {NotificationCenter} from '@/widgets/NotificationCenter'
 
 /**
@@ -28,13 +29,15 @@ export function NotificationsPage() {
 
   return (
     <div
-      className="hockey-stack hockey-stack--gap-16"
+      className="hockey-stack hockey-stack--gap-20"
       data-testid={testId('notifications', 'page', 'page')}
     >
-      <Text variant="header-1" data-testid={testId('notifications', 'page', 'text', 'title')}>
-        Уведомления
-      </Text>
-      {unreadCount > 0 && (
+      <PageHeader
+        title="Уведомления"
+        testIdPrefix="notifications"
+        subtitle="Важные сигналы по SOS, составу и событиям"
+      />
+      {!isLoading && !isError && unreadCount > 0 && (
         <Text
           color="secondary"
           data-testid={testId('notifications', 'page', 'text', 'unread-count')}
@@ -42,19 +45,17 @@ export function NotificationsPage() {
           Непрочитанных: {unreadCount}
         </Text>
       )}
-      {isLoading && (
-        <Text data-testid={testId('notifications', 'page', 'loader')}>Загрузка...</Text>
-      )}
-      {isError && !isLoading ? (
-        <QueryErrorState
-          title="Не удалось загрузить уведомления"
-          onRetry={() => refetch()}
-          testIdPrefix="notifications"
-          data-testid={testId('notifications', 'page', 'error')}
-        />
-      ) : (
+
+      <QueryState
+        isLoading={isLoading}
+        isError={isError}
+        loadingLabel="Загрузка уведомлений"
+        errorTitle="Не удалось загрузить уведомления"
+        onRetry={() => void refetch()}
+        testIdPrefix="notifications"
+      >
         <NotificationCenter notifications={notifications} />
-      )}
+      </QueryState>
     </div>
   )
 }

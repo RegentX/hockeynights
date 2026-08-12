@@ -12,6 +12,7 @@ import {Link} from 'react-router'
 import type {GameEvent} from '@/entities/event'
 import {fetchEventRsvp} from '@/entities/event'
 import {fetchMyProfile} from '@/entities/profile'
+import {useSessionAccess} from '@/features/access'
 import {
   countOpenSlots,
   countOpenSlotsForPosition,
@@ -49,8 +50,10 @@ export interface EventCardProps {
  * @spec SPEC-FR-4.1.1 - Карточка игры/тренировки
  * @spec HOCFRONT-28B - v2: подходит ли мне без открытия деталки
  */
-export function EventCard({event, currentUserId = 'user-001', compact = false}: EventCardProps) {
-  const myAttendance = event.participation.find((p) => p.userId === currentUserId)
+export function EventCard({event, currentUserId, compact = false}: EventCardProps) {
+  const {userId: sessionUserId} = useSessionAccess()
+  const resolvedUserId = currentUserId || sessionUserId
+  const myAttendance = event.participation.find((p) => p.userId === resolvedUserId)
   const currentStatus = myAttendance?.status
   const [nowMs] = useState(() => Date.now())
   const start = new Date(event.startsAt)
@@ -71,7 +74,7 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
     queryFn: () => fetchEventRsvp(event.id),
     enabled: Boolean(event.hasTeamRsvp),
   })
-  const myRsvp = rsvpBoard?.players.find((player) => player.userId === currentUserId)
+  const myRsvp = rsvpBoard?.players.find((player) => player.userId === resolvedUserId)
   const statusLabel = event.hasTeamRsvp
     ? rsvpBoard
       ? teamRsvpStatusLabel(myRsvp?.status, myRsvp?.declineReason)
@@ -208,7 +211,7 @@ export function EventCard({event, currentUserId = 'user-001', compact = false}: 
             eventType={event.type}
             currentStatus={currentStatus}
             registrationStatus={event.registrationStatus}
-            currentUserId={currentUserId}
+            currentUserId={resolvedUserId}
           />
         )}
       </div>

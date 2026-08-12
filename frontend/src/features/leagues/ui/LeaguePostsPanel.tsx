@@ -2,12 +2,13 @@
  * SPEC-FR-24.5.6
  */
 
-import {Button, Switch, Text, TextInput} from '@gravity-ui/uikit'
+import {Switch, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
 
 import {createLeaguePost, fetchLeaguePosts} from '@/entities/league'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 export interface LeaguePostsPanelProps {
   leagueId: string
@@ -108,7 +109,7 @@ export function LeaguePostsPanel({leagueId}: LeaguePostsPanelProps) {
         >
           Закрепить
         </Switch>
-        <Button
+        <HockeyButton
           view="action"
           size="s"
           disabled={!title.trim() || !body.trim()}
@@ -117,7 +118,7 @@ export function LeaguePostsPanel({leagueId}: LeaguePostsPanelProps) {
           data-testid={testId('leagues', 'posts', 'btn', 'publish', leagueId)}
         >
           Опубликовать
-        </Button>
+        </HockeyButton>
       </div>
     </div>
   )

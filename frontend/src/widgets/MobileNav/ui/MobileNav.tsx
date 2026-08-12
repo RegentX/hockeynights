@@ -9,7 +9,6 @@ import {useQuery} from '@tanstack/react-query'
 import {useEffect, useId, useState} from 'react'
 import {Link, useLocation} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import {fetchChats, getTotalUnreadCount} from '@/entities/messenger'
 import {
   isMobileMorePathActive,
@@ -17,6 +16,7 @@ import {
   resolveMobileMoreNavItems,
   resolveMobileNavItems,
   shouldUsePartnerWorkspace,
+  useSessionAccess,
 } from '@/features/access'
 import {routeToTestSlug, testId} from '@/shared/testing/testId'
 
@@ -38,7 +38,7 @@ export function MobileNav() {
     setSheetPath(location.pathname)
     setIsMoreOpen(false)
   }
-  const {data: session} = useQuery({queryKey: ['session'], queryFn: fetchSession})
+  const {session} = useSessionAccess()
   const partnerMembership = session?.user.partnerMemberships?.[0]
   const partnerCount = session?.user.partnerMemberships?.length ?? 0
   const showLegacyPartnerLink =

@@ -918,6 +918,20 @@ function EventCreateFormFields({
                 Сохранить черновик
               </HockeyButton>
             ) : null}
+            {isEdit && initialEvent ? (
+              <Link
+                to={`/events/trainings/${initialEvent.id}`}
+                data-testid={testId('events', 'create-form', 'link', 'back-details')}
+              >
+                <HockeyButton
+                  view="flat"
+                  size="m"
+                  data-testid={testId('events', 'create-form', 'btn', 'back-details')}
+                >
+                  К карточке
+                </HockeyButton>
+              </Link>
+            ) : null}
             {!isEdit ? (
               <Link
                 to={routes.profile}

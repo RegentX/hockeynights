@@ -46,6 +46,7 @@ import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {HockeyRinkLoader} from '@/shared/ui/HockeyRinkLoader'
+import {PageHeader} from '@/shared/ui/PageHeader'
 import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
 
@@ -284,53 +285,48 @@ export function EventsPage() {
   return (
     <div className="hockey-stack hockey-stack--gap-20" data-testid={testId('events', 'page')}>
       <ScrollReveal direction="down">
-        <div className="hockey-row hockey-row--between hockey-row--align-center hockey-row--wrap">
-          <div className="hockey-stack hockey-stack--gap-8">
-            <Text
-              variant="header-1"
-              className="variable-font-header"
-              data-testid={testId('events', 'page', 'text', 'title')}
-            >
-              {EVENTS_LABEL}
-            </Text>
-            <Text color="secondary" data-testid={testId('events', 'page', 'text', 'subtitle')}>
-              Найдите будущую тренировку или игру и запишитесь. Создание — отдельным экраном.
-            </Text>
-            <Text color="secondary" data-testid={testId('events', 'page', 'text', 'geoblock')}>
-              Геоблок MVP: {LAUNCH_REGION}
-            </Text>
-          </div>
-          {canOrganizeEvents && (
-            <div
-              className="hockey-row hockey-row--gap-8"
-              data-testid={testId('events', 'page', 'panel', 'organizer-actions')}
-            >
-              <Link
-                to={routes.eventsCreate}
-                data-testid={testId('events', 'page', 'link', 'create')}
-              >
-                <HockeyButton
-                  view="action"
-                  size="m"
-                  data-testid={testId('events', 'page', 'btn', 'create')}
+        <div className="hockey-stack hockey-stack--gap-8">
+          <PageHeader
+            title={EVENTS_LABEL}
+            subtitle="Найдите будущую тренировку или игру и запишитесь. Создание — отдельным экраном."
+            testIdPrefix="events"
+            actions={
+              canOrganizeEvents ? (
+                <div
+                  className="hockey-row hockey-row--gap-8"
+                  data-testid={testId('events', 'page', 'panel', 'organizer-actions')}
                 >
-                  Создать
-                </HockeyButton>
-              </Link>
-              <Link
-                to={routes.eventsOrganizer}
-                data-testid={testId('events', 'page', 'link', 'organizer')}
-              >
-                <HockeyButton
-                  view="outlined"
-                  size="m"
-                  data-testid={testId('events', 'page', 'btn', 'organizer')}
-                >
-                  Кабинет организатора
-                </HockeyButton>
-              </Link>
-            </div>
-          )}
+                  <Link
+                    to={routes.eventsCreate}
+                    data-testid={testId('events', 'page', 'link', 'create')}
+                  >
+                    <HockeyButton
+                      view="action"
+                      size="m"
+                      data-testid={testId('events', 'page', 'btn', 'create')}
+                    >
+                      Создать
+                    </HockeyButton>
+                  </Link>
+                  <Link
+                    to={routes.eventsOrganizer}
+                    data-testid={testId('events', 'page', 'link', 'organizer')}
+                  >
+                    <HockeyButton
+                      view="outlined"
+                      size="m"
+                      data-testid={testId('events', 'page', 'btn', 'organizer')}
+                    >
+                      Кабинет организатора
+                    </HockeyButton>
+                  </Link>
+                </div>
+              ) : undefined
+            }
+          />
+          <Text color="secondary" data-testid={testId('events', 'page', 'text', 'geoblock')}>
+            Геоблок MVP: {LAUNCH_REGION}
+          </Text>
         </div>
       </ScrollReveal>
 
@@ -614,14 +610,14 @@ export function EventsPage() {
       {isError && !isLoading && (
         <QueryErrorState
           title="Не удалось загрузить игры и тренировки"
-          onRetry={() => refetch()}
+          onRetry={() => void refetch()}
           testIdPrefix="events"
           data-testid={testId('events', 'page', 'error')}
         />
       )}
 
-      {!isError &&
-        !isLoading &&
+      {!isLoading &&
+        !isError &&
         !isResultsLoading &&
         !isDemoLoaderVisible &&
         upcomingCatalog.length === 0 && (
@@ -633,28 +629,33 @@ export function EventsPage() {
           </div>
         )}
 
-      {!isLoading && !isResultsLoading && !isDemoLoaderVisible && filteredCatalog.length > 0 && (
-        <div
-          className="hockey-stack hockey-stack--gap-12"
-          data-testid={testId('events', 'page', 'list', 'details')}
-        >
-          <Text
-            variant="subheader-2"
-            data-testid={testId('events', 'page', 'text', 'details-title')}
+      {!isLoading &&
+        !isError &&
+        !isResultsLoading &&
+        !isDemoLoaderVisible &&
+        filteredCatalog.length > 0 && (
+          <div
+            className="hockey-stack hockey-stack--gap-12"
+            data-testid={testId('events', 'page', 'list', 'details')}
           >
-            {TAB_TITLES[filters.tab]}
-          </Text>
-          {filteredCatalog.map((event, index) => (
-            <ScrollReveal key={event.id} direction={index % 2 === 0 ? 'up' : 'down'}>
-              <div id={event.id}>
-                <EventCard event={event} currentUserId={userId} />
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      )}
+            <Text
+              variant="subheader-2"
+              data-testid={testId('events', 'page', 'text', 'details-title')}
+            >
+              {TAB_TITLES[filters.tab]}
+            </Text>
+            {filteredCatalog.map((event, index) => (
+              <ScrollReveal key={event.id} direction={index % 2 === 0 ? 'up' : 'down'}>
+                <div id={event.id}>
+                  <EventCard event={event} currentUserId={userId} />
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        )}
 
       {!isLoading &&
+        !isError &&
         !isResultsLoading &&
         !isDemoLoaderVisible &&
         upcomingCatalog.length > 0 &&

@@ -10,6 +10,7 @@ import {Link, useParams} from 'react-router'
 
 import {fetchLeague, fetchLeagueSchedule, fetchLeagueStandings} from '@/entities/league'
 import {LeagueProfilePanel, LeagueSchedule, LeagueStandings} from '@/features/leagues'
+import {isNotFoundError} from '@/shared/api/client'
 import {LEAGUES_LABEL} from '@/shared/config/navigationLabels'
 import {routes} from '@/shared/const/appRoutes'
 import {useDocumentTitle} from '@/shared/hooks/useDocumentTitle'
@@ -17,6 +18,7 @@ import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 
@@ -30,7 +32,8 @@ export function LeagueDetailsPage() {
   const {
     data: league,
     isLoading,
-    isError,
+    error,
+    refetch,
   } = useQuery({
     queryKey: ['league', leagueId],
     queryFn: () => fetchLeague(leagueId),
@@ -59,7 +62,18 @@ export function LeagueDetailsPage() {
     )
   }
 
-  if (isError || !league) {
+  if (error && !isNotFoundError(error)) {
+    return (
+      <QueryErrorState
+        title="Не удалось загрузить лигу"
+        onRetry={() => void refetch()}
+        testIdPrefix="leagues"
+        data-testid={testId('leagues', 'details', 'error')}
+      />
+    )
+  }
+
+  if (!league) {
     return (
       <div
         className="hockey-stack hockey-stack--gap-12"

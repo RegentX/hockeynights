@@ -2,11 +2,12 @@
  * SPEC-FR-11.2.1, SPEC-FR-11.2.2
  */
 
-import {Card, Text} from '@gravity-ui/uikit'
+import {Text} from '@gravity-ui/uikit'
 
 import type {SourceStatusItem} from '@/entities/admin'
 import {VisibilityToggle} from '@/features/admin/ui/VisibilityToggle'
 import {testId} from '@/shared/testing/testId'
+import {IceCard} from '@/shared/ui/IceCard'
 import {SourceMetaBadge} from '@/shared/ui/SourceMetaBadge'
 
 /** @spec SPEC-FR-11.2.1 - Props таблицы источников */
@@ -35,11 +36,7 @@ export function SourceStatusTable({items}: SourceStatusTableProps) {
   }
 
   return (
-    <Card
-      view="outlined"
-      className="hockey-panel"
-      data-testid={testId('admin', 'source-table', 'table')}
-    >
+    <IceCard padding="m" data-testid={testId('admin', 'source-table', 'table')}>
       <div className="hockey-stack hockey-stack--gap-12">
         {items.map((item) => (
           <div
@@ -92,6 +89,6 @@ export function SourceStatusTable({items}: SourceStatusTableProps) {
           </div>
         ))}
       </div>
-    </Card>
+    </IceCard>
   )
 }

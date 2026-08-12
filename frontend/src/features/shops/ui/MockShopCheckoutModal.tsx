@@ -2,7 +2,7 @@
  * SPEC-FR-9.2.3, SPEC-FR-9.2.2
  */
 
-import {Button, Text} from '@gravity-ui/uikit'
+import {Text} from '@gravity-ui/uikit'
 import {useMutation} from '@tanstack/react-query'
 import {useState} from 'react'
 
@@ -10,6 +10,7 @@ import type {CheckoutIntent} from '@/entities/external-flow'
 import {createCheckoutIntent} from '@/entities/external-flow'
 import type {ProductOffer} from '@/entities/shop'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {MockExternalFlowDialog} from '@/shared/ui/MockExternalFlowDialog'
 
 /** @spec SPEC-FR-9.2.3 - Props mock-checkout */
@@ -55,30 +56,28 @@ export function MockShopCheckoutModal({
       externalUrl={offer.externalUrl}
       footer={
         result ? (
-          <Button
-            view="action"
+          <HockeyButton
             data-testid={testId('shops', 'checkout-modal', 'btn', 'confirm', offer.id)}
             onClick={handleClose}
           >
             Понятно
-          </Button>
+          </HockeyButton>
         ) : (
           <>
-            <Button
+            <HockeyButton
               view="flat"
               data-testid={testId('shops', 'checkout-modal', 'btn', 'cancel', offer.id)}
               onClick={handleClose}
             >
               Отмена
-            </Button>
-            <Button
-              view="action"
+            </HockeyButton>
+            <HockeyButton
               loading={mutation.isPending}
               data-testid={testId('shops', 'checkout-modal', 'btn', 'checkout', offer.id)}
               onClick={() => mutation.mutate({offerId: offer.id})}
             >
               Перейти к покупке (mock)
-            </Button>
+            </HockeyButton>
           </>
         )
       }

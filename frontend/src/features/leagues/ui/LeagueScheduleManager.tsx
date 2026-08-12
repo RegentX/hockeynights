@@ -2,7 +2,7 @@
  * SPEC-FR-24.5.5
  */
 
-import {Button, Text, TextArea, TextInput} from '@gravity-ui/uikit'
+import {Text, TextArea, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
 
@@ -16,6 +16,7 @@ import {
   updateLeagueStanding,
 } from '@/entities/league'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 const CSV_SAMPLE = `homeTeam,awayTeam,startsAt,arenaName
 Сокол Юг,Буран,2026-07-12T20:00:00+03:00,Ледовый дворец на Ходынке`
@@ -130,7 +131,7 @@ export function LeagueScheduleManager({leagueId}: LeagueScheduleManagerProps) {
           rows={4}
           data-testid={testId('leagues', 'schedule-manager', 'field', 'csv', leagueId)}
         />
-        <Button
+        <HockeyButton
           size="s"
           view="outlined"
           loading={importMutation.isPending}
@@ -138,7 +139,7 @@ export function LeagueScheduleManager({leagueId}: LeagueScheduleManagerProps) {
           data-testid={testId('leagues', 'schedule-manager', 'btn', 'import', leagueId)}
         >
           Импортировать расписание
-        </Button>
+        </HockeyButton>
       </div>
 
       <ul
@@ -170,7 +171,7 @@ export function LeagueScheduleManager({leagueId}: LeagueScheduleManagerProps) {
             </div>
             {item.status !== 'completed' && (
               <div className="partner-dashboard__tabs">
-                <Button
+                <HockeyButton
                   size="s"
                   view="outlined"
                   onClick={() =>
@@ -179,7 +180,7 @@ export function LeagueScheduleManager({leagueId}: LeagueScheduleManagerProps) {
                   data-testid={testId('leagues', 'schedule-manager', 'btn', 'save-score', item.id)}
                 >
                   Сохранить 3:2
-                </Button>
+                </HockeyButton>
               </div>
             )}
           </li>
@@ -221,7 +222,7 @@ export function LeagueScheduleManager({leagueId}: LeagueScheduleManagerProps) {
           onUpdate={(value) => setMatchForm((prev) => ({...prev, arenaName: value}))}
           data-testid={testId('leagues', 'schedule-manager', 'field', 'arena', leagueId)}
         />
-        <Button
+        <HockeyButton
           view="action"
           size="s"
           disabled={
@@ -232,7 +233,7 @@ export function LeagueScheduleManager({leagueId}: LeagueScheduleManagerProps) {
           data-testid={testId('leagues', 'schedule-manager', 'btn', 'add-match', leagueId)}
         >
           Добавить матч
-        </Button>
+        </HockeyButton>
       </div>
 
       <Text
@@ -255,7 +256,7 @@ export function LeagueScheduleManager({leagueId}: LeagueScheduleManagerProps) {
               {row.teamName}
             </Text>
             <div className="partner-dashboard__tabs">
-              <Button
+              <HockeyButton
                 size="s"
                 view="outlined"
                 loading={standingMutation.isPending}
@@ -270,7 +271,7 @@ export function LeagueScheduleManager({leagueId}: LeagueScheduleManagerProps) {
                 data-testid={testId('leagues', 'schedule-manager', 'btn', 'win', row.teamName)}
               >
                 + победа
-              </Button>
+              </HockeyButton>
             </div>
           </li>
         ))}

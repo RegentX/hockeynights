@@ -2,7 +2,7 @@
  * SPEC-FR-24.5.4
  */
 
-import {Button, Select, Text, TextInput} from '@gravity-ui/uikit'
+import {Select, Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
 import type {LeagueApplicationStatus, LeagueTeamApplication} from '@/entities/league'
@@ -13,6 +13,7 @@ import {
   reviewLeagueApplication,
 } from '@/entities/league'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 const STATUS_OPTIONS = [
   {value: 'pending', content: 'На рассмотрении'},
@@ -148,7 +149,7 @@ export function LeagueApplicationsPanel({leagueId}: LeagueApplicationsPanelProps
                   data-testid={testId('leagues', 'applications', 'field', 'comment', app.id)}
                 />
                 <div className="partner-dashboard__tabs">
-                  <Button
+                  <HockeyButton
                     size="s"
                     view="action"
                     loading={reviewMutation.isPending}
@@ -158,8 +159,8 @@ export function LeagueApplicationsPanel({leagueId}: LeagueApplicationsPanelProps
                     data-testid={testId('leagues', 'applications', 'btn', 'approve', app.id)}
                   >
                     Одобрить
-                  </Button>
-                  <Button
+                  </HockeyButton>
+                  <HockeyButton
                     size="s"
                     view="outlined"
                     onClick={() =>
@@ -168,7 +169,7 @@ export function LeagueApplicationsPanel({leagueId}: LeagueApplicationsPanelProps
                     data-testid={testId('leagues', 'applications', 'btn', 'reject', app.id)}
                   >
                     Отклонить
-                  </Button>
+                  </HockeyButton>
                 </div>
               </div>
             )}

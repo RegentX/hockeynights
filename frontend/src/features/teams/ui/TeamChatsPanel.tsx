@@ -1,4 +1,4 @@
-import {Button, Text, TextInput} from '@gravity-ui/uikit'
+import {Text, TextInput} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useMemo, useState} from 'react'
 import {Link} from 'react-router'
@@ -10,6 +10,7 @@ import type {Team, TeamRole} from '@/entities/team'
 import {fetchTeamRoster} from '@/entities/team'
 import type {TeamPermissions} from '@/features/access'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 
 export interface TeamChatsPanelProps {
   team: Team
@@ -91,14 +92,14 @@ export function TeamChatsPanel({team, activeSquad, userId, teamPermissions}: Tea
           Чаты команды
         </Text>
         {activeSquad && (
-          <Button
+          <HockeyButton
             view={squadOnly ? 'action' : 'outlined'}
             size="s"
             onClick={() => setSquadOnly((v) => !v)}
             data-testid={testId('teams', 'team-chats-panel', 'btn', 'squad-filter', team.id)}
           >
             {squadOnly ? 'Только активный состав' : 'Фильтр по составу'}
-          </Button>
+          </HockeyButton>
         )}
       </div>
 
@@ -139,13 +140,13 @@ export function TeamChatsPanel({team, activeSquad, userId, teamPermissions}: Tea
                 to="/messenger"
                 data-testid={testId('teams', 'team-chats-panel', 'link', 'chat', chat.id)}
               >
-                <Button
+                <HockeyButton
                   size="s"
                   view="outlined"
                   data-testid={testId('teams', 'team-chats-panel', 'btn', 'open-chat', chat.id)}
                 >
                   Открыть
-                </Button>
+                </HockeyButton>
               </Link>
             </div>
           ))
@@ -183,7 +184,7 @@ export function TeamChatsPanel({team, activeSquad, userId, teamPermissions}: Tea
                 placeholder={squadTag ? `Тег (по умолчанию ${squadTag})` : 'Тег канала'}
                 data-testid={testId('teams', 'team-chats-panel', 'field', 'channel-tag', team.id)}
               />
-              <Button
+              <HockeyButton
                 view="action"
                 disabled={!newChannelTitle.trim()}
                 loading={createTeamChannelMutation.isPending}
@@ -197,7 +198,7 @@ export function TeamChatsPanel({team, activeSquad, userId, teamPermissions}: Tea
                 data-testid={testId('teams', 'team-chats-panel', 'btn', 'create-channel', team.id)}
               >
                 Создать канал
-              </Button>
+              </HockeyButton>
             </div>
           )}
 
@@ -221,7 +222,7 @@ export function TeamChatsPanel({team, activeSquad, userId, teamPermissions}: Tea
                 placeholder="Например: Сбор на тренировку"
                 data-testid={testId('teams', 'team-chats-panel', 'field', 'chat-title', team.id)}
               />
-              <Button
+              <HockeyButton
                 view="outlined"
                 disabled={!newChatTitle.trim()}
                 loading={createTeamChannelMutation.isPending}
@@ -234,7 +235,7 @@ export function TeamChatsPanel({team, activeSquad, userId, teamPermissions}: Tea
                 data-testid={testId('teams', 'team-chats-panel', 'btn', 'create-chat', team.id)}
               >
                 Создать чат
-              </Button>
+              </HockeyButton>
             </div>
           )}
         </div>

@@ -8,8 +8,8 @@ import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {Link, useParams} from 'react-router'
 
-import {fetchSession} from '@/entities/auth'
 import {fetchPublicPlayer} from '@/entities/profile'
+import {useSessionAccess} from '@/features/access'
 import {CalendarShell} from '@/features/calendar'
 import {ProfileFavoritesSection} from '@/features/favorites'
 import {PlayerPublicInfoSection, PlayerTeamsSection} from '@/features/players'
@@ -30,10 +30,7 @@ import {PlayerCard} from '@/widgets/PlayerCard'
  */
 export function PublicPlayerProfilePage() {
   const {userId = ''} = useParams()
-  const {data: session, isLoading: isSessionLoading} = useQuery({
-    queryKey: ['session'],
-    queryFn: fetchSession,
-  })
+  const {session, isLoading: isSessionLoading} = useSessionAccess()
   const {data, isLoading, error, refetch} = useQuery({
     queryKey: ['player-public', userId],
     queryFn: () => fetchPublicPlayer(userId),

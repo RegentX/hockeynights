@@ -8,6 +8,7 @@ import {Text} from '@gravity-ui/uikit'
 import {SosFeed, SosRequestForm} from '@/features/sos'
 import {testId} from '@/shared/testing/testId'
 import {IceCard} from '@/shared/ui/IceCard'
+import {PageHeader} from '@/shared/ui/PageHeader'
 
 /**
  * @spec SPEC-FR-5.1.1 - Страница Goalkeeper SOS
@@ -15,9 +16,11 @@ import {IceCard} from '@/shared/ui/IceCard'
 export function SosPage() {
   return (
     <div className="hockey-stack hockey-stack--gap-20" data-testid={testId('sos', 'page', 'page')}>
-      <Text variant="header-1" data-testid={testId('sos', 'page', 'text', 'title')}>
-        Goalkeeper SOS
-      </Text>
+      <PageHeader
+        title="Goalkeeper SOS"
+        subtitle="Срочный поиск вратаря на игру или тренировку — запрос уходит в ленту и уведомления."
+        testIdPrefix="sos"
+      />
 
       <div
         className="hockey-grid hockey-grid--cards-280"

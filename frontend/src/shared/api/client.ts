@@ -2,6 +2,7 @@
  * SPEC-FR-1.2.3, SPEC-FR-12.1.1, SPEC-FR-12.1.2, SPEC-FR-12.1.3
  */
 
+import {extractApiErrorMessage} from '@/shared/api/parseApiError'
 import {getApiBaseUrl, getApiMode} from '@/shared/config/apiMode'
 
 /** @spec SPEC-FR-12.1.1 - Опции HTTP-запроса */
@@ -90,7 +91,8 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 
   if (!response.ok) {
     const errorText = await response.text()
-    throw new ApiError(method, path, response.status, errorText)
+    const apiMessage = extractApiErrorMessage(errorText)
+    throw new ApiError(method, path, response.status, apiMessage ?? errorText)
   }
 
   if (response.status === 204) {

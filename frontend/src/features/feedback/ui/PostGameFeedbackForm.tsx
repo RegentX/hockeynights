@@ -2,15 +2,19 @@
  * SPEC-FR-8.1.1, SPEC-FR-8.1.2
  */
 
-import {Button, Card, Select, Text, TextArea} from '@gravity-ui/uikit'
+import {Select, Text, TextArea} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useState} from 'react'
 
 import type {CreateFeedbackPayload} from '@/entities/feedback'
 import {submitFeedback} from '@/entities/feedback'
 import {fetchPlayers} from '@/entities/profile'
+import {useSessionAccess} from '@/features/access'
 import {useFeedbackEligibleEvents} from '@/features/feedback/lib/useFeedbackEligibility'
 import {testId} from '@/shared/testing/testId'
+import {EmptyNetState} from '@/shared/ui/EmptyNetState'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
+import {IceCard} from '@/shared/ui/IceCard'
 
 const ATTENDANCE_OPTIONS = [
   {value: 'confirmed', content: 'Пришёл вовремя'},
@@ -36,6 +40,7 @@ const BEHAVIOR_OPTIONS = [
  */
 export function PostGameFeedbackForm() {
   const queryClient = useQueryClient()
+  const {userId} = useSessionAccess()
   const {data: events = []} = useFeedbackEligibleEvents()
   const {data: players = []} = useQuery({
     queryKey: ['players'],
@@ -67,7 +72,7 @@ export function PostGameFeedbackForm() {
   const selectedEvent = events.find((e) => e.id === eventId)
   const participantOptions = selectedEvent
     ? selectedEvent.participation
-        .filter((p) => p.userId !== 'user-001')
+        .filter((p) => p.userId !== userId)
         .map((p) => ({value: p.userId, content: p.displayName}))
     : players.map((p) => ({value: p.userId, content: p.displayName}))
 
@@ -88,16 +93,19 @@ export function PostGameFeedbackForm() {
 
   if (events.length === 0) {
     return (
-      <Text color="secondary" data-testid={testId('feedback', 'form', 'empty')}>
-        Feedback доступен только после участия в событии со статусом «иду».
-      </Text>
+      <EmptyNetState
+        title="Нет событий для feedback"
+        copy="Feedback доступен только после участия в событии со статусом «иду»."
+        testIdPrefix="feedback"
+        data-testid={testId('feedback', 'form', 'empty')}
+      />
     )
   }
 
   return (
-    <Card
-      view="outlined"
-      className="hockey-panel hockey-form-shell hockey-form-shell--560"
+    <IceCard
+      padding="m"
+      className="hockey-form-shell hockey-form-shell--560"
       data-testid={testId('feedback', 'form', 'form')}
     >
       <div className="hockey-stack hockey-stack--gap-12">
@@ -163,15 +171,14 @@ export function PostGameFeedbackForm() {
           </Text>
         )}
 
-        <Button
-          view="action"
+        <HockeyButton
           loading={mutation.isPending}
           onClick={handleSubmit}
           data-testid={testId('feedback', 'form', 'btn', 'submit')}
         >
           Отправить feedback
-        </Button>
+        </HockeyButton>
       </div>
-    </Card>
+    </IceCard>
   )
 }

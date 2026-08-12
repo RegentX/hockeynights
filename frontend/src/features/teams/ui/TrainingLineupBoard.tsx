@@ -3,7 +3,7 @@
  * SPEC-FR-21.1.6, SPEC-FR-21.1.7, SPEC-FR-24.3.2
  */
 
-import {Button, Select, Text} from '@gravity-ui/uikit'
+import {Select, Text} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {type DragEvent, useRef, useState} from 'react'
 
@@ -18,6 +18,7 @@ import {
 } from '@/entities/team'
 import {FifaPlayerCardModal} from '@/features/teams/ui/FifaPlayerCardModal'
 import {testId} from '@/shared/testing/testId'
+import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 
@@ -420,7 +421,7 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
             Шаблоны:
           </Text>
           {(['balanced', 'red_pressing', 'white_counter'] as const).map((templateId) => (
-            <Button
+            <HockeyButton
               key={templateId}
               size="s"
               view="outlined"
@@ -436,7 +437,7 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
               )}
             >
               {FORMATION_TEMPLATES[templateId].label}
-            </Button>
+            </HockeyButton>
           ))}
         </div>
 
@@ -451,7 +452,7 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
             placeholder="Название пресета"
             data-testid={testId('teams', 'training-lineup-board', 'field', 'preset-name', teamId)}
           />
-          <Button
+          <HockeyButton
             size="s"
             view="outlined"
             disabled={!canEdit || !lineupEditableForSquad || !presetName.trim()}
@@ -459,7 +460,7 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
             data-testid={testId('teams', 'training-lineup-board', 'btn', 'save-preset', teamId)}
           >
             Сохранить
-          </Button>
+          </HockeyButton>
           <Select
             size="s"
             value={[]}
@@ -604,7 +605,7 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
             )}
           >
             <Text color="secondary">{selectedPlayer.member.displayName}:</Text>
-            <Button
+            <HockeyButton
               size="s"
               view="outlined"
               onClick={() => assignToTeam(selectedPlayer.member.userId, 'red')}
@@ -617,8 +618,8 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
               )}
             >
               В красные
-            </Button>
-            <Button
+            </HockeyButton>
+            <HockeyButton
               size="s"
               view="outlined"
               onClick={() => assignToTeam(selectedPlayer.member.userId, 'white')}
@@ -631,8 +632,8 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
               )}
             >
               В белые
-            </Button>
-            <Button
+            </HockeyButton>
+            <HockeyButton
               size="s"
               view="outlined"
               onClick={() => updateAssignment(selectedPlayer.member.userId, {side: 'bench'})}
@@ -645,7 +646,7 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
               )}
             >
               На скамейку
-            </Button>
+            </HockeyButton>
           </div>
         )}
 
@@ -753,14 +754,14 @@ export function TrainingLineupBoard({teamId, canEdit, activeSquad}: TrainingLine
         </div>
 
         {canEdit && lineupEditableForSquad && (
-          <Button
+          <HockeyButton
             view="action"
             loading={saveMutation.isPending}
             onClick={() => saveAssignments(composedAssignments)}
             data-testid={testId('teams', 'training-lineup-board', 'btn', 'save', teamId)}
           >
             Сохранить расстановку
-          </Button>
+          </HockeyButton>
         )}
       </div>
     </IceCard>
