@@ -23,11 +23,6 @@ a {
   color: inherit;
 }
 
-/*
- * Только равномерный text-clip градиент — без изменения размеров шрифта.
- * overflow/line-box: не клипать диакритику (Й, Ё и т.п.).
- */
-.g-text_variant_header-1,
 .variable-font-header {
   @include display-text-gradient;
   overflow: visible;
@@ -36,10 +31,12 @@ a {
 .app-shell__main-col {
   /*
    * Typography scope (HOCFRONT-18 / TASK-02-03):
-   * - header-1: page titles — display metrics (градиент глобальный выше)
+   * - header-1: page titles — display metrics + gradient only in main column
    * - header-2: entity names — solid color, same Bebas family/weight/tracking/uppercase
    */
   .g-text_variant_header-1 {
+    @include display-text-gradient;
+    overflow: visible;
     font-family: var(--hockey-font-display);
     font-size: clamp(2rem, 4vw, 2.75rem);
     font-weight: 400;

@@ -24,10 +24,23 @@ export function formatProfileLocation({city}: {city?: string}): string {
   return city?.trim() ?? ''
 }
 
+function parseCalendarDate(birthDate: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(birthDate.trim())
+  if (!match) {
+    const fallback = new Date(birthDate)
+    return Number.isNaN(fallback.getTime()) ? null : fallback
+  }
+  const year = Number(match[1])
+  const month = Number(match[2])
+  const day = Number(match[3])
+  const birth = new Date(year, month - 1, day)
+  return Number.isNaN(birth.getTime()) ? null : birth
+}
+
 /** Возраст в полных годах на указанную дату (по умолчанию — сегодня). */
 export function getAgeYears(birthDate: string, now = new Date()): number | null {
-  const birth = new Date(birthDate)
-  if (Number.isNaN(birth.getTime())) return null
+  const birth = parseCalendarDate(birthDate)
+  if (!birth) return null
   let age = now.getFullYear() - birth.getFullYear()
   const monthDiff = now.getMonth() - birth.getMonth()
   if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) age -= 1
@@ -46,8 +59,8 @@ function pluralizeYears(age: number): string {
 /** «44 года, 19 ноября 1981» */
 export function formatBirthMeta(birthDate?: string, now = new Date()): string {
   if (!birthDate) return ''
-  const birth = new Date(birthDate)
-  if (Number.isNaN(birth.getTime())) return ''
+  const birth = parseCalendarDate(birthDate)
+  if (!birth) return ''
   const age = getAgeYears(birthDate, now)
   if (age == null) return ''
   const dateLabel = birth.toLocaleDateString('ru-RU', {

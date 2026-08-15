@@ -26,14 +26,10 @@ export async function loadCalendarEvents(state: CalendarUiState): Promise<GameEv
   }
   if (state.scope === 'player' && state.scopeId) {
     const events = await fetchEvents()
-    return events.filter(
-      (event) =>
-        event.organizerUserId === state.scopeId ||
-        event.participation.some(
-          (entry) =>
-            entry.userId === state.scopeId &&
-            (entry.status === 'going' || entry.status === 'maybe'),
-        ),
+    return events.filter((event) =>
+      event.participation.some(
+        (entry) => entry.userId === state.scopeId && entry.status === 'going',
+      ),
     )
   }
 

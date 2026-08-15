@@ -134,6 +134,7 @@ function EntityFavoritesPanelInner({pathname}: {pathname: string}) {
         onClose={() => setAllOpen(false)}
         size="m"
         className="favorites-all-dialog"
+        modalClassName="favorites-all-dialog-modal"
         data-testid={testId('favorites', 'entity-panel', 'dialog', 'all')}
       >
         <Dialog.Header

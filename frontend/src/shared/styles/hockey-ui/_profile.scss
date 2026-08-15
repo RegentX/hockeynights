@@ -21,9 +21,17 @@
     border-radius: var(--profile-radius);
   }
 
-  .hockey-button {
+  .hockey-button,
+  a.hockey-button {
     --g-button-border-radius: var(--profile-radius);
     border-radius: var(--profile-radius) !important;
+    box-sizing: border-box;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: var(--g-button-height, 36px) !important;
+    min-height: var(--g-button-height, 36px);
+    vertical-align: middle;
   }
 
   .favorites-profile-group__row {
@@ -152,9 +160,16 @@
   }
 
   .hockey-button,
-  .g-button {
+  .g-button,
+  a.hockey-button {
     --g-button-border-radius: var(--profile-radius);
     border-radius: var(--profile-radius) !important;
+    box-sizing: border-box;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: var(--g-button-height, 36px) !important;
+    min-height: var(--g-button-height, 36px);
   }
 
   .profile-hub__goalie-panel,
@@ -275,18 +290,6 @@
 .profile-avatar-editor__btn {
   --g-button-border-radius: var(--profile-radius, 16px);
   border-radius: var(--profile-radius, 16px) !important;
-  min-height: 32px;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 6px 12px !important;
-  box-sizing: border-box;
-  line-height: 1.25;
-
-  .g-button__text {
-    display: inline-block;
-    line-height: 1.25;
-  }
 }
 
 .profile-avatar-editor__dialog-body {
@@ -477,25 +480,7 @@
   width: max-content;
   max-width: 100%;
   align-self: flex-start;
-  height: auto !important;
-  min-height: 0 !important;
-  --g-button-height: auto;
-  --g-button-border-radius: var(--profile-radius, 16px);
-  border-radius: var(--profile-radius, 16px) !important;
-  padding: 12px 16px !important;
-  box-sizing: border-box;
   white-space: nowrap;
-  line-height: 1.25;
-
-  .g-button__text {
-    display: inline-block;
-    line-height: 1.25;
-    overflow: visible;
-  }
-
-  .g-button__loader-icon {
-    --g-button-loader-size: 16px;
-  }
 }
 
 @media (max-width: 640px) {

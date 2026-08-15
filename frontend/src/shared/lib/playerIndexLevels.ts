@@ -46,9 +46,8 @@ export function getPlayerLevelLabel(player: {
   if (player.playerIndex != null) {
     return getPlayerIndexLevel(player.playerIndex)?.label ?? String(player.playerIndex)
   }
-  if (player.skillLevel) {
-    const fromSkill = SKILL_TO_INDEX.get(player.skillLevel as PlayerIndexSkillLevel)
-    if (fromSkill) return fromSkill.label
+  if (player.skillLevel && player.skillLevel !== 'unknown') {
+    return getPlayerIndexLevel(playerIndexFromSkillLevel(player.skillLevel))?.label ?? '—'
   }
   return '—'
 }

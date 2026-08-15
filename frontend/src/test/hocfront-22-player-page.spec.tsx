@@ -93,4 +93,16 @@ describe('HOCFRONT-22 страница игрока', () => {
       expect(screen.getByTestId('profile-page')).toBeInTheDocument()
     })
   })
+
+  it('скрытый профиль не показывает паспорт', async () => {
+    renderPlayerPage('user-008')
+
+    await waitFor(() => {
+      expect(screen.getByTestId('players-public-player-profile-card-hidden')).toBeInTheDocument()
+    })
+    expect(screen.getByTestId('players-public-player-profile-text-hidden-title')).toHaveTextContent(
+      'Профиль скрыт',
+    )
+    expect(screen.queryByTestId('players-player-card-card-user-008')).not.toBeInTheDocument()
+  })
 })

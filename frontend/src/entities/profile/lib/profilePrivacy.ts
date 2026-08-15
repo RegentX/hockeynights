@@ -9,6 +9,37 @@ import type {
 /** Кто смотрит профиль: сам владелец / одноклубник / остальные */
 export type PrivacyViewerRelation = 'self' | 'teammate' | 'public'
 
+export function shareTeamIds(left?: string[], right?: string[]): boolean {
+  if (!left?.length || !right?.length) return false
+  return left.some((id) => right.includes(id))
+}
+
+export function resolvePrivacyViewer(
+  ownerUserId: string,
+  viewerUserId: string | undefined,
+  ownerTeamIds?: string[],
+  viewerTeamIds?: string[],
+): PrivacyViewerRelation {
+  if (!viewerUserId) return 'public'
+  if (viewerUserId === ownerUserId) return 'self'
+  if (shareTeamIds(ownerTeamIds, viewerTeamIds)) return 'teammate'
+  return 'public'
+}
+
+/** Можно ли открыть профиль при выбранной видимости (не поля). */
+export function canViewProfileByVisibility(
+  visibility: PrivacySettings['profileVisibility'],
+  viewer: PrivacyViewerRelation,
+  viewerVerified: boolean,
+): boolean {
+  if (viewer === 'self') return true
+  if (visibility === 'public') return true
+  if (visibility === 'private') return false
+  if (visibility === 'teams_only') return viewer === 'teammate'
+  if (visibility === 'verified_only') return viewerVerified
+  return false
+}
+
 export const DEFAULT_FIELD_PRIVACY: ProfileFieldPrivacy = {
   birthDate: 'teams_only',
   city: 'public',
@@ -180,14 +211,50 @@ export function redactPlayerForViewer(
   return {
     ...player,
     birthDate: visible.birthDate ? player.birthDate : undefined,
-    city: visible.city ? player.city : '—',
+    city: visible.city ? player.city : '',
+    district: visible.city ? player.district : undefined,
+    metro: visible.city ? player.metro : undefined,
     heightCm: visible.heightWeight ? player.heightCm : undefined,
     weightKg: visible.heightWeight ? player.weightKg : undefined,
+    position: visible.position ? player.position : 'any',
+    skillLevel: visible.skillLevel ? player.skillLevel : 'unknown',
+    playerIndex: visible.skillLevel ? player.playerIndex : undefined,
+    stickHand: visible.position ? player.stickHand : undefined,
     bio: visible.bio ? player.bio : undefined,
     achievements: visible.achievements ? player.achievements : undefined,
     teamName: visible.teams ? player.teamName : undefined,
     teamLogoUrl: visible.teams ? player.teamLogoUrl : undefined,
     teamIds: visible.teams ? player.teamIds : undefined,
+    goalieReliabilityScore: visible.position ? player.goalieReliabilityScore : undefined,
     contacts: undefined,
   }
+}
+
+/** Минимальный stub для скрытого профиля — без паспорта в payload. */
+export function toHiddenPlayerStub(player: PlayerListItem): PlayerListItem {
+  return redactPlayerForViewer(
+    {
+      ...player,
+      displayName: '',
+      fullName: '',
+      avatarUrl: undefined,
+      preferredArenaIds: [],
+    },
+    {
+      birthDate: false,
+      city: false,
+      heightWeight: false,
+      position: false,
+      skillLevel: false,
+      teams: false,
+      bio: false,
+      achievements: false,
+      participationHistory: false,
+      calendar: false,
+      phone: false,
+      email: false,
+      telegram: false,
+      maxMessenger: false,
+    },
+  )
 }

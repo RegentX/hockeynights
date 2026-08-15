@@ -1140,6 +1140,37 @@
   flex-shrink: 0;
 }
 
+.favorites-all-dialog-modal {
+  --profile-radius: 16px;
+  --g-modal-border-radius: var(--profile-radius);
+  --g-border-radius-xs: var(--profile-radius);
+  --g-border-radius-s: var(--profile-radius);
+  --g-border-radius-m: var(--profile-radius);
+  --g-border-radius-l: var(--profile-radius);
+  --g-border-radius-xl: var(--profile-radius);
+}
+
+.favorites-all-dialog.g-dialog {
+  --profile-radius: 16px;
+  --g-button-border-radius: var(--profile-radius);
+  background: var(--hockey-card-bg);
+  border: 1px solid var(--hockey-card-border);
+  border-radius: var(--profile-radius);
+  box-shadow: var(--hockey-card-shadow);
+  overflow: hidden;
+
+  .hockey-button,
+  .g-button,
+  a.hockey-button {
+    --g-button-border-radius: var(--profile-radius);
+    border-radius: var(--profile-radius) !important;
+  }
+
+  .favorites-profile-group__row {
+    border-radius: var(--profile-radius);
+  }
+}
+
 .favorites-profile-group {
   &__list {
     list-style: none;

@@ -111,9 +111,9 @@ export function PlayerCard({
   visibleFields,
 }: PlayerCardProps) {
   const jerseyNumber = String(player.userId.replace(/\D/g, '').slice(-2) || '00').padStart(2, '0')
-  const isGoalie = player.position === 'goalie'
   const isProfile = variant === 'profile'
   const showField = (key: keyof ProfileFieldPrivacy) => visibleFields?.[key] !== false
+  const isGoalie = showField('position') && player.position === 'goalie'
   const reliability =
     isGoalie && player.goalieReliabilityScore != null
       ? player.goalieReliabilityScore
@@ -218,7 +218,7 @@ export function PlayerCard({
               <div className="hockey-player-card__passport-col">
                 <p className="hockey-player-card__passport-col-title">Личные</p>
                 <dl className="hockey-player-card__passport-facts">
-                  {showField('city') && (
+                  {showField('city') && player.city.trim() !== '' && (
                     <div>
                       <dt>Город</dt>
                       <dd
@@ -272,10 +272,12 @@ export function PlayerCard({
               <div className="hockey-player-card__passport-col">
                 <p className="hockey-player-card__passport-col-title">Игровые</p>
                 <dl className="hockey-player-card__passport-facts">
-                  <div>
-                    <dt>Хват</dt>
-                    <dd>{STICK_HAND_LABELS[stickHand]}</dd>
-                  </div>
+                  {showField('position') && (
+                    <div>
+                      <dt>Хват</dt>
+                      <dd>{STICK_HAND_LABELS[stickHand]}</dd>
+                    </div>
+                  )}
                   {showField('position') && (
                     <div>
                       <dt>Позиция</dt>
@@ -368,15 +370,17 @@ export function PlayerCard({
         className="hockey-player-card__meta"
         data-testid={testId('players', 'player-card', 'panel', 'meta', player.userId)}
       >
-        <Text
-          color="secondary"
-          data-testid={testId('players', 'player-card', 'text', 'skill', player.userId)}
-        >
-          {skillLabel}
-        </Text>
+        {showField('skillLevel') && skillLabel !== '—' && (
+          <Text
+            color="secondary"
+            data-testid={testId('players', 'player-card', 'text', 'skill', player.userId)}
+          >
+            {skillLabel}
+          </Text>
+        )}
       </div>
 
-      {player.teamName && (
+      {showField('teams') && player.teamName && (
         <div
           className="hockey-player-card__field"
           data-testid={testId('players', 'player-card', 'panel', 'team', player.userId)}
@@ -405,22 +409,24 @@ export function PlayerCard({
         </div>
       )}
 
-      <div
-        className="hockey-player-card__field"
-        data-testid={testId('players', 'player-card', 'panel', 'city', player.userId)}
-      >
-        <Text
-          color="secondary"
-          className="hockey-text-caption hockey-player-card__field-label"
-          data-testid={testId('players', 'player-card', 'text', 'city-label', player.userId)}
+      {showField('city') && player.city.trim() ? (
+        <div
+          className="hockey-player-card__field"
+          data-testid={testId('players', 'player-card', 'panel', 'city', player.userId)}
         >
-          <Icon data={MapPin} size={14} aria-hidden />
-          Город
-        </Text>
-        <Text data-testid={testId('players', 'player-card', 'text', 'city', player.userId)}>
-          {player.city}
-        </Text>
-      </div>
+          <Text
+            color="secondary"
+            className="hockey-text-caption hockey-player-card__field-label"
+            data-testid={testId('players', 'player-card', 'text', 'city-label', player.userId)}
+          >
+            <Icon data={MapPin} size={14} aria-hidden />
+            Город
+          </Text>
+          <Text data-testid={testId('players', 'player-card', 'text', 'city', player.userId)}>
+            {player.city}
+          </Text>
+        </div>
+      ) : null}
 
       <div className="hockey-player-card__stats">
         <div>
@@ -465,11 +471,19 @@ export function PlayerCard({
           <CardNav linkable={linkable} to={profilePath} userId={player.userId}>
             <div className="hockey-player-card__top-left">
               <div className="hockey-player-card__badges">
-                <PositionLabel
-                  position={player.position}
-                  testIdPrefix="players"
-                  data-testid={testId('players', 'player-card', 'badge', 'position', player.userId)}
-                />
+                {showField('position') && player.position !== 'any' && (
+                  <PositionLabel
+                    position={player.position}
+                    testIdPrefix="players"
+                    data-testid={testId(
+                      'players',
+                      'player-card',
+                      'badge',
+                      'position',
+                      player.userId,
+                    )}
+                  />
+                )}
                 {isGoalie && (
                   <span
                     className="hockey-player-card__goalie-badge"

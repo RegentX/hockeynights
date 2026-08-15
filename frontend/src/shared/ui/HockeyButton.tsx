@@ -2,13 +2,14 @@
  * SPEC-UI-1.1, SPEC-UI-1.2
  */
 
-import {Button, type ButtonButtonProps} from '@gravity-ui/uikit'
+import {Button} from '@gravity-ui/uikit'
+import type {ComponentProps} from 'react'
 
 /** @spec SPEC-UI-1.1 */
 export type HockeyButtonVariant = 'puck' | 'sos'
 
 /** @spec SPEC-UI-1.1 - Props шайба-кнопки */
-export interface HockeyButtonProps extends ButtonButtonProps {
+export type HockeyButtonProps = ComponentProps<typeof Button> & {
   /** @spec SPEC-UI-1.2 */
   variant?: HockeyButtonVariant
 }

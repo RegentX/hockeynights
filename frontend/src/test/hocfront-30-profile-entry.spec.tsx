@@ -95,7 +95,7 @@ describe('Own profile «О себе» как публичная композиц
       'Петров Иван Сергеевич',
     )
     expect(screen.getByTestId('players-player-card-text-city-user-001')).toHaveTextContent('Москва')
-    expect(screen.getByTestId('profile-profile-about-section-link-public-view')).toHaveAttribute(
+    expect(screen.getByTestId('profile-profile-about-section-btn-public-view')).toHaveAttribute(
       'href',
       '/players/user-001',
     )
@@ -143,9 +143,9 @@ describe('Own profile «О себе» как публичная композиц
       screen.getByTestId('profile-participation-history-text-arena-event-002'),
     ).toHaveTextContent('Каток «Лужники»')
     expect(
-      screen.getByTestId('profile-participation-history-link-invite-event-002'),
+      screen.getByTestId('profile-participation-history-btn-invite-event-002'),
     ).toHaveAttribute('href', '/events/trainings/event-002')
-    expect(screen.getByTestId('profile-participation-history-link-chat-event-002')).toHaveAttribute(
+    expect(screen.getByTestId('profile-participation-history-btn-chat-event-002')).toHaveAttribute(
       'href',
       '/messenger?chatId=chat-1',
     )
@@ -162,7 +162,7 @@ describe('Own profile «О себе» как публичная композиц
     expect(
       screen.getByTestId('profile-participation-history-text-result-event-001'),
     ).toHaveTextContent('3:2')
-    expect(screen.getByTestId('profile-participation-history-link-chat-event-001')).toHaveAttribute(
+    expect(screen.getByTestId('profile-participation-history-btn-chat-event-001')).toHaveAttribute(
       'href',
       '/messenger?chatId=chat-2',
     )

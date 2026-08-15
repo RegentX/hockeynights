@@ -18,6 +18,7 @@ export interface ProfileAvatarEditorProps {
   avatarUrl?: string
   displayName: string
   onChange: (avatarUrl: string | undefined) => void
+  onEditorOpenChange?: (open: boolean) => void
 }
 
 interface ImageSize {
@@ -77,7 +78,12 @@ async function cropToDataUrl(
   return canvas.toDataURL('image/jpeg', 0.92)
 }
 
-export function ProfileAvatarEditor({avatarUrl, displayName, onChange}: ProfileAvatarEditorProps) {
+export function ProfileAvatarEditor({
+  avatarUrl,
+  displayName,
+  onChange,
+  onEditorOpenChange,
+}: ProfileAvatarEditorProps) {
   const fileInputId = useId()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
@@ -93,6 +99,10 @@ export function ProfileAvatarEditor({avatarUrl, displayName, onChange}: ProfileA
   const [error, setError] = useState<string | null>(null)
 
   const initials = getProfileInitials(displayName)
+
+  useEffect(() => {
+    onEditorOpenChange?.(editorOpen)
+  }, [editorOpen, onEditorOpenChange])
 
   useEffect(() => {
     return () => {
@@ -169,6 +179,7 @@ export function ProfileAvatarEditor({avatarUrl, displayName, onChange}: ProfileA
   }
 
   function closeEditor() {
+    if (isSaving) return
     setEditorOpen(false)
     setDragging(false)
     dragOrigin.current = null
@@ -204,12 +215,18 @@ export function ProfileAvatarEditor({avatarUrl, displayName, onChange}: ProfileA
 
   async function applyCrop() {
     if (!sourceUrl) return
+    const cropSource = sourceUrl
     setIsSaving(true)
     setError(null)
     try {
-      const next = await cropToDataUrl(sourceUrl, zoom, offset.x, offset.y)
+      const next = await cropToDataUrl(cropSource, zoom, offset.x, offset.y)
       onChange(next)
-      closeEditor()
+      setEditorOpen(false)
+      setDragging(false)
+      dragOrigin.current = null
+      if (cropSource.startsWith('blob:')) URL.revokeObjectURL(cropSource)
+      setSourceUrl(null)
+      setImageSize(null)
     } catch {
       setError('Не удалось обрезать изображение')
     } finally {
@@ -247,7 +264,6 @@ export function ProfileAvatarEditor({avatarUrl, displayName, onChange}: ProfileA
           <div className="profile-avatar-editor__buttons">
             <HockeyButton
               view="outlined"
-              size="s"
               className="profile-avatar-editor__btn"
               onClick={openFilePicker}
               data-testid={testId('profile', 'avatar-editor', 'btn', 'upload')}
@@ -257,7 +273,6 @@ export function ProfileAvatarEditor({avatarUrl, displayName, onChange}: ProfileA
             {avatarUrl ? (
               <HockeyButton
                 view="outlined"
-                size="s"
                 className="profile-avatar-editor__btn"
                 onClick={() => onChange(undefined)}
                 data-testid={testId('profile', 'avatar-editor', 'btn', 'remove')}
@@ -361,6 +376,7 @@ export function ProfileAvatarEditor({avatarUrl, displayName, onChange}: ProfileA
         <Dialog.Footer data-testid={testId('profile', 'avatar-editor', 'footer')}>
           <HockeyButton
             view="outlined"
+            disabled={isSaving}
             onClick={closeEditor}
             data-testid={testId('profile', 'avatar-editor', 'btn', 'cancel')}
           >
@@ -368,7 +384,6 @@ export function ProfileAvatarEditor({avatarUrl, displayName, onChange}: ProfileA
           </HockeyButton>
           <HockeyButton
             view="action"
-            className="profile-hub__save-btn"
             loading={isSaving}
             onClick={() => {
               void applyCrop()

@@ -223,55 +223,35 @@ function ParticipationHistoryItem({record}: {record: ParticipationRecord}) {
               record.eventId,
             )}
           >
-            <Link
+            <HockeyButton
+              view="outlined"
+              component={Link}
               to={inviteHref}
               data-testid={testId(
                 'profile',
                 'participation-history',
-                'link',
+                'btn',
                 'invite',
                 record.eventId,
               )}
             >
-              <HockeyButton
-                view="outlined"
-                size="s"
-                data-testid={testId(
-                  'profile',
-                  'participation-history',
-                  'btn',
-                  'invite',
-                  record.eventId,
-                )}
-              >
-                {inviteLabel}
-              </HockeyButton>
-            </Link>
+              {inviteLabel}
+            </HockeyButton>
             {chatHref && (
-              <Link
+              <HockeyButton
+                view="action"
+                component={Link}
                 to={chatHref}
                 data-testid={testId(
                   'profile',
                   'participation-history',
-                  'link',
+                  'btn',
                   'chat',
                   record.eventId,
                 )}
               >
-                <HockeyButton
-                  view="action"
-                  size="s"
-                  data-testid={testId(
-                    'profile',
-                    'participation-history',
-                    'btn',
-                    'chat',
-                    record.eventId,
-                  )}
-                >
-                  Чат приглашения
-                </HockeyButton>
-              </Link>
+                Чат приглашения
+              </HockeyButton>
             )}
           </div>
         </div>
@@ -302,7 +282,7 @@ export function ParticipationHistorySection({
   if (records.length === 0) {
     return (
       <Text color="secondary" data-testid={testId('profile', 'participation-history', 'empty')}>
-        Пока нет подтверждённых участий в событиях.
+        Пока нет записей в истории участия.
       </Text>
     )
   }

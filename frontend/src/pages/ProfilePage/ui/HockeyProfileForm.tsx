@@ -51,6 +51,7 @@ import {
   ParticipationHistorySection,
   ProfileAvatarEditor,
 } from '@/features/profile'
+import {parseApiErrorMessage} from '@/shared/api/parseApiError'
 import {
   clampPlayerIndex,
   PLAYER_INDEX_LEVELS,
@@ -181,6 +182,7 @@ function ProfileAboutSection({
   onCloseEdit,
   isSaving,
   isVerifying,
+  saveError,
   detailsOpen,
   detailsPanelId,
 }: {
@@ -192,11 +194,14 @@ function ProfileAboutSection({
   onCloseEdit: () => void
   isSaving: boolean
   isVerifying: boolean
+  saveError?: unknown
   detailsOpen: boolean
   detailsPanelId: string
 }) {
+  const birthDateId = useId()
   const [form, setForm] = useState<Partial<HockeyProfile>>(profile)
   const [editSessionOpen, setEditSessionOpen] = useState(detailsOpen)
+  const [avatarEditorOpen, setAvatarEditorOpen] = useState(false)
 
   if (detailsOpen !== editSessionOpen) {
     setEditSessionOpen(detailsOpen)
@@ -215,6 +220,7 @@ function ProfileAboutSection({
   }
 
   function handleClose() {
+    if (isSaving || avatarEditorOpen) return
     setForm(profile)
     onCloseEdit()
   }
@@ -278,7 +284,11 @@ function ProfileAboutSection({
     } else if (!canEditContacts) {
       next.contacts = profile.contacts
     }
-    await onSaveProfile(next)
+    try {
+      await onSaveProfile(next)
+    } catch {
+      /* ошибка показывается через saveError */
+    }
   }
 
   return (
@@ -322,6 +332,7 @@ function ProfileAboutSection({
                 avatarUrl={form.avatarUrl}
                 displayName={form.fullName || profile.fullName}
                 onChange={(next) => updateField('avatarUrl', next || undefined)}
+                onEditorOpenChange={setAvatarEditorOpen}
               />
             </div>
 
@@ -397,8 +408,8 @@ function ProfileAboutSection({
                   data-testid={testId('profile', 'profile-about-section', 'field', 'full-name')}
                 />
                 <div className="hockey-stack hockey-stack--gap-4">
-                  <Text
-                    color="secondary"
+                  <label
+                    htmlFor={birthDateId}
                     data-testid={testId(
                       'profile',
                       'profile-about-section',
@@ -406,9 +417,10 @@ function ProfileAboutSection({
                       'birth-date-label',
                     )}
                   >
-                    Дата рождения
-                  </Text>
+                    <Text color="secondary">Дата рождения</Text>
+                  </label>
                   <input
+                    id={birthDateId}
                     type="date"
                     className="g-text-input__control"
                     value={form.birthDate ?? ''}
@@ -588,9 +600,18 @@ function ProfileAboutSection({
           </div>
         </Dialog.Body>
         <Dialog.Footer data-testid={testId('profile', 'profile-about-section', 'footer')}>
+          {saveError != null && (
+            <Text
+              color="danger"
+              data-testid={testId('profile', 'profile-about-section', 'text', 'save-error')}
+            >
+              {parseApiErrorMessage(saveError, 'Не удалось сохранить профиль')}
+            </Text>
+          )}
           <HockeyButton
             view="outlined"
             loading={isVerifying}
+            disabled={isSaving}
             onClick={onStartVerification}
             data-testid={testId('profile', 'profile-about-section', 'btn', 'verify')}
           >
@@ -598,6 +619,7 @@ function ProfileAboutSection({
           </HockeyButton>
           <HockeyButton
             view="outlined"
+            disabled={isSaving}
             onClick={handleClose}
             data-testid={testId('profile', 'profile-about-section', 'btn', 'cancel')}
           >
@@ -659,10 +681,12 @@ function ProfileSettingsSection({
   settings,
   onSave,
   isSaving,
+  saveError,
 }: {
   settings: ProfileSettings
   onSave: (next: ProfileSettings['notificationPreferences']) => void
   isSaving: boolean
+  saveError?: unknown
 }) {
   const [form, setForm] = useState(settings.notificationPreferences)
 
@@ -814,6 +838,14 @@ function ProfileSettingsSection({
           />
         </label>
 
+        {saveError != null && (
+          <Text
+            color="danger"
+            data-testid={testId('profile', 'profile-settings-section', 'text', 'save-error')}
+          >
+            {parseApiErrorMessage(saveError, 'Не удалось сохранить настройки')}
+          </Text>
+        )}
         <HockeyButton
           view="action"
           className="profile-hub__save-btn"
@@ -832,10 +864,12 @@ function ProfilePrivacySection({
   settings,
   onSave,
   isSaving,
+  saveError,
 }: {
   settings: ProfileSettings
   onSave: (next: ProfileSettings['privacy']) => void
   isSaving: boolean
+  saveError?: unknown
 }) {
   const [form, setForm] = useState(() => normalizePrivacySettings(settings.privacy))
   const [privacySource, setPrivacySource] = useState(settings.privacy)
@@ -1031,6 +1065,14 @@ function ProfilePrivacySection({
           </div>
         </div>
 
+        {saveError != null && (
+          <Text
+            color="danger"
+            data-testid={testId('profile', 'profile-privacy-section', 'text', 'save-error')}
+          >
+            {parseApiErrorMessage(saveError, 'Не удалось сохранить приватность')}
+          </Text>
+        )}
         <HockeyButton
           view="action"
           className="profile-hub__save-btn"
@@ -1151,6 +1193,7 @@ function HockeyProfileHub({
       queryClient.setQueryData(['profile'], updated)
       void queryClient.invalidateQueries({queryKey: ['profile']})
       void queryClient.invalidateQueries({queryKey: ['players']})
+      void queryClient.invalidateQueries({queryKey: ['player-public']})
     },
   })
 
@@ -1172,6 +1215,8 @@ function HockeyProfileHub({
     mutationFn: updatePrivacySettings,
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ['profile-settings']})
+      void queryClient.invalidateQueries({queryKey: ['player-public']})
+      void queryClient.invalidateQueries({queryKey: ['players']})
     },
   })
 
@@ -1200,6 +1245,7 @@ function HockeyProfileHub({
         onCloseEdit={() => setDetailsOpen(false)}
         isSaving={saveProfileMutation.isPending}
         isVerifying={verifyMutation.isPending}
+        saveError={saveProfileMutation.error}
         detailsOpen={detailsOpen}
         detailsPanelId={detailsPanelId}
       />
@@ -1214,11 +1260,13 @@ function HockeyProfileHub({
           settings={settings}
           onSave={(next) => saveNotificationPrefsMutation.mutate(next)}
           isSaving={saveNotificationPrefsMutation.isPending}
+          saveError={saveNotificationPrefsMutation.error}
         />
         <ProfilePrivacySection
           settings={settings}
           onSave={(next) => savePrivacyMutation.mutate(next)}
           isSaving={savePrivacyMutation.isPending}
+          saveError={savePrivacyMutation.error}
         />
       </div>
     ) : (
@@ -1250,17 +1298,14 @@ function HockeyProfileHub({
             >
               Редактировать профиль
             </HockeyButton>
-            <Link
+            <HockeyButton
+              view="outlined"
+              component={Link}
               to={`/players/${profile.userId}`}
-              data-testid={testId('profile', 'profile-about-section', 'link', 'public-view')}
+              data-testid={testId('profile', 'profile-about-section', 'btn', 'public-view')}
             >
-              <HockeyButton
-                view="outlined"
-                data-testid={testId('profile', 'profile-about-section', 'btn', 'public-view')}
-              >
-                Публичный вид
-              </HockeyButton>
-            </Link>
+              Публичный вид
+            </HockeyButton>
           </div>
         )}
       </div>

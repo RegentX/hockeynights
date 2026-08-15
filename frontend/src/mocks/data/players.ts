@@ -12,10 +12,13 @@ import type {
   PublicPlayerView,
 } from '@/entities/profile'
 import {
+  canViewProfileByVisibility,
   normalizePrivacySettings,
   redactPlayerForViewer,
+  resolvePrivacyViewer,
   resolveVisibleContacts,
   resolveVisibleFields,
+  toHiddenPlayerStub,
 } from '@/entities/profile'
 
 /** @spec SPEC-FR-24.1.3 - Mock приватность публичных профилей */
@@ -48,6 +51,13 @@ export const mockPlayerPrivacy: Record<
   },
   'user-003': {
     profileVisibility: 'teams_only',
+    showContacts: false,
+    showParticipationHistory: false,
+    calendarVisibility: 'private',
+    personalDataProcessingConsent: false,
+  },
+  'user-008': {
+    profileVisibility: 'private',
     showContacts: false,
     showParticipationHistory: false,
     calendarVisibility: 'private',
@@ -115,32 +125,53 @@ const mockParticipationByUser: Record<string, ParticipationRecord[]> = {
   ],
 }
 
+function privacyForUser(
+  userId: string,
+): Partial<PrivacySettings> & Pick<PrivacySettings, 'profileVisibility'> {
+  return (
+    mockPlayerPrivacy[userId] ?? {
+      profileVisibility: 'public',
+      showContacts: false,
+      showParticipationHistory: false,
+      calendarVisibility: 'public',
+      personalDataProcessingConsent: false,
+    }
+  )
+}
+
+function hiddenView(player: PlayerListItem): PublicPlayerView {
+  return {
+    player: toHiddenPlayerStub(player),
+    visibility: 'hidden',
+    contactsVisible: false,
+    participationHistoryVisible: false,
+    calendarVisible: false,
+  }
+}
+
 function buildViewFromPlayer(
   player: PlayerListItem,
   privacyInput: Partial<PrivacySettings> & Pick<PrivacySettings, 'profileVisibility'>,
   participationHistory?: ParticipationRecord[],
   viewer: PrivacyViewerRelation = 'public',
+  viewerVerified = false,
 ): PublicPlayerView {
   const privacy = normalizePrivacySettings(privacyInput)
 
-  if (privacy.profileVisibility === 'private' && viewer !== 'self') {
-    return {
-      player: redactPlayerForViewer(player, resolveVisibleFields(privacy.fields, 'public')),
-      visibility: 'hidden',
-      contactsVisible: false,
-      participationHistoryVisible: false,
-      calendarVisible: false,
-    }
+  if (!canViewProfileByVisibility(privacy.profileVisibility, viewer, viewerVerified)) {
+    return hiddenView(player)
   }
 
-  const visibleFields = resolveVisibleFields(privacy.fields, viewer)
+  const fieldViewer = viewer === 'self' ? 'public' : viewer
+  const visibleFields = resolveVisibleFields(privacy.fields, fieldViewer)
   const visibleContacts = resolveVisibleContacts(
     player.contacts,
     privacy.fields,
-    viewer,
+    fieldViewer,
     privacy.personalDataProcessingConsent,
   )
-  const visibility = privacy.profileVisibility === 'teams_only' ? 'limited' : 'full'
+  const visibility =
+    viewer === 'self' || privacy.profileVisibility === 'public' ? 'full' : 'limited'
 
   return {
     player: redactPlayerForViewer(player, visibleFields),
@@ -159,31 +190,55 @@ export function buildPublicPlayerViewFromProfile(
   profile: HockeyProfile,
   privacy: Partial<PrivacySettings> & Pick<PrivacySettings, 'profileVisibility'>,
   viewer: PrivacyViewerRelation = 'public',
+  viewerVerified = false,
 ): PublicPlayerView {
   const player: PlayerListItem = {
     ...profile,
     displayName: profile.fullName,
   }
-  return buildViewFromPlayer(player, privacy, profile.participationHistory, viewer)
+  return buildViewFromPlayer(player, privacy, profile.participationHistory, viewer, viewerVerified)
 }
 
 /** @spec SPEC-FR-24.1.3 - Собрать публичное представление игрока */
 export function buildPublicPlayerView(
   userId: string,
   viewer: PrivacyViewerRelation = 'public',
+  viewerVerified = false,
 ): PublicPlayerView | null {
   const player = mockPlayers.find((p) => p.userId === userId)
   if (!player) return null
 
-  const privacy = mockPlayerPrivacy[userId] ?? {
-    profileVisibility: 'public',
-    showContacts: false,
-    showParticipationHistory: false,
-    calendarVisibility: 'public',
-    personalDataProcessingConsent: false,
-  }
+  return buildViewFromPlayer(
+    player,
+    privacyForUser(userId),
+    mockParticipationByUser[userId],
+    viewer,
+    viewerVerified,
+  )
+}
 
-  return buildViewFromPlayer(player, privacy, mockParticipationByUser[userId], viewer)
+export interface PlayerViewerContext {
+  userId?: string
+  teamIds?: string[]
+  verified: boolean
+}
+
+/** Каталог: только профили, которые зритель имеет право видеть, с редакцией полей. */
+export function listPlayersForViewer(context: PlayerViewerContext): PlayerListItem[] {
+  return mockPlayers.flatMap((player) => {
+    const privacy = normalizePrivacySettings(privacyForUser(player.userId))
+    const viewer = resolvePrivacyViewer(
+      player.userId,
+      context.userId,
+      player.teamIds,
+      context.teamIds,
+    )
+    if (!canViewProfileByVisibility(privacy.profileVisibility, viewer, context.verified)) {
+      return []
+    }
+    const fieldViewer = viewer === 'self' ? 'public' : viewer
+    return [redactPlayerForViewer(player, resolveVisibleFields(privacy.fields, fieldViewer))]
+  })
 }
 
 /** @spec SPEC-FR-2.3.1 - Mock список игроков */
