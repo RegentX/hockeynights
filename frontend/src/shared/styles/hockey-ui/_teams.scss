@@ -92,6 +92,12 @@
 }
 
 .team-profile {
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    align-self: flex-start;
+  }
+
   &__hero {
     display: flex;
     flex-direction: column;

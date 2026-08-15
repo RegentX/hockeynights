@@ -24,90 +24,86 @@ function groupByType(items: Favorite[]): Array<{type: FavoriteType; items: Favor
   })).filter((group) => group.items.length > 0)
 }
 
-export function ProfileFavoritesSection() {
+export interface ProfileFavoritesSectionProps {
+  /** Без внешней карточки и заголовка — для диалога «Все» в борте */
+  embedded?: boolean
+}
+
+export function ProfileFavoritesSection({embedded = false}: ProfileFavoritesSectionProps) {
   const {data: items = [], isLoading, isError} = useFavoritesQuery()
   const groups = groupByType(items)
 
-  return (
-    <IceCard padding="m" data-testid={testId('favorites', 'profile-section', 'page')}>
-      <Text
-        variant="header-2"
-        data-testid={testId('favorites', 'profile-section', 'text', 'title')}
-      >
-        Избранное
-      </Text>
-      <Text
-        color="secondary"
-        className="hockey-mt-4"
-        data-testid={testId('favorites', 'profile-section', 'text', 'subtitle')}
-      >
-        Все сохранённые сущности по типам. Ссылки ведут на карточки и разделы.
-      </Text>
-
+  const body = (
+    <div className="hockey-stack hockey-stack--gap-16">
       {isLoading && (
-        <div
-          className="hockey-mt-12"
-          data-testid={testId('favorites', 'profile-section', 'loader')}
-        >
+        <div data-testid={testId('favorites', 'profile-section', 'loader')}>
           <ScoreboardLoader label="Загрузка избранного" />
         </div>
       )}
 
       {isError && (
-        <Text
-          color="danger"
-          className="hockey-mt-12"
-          data-testid={testId('favorites', 'profile-section', 'error')}
-        >
+        <Text color="danger" data-testid={testId('favorites', 'profile-section', 'error')}>
           Не удалось загрузить избранное
         </Text>
       )}
 
       {!isLoading && !isError && groups.length === 0 && (
-        <Text
-          color="secondary"
-          className="hockey-mt-12"
-          data-testid={testId('favorites', 'profile-section', 'empty')}
-        >
+        <Text color="secondary" data-testid={testId('favorites', 'profile-section', 'empty')}>
           Пока пусто — добавьте игроков, команды, лиги, тренировки, арены или товары через ♥ на
           карточках.
         </Text>
       )}
 
-      <div className="hockey-stack hockey-stack--gap-16 hockey-mt-16">
-        {groups.map((group) => (
-          <section
-            key={group.type}
-            className="favorites-profile-group"
-            data-testid={testId('favorites', 'profile-section', 'group', group.type)}
+      {groups.map((group) => (
+        <section
+          key={group.type}
+          className="favorites-profile-group"
+          data-testid={testId('favorites', 'profile-section', 'group', group.type)}
+        >
+          <Text
+            variant="subheader-2"
+            data-testid={testId('favorites', 'profile-section', 'text', `group-${group.type}`)}
           >
-            <Text
-              variant="subheader-2"
-              data-testid={testId('favorites', 'profile-section', 'text', `group-${group.type}`)}
-            >
-              {FAVORITE_TYPE_LABELS[group.type]}
-            </Text>
-            <ul className="favorites-profile-group__list">
-              {group.items.map((item) => (
-                <li key={item.id} className="favorites-profile-group__row">
-                  <Link
-                    to={item.href}
-                    className="favorites-profile-group__link"
-                    data-testid={testId('favorites', 'profile-section', 'link', item.id)}
-                  >
-                    {item.title}
-                  </Link>
-                  <FavoriteButton
-                    type={item.type}
-                    entityId={item.entityId}
-                    title={item.title}
-                    href={item.href}
-                  />
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
+            {FAVORITE_TYPE_LABELS[group.type]}
+          </Text>
+          <ul className="favorites-profile-group__list">
+            {group.items.map((item) => (
+              <li key={item.id} className="favorites-profile-group__row">
+                <Link
+                  to={item.href}
+                  className="favorites-profile-group__link"
+                  data-testid={testId('favorites', 'profile-section', 'link', item.id)}
+                >
+                  {item.title}
+                </Link>
+                <FavoriteButton
+                  type={item.type}
+                  entityId={item.entityId}
+                  title={item.title}
+                  href={item.href}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  )
+
+  if (embedded) {
+    return <div data-testid={testId('favorites', 'profile-section', 'embedded')}>{body}</div>
+  }
+
+  return (
+    <IceCard padding="m" data-testid={testId('favorites', 'profile-section', 'page')}>
+      <div className="hockey-stack hockey-stack--gap-16">
+        <Text
+          variant="header-1"
+          data-testid={testId('favorites', 'profile-section', 'text', 'title')}
+        >
+          Избранное
+        </Text>
+        {body}
       </div>
     </IceCard>
   )

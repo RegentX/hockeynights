@@ -18,6 +18,11 @@ export const TRAINING_FORMAT_LABELS: Record<NonNullable<GameEvent['trainingForma
 export const SKILL_LEVEL_LABELS: Record<SkillLevel, string> = {
   beginner: 'Дебютант',
   amateur: 'Любитель',
+  novice_theorist: 'Начинающий теоретик',
+  theorist: 'Теоретик',
+  confident_theorist: 'Уверенный теоретик',
+  practitioner: 'Практик',
+  master: 'Мастер',
   advanced: 'Продвинутый',
   league: 'Лига',
   unknown: 'Не указан',

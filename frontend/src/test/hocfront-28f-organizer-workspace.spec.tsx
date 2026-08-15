@@ -53,7 +53,7 @@ describe('HOCFRONT-28F organizer workspace', () => {
     await waitFor(() => {
       expect(screen.getByTestId('events-organizer-page-panel-profile')).toBeInTheDocument()
       expect(screen.getByTestId('events-organizer-page-text-profile-name')).toHaveTextContent(
-        'Мария Организаторова',
+        'Организаторова Мария Андреевна',
       )
       expect(screen.getByTestId('events-organizer-page-text-profile-stats')).toBeInTheDocument()
       expect(

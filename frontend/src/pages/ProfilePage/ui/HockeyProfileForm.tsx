@@ -1,9 +1,18 @@
 /**
- * SPEC-FR-2.2.1, SPEC-FR-2.2.2, SPEC-FR-2.2.3, SPEC-FR-2.2.4
+ * SPEC-FR-2.2.1, SPEC-FR-2.2.2, SPEC-FR-2.2.4
  * SPEC-FR-17.1.1, SPEC-FR-18.1.1, SPEC-FR-18.1.3, SPEC-FR-18.1.4, SPEC-FR-19.1.1
  */
 
-import {Progress, Select, Switch, Text, TextArea, TextInput} from '@gravity-ui/uikit'
+import {
+  Checkbox,
+  Dialog,
+  Progress,
+  Select,
+  Switch,
+  Text,
+  TextArea,
+  TextInput,
+} from '@gravity-ui/uikit'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {useId, useState} from 'react'
 import {Link, Navigate, useSearchParams} from 'react-router'
@@ -11,28 +20,49 @@ import {Link, Navigate, useSearchParams} from 'react-router'
 import type {PlayerPosition, SkillLevel, UserRole} from '@/entities/common'
 import type {
   HockeyProfile,
-  ParticipationRecord,
+  PrivacyAudience,
+  ProfileContacts,
+  ProfileFieldPrivacy,
   ProfileSettings,
   SubscriptionState,
 } from '@/entities/profile'
 import {
+  CONTACT_FIELD_PRIVACY_KEYS,
   fetchMyProfile,
   fetchProfileSettings,
+  FIELD_PRIVACY_LABELS,
+  FIELD_PRIVACY_OPTIONS,
+  normalizePrivacySettings,
+  PROFILE_FIELD_PRIVACY_KEYS,
   startVerificationRequest,
+  toPlayerListItem,
   updateMyProfile,
   updateNotificationPreferences,
   updatePrivacySettings,
   updateSubscription,
 } from '@/entities/profile'
 import {getPrimaryPartnerPath, shouldUsePartnerWorkspace, useSessionAccess} from '@/features/access'
-import {CalendarScopePreview} from '@/features/calendar'
+import {CalendarShell} from '@/features/calendar'
+import {ProfileFavoritesSection} from '@/features/favorites'
 import {KarmaHint} from '@/features/karma'
-import {CoachProfilePanel, ProfileSummaryCard} from '@/features/profile'
-import {routes} from '@/shared/const/appRoutes'
+import {PlayerPublicInfoSection} from '@/features/players'
+import {
+  CoachProfilePanel,
+  ParticipationHistorySection,
+  ProfileAvatarEditor,
+} from '@/features/profile'
+import {parseApiErrorMessage} from '@/shared/api/parseApiError'
+import {
+  clampPlayerIndex,
+  PLAYER_INDEX_LEVELS,
+  playerIndexFromSkillLevel,
+  skillLevelFromPlayerIndex,
+} from '@/shared/lib/profileIdentity'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
+import {PlayerCard} from '@/widgets/PlayerCard'
 
 const POSITION_OPTIONS = [
   {value: 'forward', content: 'Нападающий'},
@@ -43,8 +73,22 @@ const POSITION_OPTIONS = [
 const SKILL_OPTIONS = [
   {value: 'beginner', content: 'Дебютант'},
   {value: 'amateur', content: 'Любитель'},
-  {value: 'advanced', content: 'Продвинутый'},
-  {value: 'league', content: 'Лига'},
+  {value: 'novice_theorist', content: 'Начинающий теоретик'},
+  {value: 'theorist', content: 'Теоретик'},
+  {value: 'confident_theorist', content: 'Уверенный теоретик'},
+  {value: 'practitioner', content: 'Практик'},
+  {value: 'master', content: 'Мастер'},
+]
+
+const PLAYER_INDEX_OPTIONS = PLAYER_INDEX_LEVELS.map((item) => ({
+  value: String(item.index),
+  content: `${item.index} — ${item.label}`,
+}))
+
+const STICK_HAND_OPTIONS = [
+  {value: 'left', content: 'Левый'},
+  {value: 'right', content: 'Правый'},
+  {value: 'unknown', content: '—'},
 ]
 
 const VISIBILITY_OPTIONS = [
@@ -52,12 +96,6 @@ const VISIBILITY_OPTIONS = [
   {value: 'teams_only', content: 'Только командам'},
   {value: 'verified_only', content: 'Только подтвержденным'},
   {value: 'private', content: 'Скрытый'},
-]
-
-const CALENDAR_VISIBILITY_OPTIONS = [
-  {value: 'public', content: 'Всем'},
-  {value: 'teams_only', content: 'Только командам'},
-  {value: 'private', content: 'Скрыт'},
 ]
 
 const SUBSCRIPTION_PLAN_OPTIONS = [
@@ -78,7 +116,18 @@ const SUBSCRIPTION_PLAN_OPTIONS = [
   },
 ]
 
-type ProfileHubSection = 'about' | 'settings' | 'privacy' | 'subscription'
+type ProfileHubSection = 'about' | 'favorites' | 'settings' | 'subscription'
+
+const PROFILE_HUB_SECTIONS: ProfileHubSection[] = ['about', 'favorites', 'settings', 'subscription']
+
+function isProfileHubSection(value: string | null): value is ProfileHubSection {
+  return Boolean(value && PROFILE_HUB_SECTIONS.includes(value as ProfileHubSection))
+}
+
+function resolveProfileHubSection(value: string | null): ProfileHubSection {
+  if (value === 'privacy') return 'settings'
+  return isProfileHubSection(value) ? value : 'about'
+}
 
 function ProfileHubTabs({
   section,
@@ -100,18 +149,18 @@ function ProfileHubTabs({
         О себе
       </HockeyButton>
       <HockeyButton
+        view={section === 'favorites' ? 'action' : 'outlined'}
+        onClick={() => onSelect('favorites')}
+        data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'favorites')}
+      >
+        Избранное
+      </HockeyButton>
+      <HockeyButton
         view={section === 'settings' ? 'action' : 'outlined'}
         onClick={() => onSelect('settings')}
         data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'settings')}
       >
         Настройки
-      </HockeyButton>
-      <HockeyButton
-        view={section === 'privacy' ? 'action' : 'outlined'}
-        onClick={() => onSelect('privacy')}
-        data-testid={testId('profile', 'profile-hub-tabs', 'tab', 'privacy')}
-      >
-        Приватность
       </HockeyButton>
       <HockeyButton
         view={section === 'subscription' ? 'action' : 'outlined'}
@@ -124,548 +173,361 @@ function ProfileHubTabs({
   )
 }
 
-const PARTICIPATION_ROLE_LABELS: Record<ParticipationRecord['role'], string> = {
-  player: 'Игрок',
-  goalie: 'Вратарь',
-  coach: 'Тренер',
-}
-
-const PARTICIPATION_TYPE_LABELS: Record<NonNullable<ParticipationRecord['eventType']>, string> = {
-  game: 'Игра',
-  training: 'Тренировка',
-  open_ice: 'Открытый лёд',
-}
-
-function ParticipationHistoryItem({record}: {record: ParticipationRecord}) {
-  const [open, setOpen] = useState(false)
-  const detailsId = useId()
-  const timeLabel = new Date(record.eventDate).toLocaleTimeString('ru-RU', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-  /** Как после создания тренировки: детальная карточка события = «приглашение». */
-  const inviteHref =
-    record.eventType === 'training'
-      ? `/events/trainings/${record.eventId}`
-      : `/events/games/${record.eventId}`
-  const inviteLabel = 'К приглашению'
-  const chatHref = record.chatId ? `/messenger?chatId=${encodeURIComponent(record.chatId)}` : null
-
-  return (
-    <li
-      className={`profile-hub__history-item${open ? ' is-open' : ''}`}
-      data-testid={testId('profile', 'participation-history', 'item', record.eventId)}
-    >
-      <button
-        type="button"
-        className="profile-hub__history-toggle"
-        aria-expanded={open}
-        aria-controls={detailsId}
-        onClick={() => setOpen((prev) => !prev)}
-        data-testid={testId('profile', 'participation-history', 'btn', 'toggle', record.eventId)}
-      >
-        <span className="profile-hub__history-main">
-          <Text
-            variant="subheader-2"
-            data-testid={testId(
-              'profile',
-              'participation-history',
-              'text',
-              'event',
-              record.eventId,
-            )}
-          >
-            {record.eventTitle}
-          </Text>
-          <Text
-            color="secondary"
-            data-testid={testId('profile', 'participation-history', 'text', 'date', record.eventId)}
-          >
-            {new Date(record.eventDate).toLocaleDateString('ru-RU')}
-            {record.teamName ? ` · ${record.teamName}` : ''}
-          </Text>
-        </span>
-        <span className="profile-hub__history-meta">
-          <span
-            className={`profile-hub__history-status ${
-              record.confirmed ? 'is-confirmed' : 'is-pending'
-            }`}
-            data-testid={testId(
-              'profile',
-              'participation-history',
-              'badge',
-              'status',
-              record.eventId,
-            )}
-          >
-            {record.confirmed ? 'Подтверждено' : 'Ожидает'}
-          </span>
-          <span className="profile-hub__history-chevron" aria-hidden>
-            {open ? '▴' : '▾'}
-          </span>
-        </span>
-      </button>
-
-      {open && (
-        <div
-          id={detailsId}
-          className="profile-hub__history-details"
-          data-testid={testId(
-            'profile',
-            'participation-history',
-            'panel',
-            'details',
-            record.eventId,
-          )}
-        >
-          <dl className="profile-hub__history-facts">
-            <div>
-              <dt>Роль</dt>
-              <dd
-                data-testid={testId(
-                  'profile',
-                  'participation-history',
-                  'text',
-                  'role',
-                  record.eventId,
-                )}
-              >
-                {PARTICIPATION_ROLE_LABELS[record.role]}
-              </dd>
-            </div>
-            {record.eventType && (
-              <div>
-                <dt>Тип</dt>
-                <dd
-                  data-testid={testId(
-                    'profile',
-                    'participation-history',
-                    'text',
-                    'type',
-                    record.eventId,
-                  )}
-                >
-                  {PARTICIPATION_TYPE_LABELS[record.eventType]}
-                </dd>
-              </div>
-            )}
-            <div>
-              <dt>Время</dt>
-              <dd
-                data-testid={testId(
-                  'profile',
-                  'participation-history',
-                  'text',
-                  'time',
-                  record.eventId,
-                )}
-              >
-                {timeLabel}
-                {record.durationMinutes ? ` · ${record.durationMinutes} мин` : ''}
-              </dd>
-            </div>
-            {record.arenaName && (
-              <div>
-                <dt>Арена</dt>
-                <dd
-                  data-testid={testId(
-                    'profile',
-                    'participation-history',
-                    'text',
-                    'arena',
-                    record.eventId,
-                  )}
-                >
-                  {record.arenaName}
-                </dd>
-              </div>
-            )}
-            {record.opponent && (
-              <div>
-                <dt>Соперник</dt>
-                <dd
-                  data-testid={testId(
-                    'profile',
-                    'participation-history',
-                    'text',
-                    'opponent',
-                    record.eventId,
-                  )}
-                >
-                  {record.opponent}
-                </dd>
-              </div>
-            )}
-            {record.result && (
-              <div>
-                <dt>Итог</dt>
-                <dd
-                  data-testid={testId(
-                    'profile',
-                    'participation-history',
-                    'text',
-                    'result',
-                    record.eventId,
-                  )}
-                >
-                  {record.result}
-                </dd>
-              </div>
-            )}
-          </dl>
-          {record.note && (
-            <Text
-              color="secondary"
-              data-testid={testId(
-                'profile',
-                'participation-history',
-                'text',
-                'note',
-                record.eventId,
-              )}
-            >
-              {record.note}
-            </Text>
-          )}
-          <div
-            className="profile-hub__history-actions"
-            data-testid={testId(
-              'profile',
-              'participation-history',
-              'panel',
-              'actions',
-              record.eventId,
-            )}
-          >
-            <Link
-              to={inviteHref}
-              data-testid={testId(
-                'profile',
-                'participation-history',
-                'link',
-                'invite',
-                record.eventId,
-              )}
-            >
-              <HockeyButton
-                view="outlined"
-                size="s"
-                data-testid={testId(
-                  'profile',
-                  'participation-history',
-                  'btn',
-                  'invite',
-                  record.eventId,
-                )}
-              >
-                {inviteLabel}
-              </HockeyButton>
-            </Link>
-            {chatHref && (
-              <Link
-                to={chatHref}
-                data-testid={testId(
-                  'profile',
-                  'participation-history',
-                  'link',
-                  'chat',
-                  record.eventId,
-                )}
-              >
-                <HockeyButton
-                  view="action"
-                  size="s"
-                  data-testid={testId(
-                    'profile',
-                    'participation-history',
-                    'btn',
-                    'chat',
-                    record.eventId,
-                  )}
-                >
-                  Чат приглашения
-                </HockeyButton>
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
-    </li>
-  )
-}
-
-function ParticipationHistorySection({
-  profile,
-  showHistory,
-}: {
-  profile: HockeyProfile
-  showHistory: boolean
-}) {
-  const history = profile.participationHistory ?? []
-  if (!showHistory) {
-    return (
-      <Text
-        color="secondary"
-        data-testid={testId('profile', 'participation-history', 'text', 'hidden')}
-      >
-        История участия скрыта настройками приватности.
-      </Text>
-    )
-  }
-  if (history.length === 0) {
-    return (
-      <Text color="secondary" data-testid={testId('profile', 'participation-history', 'empty')}>
-        Пока нет подтверждённых участий в событиях.
-      </Text>
-    )
-  }
-
-  return (
-    <ul
-      className="profile-hub__history"
-      data-testid={testId('profile', 'participation-history', 'list')}
-    >
-      {history.map((record) => (
-        <ParticipationHistoryItem key={record.eventId} record={record} />
-      ))}
-    </ul>
-  )
-}
-
 function ProfileAboutSection({
   profile,
   settings,
   userRoles,
   onSaveProfile,
   onStartVerification,
+  onCloseEdit,
   isSaving,
   isVerifying,
+  saveError,
+  detailsOpen,
+  detailsPanelId,
 }: {
   profile: HockeyProfile
   settings: ProfileSettings
   userRoles: UserRole[]
-  onSaveProfile: (next: Partial<HockeyProfile>) => void
+  onSaveProfile: (next: Partial<HockeyProfile>) => Promise<void>
   onStartVerification: () => void
+  onCloseEdit: () => void
   isSaving: boolean
   isVerifying: boolean
+  saveError?: unknown
+  detailsOpen: boolean
+  detailsPanelId: string
 }) {
+  const birthDateId = useId()
   const [form, setForm] = useState<Partial<HockeyProfile>>(profile)
-  const [detailsOpen, setDetailsOpen] = useState(false)
-  const detailsPanelId = useId()
+  const [editSessionOpen, setEditSessionOpen] = useState(detailsOpen)
+  const [avatarEditorOpen, setAvatarEditorOpen] = useState(false)
+
+  if (detailsOpen !== editSessionOpen) {
+    setEditSessionOpen(detailsOpen)
+    if (detailsOpen) {
+      setForm(profile)
+    }
+  }
+
+  /** Пока диалог открыт — карточки показывают черновик */
+  const previewProfile: HockeyProfile = detailsOpen ? {...profile, ...form} : profile
+  const player = toPlayerListItem(previewProfile)
 
   /** @spec SPEC-FR-2.2.2 - Обновление поля профиля */
   function updateField<K extends keyof HockeyProfile>(key: K, value: HockeyProfile[K]) {
     setForm((prev) => ({...prev, [key]: value}))
   }
 
-  /** @spec SPEC-FR-2.2.1 - Сохранение профиля */
-  function handleSave() {
-    onSaveProfile(form)
+  function handleClose() {
+    if (isSaving || avatarEditorOpen) return
+    setForm(profile)
+    onCloseEdit()
   }
 
   const isGoalieProfile = userRoles.includes('goalie') || profile.position === 'goalie'
-  const showCollapsedHistory =
+  const showHistorySection =
     userRoles.includes('player') ||
     userRoles.includes('goalie') ||
     userRoles.includes('captain') ||
     userRoles.includes('coach')
+  const privacy = normalizePrivacySettings(settings.privacy)
+  const canEditContacts = privacy.personalDataProcessingConsent
+  const ownerContacts = previewProfile.contacts
+
+  function updateContact(key: keyof ProfileContacts, value: string) {
+    setForm((prev) => ({
+      ...prev,
+      contacts: {
+        ...prev.contacts,
+        [key]: value.trim() === '' ? undefined : value,
+      },
+    }))
+  }
+
+  /** @spec SPEC-FR-2.2.1 - Сохранение профиля */
+  async function handleSave() {
+    const next: Partial<HockeyProfile> = {...form}
+    if (next.playerIndex != null && !Number.isNaN(Number(next.playerIndex))) {
+      next.playerIndex = clampPlayerIndex(Number(next.playerIndex))
+      next.skillLevel = skillLevelFromPlayerIndex(next.playerIndex)
+    } else if (next.skillLevel) {
+      next.playerIndex = playerIndexFromSkillLevel(next.skillLevel)
+      next.skillLevel = skillLevelFromPlayerIndex(next.playerIndex)
+    }
+    if (next.heightCm != null && !Number.isNaN(Number(next.heightCm))) {
+      next.heightCm = Math.round(Number(next.heightCm))
+    }
+    if (next.weightKg != null && !Number.isNaN(Number(next.weightKg))) {
+      next.weightKg = Math.round(Number(next.weightKg))
+    }
+    if (typeof next.fullName === 'string') {
+      next.fullName = next.fullName.trim()
+    }
+    if (typeof next.city === 'string') {
+      next.city = next.city.trim()
+    }
+    if (typeof next.bio === 'string') {
+      next.bio = next.bio.trim()
+    }
+    /** Пустая строка — сброс аватарки (JSON не передаёт undefined) */
+    next.avatarUrl = form.avatarUrl?.trim() ? form.avatarUrl.trim() : ''
+    if (canEditContacts && next.contacts) {
+      const contacts: ProfileContacts = {}
+      if (next.contacts.phone?.trim()) contacts.phone = next.contacts.phone.trim()
+      if (next.contacts.email?.trim()) contacts.email = next.contacts.email.trim()
+      if (next.contacts.telegram?.trim()) contacts.telegram = next.contacts.telegram.trim()
+      if (next.contacts.maxMessenger?.trim()) {
+        contacts.maxMessenger = next.contacts.maxMessenger.trim()
+      }
+      next.contacts = Object.keys(contacts).length > 0 ? contacts : undefined
+    } else if (!canEditContacts) {
+      next.contacts = profile.contacts
+    }
+    try {
+      await onSaveProfile(next)
+    } catch {
+      /* ошибка показывается через saveError */
+    }
+  }
 
   return (
-    <div className="hockey-stack hockey-stack--gap-16">
-      <ProfileSummaryCard
-        profile={profile}
-        roles={userRoles}
-        detailsOpen={detailsOpen}
-        onToggleDetails={() => setDetailsOpen((prev) => !prev)}
-        detailsPanelId={detailsPanelId}
-      />
+    <div className="hockey-stack hockey-stack--gap-16 player-profile-layout">
+      <div
+        className="player-profile-layout__grid"
+        data-testid={testId('profile', 'profile-about-section', 'panel', 'grid')}
+      >
+        <PlayerCard player={player} linkable={false} showFavorite={false} variant="profile" />
+        <PlayerPublicInfoSection
+          player={player}
+          contactsVisible={Boolean(ownerContacts)}
+          visibleContacts={ownerContacts}
+          participationHistoryVisible
+          hideHistory
+        />
+      </div>
 
-      {!detailsOpen && showCollapsedHistory && (
-        <IceCard
-          padding="m"
-          data-testid={testId('profile', 'profile-about-section', 'card', 'history-preview')}
-        >
-          <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-8">
-            <Text
-              variant="subheader-2"
-              data-testid={testId(
-                'profile',
-                'profile-about-section',
-                'text',
-                'history-preview-title',
-              )}
-            >
-              История участия
-            </Text>
-            <ParticipationHistorySection
-              profile={profile}
-              showHistory={settings.privacy.showParticipationHistory}
-            />
-          </div>
-        </IceCard>
-      )}
+      <Dialog
+        open={detailsOpen}
+        onClose={handleClose}
+        maxWidth="l"
+        fullWidth
+        className="profile-hub__edit-dialog"
+        modalClassName="profile-hub__edit-dialog-modal"
+        contentOverflow="auto"
+        data-testid={testId('profile', 'profile-about-section', 'card')}
+      >
+        <Dialog.Header
+          caption="Редактирование профиля"
+          data-testid={testId('profile', 'profile-about-section', 'text', 'title')}
+        />
+        <Dialog.Body>
+          <div
+            id={detailsPanelId}
+            className="hockey-stack hockey-stack--gap-16 profile-hub__edit-dialog-body"
+          >
+            <div className="profile-hub__edit-section">
+              <p className="profile-hub__edit-section-title">Аватар</p>
+              <ProfileAvatarEditor
+                avatarUrl={form.avatarUrl}
+                displayName={form.fullName || profile.fullName}
+                onChange={(next) => updateField('avatarUrl', next || undefined)}
+                onEditorOpenChange={setAvatarEditorOpen}
+              />
+            </div>
 
-      {!detailsOpen && (
-        <IceCard
-          padding="m"
-          data-testid={testId('profile', 'profile-about-section', 'card', 'schedule-preview')}
-        >
-          <div className="hockey-panel hockey-panel--24">
-            <CalendarScopePreview scope="me" title="Мой график" testIdPrefix="profile" />
-          </div>
-        </IceCard>
-      )}
+            {userRoles.includes('coach') && <CoachProfilePanel />}
 
-      {!detailsOpen && (
-        <Text
-          color="secondary"
-          data-testid={testId('profile', 'profile-about-section', 'text', 'details-hint')}
-        >
-          Нажмите «Подробнее», чтобы открыть полную анкету Hockey ID и редактирование.
-        </Text>
-      )}
-
-      {detailsOpen && (
-        <div id={detailsPanelId}>
-          <IceCard padding="m" data-testid={testId('profile', 'profile-about-section', 'card')}>
-            <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
-              <Text
-                variant="header-2"
-                data-testid={testId('profile', 'profile-about-section', 'text', 'title')}
+            {isGoalieProfile && (
+              <div
+                className="profile-hub__goalie-panel"
+                data-testid={testId('profile', 'profile-about-section', 'panel', 'goalie')}
               >
-                Hockey ID · подробно
-              </Text>
-
-              {userRoles.includes('coach') && <CoachProfilePanel />}
-
-              {isGoalieProfile && (
-                <div
-                  className="profile-hub__goalie-panel"
-                  data-testid={testId('profile', 'profile-about-section', 'panel', 'goalie')}
+                <Text
+                  variant="subheader-2"
+                  data-testid={testId('profile', 'profile-about-section', 'text', 'goalie-title')}
                 >
-                  <Text
-                    variant="subheader-2"
-                    data-testid={testId('profile', 'profile-about-section', 'text', 'goalie-title')}
+                  Профиль вратаря
+                </Text>
+                <Text
+                  color="secondary"
+                  data-testid={testId('profile', 'profile-about-section', 'text', 'goalie-hint')}
+                >
+                  Приоритетные SOS-запросы и отдельная метрика надёжности выходов.
+                </Text>
+                {profile.goalieReliabilityScore != null && (
+                  <div
+                    className="profile-hub__goalie-score"
+                    data-testid={testId(
+                      'profile',
+                      'profile-about-section',
+                      'panel',
+                      'goalie-score',
+                    )}
                   >
-                    Профиль вратаря
-                  </Text>
-                  <Text
-                    color="secondary"
-                    data-testid={testId('profile', 'profile-about-section', 'text', 'goalie-hint')}
-                  >
-                    Приоритетные SOS-запросы и отдельная метрика надёжности выходов.
-                  </Text>
-                  {profile.goalieReliabilityScore != null && (
-                    <div
-                      className="profile-hub__goalie-score"
+                    <Text
+                      color="secondary"
                       data-testid={testId(
                         'profile',
                         'profile-about-section',
-                        'panel',
-                        'goalie-score',
+                        'text',
+                        'goalie-score-label',
                       )}
                     >
-                      <Text
-                        color="secondary"
-                        data-testid={testId(
-                          'profile',
-                          'profile-about-section',
-                          'text',
-                          'goalie-score-label',
-                        )}
-                      >
-                        Надёжность выходов
-                      </Text>
-                      <Progress
-                        value={profile.goalieReliabilityScore}
-                        text={`${profile.goalieReliabilityScore}%`}
-                        data-testid={testId(
-                          'profile',
-                          'profile-about-section',
-                          'cell',
-                          'goalie-score',
-                        )}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <div
-                className="hockey-stack hockey-stack--gap-4"
-                data-testid={testId('profile', 'profile-about-section', 'panel', 'karma')}
-              >
-                <KarmaHint testIdPrefix="profile" />
+                      Надёжность выходов
+                    </Text>
+                    <Progress
+                      value={profile.goalieReliabilityScore}
+                      text={`${profile.goalieReliabilityScore}%`}
+                      data-testid={testId(
+                        'profile',
+                        'profile-about-section',
+                        'cell',
+                        'goalie-score',
+                      )}
+                    />
+                  </div>
+                )}
               </div>
+            )}
 
-              {profile.achievements && profile.achievements.length > 0 && (
-                <div
-                  className="hockey-stack hockey-stack--gap-4"
-                  data-testid={testId('profile', 'profile-about-section', 'panel', 'achievements')}
-                >
-                  <Text
-                    color="secondary"
+            <div
+              className="hockey-stack hockey-stack--gap-4"
+              data-testid={testId('profile', 'profile-about-section', 'panel', 'karma')}
+            >
+              <KarmaHint testIdPrefix="profile" />
+            </div>
+
+            <div className="profile-hub__edit-section">
+              <p className="profile-hub__edit-section-title">Личные</p>
+              <div className="profile-hub__edit-grid">
+                <TextInput
+                  label="ФИО"
+                  value={form.fullName ?? ''}
+                  onUpdate={(v) => updateField('fullName', v)}
+                  data-testid={testId('profile', 'profile-about-section', 'field', 'full-name')}
+                />
+                <div className="hockey-stack hockey-stack--gap-4">
+                  <label
+                    htmlFor={birthDateId}
                     data-testid={testId(
                       'profile',
                       'profile-about-section',
                       'text',
-                      'achievements-label',
+                      'birth-date-label',
                     )}
                   >
-                    Микро-ачивки
-                  </Text>
-                  <ul
-                    className="hockey-list hockey-list--chips"
-                    data-testid={testId('profile', 'profile-about-section', 'list', 'achievements')}
-                  >
-                    {profile.achievements.map((ach) => (
-                      <li
-                        key={ach}
-                        className="hockey-chip"
-                        data-testid={testId(
-                          'profile',
-                          'profile-about-section',
-                          'item',
-                          'achievement',
-                          ach,
-                        )}
-                      >
-                        {ach}
-                      </li>
-                    ))}
-                  </ul>
+                    <Text color="secondary">Дата рождения</Text>
+                  </label>
+                  <input
+                    id={birthDateId}
+                    type="date"
+                    className="g-text-input__control"
+                    value={form.birthDate ?? ''}
+                    onChange={(event) => updateField('birthDate', event.target.value || undefined)}
+                    data-testid={testId('profile', 'profile-about-section', 'field', 'birth-date')}
+                  />
                 </div>
-              )}
+                <TextInput
+                  label="Город"
+                  value={form.city ?? ''}
+                  onUpdate={(v) => updateField('city', v)}
+                  data-testid={testId('profile', 'profile-about-section', 'field', 'city')}
+                />
+                <TextInput
+                  label="Рост, см"
+                  type="number"
+                  value={form.heightCm != null ? String(form.heightCm) : ''}
+                  onUpdate={(v) => {
+                    if (v === '' || Number.isNaN(Number(v))) {
+                      updateField('heightCm', undefined)
+                      return
+                    }
+                    updateField('heightCm', Math.round(Number(v)))
+                  }}
+                  data-testid={testId('profile', 'profile-about-section', 'field', 'height')}
+                />
+                <TextInput
+                  label="Вес, кг"
+                  type="number"
+                  value={form.weightKg != null ? String(form.weightKg) : ''}
+                  onUpdate={(v) => {
+                    if (v === '' || Number.isNaN(Number(v))) {
+                      updateField('weightKg', undefined)
+                      return
+                    }
+                    updateField('weightKg', Math.round(Number(v)))
+                  }}
+                  data-testid={testId('profile', 'profile-about-section', 'field', 'weight')}
+                />
+              </div>
+            </div>
 
-              <TextInput
-                label="ФИО"
-                value={form.fullName ?? ''}
-                onUpdate={(v) => updateField('fullName', v)}
-                data-testid={testId('profile', 'profile-about-section', 'field', 'full-name')}
-              />
-              <TextInput
-                label="Город"
-                value={form.city ?? ''}
-                onUpdate={(v) => updateField('city', v)}
-                data-testid={testId('profile', 'profile-about-section', 'field', 'city')}
-              />
+            <div className="profile-hub__edit-section">
+              <p className="profile-hub__edit-section-title">Игровые</p>
+              <div className="profile-hub__edit-grid">
+                <Select
+                  label="Амплуа"
+                  value={[form.position ?? 'forward']}
+                  onUpdate={(v) => updateField('position', v[0] as PlayerPosition)}
+                  options={POSITION_OPTIONS}
+                  data-testid={testId('profile', 'profile-about-section', 'select', 'position')}
+                />
+                <Select
+                  label="Уровень"
+                  value={[
+                    form.skillLevel &&
+                    SKILL_OPTIONS.some((option) => option.value === form.skillLevel)
+                      ? form.skillLevel
+                      : skillLevelFromPlayerIndex(form.playerIndex ?? 4),
+                  ]}
+                  onUpdate={(v) => {
+                    const skillLevel = v[0] as SkillLevel
+                    setForm((prev) => ({
+                      ...prev,
+                      skillLevel,
+                      playerIndex: playerIndexFromSkillLevel(skillLevel),
+                    }))
+                  }}
+                  options={SKILL_OPTIONS}
+                  data-testid={testId('profile', 'profile-about-section', 'select', 'skill-level')}
+                />
+                <Select
+                  label="Хват"
+                  value={[form.stickHand ?? 'unknown']}
+                  onUpdate={(v) =>
+                    updateField('stickHand', (v[0] as HockeyProfile['stickHand']) ?? 'unknown')
+                  }
+                  options={STICK_HAND_OPTIONS}
+                  data-testid={testId('profile', 'profile-about-section', 'select', 'stick-hand')}
+                />
+                <Select
+                  label="Индекс"
+                  value={
+                    form.playerIndex != null
+                      ? [String(clampPlayerIndex(form.playerIndex))]
+                      : [String(playerIndexFromSkillLevel(form.skillLevel ?? 'amateur'))]
+                  }
+                  onUpdate={(v) => {
+                    if (!v[0]) {
+                      updateField('playerIndex', undefined)
+                      return
+                    }
+                    const playerIndex = clampPlayerIndex(Number(v[0]))
+                    setForm((prev) => ({
+                      ...prev,
+                      playerIndex,
+                      skillLevel: skillLevelFromPlayerIndex(playerIndex),
+                    }))
+                  }}
+                  options={PLAYER_INDEX_OPTIONS}
+                  data-testid={testId('profile', 'profile-about-section', 'select', 'index')}
+                />
+              </div>
+            </div>
 
-              <Select
-                label="Амплуа"
-                value={[form.position ?? 'forward']}
-                onUpdate={(v) => updateField('position', v[0] as PlayerPosition)}
-                options={POSITION_OPTIONS}
-                data-testid={testId('profile', 'profile-about-section', 'select', 'position')}
-              />
-
-              <Select
-                label="Уровень"
-                value={[form.skillLevel ?? 'amateur']}
-                onUpdate={(v) => updateField('skillLevel', v[0] as SkillLevel)}
-                options={SKILL_OPTIONS}
-                data-testid={testId('profile', 'profile-about-section', 'select', 'skill-level')}
-              />
-
+            <div className="profile-hub__edit-section">
+              <p className="profile-hub__edit-section-title">Публичная информация</p>
               <div data-testid={testId('profile', 'profile-about-section', 'field', 'bio')}>
                 <Text
                   color="secondary"
@@ -680,51 +542,136 @@ function ProfileAboutSection({
                   data-testid={testId('profile', 'profile-about-section', 'field', 'bio-input')}
                 />
               </div>
+            </div>
 
+            <div className="profile-hub__edit-section">
+              <p className="profile-hub__edit-section-title">Личные контакты</p>
+              {canEditContacts ? (
+                <div className="profile-hub__edit-grid">
+                  <TextInput
+                    label="Телефон"
+                    type="tel"
+                    value={form.contacts?.phone ?? ''}
+                    onUpdate={(v) => updateContact('phone', v)}
+                    data-testid={testId('profile', 'profile-about-section', 'field', 'phone')}
+                  />
+                  <TextInput
+                    label="Email"
+                    type="email"
+                    value={form.contacts?.email ?? ''}
+                    onUpdate={(v) => updateContact('email', v)}
+                    data-testid={testId('profile', 'profile-about-section', 'field', 'email')}
+                  />
+                  <TextInput
+                    label="Telegram"
+                    value={form.contacts?.telegram ?? ''}
+                    onUpdate={(v) => updateContact('telegram', v)}
+                    data-testid={testId('profile', 'profile-about-section', 'field', 'telegram')}
+                  />
+                  <TextInput
+                    label="MAX"
+                    value={form.contacts?.maxMessenger ?? ''}
+                    onUpdate={(v) => updateContact('maxMessenger', v)}
+                    data-testid={testId('profile', 'profile-about-section', 'field', 'max')}
+                  />
+                </div>
+              ) : (
+                <Text
+                  color="secondary"
+                  data-testid={testId(
+                    'profile',
+                    'profile-about-section',
+                    'text',
+                    'contacts-consent',
+                  )}
+                >
+                  Чтобы хранить и показывать контакты, дайте согласие на обработку персональных
+                  данных в «Настройки» (ст. 9 152-ФЗ).
+                </Text>
+              )}
               <Text
                 color="secondary"
-                data-testid={testId('profile', 'profile-about-section', 'text', 'preferred-arenas')}
+                className="hockey-mt-8"
+                data-testid={testId('profile', 'profile-about-section', 'text', 'contacts-hint')}
               >
-                Предпочитаемые арены: {(form.preferredArenaIds ?? []).join(', ') || 'не выбраны'}
+                Видимость каждого контакта настраивается отдельно в «Настройки».
               </Text>
-
-              <div
-                className="hockey-stack hockey-stack--gap-8"
-                data-testid={testId('profile', 'profile-about-section', 'panel', 'history')}
-              >
-                <Text
-                  variant="subheader-2"
-                  data-testid={testId('profile', 'profile-about-section', 'text', 'history-title')}
-                >
-                  История участия
-                </Text>
-                <ParticipationHistorySection
-                  profile={profile}
-                  showHistory={settings.privacy.showParticipationHistory}
-                />
-              </div>
-
-              <div className="profile-hub__actions">
-                <HockeyButton
-                  view="outlined"
-                  loading={isVerifying}
-                  onClick={onStartVerification}
-                  data-testid={testId('profile', 'profile-about-section', 'btn', 'verify')}
-                >
-                  Подтвердить профиль
-                </HockeyButton>
-                <HockeyButton
-                  view="action"
-                  loading={isSaving}
-                  onClick={handleSave}
-                  data-testid={testId('profile', 'profile-about-section', 'btn', 'save')}
-                >
-                  Сохранить профиль
-                </HockeyButton>
-              </div>
             </div>
-          </IceCard>
-        </div>
+          </div>
+        </Dialog.Body>
+        <Dialog.Footer data-testid={testId('profile', 'profile-about-section', 'footer')}>
+          {saveError != null && (
+            <Text
+              color="danger"
+              data-testid={testId('profile', 'profile-about-section', 'text', 'save-error')}
+            >
+              {parseApiErrorMessage(saveError, 'Не удалось сохранить профиль')}
+            </Text>
+          )}
+          <HockeyButton
+            view="outlined"
+            loading={isVerifying}
+            disabled={isSaving}
+            onClick={onStartVerification}
+            data-testid={testId('profile', 'profile-about-section', 'btn', 'verify')}
+          >
+            Подтвердить профиль
+          </HockeyButton>
+          <HockeyButton
+            view="outlined"
+            disabled={isSaving}
+            onClick={handleClose}
+            data-testid={testId('profile', 'profile-about-section', 'btn', 'cancel')}
+          >
+            Отмена
+          </HockeyButton>
+          <HockeyButton
+            view="action"
+            loading={isSaving}
+            onClick={() => {
+              void handleSave()
+            }}
+            data-testid={testId('profile', 'profile-about-section', 'btn', 'save')}
+          >
+            Сохранить
+          </HockeyButton>
+        </Dialog.Footer>
+      </Dialog>
+
+      <section
+        id="calendar"
+        className="player-profile-layout__full"
+        data-testid={testId('profile', 'profile-about-section', 'section', 'calendar')}
+      >
+        <IceCard
+          padding="m"
+          data-testid={testId('profile', 'profile-about-section', 'card', 'calendar')}
+        >
+          <CalendarShell
+            title="Мой календарь"
+            compact
+            titleVariant="header-1"
+            forcedScope={{scope: 'player', scopeId: profile.userId}}
+            showActions={false}
+          />
+        </IceCard>
+      </section>
+
+      {showHistorySection && (
+        <IceCard
+          padding="m"
+          data-testid={testId('profile', 'profile-about-section', 'card', 'history')}
+        >
+          <div className="hockey-stack hockey-stack--gap-16">
+            <Text
+              variant="header-1"
+              data-testid={testId('profile', 'profile-about-section', 'text', 'history-title')}
+            >
+              История участия
+            </Text>
+            <ParticipationHistorySection records={profile.participationHistory} showHistory />
+          </div>
+        </IceCard>
       )}
     </div>
   )
@@ -734,10 +681,12 @@ function ProfileSettingsSection({
   settings,
   onSave,
   isSaving,
+  saveError,
 }: {
   settings: ProfileSettings
   onSave: (next: ProfileSettings['notificationPreferences']) => void
   isSaving: boolean
+  saveError?: unknown
 }) {
   const [form, setForm] = useState(settings.notificationPreferences)
 
@@ -747,20 +696,13 @@ function ProfileSettingsSection({
 
   return (
     <IceCard padding="m" data-testid={testId('profile', 'profile-settings-section', 'card')}>
-      <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
+      <div className="hockey-stack hockey-stack--gap-16">
         <Text
           variant="header-1"
           data-testid={testId('profile', 'profile-settings-section', 'text', 'title')}
         >
           Настройки уведомлений
         </Text>
-        <Text
-          color="secondary"
-          data-testid={testId('profile', 'profile-settings-section', 'text', 'hint')}
-        >
-          Push в MAX, email и in-app каналы управляются через свитчи.
-        </Text>
-
         <label
           className="profile-hub__switch-row"
           data-testid={testId('profile', 'profile-settings-section', 'toggle', 'in-app')}
@@ -896,13 +838,22 @@ function ProfileSettingsSection({
           />
         </label>
 
+        {saveError != null && (
+          <Text
+            color="danger"
+            data-testid={testId('profile', 'profile-settings-section', 'text', 'save-error')}
+          >
+            {parseApiErrorMessage(saveError, 'Не удалось сохранить настройки')}
+          </Text>
+        )}
         <HockeyButton
           view="action"
+          className="profile-hub__save-btn"
           loading={isSaving}
           onClick={() => onSave(form)}
           data-testid={testId('profile', 'profile-settings-section', 'btn', 'save')}
         >
-          Сохранить настройки
+          Сохранить
         </HockeyButton>
       </div>
     </IceCard>
@@ -913,19 +864,54 @@ function ProfilePrivacySection({
   settings,
   onSave,
   isSaving,
+  saveError,
 }: {
   settings: ProfileSettings
   onSave: (next: ProfileSettings['privacy']) => void
   isSaving: boolean
+  saveError?: unknown
 }) {
-  const [form, setForm] = useState({
-    ...settings.privacy,
-    calendarVisibility: settings.privacy.calendarVisibility ?? 'public',
-  })
+  const [form, setForm] = useState(() => normalizePrivacySettings(settings.privacy))
+  const [privacySource, setPrivacySource] = useState(settings.privacy)
+
+  if (settings.privacy !== privacySource) {
+    setPrivacySource(settings.privacy)
+    setForm(normalizePrivacySettings(settings.privacy))
+  }
+
+  function updateFieldAudience(key: keyof ProfileFieldPrivacy, value: PrivacyAudience) {
+    setForm((prev) =>
+      normalizePrivacySettings({
+        ...prev,
+        fields: {...prev.fields, [key]: value},
+      }),
+    )
+  }
+
+  function handleConsent(checked: boolean) {
+    setForm((prev) =>
+      normalizePrivacySettings({
+        ...prev,
+        personalDataProcessingConsent: checked,
+        personalDataConsentAt: checked
+          ? (prev.personalDataConsentAt ?? new Date().toISOString())
+          : undefined,
+        fields: checked
+          ? prev.fields
+          : {
+              ...prev.fields,
+              phone: 'private',
+              email: 'private',
+              telegram: 'private',
+              maxMessenger: 'private',
+            },
+      }),
+    )
+  }
 
   return (
     <IceCard padding="m" data-testid={testId('profile', 'profile-privacy-section', 'card')}>
-      <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
+      <div className="hockey-stack hockey-stack--gap-16">
         <Text
           variant="header-1"
           data-testid={testId('profile', 'profile-privacy-section', 'text', 'title')}
@@ -936,8 +922,10 @@ function ProfilePrivacySection({
           color="secondary"
           data-testid={testId('profile', 'profile-privacy-section', 'text', 'hint')}
         >
-          Управляй тем, кто видит твой профиль, контакты и историю участия.
+          Управляй видимостью профиля и отдельных полей. Контакты — персональные данные: хранение и
+          показ возможны только с согласия (152-ФЗ).
         </Text>
+
         <Select
           label="Видимость профиля"
           value={[form.profileVisibility]}
@@ -951,77 +939,148 @@ function ProfilePrivacySection({
           data-testid={testId('profile', 'profile-privacy-section', 'select', 'profile-visibility')}
         />
 
-        <label
-          className="profile-hub__switch-row"
-          data-testid={testId('profile', 'profile-privacy-section', 'toggle', 'show-contacts')}
+        <div
+          className="profile-hub__consent"
+          data-testid={testId('profile', 'profile-privacy-section', 'panel', 'consent')}
         >
-          <span
-            data-testid={testId(
-              'profile',
-              'profile-privacy-section',
-              'text',
-              'show-contacts-label',
-            )}
-          >
-            Показывать контакты
-          </span>
-          <Switch
-            checked={form.showContacts}
-            onUpdate={(v) => setForm((prev) => ({...prev, showContacts: v}))}
-            data-testid={testId(
-              'profile',
-              'profile-privacy-section',
-              'toggle',
-              'show-contacts-switch',
-            )}
+          <Checkbox
+            checked={form.personalDataProcessingConsent}
+            onUpdate={handleConsent}
+            content={
+              <span
+                data-testid={testId('profile', 'profile-privacy-section', 'text', 'consent-label')}
+              >
+                Согласие на обработку персональных данных для хранения и выборочного отображения
+                контактов (ст. 9 Федерального закона № 152-ФЗ «О персональных данных»)
+              </span>
+            }
+            data-testid={testId('profile', 'profile-privacy-section', 'checkbox', 'pdn-consent')}
           />
-        </label>
-        <label
-          className="profile-hub__switch-row"
-          data-testid={testId('profile', 'profile-privacy-section', 'toggle', 'show-history')}
+          <Text
+            color="secondary"
+            data-testid={testId('profile', 'profile-privacy-section', 'text', 'consent-hint')}
+          >
+            Без согласия контакты недоступны для редактирования и скрыты от других пользователей. Вы
+            можете отозвать согласие в любой момент — контакты снова станут только вашими.
+          </Text>
+        </div>
+
+        <div
+          className="profile-hub__privacy-group"
+          data-testid={testId('profile', 'profile-privacy-section', 'panel', 'fields')}
         >
-          <span
-            data-testid={testId('profile', 'profile-privacy-section', 'text', 'show-history-label')}
+          <Text
+            variant="subheader-2"
+            data-testid={testId('profile', 'profile-privacy-section', 'text', 'fields-title')}
           >
-            Показывать историю участия
-          </span>
-          <Switch
-            checked={form.showParticipationHistory}
-            onUpdate={(v) => setForm((prev) => ({...prev, showParticipationHistory: v}))}
-            data-testid={testId(
-              'profile',
-              'profile-privacy-section',
-              'toggle',
-              'show-history-switch',
-            )}
-          />
-        </label>
+            Поля профиля
+          </Text>
+          <div className="profile-hub__privacy-fields">
+            {PROFILE_FIELD_PRIVACY_KEYS.map((key) => (
+              <div
+                key={key}
+                className="profile-hub__privacy-field"
+                data-testid={testId('profile', 'profile-privacy-section', 'panel', `field-${key}`)}
+              >
+                <span
+                  className="profile-hub__privacy-field-label"
+                  data-testid={testId(
+                    'profile',
+                    'profile-privacy-section',
+                    'text',
+                    `field-${key}-label`,
+                  )}
+                >
+                  {FIELD_PRIVACY_LABELS[key]}
+                </span>
+                <Select
+                  value={[form.fields[key]]}
+                  options={FIELD_PRIVACY_OPTIONS}
+                  onUpdate={(v) => updateFieldAudience(key, v[0] as PrivacyAudience)}
+                  data-testid={testId(
+                    'profile',
+                    'profile-privacy-section',
+                    'select',
+                    `field-${key}`,
+                  )}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <Select
-          label="Календарь на публичной странице"
-          value={[form.calendarVisibility ?? 'public']}
-          options={CALENDAR_VISIBILITY_OPTIONS}
-          onUpdate={(v) =>
-            setForm((prev) => ({
-              ...prev,
-              calendarVisibility: v[0] as ProfileSettings['privacy']['calendarVisibility'],
-            }))
-          }
-          data-testid={testId(
-            'profile',
-            'profile-privacy-section',
-            'select',
-            'calendar-visibility',
-          )}
-        />
+        <div
+          className="profile-hub__privacy-group"
+          data-testid={testId('profile', 'profile-privacy-section', 'panel', 'contacts')}
+        >
+          <Text
+            variant="subheader-2"
+            data-testid={testId('profile', 'profile-privacy-section', 'text', 'contacts-title')}
+          >
+            Личные контакты
+          </Text>
+          <Text
+            color="secondary"
+            data-testid={testId('profile', 'profile-privacy-section', 'text', 'contacts-hint')}
+          >
+            Значения контактов задаются в редактировании профиля. Здесь — кому их показывать.
+          </Text>
+          <div className="profile-hub__privacy-fields">
+            {CONTACT_FIELD_PRIVACY_KEYS.map((key) => (
+              <div
+                key={key}
+                className="profile-hub__privacy-field"
+                data-testid={testId(
+                  'profile',
+                  'profile-privacy-section',
+                  'panel',
+                  `contact-${key}`,
+                )}
+              >
+                <span
+                  className="profile-hub__privacy-field-label"
+                  data-testid={testId(
+                    'profile',
+                    'profile-privacy-section',
+                    'text',
+                    `contact-${key}-label`,
+                  )}
+                >
+                  {FIELD_PRIVACY_LABELS[key]}
+                </span>
+                <Select
+                  value={[form.fields[key]]}
+                  options={FIELD_PRIVACY_OPTIONS}
+                  disabled={!form.personalDataProcessingConsent}
+                  onUpdate={(v) => updateFieldAudience(key, v[0] as PrivacyAudience)}
+                  data-testid={testId(
+                    'profile',
+                    'profile-privacy-section',
+                    'select',
+                    `contact-${key}`,
+                  )}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
 
+        {saveError != null && (
+          <Text
+            color="danger"
+            data-testid={testId('profile', 'profile-privacy-section', 'text', 'save-error')}
+          >
+            {parseApiErrorMessage(saveError, 'Не удалось сохранить приватность')}
+          </Text>
+        )}
         <HockeyButton
           view="action"
+          className="profile-hub__save-btn"
           loading={isSaving}
-          onClick={() => onSave(form)}
+          onClick={() => onSave(normalizePrivacySettings(form))}
           data-testid={testId('profile', 'profile-privacy-section', 'btn', 'save')}
         >
-          Сохранить приватность
+          Сохранить
         </HockeyButton>
       </div>
     </IceCard>
@@ -1040,18 +1099,12 @@ function ProfileSubscriptionSection({
   const activePlan = settings.subscription.planId
   return (
     <IceCard padding="m" data-testid={testId('profile', 'profile-subscription-section', 'card')}>
-      <div className="hockey-panel hockey-panel--24 hockey-stack hockey-stack--gap-16">
+      <div className="hockey-stack hockey-stack--gap-16">
         <Text
           variant="header-1"
           data-testid={testId('profile', 'profile-subscription-section', 'text', 'title')}
         >
           Модель подписки
-        </Text>
-        <Text
-          color="secondary"
-          data-testid={testId('profile', 'profile-subscription-section', 'text', 'hint')}
-        >
-          Phase 1 mock: тарифы без реальной оплаты.
         </Text>
         <div
           className="profile-hub__plans"
@@ -1100,11 +1153,12 @@ function ProfileSubscriptionSection({
         </div>
         <HockeyButton
           view="action"
+          className="profile-hub__save-btn"
           loading={isSaving}
           onClick={() => onSelectPlan({status: 'mock'})}
           data-testid={testId('profile', 'profile-subscription-section', 'btn', 'save')}
         >
-          Сохранить тариф
+          Сохранить
         </HockeyButton>
       </div>
     </IceCard>
@@ -1120,14 +1174,14 @@ function HockeyProfileHub({
 }) {
   const queryClient = useQueryClient()
   const [searchParams, setSearchParams] = useSearchParams()
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const detailsPanelId = useId()
   const sectionParam = searchParams.get('section')
-  const activeSection: ProfileHubSection =
-    sectionParam === 'settings' || sectionParam === 'privacy' || sectionParam === 'subscription'
-      ? sectionParam
-      : 'about'
+  const activeSection = resolveProfileHubSection(sectionParam)
 
   const selectSection = (value: ProfileHubSection) => {
     setSearchParams(value === 'about' ? {} : {section: value}, {replace: true})
+    if (value !== 'about') setDetailsOpen(false)
   }
 
   const {session} = useSessionAccess()
@@ -1135,8 +1189,11 @@ function HockeyProfileHub({
 
   const saveProfileMutation = useMutation({
     mutationFn: updateMyProfile,
-    onSuccess: () => {
+    onSuccess: (updated) => {
+      queryClient.setQueryData(['profile'], updated)
       void queryClient.invalidateQueries({queryKey: ['profile']})
+      void queryClient.invalidateQueries({queryKey: ['players']})
+      void queryClient.invalidateQueries({queryKey: ['player-public']})
     },
   })
 
@@ -1158,6 +1215,8 @@ function HockeyProfileHub({
     mutationFn: updatePrivacySettings,
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ['profile-settings']})
+      void queryClient.invalidateQueries({queryKey: ['player-public']})
+      void queryClient.invalidateQueries({queryKey: ['players']})
     },
   })
 
@@ -1168,9 +1227,8 @@ function HockeyProfileHub({
     },
   })
 
-  // HOCFRONT-22 — избранное перенесено на публичную страницу игрока
-  if (sectionParam === 'favorites') {
-    return <Navigate to={`${routes.players}/${profile.userId}#favorites`} replace />
+  if (sectionParam === 'privacy') {
+    return <Navigate to="?section=settings" replace />
   }
 
   const sectionContent =
@@ -1179,23 +1237,38 @@ function HockeyProfileHub({
         profile={profile}
         settings={settings}
         userRoles={userRoles}
-        onSaveProfile={(next) => saveProfileMutation.mutate(next)}
+        onSaveProfile={async (next) => {
+          await saveProfileMutation.mutateAsync(next)
+          setDetailsOpen(false)
+        }}
         onStartVerification={() => verifyMutation.mutate()}
+        onCloseEdit={() => setDetailsOpen(false)}
         isSaving={saveProfileMutation.isPending}
         isVerifying={verifyMutation.isPending}
+        saveError={saveProfileMutation.error}
+        detailsOpen={detailsOpen}
+        detailsPanelId={detailsPanelId}
       />
+    ) : activeSection === 'favorites' ? (
+      <ProfileFavoritesSection />
     ) : activeSection === 'settings' ? (
-      <ProfileSettingsSection
-        settings={settings}
-        onSave={(next) => saveNotificationPrefsMutation.mutate(next)}
-        isSaving={saveNotificationPrefsMutation.isPending}
-      />
-    ) : activeSection === 'privacy' ? (
-      <ProfilePrivacySection
-        settings={settings}
-        onSave={(next) => savePrivacyMutation.mutate(next)}
-        isSaving={savePrivacyMutation.isPending}
-      />
+      <div
+        className="hockey-stack hockey-stack--gap-16"
+        data-testid={testId('profile', 'profile-settings-section', 'panel', 'stack')}
+      >
+        <ProfileSettingsSection
+          settings={settings}
+          onSave={(next) => saveNotificationPrefsMutation.mutate(next)}
+          isSaving={saveNotificationPrefsMutation.isPending}
+          saveError={saveNotificationPrefsMutation.error}
+        />
+        <ProfilePrivacySection
+          settings={settings}
+          onSave={(next) => savePrivacyMutation.mutate(next)}
+          isSaving={savePrivacyMutation.isPending}
+          saveError={savePrivacyMutation.error}
+        />
+      </div>
     ) : (
       <ProfileSubscriptionSection
         settings={settings}
@@ -1206,7 +1279,36 @@ function HockeyProfileHub({
 
   return (
     <div className="profile-hub" data-testid={testId('profile', 'profile-hub', 'page')}>
-      <ProfileHubTabs section={activeSection} onSelect={selectSection} />
+      <div
+        className="profile-hub__toolbar"
+        data-testid={testId('profile', 'profile-hub', 'panel', 'toolbar')}
+      >
+        <ProfileHubTabs section={activeSection} onSelect={selectSection} />
+        {activeSection === 'about' && (
+          <div
+            className="profile-hub__actions"
+            data-testid={testId('profile', 'profile-about-section', 'panel', 'owner-actions')}
+          >
+            <HockeyButton
+              view="action"
+              aria-expanded={detailsOpen}
+              aria-controls={detailsPanelId}
+              onClick={() => setDetailsOpen(true)}
+              data-testid={testId('profile', 'profile-about-section', 'btn', 'edit')}
+            >
+              Редактировать профиль
+            </HockeyButton>
+            <HockeyButton
+              view="outlined"
+              component={Link}
+              to={`/players/${profile.userId}`}
+              data-testid={testId('profile', 'profile-about-section', 'btn', 'public-view')}
+            >
+              Публичный вид
+            </HockeyButton>
+          </div>
+        )}
+      </div>
       <div
         className="profile-hub__panel"
         data-testid={testId('profile', 'profile-hub', 'panel', activeSection)}

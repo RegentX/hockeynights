@@ -32,7 +32,7 @@ export let mockRecruitmentResponses: RecruitmentResponse[] = [
     id: 'resp-001',
     requestId: 'req-001',
     userId: 'user-002',
-    displayName: 'Алексей Смирнов',
+    displayName: 'Смирнов Алексей Дмитриевич',
     message: 'Готов выйти, есть своя форма',
     status: 'pending',
     createdAt: '2026-06-05T11:00:00Z',

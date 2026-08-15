@@ -204,6 +204,17 @@
     color: #fff;
     background: linear-gradient(145deg, var(--hockey-line-red), #a00400);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    font-family: var(--hockey-font-sans, inherit);
+    text-transform: none;
+  }
+
+  &__profile-photo {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
   }
 
   &__panel-controls {
@@ -1129,6 +1140,37 @@
   flex-shrink: 0;
 }
 
+.favorites-all-dialog-modal {
+  --profile-radius: 16px;
+  --g-modal-border-radius: var(--profile-radius);
+  --g-border-radius-xs: var(--profile-radius);
+  --g-border-radius-s: var(--profile-radius);
+  --g-border-radius-m: var(--profile-radius);
+  --g-border-radius-l: var(--profile-radius);
+  --g-border-radius-xl: var(--profile-radius);
+}
+
+.favorites-all-dialog.g-dialog {
+  --profile-radius: 16px;
+  --g-button-border-radius: var(--profile-radius);
+  background: var(--hockey-card-bg);
+  border: 1px solid var(--hockey-card-border);
+  border-radius: var(--profile-radius);
+  box-shadow: var(--hockey-card-shadow);
+  overflow: hidden;
+
+  .hockey-button,
+  .g-button,
+  a.hockey-button {
+    --g-button-border-radius: var(--profile-radius);
+    border-radius: var(--profile-radius) !important;
+  }
+
+  .favorites-profile-group__row {
+    border-radius: var(--profile-radius);
+  }
+}
+
 .favorites-profile-group {
   &__list {
     list-style: none;
@@ -1145,7 +1187,7 @@
     justify-content: space-between;
     gap: 12px;
     padding: 10px 12px;
-    border-radius: 12px;
+    border-radius: 16px;
     background: var(--hockey-glass-bg);
     border: 1px solid transparent;
   }

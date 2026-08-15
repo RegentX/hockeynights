@@ -93,7 +93,7 @@ export const mockChats: Chat[] = [
 ]
 
 export const mockChatUsers: ChatUser[] = [
-  {userId: 'user-001', displayName: 'Иван Петров', position: 'forward', isOnline: true},
+  {userId: 'user-001', displayName: 'Петров Иван Сергеевич', position: 'forward', isOnline: true},
   {
     userId: 'user-arena-001',
     displayName: 'Администратор Ходынки',
@@ -199,7 +199,7 @@ export const mockMessages: Record<string, Message[]> = {
       chatId: 'chat-5',
       topicId: 'topic-6',
       senderId: 'user-001',
-      senderName: 'Иван Петров',
+      senderName: 'Петров Иван Сергеевич',
       type: 'text',
       content: 'Сбор команды в 19:40. Форма: белая.',
       timestamp: new Date(Date.now() - 1400000).toISOString(),
@@ -212,7 +212,7 @@ mockMessages['chat-4'] = [
     id: 'msg-5',
     chatId: 'chat-4',
     senderId: 'user-002',
-    senderName: 'Алексей Смирнов',
+    senderName: 'Смирнов Алексей Дмитриевич',
     type: 'text',
     content: 'Парни, собираемся в 19:40 у входа на арену.',
     topicId: 'topic-4',
@@ -258,7 +258,7 @@ export const mockChannelSettings: Record<string, ChannelSettings> = {
     audit: [
       {
         id: 'audit-1',
-        actorName: 'Иван Петров',
+        actorName: 'Петров Иван Сергеевич',
         action: 'Создал канал и включил режим важных уведомлений',
         createdAt: new Date(Date.now() - 7_200_000).toISOString(),
       },
@@ -402,7 +402,7 @@ export function createMockChannelOrChat(payload: CreateChatPayload, userId = 'us
       audit: [
         {
           id: `audit-${Date.now()}`,
-          actorName: 'Иван Петров',
+          actorName: 'Петров Иван Сергеевич',
           action: 'создал канал',
           createdAt: new Date().toISOString(),
         },
@@ -452,7 +452,7 @@ export function getMockChannelSettings(chatId: string): ChannelSettings | null {
 export function patchMockChannelSettings(
   chatId: string,
   patch: ChannelSettingsPatch,
-  actorName = 'Иван Петров',
+  actorName = 'Петров Иван Сергеевич',
 ): ChannelSettings | null {
   const current = mockChannelSettings[chatId]
   if (!current) return null

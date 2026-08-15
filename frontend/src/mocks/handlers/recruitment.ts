@@ -41,7 +41,7 @@ export const recruitmentHandlers = [
     const created = createMockResponse(
       params.requestId as string,
       'user-002',
-      body.displayName ?? 'Алексей Смирнов',
+      body.displayName ?? 'Смирнов Алексей Дмитриевич',
       body.message,
     )
     return HttpResponse.json(created)

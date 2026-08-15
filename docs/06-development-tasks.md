@@ -214,7 +214,7 @@
 | `SPEC-FR-2.1.3` | `TASK-MOCK-01`, `TASK-BE-03` | `src/mocks/data/session.ts`, `backend/src/auth/session.service.ts` | Planned |
 | `SPEC-FR-2.2.1` | `TASK-FE-02`, `TASK-MOCK-02`, `TASK-BE-04` | `src/features/profile/HockeyProfileForm.tsx`, `src/mocks/handlers/profile.ts`, `backend/src/profiles/profile.controller.ts` | Planned |
 | `SPEC-FR-2.2.2` | `TASK-FE-02`, `TASK-MOCK-02`, `TASK-BE-04` | `src/entities/profile/types.ts`, `src/features/profile/HockeyProfileForm.tsx` | Planned |
-| `SPEC-FR-2.2.3` | `TASK-FE-02`, `TASK-MOCK-02`, `TASK-BE-04` | `src/features/profile/PreferredArenasField.tsx` | Planned |
+| `SPEC-FR-2.2.3` | — | Снято: поля нет в UI и API-контракте | Cancelled |
 | `SPEC-FR-2.2.4` | `TASK-FE-02`, `TASK-MOCK-02` | `src/features/profile/ProfileCompleteness.tsx` | Planned |
 | `SPEC-FR-2.3.1` | `TASK-FE-03`, `TASK-MOCK-02`, `TASK-BE-04` | `src/features/players/PlayerCard.tsx`, `src/features/players/PlayersPage.tsx` | Planned |
 | `SPEC-FR-2.3.2` | `TASK-FE-04`, `TASK-MOCK-02`, `TASK-BE-04` | `src/features/players/PlayerFilters.tsx` | Planned |

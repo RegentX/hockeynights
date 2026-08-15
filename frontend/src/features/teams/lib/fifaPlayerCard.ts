@@ -36,6 +36,11 @@ const POSITION_LABELS: Record<PlayerPosition, string> = {
 const SKILL_LABELS: Record<string, string> = {
   beginner: 'Дебютант',
   amateur: 'Любитель',
+  novice_theorist: 'Начинающий теоретик',
+  theorist: 'Теоретик',
+  confident_theorist: 'Уверенный теоретик',
+  practitioner: 'Практик',
+  master: 'Мастер',
   advanced: 'Продвинутый',
   league: 'Лига',
   unknown: '—',

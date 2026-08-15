@@ -48,6 +48,11 @@ async function mockSelectPersona(personaId: string): Promise<Session> {
 }
 
 describe('TASK-QA-01 mock API smoke', () => {
+  beforeEach(() => {
+    clearTestStorage()
+    resetMockSession()
+  })
+
   /** @spec SPEC-FR-2.1.3 */
   it('POST /logout resets mock session', async () => {
     await mockSelectPersona('player')
@@ -88,7 +93,7 @@ describe('TASK-QA-01 mock API smoke', () => {
   /** @spec SPEC-FR-24.1.3 — текущий пользователь доступен для «Как видят другие» */
   it('GET /players/{userId} returns public view for current mock profile', async () => {
     const view = await mockApiGet<PublicPlayerView>('/players/user-001')
-    expect(view.player.fullName).toBe('Иван Петров')
+    expect(view.player.fullName).toBe('Петров Иван Сергеевич')
     expect(view.visibility).toBe('full')
     expect(view.participationHistoryVisible).toBe(true)
   })
@@ -241,7 +246,7 @@ describe('TASK-QA-01 mock API smoke', () => {
         divisionId: 'div-001',
         teamId: 'team-001',
         teamName: 'Медведи САО',
-        captainName: 'Иван Петров',
+        captainName: 'Петров Иван Сергеевич',
         contactEmail: 'captain@example.com',
       },
     )
@@ -360,10 +365,9 @@ describe('TASK-QA-01 UI smoke', () => {
   it('HockeyProfileForm loads profile summary', async () => {
     renderWithProviders(<HockeyProfileForm />)
     await waitFor(() => {
-      expect(screen.getByText('Hockey ID')).toBeInTheDocument()
-      expect(screen.getByTestId('profile-profile-summary-text-events-label')).toHaveTextContent(
-        'игр подтверждено',
-      )
+      expect(screen.getByTestId('profile-profile-hub-page')).toBeInTheDocument()
+      expect(screen.getByTestId('profile-profile-about-section-panel-grid')).toBeInTheDocument()
+      expect(screen.getByTestId('profile-profile-about-section-btn-edit')).toBeInTheDocument()
     })
   })
 
@@ -372,7 +376,7 @@ describe('TASK-QA-01 UI smoke', () => {
     renderWithProviders(<PlayersPage />)
     await waitFor(() => {
       expect(screen.getByText('Игроки')).toBeInTheDocument()
-      expect(screen.getByText('Алексей Смирнов')).toBeInTheDocument()
+      expect(screen.getByText('Смирнов Алексей Дмитриевич')).toBeInTheDocument()
     })
   })
 

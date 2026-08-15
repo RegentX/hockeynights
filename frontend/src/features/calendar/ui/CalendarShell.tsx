@@ -45,6 +45,8 @@ const LENS_OPTIONS: {id: CalendarLens; label: string}[] = [
 export interface CalendarShellProps {
   title?: string
   compact?: boolean
+  /** Переопределение варианта заголовка (по умолчанию: compact → subheader-2, иначе header-1) */
+  titleVariant?: 'header-1' | 'subheader-2'
   forcedScope?: Pick<CalendarUiState, 'scope' | 'scopeId'>
   showActions?: boolean
 }
@@ -55,6 +57,7 @@ export interface CalendarShellProps {
 export function CalendarShell({
   title,
   compact = false,
+  titleVariant,
   forcedScope,
   showActions = true,
 }: CalendarShellProps) {
@@ -135,7 +138,7 @@ export function CalendarShell({
       <header className="hockey-calendar-shell__header">
         <div className="hockey-calendar-shell__title-block">
           <Text
-            variant={compact ? 'subheader-2' : 'header-1'}
+            variant={titleVariant ?? (compact ? 'subheader-2' : 'header-1')}
             className="hockey-calendar-shell__title"
             data-testid={testId('calendar', 'shell', 'text', 'title')}
           >

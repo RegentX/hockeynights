@@ -40,23 +40,6 @@ export function SideBoard() {
       aria-label="Борт арены"
       data-testid={testId('app', 'side-board', 'panel')}
     >
-      <IceCard padding="s" data-testid={testId('app', 'side-board', 'card', 'hero')}>
-        <div className="side-board__hero">
-          <ScoreboardText
-            tone="accent"
-            data-testid={testId('app', 'side-board', 'text', 'hero-title')}
-          >
-            HOCKEY SOCIAL
-          </ScoreboardText>
-          <Text
-            color="secondary"
-            data-testid={testId('app', 'side-board', 'text', 'hero-subtitle')}
-          >
-            Панель подсказок и избранного
-          </Text>
-        </div>
-      </IceCard>
-
       <EntityFavoritesPanel />
       <FavoritesPanel />
 

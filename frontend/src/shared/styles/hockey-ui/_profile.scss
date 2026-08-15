@@ -2,18 +2,344 @@
 @use '../mixins' as *;
 
 .profile-hub {
+  --profile-radius: 16px;
+  --g-border-radius-xs: var(--profile-radius);
+  --g-border-radius-s: var(--profile-radius);
+  --g-border-radius-m: var(--profile-radius);
+  --g-border-radius-l: var(--profile-radius);
+  --g-border-radius-xl: var(--profile-radius);
   display: grid;
-  gap: 12px;
+  gap: 16px;
+
+  .ice-card,
+  .g-text-input__content,
+  .g-text-input__control,
+  .g-text-area__content,
+  .g-text-area__control,
+  .g-select-control,
+  .g-select-control__button {
+    border-radius: var(--profile-radius);
+  }
+
+  .hockey-button,
+  a.hockey-button {
+    --g-button-border-radius: var(--profile-radius);
+    border-radius: var(--profile-radius) !important;
+    box-sizing: border-box;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: var(--g-button-height, 36px) !important;
+    min-height: var(--g-button-height, 36px);
+    vertical-align: middle;
+  }
+
+  .favorites-profile-group__row {
+    border-radius: var(--profile-radius);
+  }
+}
+
+.profile-hub__toolbar {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+
+  @media (max-width: 960px) {
+    flex-wrap: wrap;
+  }
 }
 
 .profile-hub__tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: center;
   gap: 8px;
+  min-width: 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+
+  > * {
+    flex: 0 0 auto;
+  }
+
+  @media (max-width: 560px) {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    width: 100%;
+  }
 }
 
 .profile-hub__panel {
-  max-width: 760px;
+  width: 100%;
+  max-width: none;
+}
+
+.profile-hub__edit-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-hub__edit-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-hub__edit-section-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--g-color-text-primary);
+}
+
+.profile-hub__edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profile-hub__edit-dialog-modal {
+  --profile-radius: 16px;
+  --g-modal-border-radius: var(--profile-radius);
+  --g-border-radius-xs: var(--profile-radius);
+  --g-border-radius-s: var(--profile-radius);
+  --g-border-radius-m: var(--profile-radius);
+  --g-border-radius-l: var(--profile-radius);
+  --g-border-radius-xl: var(--profile-radius);
+}
+
+/** Вложенный редактор аватарки поверх диалога профиля */
+.profile-hub__edit-dialog-modal:has(.profile-avatar-editor__stage),
+.profile-avatar-editor .profile-hub__edit-dialog-modal {
+  z-index: calc(var(--g-z-index-modal, 1000) + 2);
+}
+
+.profile-hub__edit-dialog-modal.g-modal_mobile {
+  --g-modal-border-radius: var(--profile-radius, 16px);
+  --g-modal-margin: 12px;
+  --g-modal-width: calc(100vw - 24px);
+  --g-modal-max-width: calc(100vw - 24px);
+  --g-modal-height: auto;
+  --g-modal-max-height: calc(100dvh - 24px);
+}
+
+.profile-hub__edit-dialog.g-dialog {
+  --profile-radius: 16px;
+  --g-border-radius-xs: var(--profile-radius);
+  --g-border-radius-s: var(--profile-radius);
+  --g-border-radius-m: var(--profile-radius);
+  --g-border-radius-l: var(--profile-radius);
+  --g-border-radius-xl: var(--profile-radius);
+  --g-button-border-radius: var(--profile-radius);
+  background: var(--hockey-card-bg);
+  border: 1px solid var(--hockey-card-border);
+  border-radius: var(--profile-radius);
+  box-shadow: var(--hockey-card-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  max-width: 100%;
+
+  .g-text-input__content,
+  .g-text-input__control,
+  .g-text-area__content,
+  .g-text-area__control,
+  .g-select-control,
+  .g-select-control__button,
+  .g-select-control__button-content {
+    border-radius: var(--profile-radius) !important;
+  }
+
+  .hockey-button,
+  .g-button,
+  a.hockey-button {
+    --g-button-border-radius: var(--profile-radius);
+    border-radius: var(--profile-radius) !important;
+    box-sizing: border-box;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: var(--g-button-height, 36px) !important;
+    min-height: var(--g-button-height, 36px);
+  }
+
+  .profile-hub__goalie-panel,
+  .profile-avatar-editor__stage {
+    border-radius: var(--profile-radius);
+  }
+}
+
+.profile-hub__edit-dialog.g-dialog_mobile {
+  height: auto;
+  max-height: calc(100dvh - 24px);
+  --_--side-padding: 16px;
+}
+
+.profile-hub__edit-dialog-body {
+  max-height: min(70vh, 720px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.profile-hub__edit-dialog .g-dialog-footer {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.profile-hub__edit-dialog .g-dialog-footer__children {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  .profile-hub__edit-dialog-modal:not(.g-modal_mobile) {
+    --g-modal-margin: 12px;
+    --g-modal-max-width: calc(100vw - 24px);
+    --g-modal-width: calc(100vw - 24px);
+  }
+
+  .profile-hub__edit-dialog.g-dialog {
+    width: 100% !important;
+    --_--side-padding: 16px;
+  }
+
+  .profile-hub__edit-dialog-body {
+    max-height: min(58dvh, 520px);
+  }
+
+  .profile-hub__edit-dialog .g-dialog-footer {
+    padding: 16px;
+  }
+
+  .profile-hub__edit-dialog .g-dialog-footer__children {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .profile-hub__edit-dialog .g-dialog-footer__children .hockey-button,
+  .profile-hub__edit-dialog .g-dialog-footer__children button {
+    width: 100%;
+  }
+}
+
+.profile-avatar-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-avatar-editor__preview-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+
+  @media (max-width: 560px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.profile-avatar-editor__preview {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--hockey-card-border);
+}
+
+.profile-avatar-editor__preview--empty {
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: linear-gradient(145deg, var(--hockey-line-red), #a00400);
+  font-family: var(--hockey-font-sans, inherit);
+  font-feature-settings: normal;
+  text-transform: none;
+}
+
+.profile-avatar-editor__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.profile-avatar-editor__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-avatar-editor__btn {
+  --g-button-border-radius: var(--profile-radius, 16px);
+  border-radius: var(--profile-radius, 16px) !important;
+}
+
+.profile-avatar-editor__dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-avatar-editor__stage {
+  position: relative;
+  width: min(100%, 360px);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: var(--profile-radius, 16px);
+  border: 1px solid var(--hockey-card-border);
+  background: #0b1c2c;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+
+  &.is-dragging {
+    cursor: grabbing;
+  }
+}
+
+.profile-avatar-editor__stage-image {
+  position: absolute;
+  max-width: none;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+}
+
+.profile-avatar-editor__frame {
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.profile-avatar-editor__zoom {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 360px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 /* HOCFRONT-30 — краткая карточка профиля */
@@ -109,8 +435,59 @@
   align-items: center;
   gap: 12px;
   border: 1px solid var(--hockey-card-border);
-  border-radius: 10px;
+  border-radius: var(--profile-radius, 16px);
   padding: 10px 12px;
+}
+
+.profile-hub__consent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--hockey-card-border);
+  border-radius: var(--profile-radius, 16px);
+  padding: 12px 14px;
+  background: rgba(15, 42, 64, 0.03);
+}
+
+.profile-hub__privacy-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-hub__privacy-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-hub__privacy-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(140px, 200px);
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--hockey-card-border);
+  border-radius: var(--profile-radius, 16px);
+  padding: 8px 12px;
+}
+
+.profile-hub__privacy-field-label {
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.profile-hub__save-btn.hockey-button {
+  width: max-content;
+  max-width: 100%;
+  align-self: flex-start;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .profile-hub__privacy-field {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
 }
 
 .profile-hub__plans {
@@ -121,7 +498,7 @@
 
 .profile-hub__plan {
   border: 1px solid var(--hockey-card-border);
-  border-radius: 12px;
+  border-radius: var(--profile-radius, 16px);
   background: transparent;
   color: inherit;
   cursor: pointer;
@@ -141,6 +518,19 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.profile-hub__toolbar .profile-hub__actions {
+  flex-wrap: nowrap;
+  align-items: center;
+  flex: 0 0 auto;
+  margin-left: auto;
+
+  @media (max-width: 960px) {
+    flex-wrap: wrap;
+    width: 100%;
+    margin-left: 0;
+  }
 }
 
 .profile-hub__role-badges {
@@ -172,7 +562,7 @@
 
 .profile-hub__goalie-panel {
   border: 1px solid rgba(255, 107, 107, 0.25);
-  border-radius: 12px;
+  border-radius: var(--profile-radius, 16px);
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -200,7 +590,7 @@
   flex-direction: column;
   gap: 0;
   border: 1px solid var(--hockey-card-border);
-  border-radius: 10px;
+  border-radius: var(--profile-radius, 16px);
   padding: 0;
   overflow: hidden;
   background: transparent;
@@ -478,19 +868,64 @@
 }
 
 .public-player-profile__header {
-  display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
+.player-profile-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.player-profile-layout__grid,
 .public-player-profile__grid {
   display: grid;
-  grid-template-columns: minmax(260px, 320px) 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
-  align-items: start;
+  align-items: stretch;
+  width: 100%;
+
+  > .ice-card {
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+    align-self: stretch;
+  }
+
+  /* Растягиваем внутренности до высоты более высокой колонки, не клипая контент */
+  > .ice-card.hockey-player-card-shell--profile {
+    display: flex;
+    flex-direction: column;
+  }
+
+  > .ice-card.hockey-player-card-shell--profile > .hockey-player-card--profile {
+    flex: 1 1 auto;
+  }
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+
+    .hockey-player-card--profile .hockey-player-card__portrait {
+      padding: 4px;
+    }
+
+    .hockey-player-card__avatar-img,
+    .hockey-player-card__avatar-initials {
+      width: 112px;
+      height: 112px;
+      font-size: 32px;
+    }
+  }
+}
+
+.player-profile-layout__full {
+  width: 100%;
+  clear: both;
+
+  /* sticky-месяц не должен наезжать на карточки профиля при скролле */
+  .hockey-calendar-month {
+    position: static;
   }
 }
 

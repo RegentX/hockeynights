@@ -79,7 +79,8 @@ describe('TASK-QA-02 mock API smoke', () => {
   it('GET /players/{userId}/karma returns karma info', async () => {
     const karma = await mockApiGet<KarmaInfo>('/players/user-002/karma')
     expect(karma.karmaScore).toBeGreaterThan(0)
-    expect(karma.hint.toLowerCase()).toContain('вспомогательн')
+    expect(karma.hint.toLowerCase()).toContain('участи')
+    expect(karma.hint.toLowerCase()).toContain('надёжност')
   })
 
   /** @spec SPEC-FR-9.1.1 */
@@ -190,7 +191,7 @@ describe('TASK-QA-02 mock API smoke', () => {
   it('POST /highlights/{id}/comments adds comment', async () => {
     const comment = await mockApiPost<HighlightComment>('/highlights/hl-001/comments', {
       authorUserId: 'user-001',
-      authorDisplayName: 'Иван Петров',
+      authorDisplayName: 'Петров Иван Сергеевич',
       tag: 'tip',
       text: 'Smoke comment',
     })

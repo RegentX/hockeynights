@@ -2,17 +2,19 @@
  * SPEC-FR-24.1.2, SPEC-FR-24.1.3, SPEC-FR-2.3.3, SPEC-FR-17.1.2
  * HOCFRONT-22 — публичная страница игрока `/players/:userId`
  * HOCFRONT-23 — verified badge на странице игрока
+ *
+ * Композиция как у `/profile` → «О себе»:
+ * паспорт + публичная инфа → календарь → история участия.
  */
 
 import {Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
-import {Link, useParams} from 'react-router'
+import {Link, useLocation, useNavigate, useParams} from 'react-router'
 
 import {fetchPublicPlayer} from '@/entities/profile'
-import {useSessionAccess} from '@/features/access'
 import {CalendarShell} from '@/features/calendar'
-import {ProfileFavoritesSection} from '@/features/favorites'
-import {PlayerPublicInfoSection, PlayerTeamsSection} from '@/features/players'
+import {PlayerPublicInfoSection} from '@/features/players'
+import {ParticipationHistorySection} from '@/features/profile'
 import {isNotFoundError} from '@/shared/api/client'
 import {routes} from '@/shared/const/appRoutes'
 import {testId} from '@/shared/testing/testId'
@@ -25,21 +27,28 @@ import {PlayerCard} from '@/widgets/PlayerCard'
 
 /**
  * @spec SPEC-FR-24.1.3 - Публичный просмотр Hockey ID с учётом приватности
- * @spec HOCFRONT-22 - Публичная инфа, команда, избранное, календарь внутри страницы
+ * @spec HOCFRONT-22 - Та же компоновка, что «О себе» в профиле
  * @spec HOCFRONT-23 - Verified badge на странице игрока
  */
 export function PublicPlayerProfilePage() {
   const {userId = ''} = useParams()
-  const {session, isLoading: isSessionLoading} = useSessionAccess()
+  const navigate = useNavigate()
+  const location = useLocation()
   const {data, isLoading, error, refetch} = useQuery({
     queryKey: ['player-public', userId],
     queryFn: () => fetchPublicPlayer(userId),
     enabled: Boolean(userId),
   })
 
-  const isOwnProfile = Boolean(session?.user.id && session.user.id === userId)
+  function handleBack() {
+    if (location.key === 'default') {
+      navigate(routes.players, {replace: true})
+      return
+    }
+    navigate(-1)
+  }
 
-  if (isLoading || isSessionLoading) {
+  if (isLoading) {
     return (
       <ScoreboardLoader
         label="Загрузка профиля"
@@ -123,88 +132,43 @@ export function PublicPlayerProfilePage() {
 
   return (
     <div
-      className="hockey-stack hockey-stack--gap-16 public-player-profile"
+      className="hockey-stack hockey-stack--gap-16 player-profile-layout public-player-profile"
       data-testid={testId('players', 'public-player-profile', 'page', player.userId)}
     >
       <div className="public-player-profile__header">
-        <Link
-          to={routes.players}
-          data-testid={testId('players', 'public-player-profile', 'link', 'catalog')}
+        <HockeyButton
+          view="outlined"
+          size="s"
+          onClick={handleBack}
+          data-testid={testId('players', 'public-player-profile', 'btn', 'back')}
         >
-          <HockeyButton
-            view="outlined"
-            size="s"
-            data-testid={testId('players', 'public-player-profile', 'btn', 'catalog')}
-          >
-            ← Каталог игроков
-          </HockeyButton>
-        </Link>
-        <Text
-          variant="header-1"
-          data-testid={testId('players', 'public-player-profile', 'text', 'title')}
-        >
-          Страница игрока
-        </Text>
+          Вернуться
+        </HockeyButton>
       </div>
 
       <div
-        className="public-player-profile__grid"
+        className="player-profile-layout__grid"
         data-testid={testId('players', 'public-player-profile', 'panel', 'grid')}
       >
-        <PlayerCard player={player} linkable={false} />
+        <PlayerCard
+          player={player}
+          linkable={false}
+          variant="profile"
+          visibleFields={data.visibleFields}
+        />
         <PlayerPublicInfoSection
           player={player}
           contactsVisible={data.contactsVisible}
+          visibleContacts={data.visibleContacts}
+          visibleFields={data.visibleFields}
           participationHistoryVisible={data.participationHistoryVisible}
-          participationHistory={data.participationHistory}
+          hideHistory
         />
       </div>
 
-      <section data-testid={testId('players', 'public-player-profile', 'section', 'team')}>
-        <PlayerTeamsSection playerId={player.userId} fallbackTeamName={player.teamName} />
-      </section>
-
-      <section
-        id="favorites"
-        data-testid={testId('players', 'public-player-profile', 'section', 'favorites')}
-      >
-        {isOwnProfile ? (
-          <ProfileFavoritesSection />
-        ) : (
-          <IceCard
-            padding="m"
-            data-testid={testId('players', 'public-player-profile', 'card', 'favorites-private')}
-          >
-            <Text
-              variant="subheader-2"
-              data-testid={testId(
-                'players',
-                'public-player-profile',
-                'text',
-                'favorites-private-title',
-              )}
-            >
-              Избранное
-            </Text>
-            <Text
-              color="secondary"
-              className="hockey-mt-8"
-              data-testid={testId(
-                'players',
-                'public-player-profile',
-                'text',
-                'favorites-private-copy',
-              )}
-            >
-              Список избранного виден только владельцу страницы. Добавить игрока в своё избранное
-              можно кнопкой на карточке.
-            </Text>
-          </IceCard>
-        )}
-      </section>
-
       <section
         id="calendar"
+        className="player-profile-layout__full"
         data-testid={testId('players', 'public-player-profile', 'section', 'calendar')}
       >
         <IceCard
@@ -215,6 +179,7 @@ export function PublicPlayerProfilePage() {
             <CalendarShell
               title="Календарь игрока"
               compact
+              titleVariant="header-1"
               forcedScope={{scope: 'player', scopeId: userId}}
               showActions={false}
             />
@@ -228,6 +193,24 @@ export function PublicPlayerProfilePage() {
           )}
         </IceCard>
       </section>
+
+      <IceCard
+        padding="m"
+        data-testid={testId('players', 'public-player-profile', 'card', 'history')}
+      >
+        <div className="hockey-stack hockey-stack--gap-16">
+          <Text
+            variant="header-1"
+            data-testid={testId('players', 'public-player-profile', 'text', 'history-title')}
+          >
+            История участия
+          </Text>
+          <ParticipationHistorySection
+            records={data.participationHistory}
+            showHistory={data.participationHistoryVisible}
+          />
+        </div>
+      </IceCard>
     </div>
   )
 }

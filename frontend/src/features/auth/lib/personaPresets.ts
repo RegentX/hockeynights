@@ -25,7 +25,7 @@ export const PERSONA_PRESETS: PersonaPreset[] = [
     description: 'Профиль, команды, события и RSVP',
     destination: 'Обычный player workspace',
     icon: '🏒',
-    payload: {displayName: 'Иван Петров', roles: ['player'], partnerMemberships: []},
+    payload: {displayName: 'Петров Иван Сергеевич', roles: ['player'], partnerMemberships: []},
   },
   {
     id: 'goalie',
@@ -33,7 +33,7 @@ export const PERSONA_PRESETS: PersonaPreset[] = [
     description: 'Игровой профиль с акцентом на вратарские сценарии',
     destination: 'Обычный player workspace',
     icon: '🥅',
-    payload: {displayName: 'Алексей Вратарёв', roles: ['goalie'], partnerMemberships: []},
+    payload: {displayName: 'Вратарёв Алексей Игоревич', roles: ['goalie'], partnerMemberships: []},
   },
   {
     id: 'captain',
@@ -41,7 +41,11 @@ export const PERSONA_PRESETS: PersonaPreset[] = [
     description: 'Состав команды, посещаемость и лиговые игры',
     destination: 'Обычный player workspace',
     icon: '🛡',
-    payload: {displayName: 'Сергей Капитанов', roles: ['captain'], partnerMemberships: []},
+    payload: {
+      displayName: 'Капитанов Сергей Николаевич',
+      roles: ['captain'],
+      partnerMemberships: [],
+    },
   },
   {
     id: 'coach',
@@ -49,7 +53,7 @@ export const PERSONA_PRESETS: PersonaPreset[] = [
     description: 'Тренировки, roster и тренерский профиль',
     destination: 'Обычный player workspace',
     icon: '📋',
-    payload: {displayName: 'Алексей Тренеров', roles: ['coach'], partnerMemberships: []},
+    payload: {displayName: 'Тренеров Алексей Петрович', roles: ['coach'], partnerMemberships: []},
   },
   {
     id: 'organizer',
@@ -58,7 +62,7 @@ export const PERSONA_PRESETS: PersonaPreset[] = [
     destination: 'Кабинет организатора тренировок',
     icon: '📅',
     payload: {
-      displayName: 'Мария Организаторова',
+      displayName: 'Организаторова Мария Андреевна',
       roles: ['training_organizer'],
       partnerMemberships: [],
     },

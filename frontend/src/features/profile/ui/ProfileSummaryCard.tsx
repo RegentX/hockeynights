@@ -8,9 +8,13 @@ import {Link} from 'react-router'
 
 import type {UserRole} from '@/entities/common'
 import type {HockeyProfile} from '@/entities/profile'
-import {POSITION_LABELS, SKILL_LEVEL_LABELS} from '@/features/events'
+import {POSITION_LABELS} from '@/features/events'
 import {KarmaScore} from '@/features/karma'
-import {formatProfileLocation, getProfileInitials} from '@/shared/lib/profileIdentity'
+import {
+  formatProfileLocation,
+  getPlayerLevelLabel,
+  getProfileInitials,
+} from '@/shared/lib/profileIdentity'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
@@ -113,7 +117,7 @@ export function ProfileSummaryCard({
               color="secondary"
               data-testid={testId('profile', 'profile-summary', 'text', 'role-line')}
             >
-              {POSITION_LABELS[profile.position]} · {SKILL_LEVEL_LABELS[profile.skillLevel]}
+              {POSITION_LABELS[profile.position]} · {getPlayerLevelLabel(profile)}
             </Text>
             {location && (
               <Text

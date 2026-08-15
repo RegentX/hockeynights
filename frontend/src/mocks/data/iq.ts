@@ -152,11 +152,11 @@ export const mockIqQuestions: IqQuestion[] = [
 
 /** @spec SPEC-FR-13.1.3 - Mock-лидерборд */
 export const mockIqLeaderboard: IqLeaderboardRow[] = [
-  {rank: 1, userId: 'user-008', displayName: 'Егор Воробьёв', score: 280, streak: 9},
-  {rank: 2, userId: 'user-002', displayName: 'Алексей Смирнов', score: 250, streak: 7},
-  {rank: 3, userId: 'user-011', displayName: 'Илья Савельев', score: 220, streak: 5},
-  {rank: 4, userId: 'user-001', displayName: 'Иван Петров', score: 180, streak: 3},
-  {rank: 5, userId: 'user-007', displayName: 'Максим Белов', score: 160, streak: 2},
+  {rank: 1, userId: 'user-008', displayName: 'Воробьёв Егор Михайлович', score: 280, streak: 9},
+  {rank: 2, userId: 'user-002', displayName: 'Смирнов Алексей Дмитриевич', score: 250, streak: 7},
+  {rank: 3, userId: 'user-011', displayName: 'Савельев Илья Романович', score: 220, streak: 5},
+  {rank: 4, userId: 'user-001', displayName: 'Петров Иван Сергеевич', score: 180, streak: 3},
+  {rank: 5, userId: 'user-007', displayName: 'Белов Максим Сергеевич', score: 160, streak: 2},
 ]
 
 /** @spec SPEC-FR-13.1.2 - Расчёт результата попытки */

@@ -13,10 +13,10 @@ import {useNavigate} from 'react-router'
 
 import {fetchMyProfile, fetchProfileSettings} from '@/entities/profile'
 import {getPrimaryPartnerPath, shouldUsePartnerWorkspace, useSessionAccess} from '@/features/access'
-import {POSITION_LABELS, SKILL_LEVEL_LABELS} from '@/features/events'
+import {POSITION_LABELS} from '@/features/events'
 import profileRingAnimation from '@/shared/assets/lottie/profile-ring.json'
 import {routes} from '@/shared/const/appRoutes'
-import {getProfileInitials} from '@/shared/lib/profileIdentity'
+import {getPlayerLevelLabel, getProfileInitials} from '@/shared/lib/profileIdentity'
 import {usePrefersReducedMotion} from '@/shared/lib/usePrefersReducedMotion'
 import {testId} from '@/shared/testing/testId'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
@@ -93,7 +93,7 @@ export function HeaderProfile({sessionMenuItems = []}: HeaderProfileProps) {
   const meta = partnerWorkspace
     ? 'Кабинет партнёра'
     : profile
-      ? `${POSITION_LABELS[profile.position]} · ${SKILL_LEVEL_LABELS[profile.skillLevel]}`
+      ? `${POSITION_LABELS[profile.position]} · ${getPlayerLevelLabel(profile)}`
       : (session?.user.city ?? '')
 
   const sessionUserId = session?.user.id
@@ -182,12 +182,21 @@ export function HeaderProfile({sessionMenuItems = []}: HeaderProfileProps) {
               <span className="app-shell__profile-ring" aria-hidden>
                 {View}
               </span>
-              <span
-                className="app-shell__profile-initials"
-                data-testid={testId('app', 'header-profile', 'icon', 'avatar')}
-              >
-                {getProfileInitials(fullName)}
-              </span>
+              {profile?.avatarUrl ? (
+                <img
+                  className="app-shell__profile-photo"
+                  src={profile.avatarUrl}
+                  alt=""
+                  data-testid={testId('app', 'header-profile', 'img', 'avatar')}
+                />
+              ) : (
+                <span
+                  className="app-shell__profile-initials"
+                  data-testid={testId('app', 'header-profile', 'icon', 'avatar')}
+                >
+                  {getProfileInitials(fullName)}
+                </span>
+              )}
             </span>
           </HockeyButton>
         )}

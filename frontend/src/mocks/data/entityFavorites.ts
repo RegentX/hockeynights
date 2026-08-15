@@ -21,7 +21,7 @@ const SEED: Favorite[] = [
     id: favoriteKey('player', 'user-002'),
     type: 'player',
     entityId: 'user-002',
-    title: 'Алексей Смирнов',
+    title: 'Смирнов Алексей Дмитриевич',
     href: buildFavoriteHref('player', 'user-002'),
     createdAt: '2026-07-12T14:00:00Z',
   },

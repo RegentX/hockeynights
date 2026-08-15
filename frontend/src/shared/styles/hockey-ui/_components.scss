@@ -74,6 +74,14 @@
     background: linear-gradient(165deg, rgba(255, 255, 255, 0.06) 0%, transparent 45%);
     pointer-events: none;
   }
+
+  /* Заголовки с диакритикой не должны упираться в верхний край контента */
+  .g-text_variant_header-1,
+  .variable-font-header,
+  .hockey-player-card__passport-name {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .ice-card--padding-s {
@@ -228,6 +236,353 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.hockey-player-card__body-link {
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+}
+
+.hockey-player-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hockey-player-card__field-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hockey-player-card__team-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.hockey-player-card__team-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.hockey-public-info__team {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.hockey-public-info__team-link {
+  color: inherit;
+  text-decoration: none;
+  border-radius: 12px;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--hockey-ice-glow, var(--g-color-line-focus));
+    outline-offset: 2px;
+  }
+}
+
+.hockey-public-info__team-logo,
+.hockey-public-info__team-fallback {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.hockey-public-info__team-logo {
+  object-fit: cover;
+}
+
+.hockey-public-info__team-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--g-color-base-generic) 80%, transparent);
+  color: var(--g-color-text-secondary);
+}
+
+.hockey-public-info__team-name {
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.hockey-public-info__teams {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hockey-public-info__facts {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  > div {
+    display: grid;
+    grid-template-columns: minmax(110px, 140px) minmax(0, 1fr);
+    gap: 8px 14px;
+    align-items: start;
+
+    @media (max-width: 560px) {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+
+  dt {
+    margin: 0;
+    color: var(--hockey-text-muted, inherit);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    min-width: 0;
+  }
+}
+
+.hockey-public-info__achievements {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hockey-public-info__contacts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.hockey-public-info__contact-label {
+  color: var(--hockey-text-muted, inherit);
+  font-weight: 500;
+}
+
+.hockey-public-info__achievement {
+  margin: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--hockey-card-border);
+  background: color-mix(in srgb, var(--g-color-base-generic) 70%, transparent);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--g-color-text-primary);
+}
+
+.hockey-player-card__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hockey-player-card__portrait {
+  display: none;
+}
+
+.hockey-player-card__avatar-img,
+.hockey-player-card__avatar-initials {
+  width: 148px;
+  height: 148px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.hockey-player-card__avatar-initials {
+  display: grid;
+  place-items: center;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: linear-gradient(145deg, var(--hockey-line-red), #a00400);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  font-family: var(--hockey-font-sans, inherit);
+  font-feature-settings: normal;
+  text-transform: none;
+}
+
+.hockey-player-card--profile {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: 20px;
+  min-height: 100%;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+}
+
+.hockey-player-card--profile .hockey-player-card__portrait {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  min-height: 0;
+  padding: 4px;
+}
+
+.hockey-player-card__passport {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  min-height: 100%;
+}
+
+.hockey-player-card__passport-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.hockey-player-card--profile .hockey-player-card__badges {
+  justify-content: flex-start;
+}
+
+.hockey-player-card__passport-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hockey-player-card__passport-name {
+  margin: 0;
+  line-height: 1.15 !important;
+  letter-spacing: 0.02em;
+  overflow: visible;
+  padding-block: 0.06em 0;
+}
+
+.hockey-player-card__passport-subtitle {
+  line-height: 1.35;
+}
+
+.hockey-player-card__passport-birth {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--g-color-text-primary);
+}
+
+.hockey-player-card__passport-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hockey-card-border);
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+.hockey-player-card__passport-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.hockey-player-card__passport-col-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  color: var(--g-color-text-primary);
+}
+
+.hockey-player-card__passport-facts {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  > div {
+    display: grid;
+    grid-template-columns: minmax(72px, auto) 1fr;
+    gap: 6px 10px;
+    align-items: baseline;
+  }
+
+  dt {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--hockey-text-muted, inherit);
+    font-size: 13px;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+.hockey-player-card--profile .hockey-player-card__stats {
+  padding-top: 10px;
+}
+
+@media (max-width: 640px) {
+  .hockey-player-card--profile .hockey-player-card__passport-top,
+  .hockey-player-card--profile .hockey-player-card__badges,
+  .hockey-player-card--profile .hockey-player-card__passport-team {
+    justify-content: center;
+  }
+
+  .hockey-player-card__avatar-img,
+  .hockey-player-card__avatar-initials {
+    width: 112px;
+    height: 112px;
+    font-size: 32px;
+  }
 }
 
 .hockey-player-card__row {

@@ -56,33 +56,36 @@ describe('HOCFRONT-17 nav rename and sync', () => {
 
   it('keeps mobile primary bar to at most 4 core routes (5th slot is Ещё UI)', () => {
     const mobilePaths = resolveMobileNavItems(makeSession()).map((item) => item.to)
-    expect(mobilePaths).toEqual([routes.events, routes.teams, routes.messenger, routes.profile])
+    expect(mobilePaths).toEqual([routes.events, routes.teams, routes.messenger, routes.calendar])
     expect(mobilePaths).toHaveLength(4)
   })
 
-  it('puts arenas, calendar, leagues and shops into mobile more sheet', () => {
+  it('puts arenas, leagues, shops and players into mobile more sheet', () => {
     const more = resolveMobileMoreNavItems(makeSession())
     const morePaths = more.map((item) => item.to)
 
-    expect(morePaths).toEqual([routes.arenas, routes.calendar, routes.leagues, routes.shops])
+    expect(morePaths).toEqual([routes.arenas, routes.leagues, routes.shops, routes.players])
     expect(more.find((item) => item.to === routes.arenas)?.label).toBe(ARENAS_LABEL)
-    expect(more.find((item) => item.to === routes.calendar)?.label).toBe('Календарь')
+    expect(more.find((item) => item.to === routes.players)?.label).toBe('Игроки')
   })
 
-  it('keeps calendar reachable from mobile more (desktop↔mobile sync)', () => {
-    const desktopActive = resolvePlayerNavItems(makeSession())
-      .filter((item) => item.tier === 'active')
-      .map((item) => item.to)
-    const morePaths = resolveMobileMoreNavItems(makeSession()).map((item) => item.to)
+  it('keeps calendar reachable from mobile primary (desktop↔mobile sync)', () => {
+    const desktopPaths = resolvePlayerNavItems(makeSession()).map((item) => item.to)
+    const mobilePaths = resolveMobileNavItems(makeSession()).map((item) => item.to)
 
-    expect(desktopActive).toContain(routes.calendar)
-    expect(morePaths).toContain(routes.calendar)
+    expect(desktopPaths).toContain(routes.calendar)
+    expect(mobilePaths).toContain(routes.calendar)
   })
 
-  it('keeps mobile primary paths as ordered subset of desktop active paths', () => {
-    const desktopPaths = resolvePlayerNavItems(makeSession())
-      .filter((item) => item.tier === 'active')
-      .map((item) => item.to)
+  it('puts all player nav items under incubating and hides profile from side nav', () => {
+    const items = resolvePlayerNavItems(makeSession())
+    expect(items.every((item) => item.tier === 'incubating')).toBe(true)
+    expect(items.map((item) => item.to)).not.toContain(routes.profile)
+    expect(items.filter((item) => item.tier === 'active')).toHaveLength(0)
+  })
+
+  it('keeps mobile primary paths as ordered subset of desktop paths', () => {
+    const desktopPaths = resolvePlayerNavItems(makeSession()).map((item) => item.to)
     const mobilePaths = resolveMobileNavItems(makeSession()).map((item) => item.to)
 
     expect(mobilePaths.length).toBeGreaterThan(0)

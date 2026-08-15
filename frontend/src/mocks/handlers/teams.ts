@@ -109,7 +109,7 @@ export const teamHandlers = [
     addMockRosterMember({
       teamId: team.id,
       userId: 'user-001',
-      displayName: 'Иван Петров',
+      displayName: 'Петров Иван Сергеевич',
       position: 'forward',
       teamRole: 'owner',
       rosterStatus: 'active',

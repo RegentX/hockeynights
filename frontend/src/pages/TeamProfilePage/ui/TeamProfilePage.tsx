@@ -5,7 +5,7 @@
 import {Accordion, Label, Text} from '@gravity-ui/uikit'
 import {useQuery} from '@tanstack/react-query'
 import {useState} from 'react'
-import {Link, useParams} from 'react-router'
+import {Link, useLocation, useNavigate, useParams} from 'react-router'
 
 import {
   fetchTeam,
@@ -28,6 +28,8 @@ import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 /** HOCFRONT-25 — публичная страница команды */
 export function TeamProfilePage() {
   const {teamId = ''} = useParams()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [contactOpen, setContactOpen] = useState(false)
 
   const {session} = useSessionAccess()
@@ -57,6 +59,14 @@ export function TeamProfilePage() {
     enabled: Boolean(teamId),
   })
 
+  function handleBack() {
+    if (location.key === 'default') {
+      navigate(routes.teams, {replace: true})
+      return
+    }
+    navigate(-1)
+  }
+
   if (teamLoading) {
     return (
       <div data-testid={testId('teams', 'profile', 'loader')}>
@@ -83,16 +93,15 @@ export function TeamProfilePage() {
         <Text data-testid={testId('teams', 'profile', 'text', 'not-found')}>
           Команда не найдена
         </Text>
-        <Link to={routes.teams} data-testid={testId('teams', 'profile', 'link', 'back-missing')}>
-          <HockeyButton
-            view="outlined"
-            size="s"
-            className="hockey-mt-12"
-            data-testid={testId('teams', 'profile', 'btn', 'back-missing')}
-          >
-            К списку команд
-          </HockeyButton>
-        </Link>
+        <HockeyButton
+          view="outlined"
+          size="s"
+          className="hockey-mt-12"
+          onClick={handleBack}
+          data-testid={testId('teams', 'profile', 'btn', 'back-missing')}
+        >
+          Вернуться
+        </HockeyButton>
       </IceCard>
     )
   }
@@ -109,15 +118,16 @@ export function TeamProfilePage() {
       className="team-profile hockey-stack hockey-stack--gap-20"
       data-testid={testId('teams', 'profile', 'page', team.id)}
     >
-      <Link to={routes.teams} data-testid={testId('teams', 'profile', 'link', 'back', team.id)}>
+      <div className="team-profile__toolbar">
         <HockeyButton
-          view="flat"
+          view="outlined"
           size="s"
+          onClick={handleBack}
           data-testid={testId('teams', 'profile', 'btn', 'back', team.id)}
         >
-          ← К ленте команд
+          Вернуться
         </HockeyButton>
-      </Link>
+      </div>
 
       <section
         className="team-profile__hero"

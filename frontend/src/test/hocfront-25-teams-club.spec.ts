@@ -194,14 +194,14 @@ describe('HOCFRONT-25 team profile + club cabinet', () => {
       assignments: [
         {
           userId: 'user-001',
-          displayName: 'Иван Петров',
+          displayName: 'Петров Иван Сергеевич',
           position: 'forward',
           side: 'red',
           line: 1,
         },
         {
           userId: 'user-003',
-          displayName: 'Дмитрий Козлов',
+          displayName: 'Козлов Дмитрий Александрович',
           position: 'defense',
           side: 'white',
           line: 1,

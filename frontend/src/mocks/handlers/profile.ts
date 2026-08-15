@@ -1,5 +1,5 @@
 /**
- * SPEC-FR-2.2.1, SPEC-FR-2.2.2, SPEC-FR-2.2.3, SPEC-FR-2.2.4, SPEC-FR-2.3.1, SPEC-FR-2.3.2
+ * SPEC-FR-2.2.1, SPEC-FR-2.2.2, SPEC-FR-2.2.4, SPEC-FR-2.3.1, SPEC-FR-2.3.2
  */
 
 import {http, HttpResponse} from 'msw'
@@ -12,21 +12,36 @@ import type {
   PrivacySettings,
   SubscriptionState,
 } from '@/entities/profile'
+import {normalizePrivacySettings} from '@/entities/profile'
+import {resolvePrivacyViewer} from '@/entities/profile'
 import {getMockFavorites, updateMockFavorites} from '@/mocks/data/favorites'
 import {
   buildPublicPlayerView,
   buildPublicPlayerViewFromProfile,
+  listPlayersForViewer,
   mockPlayers,
 } from '@/mocks/data/players'
 import {
   mockProfile,
   mockProfileSettings,
+  mockSession,
   updateMockNotificationPreferences,
   updateMockPrivacySettings,
   updateMockProfile,
   updateMockSubscriptionState,
   updateMockVerificationStatus,
 } from '@/mocks/data/session'
+
+function currentPlayerViewer() {
+  const userId = mockSession.user.id
+  const viewerProfile =
+    userId === mockProfile.userId ? mockProfile : mockPlayers.find((p) => p.userId === userId)
+  return {
+    userId,
+    teamIds: viewerProfile?.teamIds,
+    verified: viewerProfile?.verificationStatus === 'verified',
+  }
+}
 
 /** @spec SPEC-FR-2.3.2, HOCFRONT-20 - Query params фильтра игроков */
 interface PlayersQuery {
@@ -68,7 +83,10 @@ export const profileHandlers = [
   }),
 
   http.get('/mock-api/v1/profile/settings', () => {
-    return HttpResponse.json(mockProfileSettings)
+    return HttpResponse.json({
+      ...mockProfileSettings,
+      privacy: normalizePrivacySettings(mockProfileSettings.privacy),
+    })
   }),
 
   http.patch('/mock-api/v1/profile/notification-preferences', async ({request}) => {
@@ -124,7 +142,7 @@ export const profileHandlers = [
       city: url.searchParams.get('city') ?? undefined,
     }
 
-    let result = [...mockPlayers]
+    let result = listPlayersForViewer(currentPlayerViewer())
 
     if (query.q?.trim()) {
       const needle = query.q.trim().toLowerCase()
@@ -162,10 +180,19 @@ export const profileHandlers = [
 
   http.get('/mock-api/v1/players/:userId', ({params}) => {
     const userId = params.userId as string
+    const context = currentPlayerViewer()
+    const owner =
+      userId === mockProfile.userId ? mockProfile : mockPlayers.find((p) => p.userId === userId)
+    const viewer = resolvePrivacyViewer(userId, context.userId, owner?.teamIds, context.teamIds)
     const view =
       userId === mockProfile.userId
-        ? buildPublicPlayerViewFromProfile(mockProfile, mockProfileSettings.privacy)
-        : buildPublicPlayerView(userId)
+        ? buildPublicPlayerViewFromProfile(
+            mockProfile,
+            mockProfileSettings.privacy,
+            viewer,
+            context.verified,
+          )
+        : buildPublicPlayerView(userId, viewer, context.verified)
     if (!view) {
       return HttpResponse.json({message: 'Player not found'}, {status: 404})
     }
