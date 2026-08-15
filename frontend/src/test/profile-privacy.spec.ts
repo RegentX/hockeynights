@@ -129,7 +129,6 @@ describe('profilePrivacy', () => {
         heightCm: 180,
         weightKg: 80,
         availability: [],
-        preferredArenaIds: ['arena-001'],
         profileCompleteness: 50,
         karmaScore: 50,
         goalieReliabilityScore: 90,

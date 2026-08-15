@@ -221,7 +221,6 @@ describe('PlayersPage filters', () => {
             skillLevel: 'amateur',
             stickHand: 'right',
             availability: [],
-            preferredArenaIds: [],
             profileCompleteness: 72,
             karmaScore: 80,
             verificationStatus: 'verified',

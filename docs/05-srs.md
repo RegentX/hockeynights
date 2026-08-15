@@ -41,7 +41,7 @@
 | :--- | :--- |
 | `SPEC-FR-2.2.1` | Пользователь должен создать и редактировать `Hockey ID`. |
 | `SPEC-FR-2.2.2` | Профиль должен включать имя, город, район, метро, амплуа, уровень, хват, доступность и описание. |
-| `SPEC-FR-2.2.3` | Профиль должен хранить предпочитаемые арены пользователя. |
+| `SPEC-FR-2.2.3` | Снято: предпочитаемые арены не входят в контракт профиля. |
 | `SPEC-FR-2.2.4` | Система должна показывать степень заполненности профиля. |
 
 ### 2.3 Просмотр игроков (SPEC-FR-2.3.1 - SPEC-FR-2.3.2)
@@ -527,7 +527,6 @@ export interface HockeyProfile {
   skillLevel: SkillLevel; // SPEC-FR-2.2.2
   stickHand?: 'left' | 'right' | 'unknown'; // SPEC-FR-2.2.2
   availability: string[]; // SPEC-FR-2.2.2
-  preferredArenaIds: string[]; // SPEC-FR-2.2.3
   bio?: string; // SPEC-FR-2.2.2
   profileCompleteness: number; // SPEC-FR-2.2.4
   karmaScore: number; // SPEC-FR-8.2.1
@@ -901,7 +900,7 @@ export interface SourceMeta {
 | `GET` | `/mock-api/v1/session` | Получить текущую mock-сессию и роли пользователя | `SPEC-FR-2.1.1`, `SPEC-FR-2.1.3` |
 | `POST` | `/mock-api/v1/onboarding` | Сохранить выбранные роли и стартовые настройки | `SPEC-FR-2.1.2`, `SPEC-FR-2.1.3` |
 | `GET` | `/mock-api/v1/profile/me` | Получить свой `Hockey ID` | `SPEC-FR-2.2.1` |
-| `PUT` | `/mock-api/v1/profile/me` | Обновить свой `Hockey ID` | `SPEC-FR-2.2.1`, `SPEC-FR-2.2.2`, `SPEC-FR-2.2.3` |
+| `PUT` | `/mock-api/v1/profile/me` | Обновить свой `Hockey ID` | `SPEC-FR-2.2.1`, `SPEC-FR-2.2.2` |
 | `GET` | `/mock-api/v1/profile/settings` | Получить настройки профиля, уведомлений, приватности и подписки | `SPEC-FR-18.1.1`–`SPEC-FR-19.1.4` |
 | `PATCH` | `/mock-api/v1/profile/notification-preferences` | Обновить switch-настройки уведомлений | `SPEC-FR-18.1.3` |
 | `PATCH` | `/mock-api/v1/profile/privacy` | Обновить настройки приватности | `SPEC-FR-18.1.4` |
@@ -974,7 +973,6 @@ export interface SourceMeta {
   "skillLevel": "amateur",
   "stickHand": "left",
   "availability": ["weekday_evening", "sunday_morning"],
-  "preferredArenaIds": ["arena-001"],
   "bio": "Любитель, играю 2 раза в неделю",
   "profileCompleteness": 86,
   "karmaScore": 74
@@ -1100,7 +1098,7 @@ export interface SourceMeta {
 | Модуль | SPEC ID |
 | :--- | :--- |
 | `Auth & Onboarding` | `SPEC-FR-2.1.1`, `SPEC-FR-2.1.2`, `SPEC-FR-2.1.3` |
-| `Hockey ID` | `SPEC-FR-2.2.1`, `SPEC-FR-2.2.2`, `SPEC-FR-2.2.3`, `SPEC-FR-2.2.4`, `SPEC-FR-2.3.1`, `SPEC-FR-2.3.2` |
+| `Hockey ID` | `SPEC-FR-2.2.1`, `SPEC-FR-2.2.2`, `SPEC-FR-2.2.4`, `SPEC-FR-2.3.1`, `SPEC-FR-2.3.2` |
 | `Team & Roster` | `SPEC-FR-3.1.1`, `SPEC-FR-3.1.2`, `SPEC-FR-3.2.1`, `SPEC-FR-3.2.2`, `SPEC-FR-3.3.1`, `SPEC-FR-3.3.2` |
 | `Games & Trainings` | `SPEC-FR-4.1.1`, `SPEC-FR-4.1.2`, `SPEC-FR-4.2.1`, `SPEC-FR-4.2.2`, `SPEC-FR-4.3.1`, `SPEC-FR-4.3.2` |
 | `Goalkeeper SOS` | `SPEC-FR-5.1.1`, `SPEC-FR-5.1.2`, `SPEC-FR-5.1.3`, `SPEC-FR-5.2.1`, `SPEC-FR-5.2.2`, `SPEC-FR-5.2.3` |

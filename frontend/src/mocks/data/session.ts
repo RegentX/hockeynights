@@ -81,7 +81,6 @@ export let mockProfile: HockeyProfile = {
   weightKg: 92,
   playerIndex: 6,
   availability: ['weekday_evening', 'sunday_morning'],
-  preferredArenaIds: ['arena-001'],
   bio: 'Любитель, играю 2 раза в неделю',
   contacts: {
     phone: '+7 (999) 123-45-67',

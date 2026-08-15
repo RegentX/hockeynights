@@ -1,5 +1,5 @@
 /**
- * SPEC-FR-2.2.1, SPEC-FR-2.2.2, SPEC-FR-2.2.3, SPEC-FR-2.2.4
+ * SPEC-FR-2.2.1, SPEC-FR-2.2.2, SPEC-FR-2.2.4
  */
 
 import type {

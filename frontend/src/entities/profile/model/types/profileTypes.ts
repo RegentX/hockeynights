@@ -1,5 +1,5 @@
 /**
- * SPEC-FR-2.2.1, SPEC-FR-2.2.2, SPEC-FR-2.2.3, SPEC-FR-2.2.4, SPEC-FR-8.2.1
+ * SPEC-FR-2.2.1, SPEC-FR-2.2.2, SPEC-FR-2.2.4, SPEC-FR-8.2.1
  * SPEC-FR-17.1.1, SPEC-FR-18.1.3, SPEC-FR-18.1.4, SPEC-FR-19.1.1
  * SPEC-FR-24.1.4, SPEC-FR-24.2.3
  */
@@ -70,8 +70,6 @@ export interface HockeyProfile {
   playerIndex?: number
   /** @spec SPEC-FR-2.2.2 */
   availability: string[]
-  /** @spec SPEC-FR-2.2.3 */
-  preferredArenaIds: string[]
   /** @spec SPEC-FR-2.2.2 */
   bio?: string
   /** Личные контакты — показываются только при настройках приватности */

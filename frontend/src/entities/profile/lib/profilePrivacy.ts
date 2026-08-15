@@ -238,7 +238,6 @@ export function toHiddenPlayerStub(player: PlayerListItem): PlayerListItem {
       displayName: '',
       fullName: '',
       avatarUrl: undefined,
-      preferredArenaIds: [],
     },
     {
       birthDate: false,
