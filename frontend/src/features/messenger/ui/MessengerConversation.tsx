@@ -4,7 +4,7 @@
  */
 
 import {ArrowLeft, Gear, Paperclip, PaperPlane, Pin, PinFill, Plus} from '@gravity-ui/icons'
-import {Icon, Text, TextInput} from '@gravity-ui/uikit'
+import {Icon, Text, TextArea} from '@gravity-ui/uikit'
 import {useEffect, useId, useRef, useState} from 'react'
 
 import type {Chat, ChatTopic, Message} from '@/entities/messenger'
@@ -281,19 +281,23 @@ export function MessengerConversation({
         >
           <Icon data={Paperclip} size={16} />
         </HockeyButton>
-        <TextInput
+        <TextArea
           size="m"
           value={inputText}
           onUpdate={setInputText}
           placeholder="Напишите сообщение..."
           aria-label="Текст сообщения"
+          minRows={1}
+          maxRows={6}
+          /* Enter отправляет, Shift+Enter переносит строку — как в мессенджерах. */
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault()
-              handleSend()
-            }
+            if (e.key !== 'Enter' || e.shiftKey) return
+            /* IME: пока идёт композиция иероглифов, Enter подтверждает ввод. */
+            if (e.nativeEvent.isComposing) return
+            e.preventDefault()
+            handleSend()
           }}
-          data-testid={testId('messenger', 'page', 'field', 'message-input')}
+          qa={testId('messenger', 'page', 'field', 'message-input')}
         />
         <HockeyButton
           size="m"

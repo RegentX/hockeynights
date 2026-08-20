@@ -157,12 +157,6 @@ export function MessengerChannelSettingsDialog({
               onUpdate={(value) => patch({notifications: {mentionsOnly: value}})}
             />
             <SettingsSwitch
-              label="Только важные"
-              qualifier="channel-important-only"
-              checked={settings.notifications.importantOnly}
-              onUpdate={(value) => patch({notifications: {importantOnly: value}})}
-            />
-            <SettingsSwitch
               label="Push-уведомления"
               qualifier="channel-push"
               checked={settings.notifications.pushEnabled}

@@ -33,6 +33,16 @@ $slot-green: #34d399;
   --hockey-ice-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.12);
   --hockey-glass-bg: rgba(255, 255, 255, 0.06);
   --hockey-glass-border: rgba(255, 255, 255, 0.1);
+  /**
+   * Нижняя навигация — position: fixed, она перекрывает контент.
+   * Страницы отбивают низ ровно на эту величину, поэтому высота задаётся
+   * здесь, а не подбирается числом в каждом месте: раньше main-col отбивал
+   * 80px против фактических 82px и карточка уезжала под таб-бар.
+   */
+  --hockey-mobile-nav-content: 66px;
+  --hockey-mobile-nav-height: calc(
+    var(--hockey-mobile-nav-content) + 16px + env(safe-area-inset-bottom, 0px)
+  );
   --hockey-motion-fast: 200ms;
   --hockey-motion-normal: 320ms;
   --hockey-motion-ease: cubic-bezier(0.4, 0, 0.2, 1);

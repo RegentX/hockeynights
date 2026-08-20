@@ -272,15 +272,20 @@
 .messenger-input {
   display: flex;
   gap: 8px;
-  align-items: center;
+  /* Поле растёт вниз при Shift+Enter — кнопки держим у нижнего края. */
+  align-items: flex-end;
   padding: 12px 14px;
   border-top: 1px solid var(--hockey-card-border);
   flex-shrink: 0;
   @include glass-panel(8px);
 
-  .g-text-input {
+  .g-text-area {
     flex: 1;
     min-width: 0;
+  }
+
+  .g-text-area__control {
+    resize: none;
   }
 }
 
@@ -662,6 +667,9 @@
 }
 
 .chat-bubble {
+  /* Сообщение может быть многострочным (Shift+Enter) — переносы сохраняем. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   padding: 9px 12px 7px;
   border-radius: 14px 14px 14px 4px;
   background: var(--hockey-card-bg-solid);

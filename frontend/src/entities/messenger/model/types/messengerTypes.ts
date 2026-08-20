@@ -80,7 +80,6 @@ export type ChannelRole = 'owner' | 'captain' | 'coach' | 'team_admin' | 'player
 export interface ChannelNotificationSettings {
   muted: boolean
   mentionsOnly: boolean
-  importantOnly: boolean
   pushEnabled: boolean
 }
 
