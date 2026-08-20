@@ -61,7 +61,7 @@ export const mockChats: Chat[] = [
     visibility: 'public',
   },
   {
-    id: 'chat-6',
+    id: 'chat-7',
     type: 'team',
     title: 'Балтика',
     unreadCount: 0,

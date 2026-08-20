@@ -14,6 +14,7 @@ import type {
 } from '@/entities/external-flow'
 import {mockArenas, mockIceSlots} from '@/mocks/data/arenas'
 import {mockPlayers} from '@/mocks/data/players'
+import {relativeDate} from '@/mocks/data/relativeDate'
 import {mockUser} from '@/mocks/data/session'
 import {mockProductOffers, mockShops} from '@/mocks/data/shops'
 import {mockTeams} from '@/mocks/data/teams'
@@ -221,8 +222,8 @@ function createSeedBookings(): IceBookingRequest[] {
       comment: 'Ждём финальное подтверждение слота',
       priceRub: 16000,
       chatId: 'chat-ice-org-neg',
-      startsAt: '2026-08-21T21:00:00+03:00',
-      endsAt: '2026-08-21T22:30:00+03:00',
+      startsAt: relativeDate(1, '21:00'),
+      endsAt: relativeDate(1, '22:30'),
     },
     {
       id: 'booking-org-pay-001',
@@ -244,8 +245,8 @@ function createSeedBookings(): IceBookingRequest[] {
       comment: 'Арена приняла — нужно оплатить',
       priceRub: 13000,
       paymentDueAt: new Date(now + 86400000).toISOString(),
-      startsAt: '2026-08-24T18:00:00+03:00',
-      endsAt: '2026-08-24T19:30:00+03:00',
+      startsAt: relativeDate(4, '18:00'),
+      endsAt: relativeDate(4, '19:30'),
     },
     {
       id: 'booking-org-ready-001',
@@ -265,8 +266,8 @@ function createSeedBookings(): IceBookingRequest[] {
       headcount: '14',
       purpose: 'Утренняя раскатка',
       priceRub: 12000,
-      startsAt: '2026-08-22T10:00:00+03:00',
-      endsAt: '2026-08-22T11:30:00+03:00',
+      startsAt: relativeDate(2, '10:00'),
+      endsAt: relativeDate(2, '11:30'),
     },
     {
       id: 'booking-org-ready-002',
@@ -286,8 +287,8 @@ function createSeedBookings(): IceBookingRequest[] {
       headcount: '16',
       purpose: 'Двухсторонка',
       priceRub: 9000,
-      startsAt: '2026-08-23T19:00:00+03:00',
-      endsAt: '2026-08-23T20:30:00+03:00',
+      startsAt: relativeDate(3, '19:00'),
+      endsAt: relativeDate(3, '20:30'),
     },
     {
       id: 'booking-org-declined-001',
