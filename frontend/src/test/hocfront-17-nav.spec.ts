@@ -77,11 +77,15 @@ describe('HOCFRONT-17 nav rename and sync', () => {
     expect(mobilePaths).toContain(routes.calendar)
   })
 
-  it('puts all player nav items under incubating and hides profile from side nav', () => {
+  it('keeps messenger in the released catalog and the rest under incubating', () => {
     const items = resolvePlayerNavItems(makeSession())
-    expect(items.every((item) => item.tier === 'incubating')).toBe(true)
+    const messenger = items.find((item) => item.to === routes.messenger)
+
+    expect(messenger?.tier).toBe('active')
+    expect(
+      items.filter((item) => item.to !== routes.messenger).every((i) => i.tier === 'incubating'),
+    ).toBe(true)
     expect(items.map((item) => item.to)).not.toContain(routes.profile)
-    expect(items.filter((item) => item.tier === 'active')).toHaveLength(0)
   })
 
   it('keeps mobile primary paths as ordered subset of desktop paths', () => {

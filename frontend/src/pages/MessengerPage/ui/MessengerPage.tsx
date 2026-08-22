@@ -41,7 +41,7 @@ function isMobileViewport(): boolean {
 
 const FILTER_TABS: Array<{value: ChatFilterMode; label: string}> = [
   {value: 'all', label: 'Все'},
-  {value: 'pinned', label: 'Важные'},
+  {value: 'pinned', label: 'Закреплённые'},
   {value: 'channels', label: 'Каналы'},
 ]
 
