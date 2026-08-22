@@ -61,7 +61,7 @@ export const mockChats: Chat[] = [
     visibility: 'public',
   },
   {
-    id: 'chat-6',
+    id: 'chat-7',
     type: 'team',
     title: 'Балтика',
     unreadCount: 0,
@@ -246,7 +246,6 @@ export const mockChannelSettings: Record<string, ChannelSettings> = {
     notifications: {
       muted: false,
       mentionsOnly: false,
-      importantOnly: true,
       pushEnabled: true,
     },
     permissions: {
@@ -390,7 +389,6 @@ export function createMockChannelOrChat(payload: CreateChatPayload, userId = 'us
       notifications: {
         muted: false,
         mentionsOnly: false,
-        importantOnly: false,
         pushEnabled: true,
       },
       permissions: {

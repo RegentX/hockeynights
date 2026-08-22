@@ -1,10 +1,20 @@
 @use '../mixins' as *;
 
-/* SPEC-UI-5.1 App shell layout */
+/* SPEC-UI-5.1 App shell layout.
+ * Брейкпоинт колоночной раскладки (1200px) продублирован в TS:
+ * shared/config/layout.ts — на него завязаны Lenis и ScrollTrigger.
+ * Меняешь здесь — поменяй и там. */
 .app-shell {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+
+  /* Десктоп: высоту держит оболочка, скроллится каждая колонка отдельно.
+     Ниже 1200px колонок нет — там скроллится страница, как раньше. */
+  @include breakpoint(1200px) {
+    height: 100dvh;
+    overflow: hidden;
+  }
 
   &__header {
     position: sticky;
@@ -351,12 +361,18 @@
     display: flex;
     flex-direction: column;
 
+    @include breakpoint(1200px) {
+      min-height: 0;
+    }
+
     &--grid {
       @include breakpoint(1200px) {
         display: grid;
         grid-template-columns: 220px minmax(0, 1fr) 280px;
         gap: 0;
-        min-height: calc(100vh - 64px);
+        min-height: 0;
+        height: 100%;
+        overflow: hidden;
       }
     }
 
@@ -421,13 +437,6 @@
         box-sizing: border-box;
       }
     }
-
-    &--messenger-focus#{&}--left-collapsed#{&}--right-collapsed .app-shell__main-col {
-      @include breakpoint(1200px) {
-        padding: 0;
-        overflow: hidden;
-      }
-    }
   }
 
   &__nav-col {
@@ -440,6 +449,10 @@
       padding: 20px 12px;
       background: var(--hockey-glass-bg);
       @include glass-panel(8px);
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
     }
   }
 
@@ -453,14 +466,18 @@
       padding: 20px 16px;
       background: var(--hockey-glass-bg);
       @include glass-panel(8px);
-      overflow: auto;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
     }
   }
 
   &__main-col {
     flex: 1;
     padding: 16px;
-    padding-bottom: 80px;
+    /* Высота таб-бара + safe-area + воздух, иначе контент упирается в навигацию. */
+    padding-bottom: calc(var(--hockey-mobile-nav-height) + 16px);
     overflow: auto;
     min-width: 0;
 
@@ -468,6 +485,11 @@
       grid-column: 2;
       padding: 28px 32px;
       padding-bottom: 28px;
+      min-height: 0;
+      overscroll-behavior: contain;
+      /* Скроллбар колонки резервируем заранее — иначе width:100% детей
+         вылезает за колонку ровно на его ширину. */
+      scrollbar-gutter: stable;
     }
   }
 }
@@ -595,6 +617,8 @@
   gap: 0;
   padding: 8px max(6px, env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom))
     max(6px, env(safe-area-inset-right));
+  /* Держим высоту в договоре с --hockey-mobile-nav-height, от которого отбивают страницы. */
+  min-height: var(--hockey-mobile-nav-height);
   background: var(--hockey-card-bg);
   border-top: 2px solid var(--hockey-card-border);
   @include glass-panel(20px);

@@ -3,6 +3,7 @@
  */
 
 import type {League, LeagueScheduleItem, LeagueStanding} from '@/entities/league'
+import {relativeDate} from '@/mocks/data/relativeDate'
 
 const mockSource = {
   source: 'mock' as const,
@@ -174,7 +175,7 @@ export let mockSchedule: LeagueScheduleItem[] = [
     leagueId: 'league-001',
     homeTeam: 'Медведи САО',
     awayTeam: 'Ледовые Волки',
-    startsAt: '2026-08-02T20:00:00+03:00',
+    startsAt: relativeDate(-18, '20:00'),
     arenaName: 'Ледовый дворец на Ходынке',
     homeScore: 4,
     awayScore: 2,
@@ -185,7 +186,7 @@ export let mockSchedule: LeagueScheduleItem[] = [
     leagueId: 'league-001',
     homeTeam: 'Динамо Любители',
     awayTeam: 'Медведи САО',
-    startsAt: '2026-08-22T21:00:00+03:00',
+    startsAt: relativeDate(2, '21:00'),
     arenaName: 'Каток «Лужники»',
     status: 'scheduled',
   },
@@ -194,7 +195,7 @@ export let mockSchedule: LeagueScheduleItem[] = [
     leagueId: 'league-004',
     homeTeam: 'Барсы Казань',
     awayTeam: 'Ак Барс Любители',
-    startsAt: '2026-08-25T19:30:00+03:00',
+    startsAt: relativeDate(5, '19:30'),
     arenaName: 'Татнефть Арена',
     status: 'scheduled',
   },
@@ -203,7 +204,7 @@ export let mockSchedule: LeagueScheduleItem[] = [
     leagueId: 'league-005',
     homeTeam: 'Урал Старт',
     awayTeam: 'Екатеринбург Найтс',
-    startsAt: '2026-08-28T20:00:00+05:00',
+    startsAt: relativeDate(8, '20:00', '+05:00'),
     arenaName: 'Дворец спорта Уралец',
     status: 'scheduled',
   },
@@ -212,7 +213,7 @@ export let mockSchedule: LeagueScheduleItem[] = [
     leagueId: 'league-006',
     homeTeam: 'Сибирь Ночь',
     awayTeam: 'Новосибирск Лайн',
-    startsAt: '2026-09-05T21:00:00+07:00',
+    startsAt: relativeDate(16, '21:00', '+07:00'),
     arenaName: 'ЛДС Сибирь',
     status: 'scheduled',
   },

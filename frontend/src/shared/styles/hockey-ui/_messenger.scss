@@ -1,165 +1,167 @@
 @use '../mixins' as *;
 
-/* SPEC-UI-8.1, SPEC-UI-8.2, SPEC-UI-8.3, SPEC-UI-8.4 Messenger */
-.messenger-layout {
+/* SPEC-UI-8.1 - SPEC-UI-8.5 Messenger.
+ * HOCFRONT-42: оболочка повторяет `profile-hub` — те же радиусы, кнопки и токены тем.
+ */
+.messenger-hub {
+  --messenger-radius: 16px;
+  /* Высота рабочей области: вычитаем хедер приложения, шапку страницы и табы. */
+  --messenger-viewport: clamp(420px, calc(100dvh - 300px), 960px);
+  --g-border-radius-xs: var(--messenger-radius);
+  --g-border-radius-s: var(--messenger-radius);
+  --g-border-radius-m: var(--messenger-radius);
+  --g-border-radius-l: var(--messenger-radius);
+  --g-border-radius-xl: var(--messenger-radius);
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
-  gap: 0;
-  height: calc(100vh - 120px);
-  min-height: 480px;
-  border: 1px solid var(--hockey-card-border);
-  border-radius: 16px;
-  overflow: hidden;
-  background: var(--hockey-card-bg);
-  box-shadow: 0 14px 36px rgba(3, 15, 33, 0.22);
-}
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 16px;
+  min-width: 0;
+  min-height: 0;
+  /* Колонка приложения уже, чем окно: раскладку меряем по контейнеру, не по вьюпорту. */
+  container: messenger / inline-size;
 
-.app-shell__body--left-collapsed.app-shell__body--right-collapsed {
-  .messenger-layout {
-    height: calc(100vh - 64px);
-    min-height: 0;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-    background: transparent;
+  .ice-card,
+  .g-text-input__content,
+  .g-text-input__control,
+  .g-select-control,
+  .g-select-control__button {
+    border-radius: var(--messenger-radius);
   }
 
-  .messenger-sidebar {
-    background: transparent;
-    border-right-color: rgba(255, 255, 255, 0.06);
-  }
-
-  .messenger-title,
-  .messenger-header,
-  .messenger-input {
-    background: transparent;
-    border-color: rgba(255, 255, 255, 0.06);
-  }
-
-  .messenger-messages {
-    background: transparent;
+  .hockey-button,
+  a.hockey-button {
+    --g-button-border-radius: var(--messenger-radius);
+    border-radius: var(--messenger-radius) !important;
+    box-sizing: border-box;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px;
+    height: var(--g-button-height, 36px) !important;
+    min-height: var(--g-button-height, 36px);
+    vertical-align: middle;
   }
 }
 
-.messenger-sidebar {
-  border-right: 1px solid var(--hockey-card-border);
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.01) 100%);
-}
-
-.messenger-title,
-.messenger-header {
-  display: flex;
-  align-items: center;
-  height: 56px;
-  min-height: 56px;
-  box-sizing: border-box;
-  padding: 0 20px;
-  border-bottom: 1px solid var(--hockey-card-border);
-  flex-shrink: 0;
-}
-
-.messenger-title {
-  letter-spacing: 0.01em;
-
-  &--stack {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-    height: auto;
-    min-height: 56px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-}
-
-.messenger-toolbar {
+.messenger-hub__toolbar {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+}
+
+/**
+ * Табы переносим, а не скроллим: `overflow-x` делал контейнер обрезающим,
+ * и «шайбовый» сдвиг кнопки на ховере (`translateX(4px)` + тень) срезало
+ * по невидимому краю. Трёх коротких кнопок хватает, чтобы обойтись переносом.
+ */
+.messenger-hub__tabs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+
+  > * {
+    flex: 0 0 auto;
+  }
+}
+
+.messenger-hub__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
 }
 
-.messenger-composer,
-.messenger-topic-composer {
-  border-top: 1px solid var(--hockey-card-border);
-  padding-top: 8px;
+/* Поле поиска скруглено на 16px — лупа без отступа упирается в угол. */
+.messenger-hub__search-icon {
+  padding-inline-start: 8px;
+}
 
-  &__switch,
-  .messenger-composer__switch {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+.messenger-hub__grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+  height: var(--messenger-viewport);
+  min-width: 0;
+  min-height: 0;
+
+  @container messenger (min-width: 820px) {
+    grid-template-columns: minmax(300px, 340px) minmax(0, 1fr);
+  }
+
+  @container messenger (min-width: 1040px) {
+    grid-template-columns: 360px minmax(0, 1fr);
   }
 }
 
-.messenger-member-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.messenger-member-pill {
-  border: 1px solid var(--hockey-card-border);
-  border-radius: 999px;
-  background: transparent;
-  color: inherit;
-  padding: 4px 10px;
-  font-size: 12px;
-  cursor: pointer;
-
-  &.is-selected {
-    border-color: rgba(83, 159, 255, 0.42);
-    background: rgba(83, 159, 255, 0.12);
-  }
-}
-
-.chat-user-search {
+/* Обе колонки — ледовые карточки, как панели профиля. */
+.messenger-hub__sidebar {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  border-top: 1px solid var(--hockey-card-border);
-  padding-top: 8px;
-  max-height: 240px;
-  overflow-y: auto;
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+  container: messenger-list / inline-size;
+}
 
-  &__group {
+.messenger-hub__conversation {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 0 !important;
+}
+
+.messenger-hub__conversation--empty {
+  align-items: center;
+  justify-content: center;
+  padding: 20px !important;
+}
+
+/* Десктоп: мессенджер занимает всю колонку, скролл — только внутри карточек. */
+@include breakpoint(1200px) {
+  .app-shell__main-col:has(> .messenger-hub) {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    margin-bottom: 4px;
+    overflow: hidden;
   }
 
-  &__item {
-    border: 1px solid var(--hockey-card-border);
-    background: rgba(255, 255, 255, 0.02);
-    color: inherit;
-    border-radius: 8px;
-    padding: 8px 10px;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
+  .messenger-hub {
+    flex: 1 1 auto;
   }
 
-  &__status {
-    font-size: 11px;
-    color: var(--hockey-status-typing);
-
-    &.is-online {
-      color: var(--hockey-status-online);
-    }
+  .messenger-hub__grid {
+    height: auto;
   }
 }
 
 .messenger-header {
-  gap: 12px;
-  justify-content: space-between;
-  background: rgba(255, 255, 255, 0.01);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--hockey-card-border);
+  flex-shrink: 0;
   @include glass-panel(8px);
+
+  &__avatar {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #58a9ff, #3a6ef2);
+  }
 
   &__title {
     display: flex;
@@ -169,87 +171,141 @@
     flex: 1;
   }
 
+  &__typing {
+    color: var(--hockey-status-typing);
+    font-style: italic;
+  }
+
   &__actions {
     display: flex;
     gap: 8px;
+    flex: 0 0 auto;
   }
 }
 
 .messenger-topics {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
-  padding: 10px 16px;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--hockey-card-border);
-  background: rgba(255, 255, 255, 0.02);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  flex-shrink: 0;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   &__item {
+    flex: 0 0 auto;
     border: 1px solid var(--hockey-card-border);
     border-radius: 999px;
     background: transparent;
-    color: inherit;
+    color: var(--hockey-text-muted);
+    font-family: inherit;
+    font-size: 12px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 10px;
+    height: 30px;
+    padding: 0 12px;
     cursor: pointer;
+    transition:
+      border-color var(--hockey-motion-fast) var(--hockey-motion-ease),
+      background var(--hockey-motion-fast) var(--hockey-motion-ease);
 
     small {
       opacity: 0.7;
     }
 
+    &:hover {
+      border-color: color-mix(in srgb, var(--hockey-accent) 45%, var(--hockey-card-border));
+    }
+
     &.is-active {
-      border-color: rgba(83, 159, 255, 0.42);
-      background: rgba(83, 159, 255, 0.12);
+      border-color: color-mix(in srgb, var(--hockey-accent) 55%, transparent);
+      background: color-mix(in srgb, var(--hockey-accent) 14%, transparent);
+      color: var(--g-color-text-primary);
+      font-weight: 600;
     }
   }
+
+  &__lock {
+    width: 11px;
+    height: 11px;
+    flex: 0 0 auto;
+    background: currentcolor;
+    /* Замок рисуем маской, чтобы не тянуть иконку в разметку. */
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 7V5a4 4 0 0 1 8 0v2h.5A1.5 1.5 0 0 1 14 8.5v5A1.5 1.5 0 0 1 12.5 15h-9A1.5 1.5 0 0 1 2 13.5v-5A1.5 1.5 0 0 1 3.5 7H4Zm2 0h4V5a2 2 0 1 0-4 0v2Z'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+  }
+}
+
+.messenger-messages {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 18px 20px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-image:
+    radial-gradient(
+      circle at 12% 20%,
+      color-mix(in srgb, var(--hockey-accent) 10%, transparent),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 90% 85%,
+      color-mix(in srgb, var(--hockey-accent) 7%, transparent),
+      transparent 30%
+    );
 }
 
 .messenger-status {
-  padding: 4px 16px 0;
+  padding: 6px 16px 0;
+  flex-shrink: 0;
 }
 
-.messenger-channel-settings {
-  margin: 8px 16px 0;
-  padding: 12px;
-  border: 1px solid var(--hockey-card-border);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.02);
+.messenger-input {
+  /* Общий размер ряда: и кнопки, и пустое поле. На мобильном — 44px. */
+  --messenger-composer-size: 36px;
+  /* line-height контрола TextArea size=m у Gravity. */
+  --messenger-composer-line: 16px;
+  display: flex;
+  gap: 8px;
+  /* Поле растёт вниз при Shift+Enter — кнопки держим у нижнего края. */
+  align-items: flex-end;
+  padding: 12px 14px;
+  border-top: 1px solid var(--hockey-card-border);
+  flex-shrink: 0;
+  @include glass-panel(8px);
 
-  &__grid {
-    display: grid;
-    gap: 8px;
+  .g-text-area {
+    flex: 1;
+    min-width: 0;
   }
 
-  &__field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 12px;
-
-    select {
-      border: 1px solid var(--hockey-card-border);
-      border-radius: 8px;
-      background: transparent;
-      color: inherit;
-      padding: 6px 8px;
-    }
-  }
-
-  &__audit {
-    border-top: 1px solid var(--hockey-card-border);
-    padding-top: 8px;
-    margin-top: 4px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  &__audit-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
+  /**
+   * Пустое поле по высоте равно кнопкам, поэтому стоит с ними в один ряд:
+   * без этого однострочный TextArea (28px против 36px) визуально проваливался.
+   * Растёт вниз, а `align-items: flex-end` держит кнопки у нижнего края.
+   *
+   * Селектор с `.g-text-area` — ради специфичности: у Gravity есть
+   * `.g-text-area_size_m .g-text-area__control { padding: 5px 8px }`
+   * с тем же весом, и шорткат перебивал бы наш `padding-block`, оставляя
+   * строку прижатой к верху короба.
+   */
+  .g-text-area .g-text-area__control {
+    resize: none;
+    box-sizing: border-box;
+    /* −2px — рамка обёртки, чтобы внешняя высота совпала с кнопками. */
+    min-height: calc(var(--messenger-composer-size) - 2px);
+    padding-block: calc(
+      (var(--messenger-composer-size) - 2px - var(--messenger-composer-line)) / 2
+    );
   }
 }
 
@@ -263,50 +319,149 @@
   padding: 0;
   border: none;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
-  color: inherit;
-  font-size: 20px;
-  line-height: 1;
+  background: color-mix(in srgb, var(--hockey-accent) 12%, transparent);
+  color: var(--g-color-text-primary);
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.2s ease;
+  transition: background var(--hockey-motion-fast) var(--hockey-motion-ease);
 
   &:hover {
-    background: rgba(93, 172, 255, 0.16);
+    background: color-mix(in srgb, var(--hockey-accent) 22%, transparent);
+  }
+}
+
+.messenger-composer__switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.messenger-member-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.messenger-member-pill {
+  border: 1px solid var(--hockey-card-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--hockey-text-muted);
+  font-family: inherit;
+  padding: 5px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    border-color var(--hockey-motion-fast) var(--hockey-motion-ease),
+    background var(--hockey-motion-fast) var(--hockey-motion-ease);
+
+  &.is-selected {
+    border-color: color-mix(in srgb, var(--hockey-accent) 55%, transparent);
+    background: color-mix(in srgb, var(--hockey-accent) 14%, transparent);
+    color: var(--g-color-text-primary);
+  }
+}
+
+.messenger-audit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--hockey-card-border);
+    border-radius: var(--messenger-radius, 16px);
+  }
+}
+
+.chat-user-search__item {
+  border: 1px solid var(--hockey-card-border);
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: 13px;
+  border-radius: 16px;
+  padding: 10px 14px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  transition:
+    border-color var(--hockey-motion-fast) var(--hockey-motion-ease),
+    background var(--hockey-motion-fast) var(--hockey-motion-ease);
+
+  &:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--hockey-accent) 45%, var(--hockey-card-border));
+    background: color-mix(in srgb, var(--hockey-accent) 8%, transparent);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+.chat-user-search__status {
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--hockey-text-muted);
+
+  &.is-online {
+    color: var(--hockey-status-online);
   }
 }
 
 .chat-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px 10px;
+  gap: 6px;
+  min-height: 0;
+  flex: 1 1 auto;
   overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
 }
 
 .chat-item {
   display: flex;
-  width: 100%;
+  min-width: 0;
   align-items: center;
-  gap: 6px;
-  padding: 6px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.02);
+  gap: 4px;
+  padding: 2px;
+  border-radius: var(--messenger-radius, 16px);
+  background: transparent;
   border: 1px solid transparent;
   transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.18s ease;
+    background var(--hockey-motion-fast) var(--hockey-motion-ease),
+    border-color var(--hockey-motion-fast) var(--hockey-motion-ease),
+    transform var(--hockey-motion-fast) var(--hockey-motion-ease);
 
   &:hover {
-    background: rgba(93, 172, 255, 0.08);
-    border-color: rgba(93, 172, 255, 0.2);
-    transform: translateY(-1px);
+    background: color-mix(in srgb, var(--hockey-accent) 8%, transparent);
+    border-color: color-mix(in srgb, var(--hockey-accent) 20%, transparent);
   }
 
   &--selected {
-    background: rgba(83, 159, 255, 0.15);
-    border-color: rgba(83, 159, 255, 0.42);
+    background: color-mix(in srgb, var(--hockey-accent) 14%, transparent);
+    border-color: color-mix(in srgb, var(--hockey-accent) 45%, transparent);
+  }
+
+  /* :focus-visible, а не :focus-within — иначе кнопка залипает после клика мышью. */
+  &:hover .chat-item__pin,
+  &:has(:focus-visible) .chat-item__pin {
+    opacity: 1;
+  }
+
+  &:active {
+    transform: scale(0.995);
   }
 
   &__open {
@@ -314,51 +469,29 @@
     flex: 1;
     min-width: 0;
     border: none;
-    outline: none;
+    outline-offset: 2px;
     text-align: left;
-    justify-content: space-between;
     align-items: center;
     gap: 10px;
-    padding: 6px;
-    border-radius: 8px;
+    padding: 8px;
+    border-radius: 14px;
     cursor: pointer;
     background: transparent;
     color: inherit;
-  }
-
-  &__pin {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border: none;
-    border-radius: 8px;
-    background: transparent;
-    cursor: pointer;
-    opacity: 0.45;
-    transition:
-      opacity 0.2s ease,
-      background 0.2s ease;
-
-    &:hover,
-    &.is-pinned {
-      opacity: 1;
-      background: rgba(93, 172, 255, 0.12);
-    }
+    font-family: inherit;
   }
 
   &__avatar {
-    width: 34px;
-    height: 34px;
-    min-width: 34px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
     border-radius: 50%;
     background: linear-gradient(135deg, #58a9ff, #3a6ef2);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: #fff;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
   }
 
@@ -370,11 +503,39 @@
     flex: 1;
   }
 
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
   &__title {
+    flex: 1 1 auto;
+    min-width: 0;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  &__online {
+    flex: 0 0 auto;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--hockey-status-online);
+  }
+
+  &__tag {
+    flex: 0 0 auto;
+    padding: 1px 7px;
+    border-radius: 999px;
+    border: 1px solid var(--hockey-card-border);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--hockey-text-muted);
   }
 
   &__last-msg {
@@ -388,54 +549,124 @@
     }
   }
 
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+    flex: 0 0 auto;
+  }
+
+  &__time {
+    font-size: 10px;
+    color: var(--hockey-text-muted);
+  }
+
   &__unread {
-    background: #4a8eff;
-    color: #fff;
+    background: var(--hockey-accent);
+    color: var(--hockey-surface);
     font-size: 10px;
     font-weight: 700;
     padding: 2px 7px;
     border-radius: 999px;
     min-width: 22px;
     text-align: center;
-    box-shadow: 0 3px 10px rgba(74, 142, 255, 0.45);
+  }
+
+  &__pin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--hockey-text-muted);
+    cursor: pointer;
+    opacity: 0;
+    transition:
+      opacity var(--hockey-motion-fast) var(--hockey-motion-ease),
+      background var(--hockey-motion-fast) var(--hockey-motion-ease);
+
+    &:hover,
+    &:focus-visible,
+    &.is-pinned {
+      opacity: 1;
+      background: color-mix(in srgb, var(--hockey-accent) 12%, transparent);
+    }
+
+    /* Открепили — кнопка гаснет вместе с остальными, даже если фокус остался на ней. */
+    &:not(.is-pinned):not(:hover):not(:focus-visible) {
+      background: transparent;
+    }
+
+    &.is-pinned {
+      color: var(--hockey-accent);
+    }
   }
 }
 
-.messenger-main {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+/* --- Появление: смена чата, новые сообщения, темы --- */
+@keyframes messenger-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-.messenger-messages {
-  flex: 1;
-  padding: 18px 20px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background:
-    radial-gradient(circle at 12% 20%, rgba(66, 143, 255, 0.08), transparent 34%),
-    radial-gradient(circle at 90% 85%, rgba(0, 192, 255, 0.06), transparent 30%),
-    linear-gradient(180deg, rgba(8, 34, 63, 0.14) 0%, rgba(8, 34, 63, 0.03) 100%),
-    var(--hockey-card-bg);
+@keyframes messenger-bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-.messenger-input {
-  padding: 12px 16px;
-  border-top: 1px solid var(--hockey-card-border);
-  display: flex;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.01);
+@keyframes messenger-chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-.messenger-empty {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Карточка диалога перемонтируется по key={chat.id} — анимация играет на каждой смене чата. */
+.messenger-hub__conversation {
+  animation: messenger-panel-in var(--hockey-motion-normal) var(--hockey-motion-ease) both;
 }
 
+.messenger-topics__item {
+  animation: messenger-chip-in 240ms var(--hockey-motion-ease) both;
+
+  @for $i from 1 through 6 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{40 + ($i - 1) * 45}ms;
+    }
+  }
+}
+
+.chat-bubble-container {
+  animation: messenger-bubble-in 280ms var(--hockey-motion-ease) both;
+  /* Лесенка при открытии чата; новое сообщение приходит одно и появляется сразу. */
+  animation-delay: calc(var(--bubble-index, 0) * 35ms);
+}
+
+/* Бабблы сообщений — визуальная подпись мессенджера, оставлены как есть. */
 .chat-bubble-container {
   display: flex;
   flex-direction: column;
@@ -456,13 +687,16 @@
 }
 
 .chat-bubble {
+  /* Сообщение может быть многострочным (Shift+Enter) — переносы сохраняем. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   padding: 9px 12px 7px;
   border-radius: 14px 14px 14px 4px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--hockey-card-bg-solid);
   @include glass-panel(6px);
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  border: 1px solid var(--hockey-card-border);
   position: relative;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
+  box-shadow: var(--hockey-card-shadow);
   line-height: 1.35;
 
   &::after {
@@ -480,9 +714,13 @@
   }
 
   &--own {
-    background: linear-gradient(135deg, #4a8eff, #2f78ff);
+    background: linear-gradient(
+      135deg,
+      var(--hockey-accent),
+      color-mix(in srgb, var(--hockey-accent) 70%, #000)
+    );
     border-radius: 14px 14px 4px 14px;
-    border-color: rgba(116, 174, 255, 0.45);
+    border-color: color-mix(in srgb, var(--hockey-accent) 60%, transparent);
     color: #fff;
 
     &::after {
@@ -494,7 +732,8 @@
       border-top: inherit;
     }
 
-    .chat-bubble-time {
+    .chat-bubble-time,
+    .chat-bubble-status {
       color: rgba(255, 255, 255, 0.85);
     }
   }
@@ -517,68 +756,174 @@
 .chat-bubble-status {
   font-size: 10px;
   letter-spacing: -1px;
-  color: #d9f0ff;
+  color: var(--hockey-accent);
 }
 
 .actionable-card {
   min-width: 260px;
   margin: 2px 0;
-  background: rgba(255, 255, 255, 0.04);
+}
 
-  &__header {
-    margin-bottom: 8px;
-  }
+.actionable-card__header {
+  margin-bottom: 8px;
+}
 
-  &__actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
+.actionable-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* Совсем узкая колонка (три панели раскрыты) — бейдж и время уступают названию. */
+@container messenger-list (max-width: 280px) {
+  .chat-item__tag,
+  .chat-item__time {
+    display: none;
   }
 }
 
 @include breakpoint($max: 768px) {
-  .messenger-layout {
-    grid-template-columns: 1fr;
-    height: calc(100vh - 140px);
-    min-height: 0;
-    border-radius: 12px;
+  .messenger-hub {
+    --messenger-viewport: clamp(360px, calc(100dvh - 340px), 900px);
   }
 
-  .messenger-layout--mobile {
-    .messenger-sidebar {
-      display: flex;
+  .messenger-hub__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .messenger-hub__actions .hockey-button {
+    width: 100%;
+    height: 44px !important;
+    min-height: 44px;
+  }
+
+  .messenger-hub__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Список и диалог — два состояния одного экрана. */
+  .messenger-hub--mobile {
+    /* В списке скроллится страница целиком, а не колонка внутри страницы. */
+    .messenger-hub__grid {
+      height: auto;
     }
 
-    .messenger-main {
+    .chat-list {
+      overflow: visible;
+    }
+
+    .messenger-hub__conversation {
       display: none;
     }
   }
 
-  .messenger-layout--mobile-chat {
+  /* В диалоге экран фиксируем по вьюпорту: композер прижат к низу над таб-баром,
+     скроллится только лента. Высоту считает оболочка, а не вычитание констант. */
+  .app-shell:has(.messenger-hub--mobile-chat) {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .app-shell:has(.messenger-hub--mobile-chat) .app-shell__main-col {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .messenger-hub--mobile-chat {
+    flex: 1 1 auto;
+    min-height: 0;
+    /* Шапка и табы скрыты — единственная строка должна тянуться на всю высоту. */
     grid-template-rows: minmax(0, 1fr);
 
-    .messenger-sidebar {
+    .messenger-hub__grid {
+      height: auto;
+      min-height: 0;
+    }
+
+    .messenger-hub__sidebar,
+    .messenger-hub__toolbar,
+    .page-header {
       display: none;
     }
 
-    .messenger-main {
+    .messenger-hub__conversation {
       display: flex;
-      min-height: 0;
-      height: 100%;
-    }
-
-    .messenger-messages {
-      flex: 1 1 auto;
-      min-height: 0;
+      animation: messenger-chat-in var(--hockey-motion-normal) var(--hockey-motion-ease) both;
     }
   }
 
-  .messenger-sidebar,
-  .messenger-main {
-    min-height: 0;
+  .messenger-hub__grid .chat-item__open {
+    min-height: 56px;
+  }
+
+  .messenger-hub__grid .chat-item__pin {
+    opacity: 1;
+    width: 44px;
+    height: 44px;
+  }
+
+  .messenger-header__btn-label {
+    display: none;
+  }
+
+  .messenger-header__actions .hockey-button {
+    min-width: 44px;
+    height: 44px !important;
+    min-height: 44px;
+    padding-inline: 12px;
+  }
+
+  .messenger-input {
+    --messenger-composer-size: 44px;
+  }
+
+  .messenger-input .hockey-button {
+    min-width: var(--messenger-composer-size);
+    height: var(--messenger-composer-size) !important;
+    min-height: var(--messenger-composer-size);
+  }
+
+  .messenger-back {
+    width: 44px;
+    height: 44px;
   }
 
   .chat-bubble-container {
     max-width: 90%;
+  }
+}
+
+@keyframes messenger-chat-in {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@include reduced-motion {
+  .chat-item,
+  .chat-item__pin,
+  .messenger-topics__item,
+  .messenger-member-pill,
+  .chat-user-search__item,
+  .messenger-back {
+    transition: none;
+  }
+
+  .messenger-hub__conversation,
+  .messenger-hub--mobile-chat .messenger-hub__conversation,
+  .messenger-topics__item,
+  .chat-bubble-container {
+    animation: none;
   }
 }

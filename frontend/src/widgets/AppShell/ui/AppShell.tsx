@@ -6,7 +6,6 @@
 
 import {
   ArrowRightFromSquare,
-  DisplayPulse,
   LayoutSideContentLeft,
   LayoutSideContentRight,
   Persons,
@@ -68,11 +67,7 @@ export function AppShell() {
   })
   const unreadCount = notifications.filter((n) => !n.readAt).length
   const unreadChatCount = getTotalUnreadCount(chats)
-  const isMessengerRoute = location.pathname === '/messenger'
   const isArenasRoute = location.pathname === '/arenas' || location.pathname.startsWith('/arenas/')
-  const isFocusMode = isLeftCollapsed && isRightCollapsed
-  /** overflow:hidden только в мессенджере — на других страницах обе панели могут быть свёрнуты без «пустого» профиля. */
-  const isMessengerFocus = isMessengerRoute && isFocusMode
 
   const logoutMutation = useMutation({
     mutationFn: logoutSession,
@@ -92,7 +87,6 @@ export function AppShell() {
     'app-shell__body--grid',
     isLeftCollapsed ? 'app-shell__body--left-collapsed' : '',
     isRightCollapsed ? 'app-shell__body--right-collapsed' : '',
-    isMessengerFocus ? 'app-shell__body--messenger-focus' : '',
   ]
     .filter(Boolean)
     .join(' ')
@@ -121,24 +115,6 @@ export function AppShell() {
         action: () => navigate('/'),
         qa: testId('app', 'shell', 'btn', 'switch-role'),
       },
-      ...(isMessengerRoute
-        ? [
-            {
-              text: isFocusMode ? 'Обычный режим' : 'Фокус на чат',
-              iconStart: <Icon data={DisplayPulse} size={16} />,
-              action: () => {
-                if (isFocusMode) {
-                  setIsLeftCollapsed(false)
-                  setIsRightCollapsed(false)
-                  return
-                }
-                setIsLeftCollapsed(true)
-                setIsRightCollapsed(true)
-              },
-              qa: testId('app', 'shell', 'btn', 'toggle-focus-mode'),
-            },
-          ]
-        : []),
       [
         {
           text: logoutMutation.isPending ? 'Выход…' : 'Выйти',
@@ -150,7 +126,7 @@ export function AppShell() {
         },
       ],
     ],
-    [isFocusMode, isMessengerRoute, logoutMutation, navigate],
+    [logoutMutation, navigate],
   )
 
   return (

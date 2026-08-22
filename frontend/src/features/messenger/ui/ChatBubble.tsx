@@ -5,7 +5,7 @@
 
 import {Text} from '@gravity-ui/uikit'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
-import {useState} from 'react'
+import {type CSSProperties, useState} from 'react'
 
 import type {ActionableMessageData, ChatAction, Message} from '@/entities/messenger'
 import {resolveMessageAction} from '@/entities/messenger'
@@ -18,15 +18,18 @@ import {IceCard} from '@/shared/ui/IceCard'
 interface ChatBubbleProps {
   message: Message
   isOwn?: boolean
+  /** Порядковый номер в ленте — задаёт задержку появления баббла. */
+  index?: number
 }
 
 /**
  * @spec SPEC-UI-8.1 - Glassmorphism бабблы сообщений
  */
-export function ChatBubble({message, isOwn}: ChatBubbleProps) {
+export function ChatBubble({message, isOwn, index = 0}: ChatBubbleProps) {
   return (
     <div
       className={`chat-bubble-container ${isOwn ? 'chat-bubble-container--own' : ''}`}
+      style={{'--bubble-index': Math.min(index, 12)} as CSSProperties}
       data-testid={testId('messenger', 'chat-bubble', 'bubble', message.id)}
     >
       {!isOwn && (

@@ -43,12 +43,13 @@ const isHeaderOnlyNavPath = (path: string) =>
 /**
  * Единый источник пунктов для desktop left nav и mobile bottom nav.
  * Порядок совпадает; mobile берёт subset + короткие labels где заданы.
- * Сейчас все пункты в incubating («Требует доработки»); профиль — только через header.
+ * `active` — раздел доведён до релизного вида; `incubating` показывается
+ * под заголовком «Требует доработки». Профиль — только через header.
  */
 export const PLAYER_NAV_ITEMS: NavItem[] = [
   {to: routes.events, label: EVENTS_LABEL, tier: 'incubating'},
   {to: routes.teams, label: 'Команды', tier: 'incubating'},
-  {to: routes.messenger, label: 'Мессенджер', tier: 'incubating'},
+  {to: routes.messenger, label: 'Мессенджер', tier: 'active'},
   {to: routes.arenas, label: ARENAS_LABEL, tier: 'incubating'},
   {to: routes.leagues, label: LEAGUES_LABEL, tier: 'incubating'},
   {to: routes.shops, label: 'Маркет', tier: 'incubating'},
