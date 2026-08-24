@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@gravity-ui/icons": "^2.21.0",
-    "@gravity-ui/uikit": "^7.47.2",
+    "@gravity-ui/uikit": "^7.48.0",
     "@gsap/react": "^2.1.2",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
@@ -29,7 +29,7 @@
     "gsap": "^3.15.0",
     "leaflet": "^1.9.4",
     "lenis": "^1.3.26",
-    "lottie-react": "^2.4.1",
+    "lottie-react": "^3.1.0",
     "msw": "^2.15.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
