@@ -1,7 +1,7 @@
+@forward 'page-hub';
 @forward 'components';
 @forward 'teams';
 @forward 'match-center';
-@forward 'events-catalog';
 @forward 'calendar';
 @forward 'standings';
 @forward 'loaders';
@@ -14,3 +14,5 @@
 @forward 'auth';
 @forward 'marketplace';
 @forward 'players';
+// Последним: перебивает радиусы page-hub и локальные стили фильтров каталогов.
+@forward 'catalog-filters';

@@ -14,6 +14,7 @@ import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceSkeleton} from '@/shared/ui/IceSkeleton'
 import {PageHeader} from '@/shared/ui/PageHeader'
+import {PageHub} from '@/shared/ui/PageHub'
 import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {ScrollReveal} from '@/shared/ui/ScrollStory'
@@ -57,10 +58,7 @@ export function PlayersPage() {
   )
 
   return (
-    <div
-      className="hockey-stack hockey-stack--gap-16 players-page"
-      data-testid={testId('players', 'players-page', 'page')}
-    >
+    <PageHub className="players-page" data-testid={testId('players', 'players-page', 'page')}>
       <div
         className={`players-page__progress${showProgress ? ' players-page__progress--active' : ''}`}
         aria-hidden
@@ -71,17 +69,10 @@ export function PlayersPage() {
         filters={filters}
         onChange={setFilters}
         onReset={handleResetFilters}
-        isFiltered={isFiltered}
+        activeCount={activeCount}
+        resultsCount={players.length}
+        resultsPending={showProgress}
       />
-
-      {isFiltered && (
-        <div
-          className="player-filters__summary"
-          data-testid={testId('players', 'players-page', 'text', 'active-count')}
-        >
-          Активных фильтров: {activeCount}
-        </div>
-      )}
 
       {isPending && (
         <>
@@ -148,6 +139,6 @@ export function PlayersPage() {
           }
         />
       )}
-    </div>
+    </PageHub>
   )
 }
