@@ -1,0 +1,77 @@
+@use '../mixins' as *;
+
+/**
+ * SPEC-UI-2 — единая оболочка страниц.
+ * HOCFRONT-42: те же токены радиуса и кнопок, что profile-hub / messenger-hub.
+ */
+.page-hub {
+  --page-hub-radius: 16px;
+  --g-border-radius-xs: var(--page-hub-radius);
+  --g-border-radius-s: var(--page-hub-radius);
+  --g-border-radius-m: var(--page-hub-radius);
+  --g-border-radius-l: var(--page-hub-radius);
+  --g-border-radius-xl: var(--page-hub-radius);
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  width: 100%;
+
+  .ice-card,
+  .g-text-input__content,
+  .g-text-input__control,
+  .g-text-area__content,
+  .g-text-area__control,
+  .g-select-control,
+  .g-select-control__button {
+    border-radius: var(--page-hub-radius);
+  }
+
+  .hockey-button,
+  a.hockey-button {
+    --g-button-border-radius: var(--page-hub-radius);
+    border-radius: var(--page-hub-radius) !important;
+    box-sizing: border-box;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: var(--g-button-height, 36px) !important;
+    min-height: var(--g-button-height, 36px);
+    vertical-align: middle;
+  }
+}
+
+.page-hub__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.page-hub__tabs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+
+  > * {
+    flex: 0 0 auto;
+  }
+}
+
+.page-hub__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-hub__panel {
+  width: 100%;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}

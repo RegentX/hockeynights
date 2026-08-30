@@ -21,6 +21,8 @@ import {testId} from '@/shared/testing/testId'
 import {EmptyNetState} from '@/shared/ui/EmptyNetState'
 import {HockeyButton} from '@/shared/ui/HockeyButton'
 import {IceCard} from '@/shared/ui/IceCard'
+import {PageBackLink} from '@/shared/ui/PageBackLink'
+import {PageHub} from '@/shared/ui/PageHub'
 import {QueryErrorState} from '@/shared/ui/QueryErrorState'
 import {ScoreboardLoader} from '@/shared/ui/ScoreboardLoader'
 import {PlayerCard} from '@/widgets/PlayerCard'
@@ -131,20 +133,16 @@ export function PublicPlayerProfilePage() {
   const {player} = data
 
   return (
-    <div
-      className="hockey-stack hockey-stack--gap-16 player-profile-layout public-player-profile"
+    <PageHub
+      className="player-profile-layout public-player-profile"
       data-testid={testId('players', 'public-player-profile', 'page', player.userId)}
     >
-      <div className="public-player-profile__header">
-        <HockeyButton
-          view="outlined"
-          size="s"
-          onClick={handleBack}
-          data-testid={testId('players', 'public-player-profile', 'btn', 'back')}
-        >
-          Вернуться
-        </HockeyButton>
-      </div>
+      <PageBackLink
+        label="Вернуться"
+        onClick={handleBack}
+        testIdPrefix="players"
+        testIdSection="public-player-profile"
+      />
 
       <div
         className="player-profile-layout__grid"
@@ -211,6 +209,6 @@ export function PublicPlayerProfilePage() {
           />
         </div>
       </IceCard>
-    </div>
+    </PageHub>
   )
 }
